@@ -12,40 +12,6 @@ class PengajuanController extends Controller
      */
     public function index(Request $request)
     {
-        // TODO: Get data from database
-        // $query = Pengajuan::with(['anggota', 'user']);
-
-        // Filter by jenis
-        // if ($request->filled('jenis')) {
-        //     $query->where('jenis_pinjaman', $request->jenis);
-        // }
-
-        // Filter by status
-        // if ($request->filled('status')) {
-        //     $query->where('status', $request->status);
-        // }
-
-        // Filter by bulan (21st of previous month to 20th of current month)
-        // if ($request->filled('bulan')) {
-        //     $bulan = $request->bulan; // Format: YYYY-MM
-        //     $query->whereBetween('tanggal_pengajuan', [
-        //         date('Y-m-21', strtotime($bulan . '-01 -1 month')),
-        //         date('Y-m-20', strtotime($bulan . '-01'))
-        //     ]);
-        // }
-
-        // Filter by date range
-        // if ($request->filled('tanggal')) {
-        //     $dates = explode(' - ', $request->tanggal);
-        //     $query->whereBetween('tanggal_pengajuan', [
-        //         date('Y-m-d', strtotime($dates[0])),
-        //         date('Y-m-d', strtotime($dates[1]))
-        //     ]);
-        // }
-
-        // $pengajuan = $query->orderBy('tanggal_pengajuan', 'desc')->get();
-
-        // Sample data untuk development
         $pengajuan = collect([
             (object)[
                 'id' => 1,

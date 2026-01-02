@@ -84,36 +84,84 @@ Route::middleware('auth')->prefix('simpanan')->name('simpanan.')->group(function
 
 Route::middleware('auth')->prefix('pinjaman')->name('pinjaman.')->group(function () {
     // Pengajuan Routes
-    Route::get('/pengajuan', [Admin\PengajuanController::class, 'index'])
+    Route::get('/pengajuan', [admin\PengajuanController::class, 'index'])
         ->name('pengajuan');
 
-    Route::post('/pengajuan/aksi', [Admin\PengajuanController::class, 'aksi'])
+    Route::post('/pengajuan/aksi', [admin\PengajuanController::class, 'aksi'])
         ->name('pengajuan.aksi');
 
-    Route::get('/pengajuan/cetak', [Admin\PengajuanController::class, 'cetak'])
+    Route::get('/pengajuan/cetak', [admin\PengajuanController::class, 'cetak'])
         ->name('pengajuan.cetak');
 
-    Route::get('/pengajuan/cetak-laporan', [Admin\PengajuanController::class, 'cetakLaporan'])
-        ->name('pengajuan.cetak');
+    Route::get('/pengajuan/cetak-laporan', [admin\PengajuanController::class, 'cetakLaporan'])
+        ->name('pengajuan.cetak-laporan');
 
-    Route::get('/pengajuan/export/excel', [Admin\PengajuanController::class, 'exportExcel'])
+    Route::get('/pengajuan/export/excel', [admin\PengajuanController::class, 'exportExcel'])
         ->name('pengajuan.export.excel');
 
-    Route::get('/pengajuan/export/pdf', [Admin\PengajuanController::class, 'exportPDF'])
+    Route::get('/pengajuan/export/pdf', [admin\PengajuanController::class, 'exportPDF'])
         ->name('pengajuan.export.pdf');
 
     // Other Pinjaman Routes (Coming Soon)
-    Route::get('/', function () {
-        return view('coming-soon');
-    })->name('index');
+    Route::get('/pinjaman', [admin\PinjamanController::class, 'index'])
+        ->name('pinjaman');
 
-    Route::get('/bayar', function () {
-        return view('coming-soon');
-    })->name('bayar');
+    Route::get('/pinjaman/{id}', [admin\PinjamanController::class, 'show'])
+        ->name('pinjaman.detail');
 
-    Route::get('/lunas', function () {
-        return view('coming-soon');
-    })->name('lunas');
+    Route::post('/pinjaman/store', [admin\PinjamanController::class, 'store'])
+        ->name('pinjaman.store');
+
+    Route::put('/pinjaman/{id}', [admin\PinjamanController::class, 'update'])
+        ->name('pinjaman.update');
+
+    Route::delete('/pinjaman/{id}', [admin\PinjamanController::class, 'destroy'])
+        ->name('pinjaman.destroy');
+
+    Route::get('/pinjaman/cetak/{id}', [admin\PinjamanController::class, 'cetak'])
+        ->name('pinjaman.cetak');
+
+    Route::post('/pinjaman/{id}/validasi-lunas', [admin\PinjamanController::class, 'validasiLunas'])
+        ->name('pinjaman.validasi-lunas');
+
+    Route::get('/pinjaman/cetak-laporan', [admin\PinjamanController::class, 'cetakLaporan'])
+        ->name('pinjaman.cetak-laporan');
+
+    Route::get('/pinjaman/export/excel', [admin\PinjamanController::class, 'exportExcel'])
+        ->name('pinjaman.export.excel');
+
+    Route::get('/pinjaman/export/pdf', [admin\PinjamanController::class, 'exportPDF'])
+        ->name('pinjaman.export.pdf');
+
+    Route::get('/bayar', [admin\BayarAngsuranController::class, 'index'])
+        ->name('bayar');
+
+    Route::post('/bayar/proses', [admin\BayarAngsuranController::class, 'proses'])
+        ->name('bayar.proses');
+
+    Route::get('/bayar/cetak-bukti/{id}', [admin\BayarAngsuranController::class, 'cetakBukti'])
+        ->name('bayar.cetak-bukti');
+
+    Route::get('/bayar/detail/{id}', [admin\BayarAngsuranController::class, 'show'])
+        ->name('bayar.detail');
+
+    Route::get('/lunas', [admin\PinjamanLunasController::class, 'index'])
+        ->name('lunas');
+
+    Route::get('/lunas/{id}', [admin\PinjamanLunasController::class, 'show'])
+        ->name('lunas.detail');
+
+    Route::get('/lunas/cetak-detail/{id}', [admin\PinjamanLunasController::class, 'cetakDetail'])
+        ->name('lunas.cetak-detail');
+
+    Route::get('/lunas/cetak-laporan', [admin\PinjamanLunasController::class, 'cetakLaporan'])
+        ->name('lunas.cetak-laporan');
+
+    Route::get('/lunas/export/excel', [admin\PinjamanLunasController::class, 'exportExcel'])
+        ->name('lunas.export.excel');
+
+    Route::get('/lunas/export/pdf', [admin\PinjamanLunasController::class, 'exportPDF'])
+        ->name('lunas.export.pdf');
 });
 
 Route::middleware('auth')->prefix('laporan')->name('laporan.')->group(function () {

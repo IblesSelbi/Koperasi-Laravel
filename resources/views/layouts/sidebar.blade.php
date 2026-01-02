@@ -128,8 +128,8 @@
                                 </div>
                             </a>
                         </li>
-                        <li class="sidebar-item {{ request()->routeIs('pinjaman.index') ? 'active' : '' }}">
-                            <a class="sidebar-link" href="{{ route('pinjaman.index') }}">
+                        <li class="sidebar-item {{ request()->routeIs('pinjaman.pinjaman') ? 'active' : '' }}">
+                            <a class="sidebar-link" href="{{ route('pinjaman.pinjaman') }}">
                                 <div class="d-flex align-items-center gap-3">
                                     <div class="round-16 d-flex align-items-center justify-content-center">
                                         <i class="ti ti-circle"></i>
