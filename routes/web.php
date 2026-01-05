@@ -83,7 +83,8 @@ Route::middleware('auth')->prefix('simpanan')->name('simpanan.')->group(function
 });
 
 Route::middleware('auth')->prefix('pinjaman')->name('pinjaman.')->group(function () {
-    // Pengajuan Routes
+
+    // ========== PENGAJUAN ROUTES ==========
     Route::get('/pengajuan', [admin\PengajuanController::class, 'index'])
         ->name('pengajuan');
 
@@ -102,27 +103,14 @@ Route::middleware('auth')->prefix('pinjaman')->name('pinjaman.')->group(function
     Route::get('/pengajuan/export/pdf', [admin\PengajuanController::class, 'exportPDF'])
         ->name('pengajuan.export.pdf');
 
-    // Other Pinjaman Routes (Coming Soon)
+    // ========== PINJAMAN ROUTES ==========
+    // Index
     Route::get('/pinjaman', [admin\PinjamanController::class, 'index'])
         ->name('pinjaman');
 
-    Route::get('/pinjaman/{id}', [admin\PinjamanController::class, 'show'])
-        ->name('pinjaman.detail');
-
+    // Routes spesifik HARUS SEBELUM {id}
     Route::post('/pinjaman/store', [admin\PinjamanController::class, 'store'])
         ->name('pinjaman.store');
-
-    Route::put('/pinjaman/{id}', [admin\PinjamanController::class, 'update'])
-        ->name('pinjaman.update');
-
-    Route::delete('/pinjaman/{id}', [admin\PinjamanController::class, 'destroy'])
-        ->name('pinjaman.destroy');
-
-    Route::get('/pinjaman/cetak/{id}', [admin\PinjamanController::class, 'cetak'])
-        ->name('pinjaman.cetak');
-
-    Route::post('/pinjaman/{id}/validasi-lunas', [admin\PinjamanController::class, 'validasiLunas'])
-        ->name('pinjaman.validasi-lunas');
 
     Route::get('/pinjaman/cetak-laporan', [admin\PinjamanController::class, 'cetakLaporan'])
         ->name('pinjaman.cetak-laporan');
@@ -133,6 +121,23 @@ Route::middleware('auth')->prefix('pinjaman')->name('pinjaman.')->group(function
     Route::get('/pinjaman/export/pdf', [admin\PinjamanController::class, 'exportPDF'])
         ->name('pinjaman.export.pdf');
 
+    Route::get('/pinjaman/cetak/{id}', [admin\PinjamanController::class, 'cetak'])
+        ->name('pinjaman.cetak');
+
+    Route::post('/pinjaman/{id}/validasi-lunas', [admin\PinjamanController::class, 'validasiLunas'])
+        ->name('pinjaman.validasi-lunas');
+
+    // Routes dengan {id} HARUS PALING BAWAH
+    Route::get('/pinjaman/{id}', [admin\PinjamanController::class, 'show'])
+        ->name('pinjaman.detail');
+
+    Route::put('/pinjaman/{id}', [admin\PinjamanController::class, 'update'])
+        ->name('pinjaman.update');
+
+    Route::delete('/pinjaman/{id}', [admin\PinjamanController::class, 'destroy'])
+        ->name('pinjaman.destroy');
+
+    // ========== BAYAR ANGSURAN ROUTES ==========
     Route::get('/bayar', [admin\BayarAngsuranController::class, 'index'])
         ->name('bayar');
 
@@ -145,12 +150,11 @@ Route::middleware('auth')->prefix('pinjaman')->name('pinjaman.')->group(function
     Route::get('/bayar/detail/{id}', [admin\BayarAngsuranController::class, 'show'])
         ->name('bayar.detail');
 
+    // ========== PINJAMAN LUNAS ROUTES ==========
     Route::get('/lunas', [admin\PinjamanLunasController::class, 'index'])
         ->name('lunas');
 
-    Route::get('/lunas/{id}', [admin\PinjamanLunasController::class, 'show'])
-        ->name('lunas.detail');
-
+    // Routes spesifik HARUS SEBELUM {id}
     Route::get('/lunas/cetak-detail/{id}', [admin\PinjamanLunasController::class, 'cetakDetail'])
         ->name('lunas.cetak-detail');
 
@@ -162,96 +166,275 @@ Route::middleware('auth')->prefix('pinjaman')->name('pinjaman.')->group(function
 
     Route::get('/lunas/export/pdf', [admin\PinjamanLunasController::class, 'exportPDF'])
         ->name('lunas.export.pdf');
+
+    // Route {id} HARUS PALING BAWAH
+    Route::get('/lunas/{id}', [admin\PinjamanLunasController::class, 'show'])
+        ->name('lunas.detail');
 });
 
 Route::middleware('auth')->prefix('laporan')->name('laporan.')->group(function () {
-    Route::get('/anggota', function () {
-        return view('coming-soon');
-    })->name('anggota');
+    // Route Data Anggota
+    Route::get('/anggota', [admin\AnggotaController::class, 'index'])
+        ->name('anggota');
 
-    Route::get('/kas-anggota', function () {
-        return view('coming-soon');
-    })->name('kas-anggota');
+    Route::get('/anggota/cetak', [admin\AnggotaController::class, 'cetakLaporan'])
+        ->name('anggota.cetak');
 
-    Route::get('/jatuh-tempo', function () {
-        return view('coming-soon');
-    })->name('jatuh-tempo');
+    Route::get('/anggota/export/excel', [admin\AnggotaController::class, 'exportExcel'])
+        ->name('anggota.export.excel');
 
-    Route::get('/kredit-macet', function () {
-        return view('coming-soon');
-    })->name('kredit-macet');
+    Route::get('/anggota/export/pdf', [admin\AnggotaController::class, 'exportPDF'])
+        ->name('anggota.export.pdf');
 
-    Route::get('/transaksi-kas', function () {
-        return view('coming-soon');
-    })->name('transaksi-kas');
+    // Route Kas Anggota
+    Route::get('/kas-anggota', [admin\KasAnggotaController::class, 'index'])
+        ->name('kas-anggota');
 
-    Route::get('/buku-besar', function () {
-        return view('coming-soon');
-    })->name('buku-besar');
+    Route::get('/kas-anggota/cetak', [admin\KasAnggotaController::class, 'cetakLaporan'])
+        ->name('kas-anggota.cetak');
 
-    Route::get('/neraca-saldo', function () {
-        return view('coming-soon');
-    })->name('neraca-saldo');
+    Route::get('/kas-anggota/export/excel', [admin\KasAnggotaController::class, 'exportExcel'])
+        ->name('kas-anggota.export.excel');
 
-    Route::get('/kas-simpanan', function () {
-        return view('coming-soon');
-    })->name('kas-simpanan');
+    // Route Jatuh Tempo
+    Route::get('/jatuh-tempo', [admin\JatuhTempoController::class, 'index'])
+        ->name('jatuh-tempo');
 
-    Route::get('/kas-pinjaman', function () {
-        return view('coming-soon');
-    })->name('kas-pinjaman');
+    Route::get('/jatuh-tempo/cetak', [admin\JatuhTempoController::class, 'cetakLaporan'])
+        ->name('jatuh-tempo.cetak');
 
-    Route::get('/saldo-kas', function () {
-        return view('coming-soon');
-    })->name('saldo-kas');
+    Route::get('/jatuh-tempo/export/excel', [admin\JatuhTempoController::class, 'exportExcel'])
+        ->name('jatuh-tempo.export.excel');
 
-    Route::get('/laba-rugi', function () {
-        return view('coming-soon');
-    })->name('laba-rugi');
+    Route::post('/jatuh-tempo/kirim-notifikasi', [admin\JatuhTempoController::class, 'kirimNotifikasi'])
+        ->name('jatuh-tempo.kirim-notifikasi');
 
-    Route::get('/shu', function () {
-        return view('coming-soon');
-    })->name('shu');
+    // Route Kredit Macet
+    Route::get('/kredit-macet', [admin\KreditMacetController::class, 'index'])
+        ->name('kredit-macet');
+
+    Route::get('/kredit-macet/cetak', [admin\KreditMacetController::class, 'cetakLaporan'])
+        ->name('kredit-macet.cetak');
+
+    Route::get('/kredit-macet/export/excel', [admin\KreditMacetController::class, 'exportExcel'])
+        ->name('kredit-macet.export.excel');
+
+    Route::post('/kredit-macet/kirim-pemanggilan', [admin\KreditMacetController::class, 'kirimPemanggilan'])
+        ->name('kredit-macet.kirim-pemanggilan');
+
+    Route::post('/kredit-macet/get-data', [admin\KreditMacetController::class, 'getData'])
+        ->name('kredit-macet.get-data');
+
+    // Route Transaksi Kas
+    Route::get('/transaksi-kas', [admin\TransaksiKasController::class, 'index'])
+        ->name('transaksi-kas');
+
+    Route::get('/transaksi-kas/cetak', [admin\TransaksiKasController::class, 'cetakLaporan'])
+        ->name('transaksi-kas.cetak');
+
+    Route::get('/transaksi-kas/export/excel', [admin\TransaksiKasController::class, 'exportExcel'])
+        ->name('transaksi-kas.export.excel');
+
+    Route::get('/transaksi-kas/export/pdf', [admin\TransaksiKasController::class, 'exportPDF'])
+        ->name('transaksi-kas.export.pdf');
+
+    Route::post('/transaksi-kas/get-data', [admin\TransaksiKasController::class, 'getData'])
+        ->name('transaksi-kas.get-data');
+
+    // Route Buku Besar
+    Route::get('/buku-besar', [admin\BukuBesarController::class, 'index'])
+        ->name('buku-besar');
+
+    Route::get('/buku-besar/cetak', [admin\BukuBesarController::class, 'cetakLaporan'])
+        ->name('buku-besar.cetak');
+
+    Route::get('/buku-besar/export/excel', [admin\BukuBesarController::class, 'exportExcel'])
+        ->name('buku-besar.export.excel');
+
+    Route::post('/buku-besar/get-data', [admin\BukuBesarController::class, 'getData'])
+        ->name('buku-besar.get-data');
+
+    // Route Neraca Saldo
+    Route::get('/neraca-saldo', [admin\NeracaSaldoController::class, 'index'])
+        ->name('neraca-saldo');
+
+    Route::get('/neraca-saldo/cetak', [admin\NeracaSaldoController::class, 'cetakLaporan'])
+        ->name('neraca-saldo.cetak');
+
+    Route::post('/neraca-saldo/get-data', [admin\NeracaSaldoController::class, 'getData'])
+        ->name('neraca-saldo.get-data');
+
+    // Route Kas Simpanan
+    Route::get('/kas-simpanan', [admin\KasSimpananController::class, 'index'])
+        ->name('kas-simpanan');
+
+    Route::get('/kas-simpanan/cetak', [admin\KasSimpananController::class, 'cetakLaporan'])
+        ->name('kas-simpanan.cetak');
+
+    // Route Kas Pinjaman
+    Route::get('/kas-pinjaman', [admin\KasPinjamanController::class, 'index'])
+        ->name('kas-pinjaman');
+
+    Route::get('/kas-pinjaman/cetak', [admin\KasPinjamanController::class, 'cetakLaporan'])
+        ->name('kas-pinjaman.cetak');
+
+    // Route Saldo Kas
+    Route::get('/saldo-kas', [admin\SaldoKasController::class, 'index'])
+        ->name('saldo-kas');
+
+    Route::get('/saldo-kas/cetak', [admin\SaldoKasController::class, 'cetakLaporan'])
+        ->name('saldo-kas.cetak');
+
+    // Route Laba Rugi
+    Route::get('/laba-rugi', [admin\LabaRugiController::class, 'index'])
+        ->name('laba-rugi');
+
+    Route::get('/laba-rugi/cetak', [admin\LabaRugiController::class, 'cetakLaporan'])
+        ->name('laba-rugi.cetak');
+
+    // Route SHU
+    Route::get('/shu', [admin\SHUController::class, 'index'])
+        ->name('shu');
+
+    Route::get('/shu/cetak', [admin\SHUController::class, 'cetakLaporan'])
+        ->name('shu.cetak');
 });
 
 Route::middleware('auth')->prefix('master')->name('master.')->group(function () {
-    Route::get('/jenis-simpanan', function () {
-        return view('coming-soon');
-    })->name('jenis-simpanan');
+    // Route Jenis Simpanan
+    Route::get('/jenis-simpanan', [admin\JenisSimpananController::class, 'index'])
+        ->name('jenis-simpanan');
+    Route::post('/jenis-simpanan', [admin\JenisSimpananController::class, 'store'])
+        ->name('jenis-simpanan.store');
+    Route::put('/jenis-simpanan/{id}', [admin\JenisSimpananController::class, 'update'])
+        ->name('jenis-simpanan.update');
+    Route::delete('/jenis-simpanan/{id}', [admin\JenisSimpananController::class, 'destroy'])
+        ->name('jenis-simpanan.destroy');
+    Route::get('/jenis-simpanan/export', [admin\JenisSimpananController::class, 'export'])
+        ->name('jenis-simpanan.export');
+    Route::get('/jenis-simpanan/cetak', [admin\JenisSimpananController::class, 'cetak'])
+        ->name('jenis-simpanan.cetak');
 
-    Route::get('/jenis-akun', function () {
-        return view('coming-soon');
-    })->name('jenis-akun');
+    // Route Jenis Akun
+    Route::get('/jenis-akun', [admin\JenisAkunController::class, 'index'])
+        ->name('jenis-akun');
+    Route::post('/jenis-akun', [admin\JenisAkunController::class, 'store'])
+        ->name('jenis-akun.store');
+    Route::put('/jenis-akun/{id}', [admin\JenisAkunController::class, 'update'])
+        ->name('jenis-akun.update');
+    Route::delete('/jenis-akun/{id}', [admin\JenisAkunController::class, 'destroy'])
+        ->name('jenis-akun.destroy');
+    Route::get('/jenis-akun/export', [admin\JenisAkunController::class, 'export'])
+        ->name('jenis-akun.export');
+    Route::get('/jenis-akun/cetak', [admin\JenisAkunController::class, 'cetak'])
+        ->name('jenis-akun.cetak');
 
-    Route::get('/data-kas', function () {
-        return view('coming-soon');
-    })->name('data-kas');
+    // Route Data Kas
+    Route::get('/data-kas', [admin\DataKasController::class, 'index'])
+        ->name('data-kas');
+    Route::post('/data-kas', [admin\DataKasController::class, 'store'])
+        ->name('data-kas.store');
+    Route::put('/data-kas/{id}', [admin\DataKasController::class, 'update'])
+        ->name('data-kas.update');
+    Route::delete('/data-kas/{id}', [admin\DataKasController::class, 'destroy'])
+        ->name('data-kas.destroy');
+    Route::get('/data-kas/export', [admin\DataKasController::class, 'export'])
+        ->name('data-kas.export');
+    Route::get('/data-kas/cetak', [admin\DataKasController::class, 'cetak'])
+        ->name('data-kas.cetak');
 
-    Route::get('/lama-angsuran', function () {
-        return view('coming-soon');
-    })->name('lama-angsuran');
+    // Route Lama Angsuran
+    Route::get('/lama-angsuran', [admin\LamaAngsuranController::class, 'index'])
+        ->name('lama-angsuran');
+    Route::post('/lama-angsuran', [admin\LamaAngsuranController::class, 'store'])
+        ->name('lama-angsuran.store');
+    Route::put('/lama-angsuran/{id}', [admin\LamaAngsuranController::class, 'update'])
+        ->name('lama-angsuran.update');
+    Route::delete('/lama-angsuran/{id}', [admin\LamaAngsuranController::class, 'destroy'])
+        ->name('lama-angsuran.destroy');
+    Route::get('/lama-angsuran/export', [admin\LamaAngsuranController::class, 'export'])
+        ->name('lama-angsuran.export');
+    Route::get('/lama-angsuran/cetak', [admin\LamaAngsuranController::class, 'cetak'])
+        ->name('lama-angsuran.cetak');
 
-    Route::get('/data-barang', function () {
-        return view('coming-soon');
-    })->name('data-barang');
+    // Route Data Barang
+    Route::get('/data-barang', [admin\DataBarangController::class, 'index'])
+        ->name('data-barang');
+    Route::post('/data-barang', [admin\DataBarangController::class, 'store'])
+        ->name('data-barang.store');
+    Route::put('/data-barang/{id}', [admin\DataBarangController::class, 'update'])
+        ->name('data-barang.update');
+    Route::delete('/data-barang/{id}', [admin\DataBarangController::class, 'destroy'])
+        ->name('data-barang.destroy');
+    Route::get('/data-barang/export', [admin\DataBarangController::class, 'export'])
+        ->name('data-barang.export');
+    Route::get('/data-barang/cetak', [admin\DataBarangController::class, 'cetak'])
+        ->name('data-barang.cetak');
 
-    Route::get('/anggota', function () {
-        return view('coming-soon');
-    })->name('anggota');
+    // Route Data Anggota 
+    Route::get('/data-anggota/export', [admin\DataAnggotaController::class, 'export'])
+        ->name('data-anggota.export');
 
-    Route::get('/pengguna', function () {
-        return view('coming-soon');
-    })->name('pengguna');
+    Route::get('/data-anggota/import', [admin\DataAnggotaController::class, 'showImport'])
+        ->name('data-anggota.import');
+
+    Route::post('/data-anggota/import', [admin\DataAnggotaController::class, 'processImport'])
+        ->name('data-anggota.import.process');
+
+    Route::get('/data-anggota/cetak', [admin\DataAnggotaController::class, 'cetak'])
+        ->name('data-anggota.cetak');
+
+    Route::get('/data-anggota', [admin\DataAnggotaController::class, 'index'])
+        ->name('data-anggota');
+
+    Route::post('/data-anggota', [admin\DataAnggotaController::class, 'store'])
+        ->name('data-anggota.store');
+
+    Route::put('/data-anggota/{id}', [admin\DataAnggotaController::class, 'update'])
+        ->name('data-anggota.update');
+
+    Route::delete('/data-anggota/{id}', [admin\DataAnggotaController::class, 'destroy'])
+        ->name('data-anggota.destroy');
+
+
+    // Route Data Pengguna - Route SPESIFIK harus di ATAS route umum
+    Route::get('/data-pengguna/export', [admin\DataPenggunaController::class, 'export'])
+        ->name('data-pengguna.export');
+
+    Route::get('/data-pengguna/cetak', [admin\DataPenggunaController::class, 'cetak'])
+        ->name('data-pengguna.cetak');
+
+    Route::get('/data-pengguna', [admin\DataPenggunaController::class, 'index'])
+        ->name('data-pengguna');
+
+    Route::post('/data-pengguna', [admin\DataPenggunaController::class, 'store'])
+        ->name('data-pengguna.store');
+
+    Route::put('/data-pengguna/{id}', [admin\DataPenggunaController::class, 'update'])
+        ->name('data-pengguna.update');
+
+    Route::delete('/data-pengguna/{id}', [admin\DataPenggunaController::class, 'destroy'])
+        ->name('data-pengguna.destroy');
 });
 
 Route::middleware('auth')->prefix('setting')->name('setting.')->group(function () {
-    Route::get('/identitas', function () {
-        return view('coming-soon');
-    })->name('identitas');
+    Route::get('/identitas', [admin\IdentitasKoperasiController::class, 'index'])
+        ->name('identitas');
 
-    Route::get('/suku-bunga', function () {
-        return view('coming-soon');
-    })->name('suku-bunga');
+    Route::put('/identitas', [admin\IdentitasKoperasiController::class, 'update'])
+        ->name('identitas.update');
+
+    Route::get('/identitas', [admin\IdentitasKoperasiController::class, 'index'])
+        ->name('identitas');
+
+    Route::put('/identitas', [admin\IdentitasKoperasiController::class, 'update'])
+        ->name('identitas.update');
+
+    Route::get('/suku-bunga', [admin\SukuBungaController::class, 'index'])
+        ->name('suku-bunga');
+
+    Route::put('/suku-bunga', [admin\SukuBungaController::class, 'update'])
+        ->name('suku-bunga.update');
 });
 
 require __DIR__ . '/auth.php';

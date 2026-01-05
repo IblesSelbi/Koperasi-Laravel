@@ -366,8 +366,8 @@
                                 </div>
                             </a>
                         </li>
-                        <li class="sidebar-item {{ request()->routeIs('master.anggota') ? 'active' : '' }}">
-                            <a class="sidebar-link" href="{{ route('master.anggota') }}">
+                        <li class="sidebar-item {{ request()->routeIs('master.data-anggota') ? 'active' : '' }}">
+                            <a class="sidebar-link" href="{{ route('master.data-anggota') }}">
                                 <div class="d-flex align-items-center gap-3">
                                     <div class="round-16 d-flex align-items-center justify-content-center">
                                         <i class="ti ti-circle"></i>
@@ -376,8 +376,8 @@
                                 </div>
                             </a>
                         </li>
-                        <li class="sidebar-item {{ request()->routeIs('master.pengguna') ? 'active' : '' }}">
-                            <a class="sidebar-link" href="{{ route('master.pengguna') }}">
+                        <li class="sidebar-item {{ request()->routeIs('master.data-pengguna') ? 'active' : '' }}">
+                            <a class="sidebar-link" href="{{ route('master.data-pengguna') }}">
                                 <div class="d-flex align-items-center gap-3">
                                     <div class="round-16 d-flex align-items-center justify-content-center">
                                         <i class="ti ti-circle"></i>

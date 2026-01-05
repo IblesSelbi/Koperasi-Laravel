@@ -67,7 +67,7 @@ class PinjamanController extends Controller
             ]
         ]);
 
-        return view('admin.pinjaman.Pinjaman', compact('pinjaman', 'notifications'));
+        return view('admin.Pinjaman.datapinjaman.Pinjaman', compact('pinjaman', 'notifications'));
     }
 
     /**
@@ -219,7 +219,7 @@ class PinjamanController extends Controller
             ]
         ]);
 
-        return view('admin.pinjaman.DetailPinjaman', compact('pinjaman', 'simulasi', 'transaksi', 'notifications'));
+        return view('admin.Pinjaman.datapinjaman.DetailPinjaman', compact('pinjaman', 'simulasi', 'transaksi', 'notifications'));
     }
 
     /**

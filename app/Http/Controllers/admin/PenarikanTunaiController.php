@@ -44,7 +44,7 @@ class PenarikanTunaiController extends Controller
         $notifications = collect([]);
 
         return view(
-            'admin.penarikan.PenarikanTunai',
+            'admin.simpanan.penarikan.PenarikanTunai',
             compact('penarikan', 'anggota_list', 'notifications')
         );
     }

@@ -56,7 +56,7 @@ class PinjamanLunasController extends Controller
             ]
         ]);
 
-        return view('admin.lunas.PinjamanLunas', compact('pinjamanLunas', 'notifications'));
+        return view('admin.Pinjaman.lunas.PinjamanLunas', compact('pinjamanLunas', 'notifications'));
     }
 
     /**
@@ -160,7 +160,7 @@ class PinjamanLunasController extends Controller
             ]
         ]);
 
-        return view('admin.pinjaman.DetailPinjamanLunas', compact('pinjaman', 'simulasi', 'transaksi', 'notifications'));
+        return view('admin.Pinjaman.lunas.DetailPinjamanLunas', compact('pinjaman', 'simulasi', 'transaksi', 'notifications'));
     }
 
     /**

@@ -20,7 +20,7 @@ class PemasukanController extends Controller
         $notifications = collect([]); 
 
         return view(
-            'admin.pemasukan.pemasukan',
+            'admin.TransaksiKas.pemasukan.Pemasukan',
             compact('pemasukan', 'akun_list', 'notifications')
         );
     }

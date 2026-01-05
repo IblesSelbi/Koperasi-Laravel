@@ -6791,6 +6791,11 @@ fieldset:disabled .btn {
   transition: opacity .15s linear;
 }
 
+.nowrap-table th,
+.nowrap-table td {
+  white-space: nowrap;
+}
+
 .modal-backdrop.fade {
   opacity: 0;
 }

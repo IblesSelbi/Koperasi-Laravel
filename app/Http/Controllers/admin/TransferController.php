@@ -15,7 +15,7 @@ class TransferController extends Controller
         $notifications = collect([]);
 
         return view(
-            'admin.transfer.transfer',
+            'admin.TransaksiKas.transfer.Transfer',
             compact('transfer', 'notifications')
         );
     }

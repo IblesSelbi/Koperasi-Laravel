@@ -57,7 +57,7 @@ class BayarAngsuranController extends Controller
             ]
         ]);
 
-        return view('admin.bayar.BayarAngsuran', compact('pinjaman', 'notifications'));
+        return view('admin.Pinjaman.bayar.BayarAngsuran', compact('pinjaman', 'notifications'));
     }
 
     /**
@@ -137,7 +137,7 @@ class BayarAngsuranController extends Controller
             ]
         ]);
 
-        return view('admin.bayar.DetailBayarAngsuran', compact('pinjaman', 'pembayaran', 'notifications'));
+        return view('admin.Pinjaman.bayar.DetailBayarAngsuran', compact('pinjaman', 'pembayaran', 'notifications'));
     }
 
     /**

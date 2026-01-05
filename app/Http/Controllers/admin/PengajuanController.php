@@ -56,7 +56,7 @@ class PengajuanController extends Controller
             ]
         ]);
 
-        return view('admin.pengajuan.Pengajuan', compact('pengajuan', 'notifications'));
+        return view('admin.Pinjaman.pengajuan.Pengajuan', compact('pengajuan', 'notifications'));
     }
 
     /**

@@ -44,7 +44,7 @@ class SetoranTunaiController extends Controller
         $notifications = collect([]);
 
         return view(
-            'admin.setorantunai.SetoranTunai',
+            'admin.simpanan.setorantunai.SetoranTunai',
             compact('setoran', 'anggota_list', 'notifications')
         );
     }

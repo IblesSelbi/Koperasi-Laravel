@@ -53,7 +53,8 @@
                         </div>
                     </div>
                 </div>
-                <a href="#" class="btn btn-warning text-white btn-sm w-100 mt-3">
+                <a href="{{ route('laporan.kas-pinjaman') }}"
+                class="btn btn-warning text-white btn-sm w-100 mt-3">
                     <small>Lihat Detail</small>
                 </a>
             </div>
@@ -100,7 +101,8 @@
                         </div>
                     </div>
                 </div>
-                <a href="#" class="btn btn-success btn-sm w-100 mt-3">
+                <a href="{{ route('laporan.kas-simpanan') }}"
+                class="btn btn-success btn-sm w-100 mt-3">
                     <small>Lihat Detail</small>
                 </a>
             </div>
@@ -147,7 +149,7 @@
                         </div>
                     </div>
                 </div>
-                <a href="#" class="btn btn-sm w-100 mt-3" style="background: #7460ee; color: white;">
+                <a href="{{ route('laporan.saldo-kas') }}" class="btn btn-sm w-100 mt-3" style="background: #7460ee; color: white;">
                     <small>Lihat Detail</small>
                 </a>
             </div>
@@ -194,7 +196,8 @@
                         </div>
                     </div>
                 </div>
-                <a href="#" class="btn btn-primary btn-sm w-100 mt-3">
+                <a href="{{ route('laporan.anggota') }}"
+                class="btn btn-primary btn-sm w-100 mt-3">
                     <small>Lihat Detail</small>
                 </a>
             </div>
@@ -241,7 +244,7 @@
                         </div>
                     </div>
                 </div>
-                <a href="#" class="btn btn-danger btn-sm w-100 mt-3">
+                <a href="{{ route('pinjaman.pinjaman') }}" class="btn btn-danger btn-sm w-100 mt-3">
                     <small>Lihat Detail</small>
                 </a>
             </div>
@@ -288,7 +291,7 @@
                         </div>
                     </div>
                 </div>
-                <a href="#" class="btn btn-info btn-sm w-100 mt-3">
+                <a href="{{ route('master.data-anggota') }}" class="btn btn-info btn-sm w-100 mt-3">
                     <small>Lihat Detail</small>
                 </a>
             </div>

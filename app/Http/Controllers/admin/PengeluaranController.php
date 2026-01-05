@@ -41,7 +41,7 @@ class PengeluaranController extends Controller
         $notifications = collect([]);
 
         return view(
-            'admin.pengeluaran.pengeluaran',
+            'admin.TransaksiKas.pengeluaran.Pengeluaran',
             compact('pengeluaran', 'akun_list', 'total_pengeluaran', 'notifications')
         );
     }
