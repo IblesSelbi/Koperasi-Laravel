@@ -9,14 +9,58 @@ class TransferController extends Controller
 {
     public function index()
     {
-        // Data kosong untuk transfer
-        $transfer = collect([]);
+        // Dummy data transfer
+        $transfer = collect([
+            (object)[
+                'id' => 1,
+                'kode_transaksi' => 'TRX-TF-001',
+                'tanggal_transaksi' => '2025-12-16 09:30:00',
+                'uraian' => 'Transfer Kas Tunai ke Kas Besar',
+                'jumlah' => 2000000,
+                'dari_kas' => 'Kas Tunai',
+                'untuk_kas' => 'Kas Besar',
+                'user' => 'Admin',
+            ],
+            (object)[
+                'id' => 2,
+                'kode_transaksi' => 'TRX-TF-002',
+                'tanggal_transaksi' => '2025-12-17 14:15:00',
+                'uraian' => 'Transfer Kas Besar ke Kas Tunai',
+                'jumlah' => 1250000,
+                'dari_kas' => 'Kas Besar',
+                'untuk_kas' => 'Kas Tunai',
+                'user' => 'Admin',
+            ],
+            (object)[
+                'id' => 3,
+                'kode_transaksi' => 'TRX-TF-003',
+                'tanggal_transaksi' => '2025-12-15 10:00:00',
+                'uraian' => 'Transfer ke Rekening Bank',
+                'jumlah' => 5000000,
+                'dari_kas' => 'Kas Besar',
+                'untuk_kas' => 'Transfer',
+                'user' => 'Kasir',
+            ],
+            (object)[
+                'id' => 4,
+                'kode_transaksi' => 'TRX-TF-004',
+                'tanggal_transaksi' => '2025-12-14 11:30:00',
+                'uraian' => 'Transfer dari Bank ke Kas Tunai',
+                'jumlah' => 3000000,
+                'dari_kas' => 'Transfer',
+                'untuk_kas' => 'Kas Tunai',
+                'user' => 'Admin',
+            ],
+        ]);
+
+        // Hitung total transfer
+        $total_transfer = $transfer->sum('jumlah');
 
         $notifications = collect([]);
 
         return view(
             'admin.TransaksiKas.transfer.Transfer',
-            compact('transfer', 'notifications')
+            compact('transfer', 'total_transfer', 'notifications')
         );
     }
 

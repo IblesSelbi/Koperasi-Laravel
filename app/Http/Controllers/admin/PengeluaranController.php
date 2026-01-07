@@ -9,8 +9,62 @@ class PengeluaranController extends Controller
 {
     public function index()
     {
-        // Data kosong untuk pengeluaran
-        $pengeluaran = collect([]);
+        // Dummy data pengeluaran
+        $pengeluaran = collect([
+            (object)[
+                'id' => 1,
+                'kode_transaksi' => 'TRX00001',
+                'tanggal_transaksi' => '2025-01-10 08:30:00',
+                'uraian' => 'Biaya ATK',
+                'dari_kas' => 'Kas Tunai',
+                'untuk_akun' => 'Beban Operasional',
+                'jumlah' => 150000,
+                'user' => 'Admin',
+            ],
+            (object)[
+                'id' => 2,
+                'kode_transaksi' => 'TRX00002',
+                'tanggal_transaksi' => '2025-01-11 10:15:00',
+                'uraian' => 'Listrik Kantor',
+                'dari_kas' => 'Kas Besar',
+                'untuk_akun' => 'Beban Utilitas',
+                'jumlah' => 300000,
+                'user' => 'Admin',
+            ],
+            (object)[
+                'id' => 3,
+                'kode_transaksi' => 'TRX00003',
+                'tanggal_transaksi' => '2025-01-09 14:00:00',
+                'uraian' => 'Pembelian Komputer',
+                'dari_kas' => 'Kas Besar',
+                'untuk_akun' => 'Peralatan Kantor',
+                'jumlah' => 5000000,
+                'user' => 'Kasir',
+            ],
+            (object)[
+                'id' => 4,
+                'kode_transaksi' => 'TRX00004',
+                'tanggal_transaksi' => '2025-01-08 09:30:00',
+                'uraian' => 'Gaji Karyawan',
+                'dari_kas' => 'Transfer',
+                'untuk_akun' => 'Beban Gaji Karyawan',
+                'jumlah' => 10000000,
+                'user' => 'Admin',
+            ],
+            (object)[
+                'id' => 5,
+                'kode_transaksi' => 'TRX00005',
+                'tanggal_transaksi' => '2025-01-07 11:00:00',
+                'uraian' => 'Biaya Transportasi',
+                'dari_kas' => 'Kas Tunai',
+                'untuk_akun' => 'Biaya Transportasi',
+                'jumlah' => 250000,
+                'user' => 'Kasir',
+            ],
+        ]);
+
+        // Hitung total pengeluaran
+        $total_pengeluaran = $pengeluaran->sum('jumlah');
 
         // Data sample untuk dropdown akun
         $akun_list = collect([
@@ -34,9 +88,6 @@ class PengeluaranController extends Controller
             (object)['id' => 111, 'nama' => 'Permisalan'],
             (object)['id' => 112, 'nama' => 'Transaksi'],
         ]);
-
-        // Hitung total pengeluaran
-        $total_pengeluaran = $pengeluaran->sum('jumlah');
 
         $notifications = collect([]);
 

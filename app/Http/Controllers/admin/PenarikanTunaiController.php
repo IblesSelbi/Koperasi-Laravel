@@ -9,8 +9,67 @@ class PenarikanTunaiController extends Controller
 {
     public function index()
     {
-        // Data kosong untuk penarikan tunai
-        $penarikan = collect([]);
+        // Dummy data penarikan tunai
+        $penarikan = collect([
+            (object)[
+                'id' => 1,
+                'kode_transaksi' => 'PNR00001',
+                'tanggal_transaksi' => '2025-12-16 10:30:00',
+                'id_anggota' => 'A001',
+                'nama_anggota' => 'Budi Santoso',
+                'departemen' => 'Keuangan',
+                'jenis_simpanan' => 'Simpanan Wajib',
+                'jumlah' => 500000,
+                'user' => 'Admin',
+            ],
+            (object)[
+                'id' => 2,
+                'kode_transaksi' => 'PNR00002',
+                'tanggal_transaksi' => '2025-12-15 14:00:00',
+                'id_anggota' => 'A002',
+                'nama_anggota' => 'Siti Rahayu',
+                'departemen' => 'Operasional',
+                'jenis_simpanan' => 'Simpanan Sukarela',
+                'jumlah' => 1000000,
+                'user' => 'Admin',
+            ],
+            (object)[
+                'id' => 3,
+                'kode_transaksi' => 'PNR00003',
+                'tanggal_transaksi' => '2025-12-14 09:15:00',
+                'id_anggota' => 'A003',
+                'nama_anggota' => 'Ahmad Hidayat',
+                'departemen' => 'IT',
+                'jenis_simpanan' => 'Simpanan Pokok',
+                'jumlah' => 2500000,
+                'user' => 'Kasir',
+            ],
+            (object)[
+                'id' => 4,
+                'kode_transaksi' => 'PNR00004',
+                'tanggal_transaksi' => '2025-12-13 11:30:00',
+                'id_anggota' => 'A004',
+                'nama_anggota' => 'Dewi Lestari',
+                'departemen' => 'Marketing',
+                'jenis_simpanan' => 'Simpanan Wajib',
+                'jumlah' => 750000,
+                'user' => 'Admin',
+            ],
+            (object)[
+                'id' => 5,
+                'kode_transaksi' => 'PNR00005',
+                'tanggal_transaksi' => '2025-12-12 15:45:00',
+                'id_anggota' => 'A005',
+                'nama_anggota' => 'Eko Prasetyo',
+                'departemen' => 'Produksi',
+                'jenis_simpanan' => 'Simpanan Sukarela',
+                'jumlah' => 1500000,
+                'user' => 'Kasir',
+            ],
+        ]);
+
+        // Hitung total penarikan
+        $total_penarikan = $penarikan->sum('jumlah');
 
         // Data sample untuk dropdown anggota
         $anggota_list = collect([
@@ -45,7 +104,7 @@ class PenarikanTunaiController extends Controller
 
         return view(
             'admin.simpanan.penarikan.PenarikanTunai',
-            compact('penarikan', 'anggota_list', 'notifications')
+            compact('penarikan', 'anggota_list', 'total_penarikan', 'notifications')
         );
     }
 

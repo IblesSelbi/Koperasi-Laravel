@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Transfer Kas')
+@section('title', 'Setoran Tunai')
 
 @push('styles')
     <!-- DataTables CSS -->
@@ -14,8 +14,8 @@
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <h4 class="fw-semibold mb-1">Transaksi Transfer Kas</h4>
-                    <p class="text-muted fs-3 mb-0">Kelola transaksi transfer kas tunai</p>
+                    <h4 class="fw-semibold mb-1">Transaksi Setoran Tunai</h4>
+                    <p class="text-muted fs-3 mb-0">Kelola transaksi setoran tunai simpanan anggota</p>
                 </div>
             </div>
         </div>
@@ -26,6 +26,15 @@
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             <i class="ti ti-check me-2"></i>
             {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
+    <!-- Alert Error -->
+    @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="ti ti-alert-circle me-2"></i>
+            {{ session('error') }}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     @endif
@@ -46,6 +55,14 @@
                     </button>
                 </div>
                 <div class="col-lg-auto ms-auto">
+                    <select class="form-select form-select-sm" id="filterSimpanan" style="width: 200px;">
+                        <option value="">-- Tampilkan Akun --</option>
+                        <option value="Simpanan Sukarela">Simpanan Sukarela</option>
+                        <option value="Simpanan Pokok">Simpanan Pokok</option>
+                        <option value="Simpanan Wajib">Simpanan Wajib</option>
+                    </select>
+                </div>
+                <div class="col-lg-auto">
                     <div class="input-group input-group-sm" style="width: 180px;">
                         <input type="date" class="form-control" id="filterTanggal" placeholder="Pilih Tanggal">
                     </div>
@@ -74,7 +91,7 @@
     <div class="card">
         <div class="card-body">
             <div class="table-responsive">
-                <table id="tabelTransfer" class="table table-hover align-middle rounded-2 border overflow-hidden"
+                <table id="tabelSetoran" class="table table-hover align-middle rounded-2 border overflow-hidden"
                     style="width:100%">
                     <thead class="table-primary">
                         <tr>
@@ -84,70 +101,79 @@
                             <th class="text-center align-middle" width="20px">No</th>
                             <th>Kode Transaksi</th>
                             <th>Tanggal Transaksi</th>
-                            <th>Uraian</th>
-                            <th class="text-center">Jumlah</th>
-                            <th>Dari Kas</th>
-                            <th>Untuk Kas</th>
+                            <th>ID Anggota</th>
+                            <th>Nama Anggota</th>
+                            <th>Departemen</th>
+                            <th>Jenis Simpanan</th>
+                            <th class="text-end">Jumlah</th>
                             <th class="text-center">User</th>
+                            <th class="text-center" width="75px">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td class="text-center">
-                                <input type="checkbox" class="row-checkbox form-check-input">
-                            </td>
-                            <td class="text-center text-muted fw-medium">1</td>
-                            <td>
-                                <span class="badge bg-primary-subtle text-primary fw-semibold px-2 py-1">
-                                    TRX-TF-001
-                                </span>
-                            </td>
-                            <td class="text-muted">16 Desember 2025</td>
-                            <td>
-                                <div class="fw-semibold text-dark mb-1">Transfer Kas Tunai ke Kas Besar</div>
-                            </td>
-                            <td class="text-dark text-center">
-                                <span class="fw-bold text-success fs-4">Rp 2.000.000</span>
-                            </td>
-                            <td>
-                                <span class="badge bg-info-subtle text-info fw-semibold px-2 py-1">Kas Tunai</span>
-                            </td>
-                            <td>
-                                <span class="badge bg-warning-subtle text-warning fw-semibold px-2 py-1">Kas Besar</span>
-                            </td>
-                            <td class="text-center">
-                                <span class="badge border border-secondary text-secondary px-3 py-1 fw-semibold">Admin</span>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="text-center">
-                                <input type="checkbox" class="row-checkbox form-check-input">
-                            </td>
-                            <td class="text-center text-muted fw-medium">2</td>
-                            <td>
-                                <span class="badge bg-primary-subtle text-primary fw-semibold px-2 py-1">
-                                    TRX-TF-002
-                                </span>
-                            </td>
-                            <td class="text-muted">17 Desember 2025</td>
-                            <td>
-                                <div class="fw-semibold text-dark mb-1">Transfer Kas Besar ke Kas Tunai</div>
-                            </td>
-                            <td class="text-dark text-center">
-                                <span class="fw-bold text-success fs-4">Rp 1.250.000</span>
-                            </td>
-                            <td>
-                                <span class="badge bg-warning-subtle text-warning fw-semibold px-2 py-1">Kas Besar</span>
-                            </td>
-                            <td>
-                                <span class="badge bg-info-subtle text-info fw-semibold px-2 py-1">Kas Tunai</span>
-                            </td>
-                            <td class="text-center">
-                                <span class="badge border border-secondary text-secondary px-3 py-1 fw-semibold">Admin</span>
-                            </td>
-                        </tr>
+                        @forelse($setoran as $index => $item)
+                            <tr>
+                                <td class="text-center">
+                                    <input type="checkbox" class="row-checkbox form-check-input" data-id="{{ $item->id }}">
+                                </td>
+                                <td class="text-center text-muted fw-medium">{{ $index + 1 }}</td>
+                                <td>
+                                    <span class="badge bg-primary-subtle text-primary fw-semibold px-2 py-1">
+                                        {{ $item->kode_transaksi }}
+                                    </span>
+                                </td>
+                                <td class="text-muted">
+                                    {{ \Carbon\Carbon::parse($item->tanggal_transaksi)->format('d F Y') }}
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-info-subtle text-info">{{ $item->id_anggota }}</span>
+                                </td>
+                                <td>
+                                    <div class="fw-semibold text-dark mb-0">{{ $item->nama_anggota }}</div>
+                                </td>
+                                <td class="text-muted">{{ $item->departemen }}</td>
+                                <td>
+                                    <span class="badge text-dark fw-semibold">{{ $item->jenis_simpanan }}</span>
+                                </td>
+                                <td class="text-end">
+                                    <span class="fw-bold text-success fs-4">
+                                        Rp {{ number_format($item->jumlah, 0, ',', '.') }}
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge border border-secondary text-secondary px-3 py-1 fw-semibold">
+                                        {{ $item->user }}
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-outline-primary" onclick="cetakNota(this)">
+                                        <i class="ti ti-printer"></i> Nota
+                                    </button>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="11" class="text-center text-muted py-4">
+                                    <i class="ti ti-database-off fs-1 mb-2"></i>
+                                    <p class="mb-0">Tidak ada data setoran tunai</p>
+                                </td>
+                            </tr>
+                        @endforelse
                     </tbody>
+
+                    @if($setoran->count() > 0)
+                        <tfoot>
+                            <tr class="table-light">
+                                <td colspan="8" class="text-end fw-bolder fs-4">Total Setoran:</td>
+                                <td class="text-end">
+                                    <span class="fw-bold text-success fs-4 fw-bolder">
+                                        Rp {{ number_format($total_setoran ?? 0, 0, ',', '.') }}
+                                    </span>
+                                </td>
+                                <td colspan="2"></td>
+                            </tr>
+                        </tfoot>
+                    @endif
                 </table>
             </div>
         </div>
@@ -155,52 +181,106 @@
 
     <!-- Modal Form -->
     <div class="modal fade" id="modalForm" tabindex="-1">
-        <div class="modal-dialog">
+       <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="modalTitle">Tambah Data Transfer</h5>
+                    <h5 class="modal-title" id="modalTitle">Tambah Data Setoran Tunai</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <form id="formTransfer" method="POST" action="#">
+                <form id="formSetoran" method="POST" action="{{ route('simpanan.setoran.store') }}">
                     @csrf
                     <input type="hidden" name="_method" id="formMethod" value="POST">
                     <input type="hidden" name="id" id="formId">
 
                     <div class="modal-body">
-                        <div class="mb-3">
-                            <label class="form-label">Tanggal Transaksi <span class="text-danger">*</span></label>
-                            <input type="datetime-local" class="form-control" id="tglTransaksi" name="tanggal_transaksi"
-                                required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Jumlah <span class="text-danger">*</span></label>
-                            <div class="input-group">
-                                <span class="input-group-text">Rp</span>
-                                <input type="text" class="form-control" id="jumlah" name="jumlah" placeholder="0" required>
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label class="form-label">Tanggal Transaksi <span class="text-danger">*</span></label>
+                                    <input type="datetime-local" class="form-control" id="tglTransaksi"
+                                        name="tanggal_transaksi" required>
+                                </div>
+
+                                <h6 class="fw-semibold mb-3 text-primary">Identitas Penyetor</h6>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Nama Penyetor</label>
+                                    <input type="text" class="form-control" id="namaPenyetor" name="nama_penyetor"
+                                        placeholder="Masukkan nama penyetor">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Nomor Identitas</label>
+                                    <input type="text" class="form-control" id="noIdentitas" name="no_identitas"
+                                        placeholder="Masukkan nomor identitas">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Alamat</label>
+                                    <textarea class="form-control" id="alamat" name="alamat" rows="2"
+                                        placeholder="Masukkan alamat"></textarea>
+                                </div>
+
+                                <h6 class="fw-semibold mb-3 text-primary mt-4">Identitas Anggota</h6>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Nama Anggota <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="namaAnggota" name="anggota_id" required>
+                                        <option value="">-- Pilih Anggota --</option>
+                                        @foreach($anggota_list as $anggota)
+                                            <option value="{{ $anggota->id }}">
+                                                {{ $anggota->id_anggota }} - {{ $anggota->nama }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Jenis Simpanan <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="jenisSimpanan" name="jenis_simpanan" required>
+                                        <option value="">-- Pilih Simpanan --</option>
+                                        <option value="Simpanan Sukarela">Simpanan Sukarela</option>
+                                        <option value="Simpanan Pokok">Simpanan Pokok</option>
+                                        <option value="Simpanan Wajib">Simpanan Wajib</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Jumlah Setoran <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">Rp</span>
+                                        <input type="text" class="form-control" id="jumlah" name="jumlah" placeholder="0"
+                                            required>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Keterangan</label>
+                                    <input type="text" class="form-control" id="keterangan" name="keterangan"
+                                        placeholder="Masukkan keterangan">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Masuk ke Kas <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="kas" name="kas" required>
+                                        <option value="">-- Pilih Kas --</option>
+                                        <option value="Kas Tunai">Kas Tunai</option>
+                                        <option value="Kas Besar">Kas Besar</option>
+                                    </select>
+                                </div>
                             </div>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Keterangan</label>
-                            <input type="text" class="form-control" id="keterangan" name="keterangan"
-                                placeholder="Masukkan keterangan">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Ambil Dari Kas <span class="text-danger">*</span></label>
-                            <select class="form-select" id="dariKas" name="dari_kas" required>
-                                <option value="">-- Pilih Kas --</option>
-                                <option value="1">Kas Tunai</option>
-                                <option value="2">Kas Besar</option>
-                                <option value="3">Transfer</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Transfer ke Kas <span class="text-danger">*</span></label>
-                            <select class="form-select" id="untukKas" name="untuk_kas" required>
-                                <option value="">-- Pilih Kas --</option>
-                                <option value="1">Kas Tunai</option>
-                                <option value="2">Kas Besar</option>
-                                <option value="3">Transfer</option>
-                            </select>
+
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Foto Anggota</label>
+                                    <div class="border rounded p-3 text-center" style="min-height: 200px;">
+                                        <div id="fotoAnggota" class="d-flex align-items-center justify-content-center"
+                                            style="height: 180px;">
+                                            <span class="text-muted">Foto akan muncul setelah memilih anggota</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -223,30 +303,30 @@
     <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.bootstrap5.min.js"></script>
 
     <script>
+        let table;
         $(document).ready(function () {
             // Hide table initially
-            const tableWrapper = $('#tabelTransfer').closest('.card-body');
+            const tableWrapper = $('#tabelSetoran').closest('.card-body');
             tableWrapper.css({ opacity: 0, transition: 'opacity 0.3s' });
 
             // Initialize DataTable
-            var table = $('#tabelTransfer').DataTable({
+            table = $('#tabelSetoran').DataTable({
                 language: {
                     url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/id.json'
                 },
                 pageLength: 10,
                 order: [[3, 'desc']],
                 columnDefs: [
-                    { orderable: false, targets: [0, 1] },
-                    {
-                        targets: 1,
-                        render: function (data, type, row, meta) {
-                            return meta.row + meta.settings._iDisplayStart + 1;
-                        }
-                    }
+                    { orderable: false, targets: [0, 1, 10] }
                 ],
                 initComplete: function () {
                     tableWrapper.css('opacity', 1);
                 }
+            });
+
+            // Filter by Simpanan Type
+            $('#filterSimpanan').on('change', function () {
+                table.column(7).search(this.value).draw();
             });
 
             // Redraw on pagination
@@ -255,8 +335,8 @@
             });
 
             // Click row to select checkbox
-            $('#tabelTransfer tbody').on('click', 'tr', function (e) {
-                if ($(e.target).is('input[type="checkbox"]')) {
+            $('#tabelSetoran tbody').on('click', 'tr', function (e) {
+                if ($(e.target).is('input[type="checkbox"]') || $(e.target).is('button') || $(e.target).closest('button').length) {
                     e.stopPropagation();
                     updateSelectAllState();
                     return;
@@ -298,6 +378,35 @@
                 }
             }
 
+            // Handle Anggota Selection - Show Photo
+            $('#namaAnggota').on('change', function () {
+                const value = $(this).val();
+                const fotoContainer = $('#fotoAnggota');
+
+                if (value) {
+                    fotoContainer.html('<img src="{{ asset("assets/images/profile/user-1.jpg") }}" alt="Foto Anggota" class="img-fluid rounded" style="max-height: 180px;">');
+                } else {
+                    fotoContainer.html('<span class="text-muted">Foto akan muncul setelah memilih anggota</span>');
+                }
+            });
+
+            // Handle Jenis Simpanan Change - Auto fill amount
+            $('#jenisSimpanan').on('change', function () {
+                const jenis = $(this).val();
+                let amount = '';
+
+                if (jenis === 'Simpanan Wajib') {
+                    amount = '500.000';
+                } else if (jenis === 'Simpanan Pokok') {
+                    amount = '2.500.000';
+                }
+
+                if (amount) {
+                    $('#jumlah').val(amount);
+                    $('#jumlah').focus().select();
+                }
+            });
+
             // Format Currency Input
             $('#jumlah').on('input', function (e) {
                 let value = e.target.value.replace(/[^0-9]/g, '');
@@ -309,9 +418,10 @@
 
             // Set default datetime on modal open
             $('#modalForm').on('show.bs.modal', function () {
-                if ($('#modalTitle').text() === 'Tambah Data Transfer') {
+                if ($('#modalTitle').text() === 'Tambah Data Setoran Tunai') {
                     const now = new Date();
                     $('#tglTransaksi').val(now.toISOString().slice(0, 16));
+                    $('#fotoAnggota').html('<span class="text-muted">Foto akan muncul setelah memilih anggota</span>');
                 }
             });
 
@@ -338,10 +448,10 @@
 
         // Functions
         function tambahData() {
-            $('#modalTitle').text('Tambah Data Transfer');
-            $('#formTransfer')[0].reset();
+            $('#modalTitle').text('Tambah Data Setoran Tunai');
+            $('#formSetoran')[0].reset();
             $('#formMethod').val('POST');
-            $('#formTransfer').attr('action', '{{ route("kas.transfer.store") }}');
+            $('#formSetoran').attr('action', '{{ route("simpanan.setoran.store") }}');
 
             const now = new Date();
             $('#tglTransaksi').val(now.toISOString().slice(0, 16));
@@ -361,10 +471,10 @@
             }
 
             const id = checked.first().data('id');
-            $('#modalTitle').text('Edit Data Transfer');
+            $('#modalTitle').text('Edit Data Setoran Tunai');
             $('#formMethod').val('PUT');
             $('#formId').val(id);
-            $('#formTransfer').attr('action', '/kas/transfer/' + id);
+            $('#formSetoran').attr('action', '/admin/setoran/' + id);
 
             // TODO: Load data via AJAX
             $('#modalForm').modal('show');
@@ -378,30 +488,31 @@
             }
 
             if (confirm('Apakah Anda yakin ingin menghapus ' + checked.length + ' data?')) {
-                checked.each(function () {
-                    const row = $(this).closest('tr');
-                    $('#tabelTransfer').DataTable().row(row).remove();
-                });
-                $('#tabelTransfer').DataTable().draw();
-
-                alert('Data berhasil dihapus!');
-                $('#selectAll').prop('checked', false);
+                // TODO: Implement delete via AJAX or form submission
+                alert('Fitur hapus akan diimplementasikan');
             }
         }
 
         function cariData() {
             const search = $('#searchInput').val();
-            $('#tabelTransfer').DataTable().search(search).draw();
+            table.search(search).draw();
         }
 
         function resetFilter() {
             $('#searchInput').val('');
             $('#filterTanggal').val('');
-            $('#tabelTransfer').DataTable().search('').draw();
+            $('#filterSimpanan').val('');
+            table.search('').columns().search('').draw();
         }
 
         function cetakLaporan() {
             window.print();
+        }
+
+        function cetakNota(button) {
+            const row = button.closest('tr');
+            const kodeTransaksi = row.querySelector('td:nth-child(3)').textContent.trim();
+            alert('Mencetak nota untuk transaksi: ' + kodeTransaksi);
         }
     </script>
 @endpush

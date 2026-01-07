@@ -30,6 +30,15 @@
         </div>
     @endif
 
+    <!-- Alert Error -->
+    @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="ti ti-alert-circle me-2"></i>
+            {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
     <!-- Toolbar Card -->
     <div class="card mb-3">
         <div class="card-body p-3">
@@ -92,62 +101,77 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td class="text-center">
-                                <input type="checkbox" class="row-checkbox form-check-input">
-                            </td>
-                            <td class="text-center text-muted fw-medium">1</td>
-                            <td>
-                                <span class="badge bg-primary-subtle text-primary fw-semibold px-2 py-1">
-                                    TRX-TF-001
-                                </span>
-                            </td>
-                            <td class="text-muted">16 Desember 2025</td>
-                            <td>
-                                <div class="fw-semibold text-dark mb-1">Transfer Kas Tunai ke Kas Besar</div>
-                            </td>
-                            <td class="text-dark text-center">
-                                <span class="fw-bold text-success fs-4">Rp 2.000.000</span>
-                            </td>
-                            <td>
-                                <span class="badge bg-info-subtle text-info fw-semibold px-2 py-1">Kas Tunai</span>
-                            </td>
-                            <td>
-                                <span class="badge bg-warning-subtle text-warning fw-semibold px-2 py-1">Kas Besar</span>
-                            </td>
-                            <td class="text-center">
-                                <span class="badge border border-secondary text-secondary px-3 py-1 fw-semibold">Admin</span>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="text-center">
-                                <input type="checkbox" class="row-checkbox form-check-input">
-                            </td>
-                            <td class="text-center text-muted fw-medium">2</td>
-                            <td>
-                                <span class="badge bg-primary-subtle text-primary fw-semibold px-2 py-1">
-                                    TRX-TF-002
-                                </span>
-                            </td>
-                            <td class="text-muted">17 Desember 2025</td>
-                            <td>
-                                <div class="fw-semibold text-dark mb-1">Transfer Kas Besar ke Kas Tunai</div>
-                            </td>
-                            <td class="text-dark text-center">
-                                <span class="fw-bold text-success fs-4">Rp 1.250.000</span>
-                            </td>
-                            <td>
-                                <span class="badge bg-warning-subtle text-warning fw-semibold px-2 py-1">Kas Besar</span>
-                            </td>
-                            <td>
-                                <span class="badge bg-info-subtle text-info fw-semibold px-2 py-1">Kas Tunai</span>
-                            </td>
-                            <td class="text-center">
-                                <span class="badge border border-secondary text-secondary px-3 py-1 fw-semibold">Admin</span>
-                            </td>
-                        </tr>
+                        @forelse($transfer as $index => $item)
+                            <tr>
+                                <td class="text-center">
+                                    <input type="checkbox" class="row-checkbox form-check-input" data-id="{{ $item->id }}">
+                                </td>
+                                <td class="text-center text-muted fw-medium">{{ $index + 1 }}</td>
+                                <td>
+                                    <span class="badge bg-primary-subtle text-primary fw-semibold px-2 py-1">
+                                        {{ $item->kode_transaksi }}
+                                    </span>
+                                </td>
+                                <td class="text-muted">
+                                    {{ \Carbon\Carbon::parse($item->tanggal_transaksi)->format('d F Y') }}
+                                </td>
+                                <td>
+                                    <div class="fw-semibold text-dark mb-1">{{ $item->uraian }}</div>
+                                </td>
+                                <td class="text-center">
+                                    <span class="fw-bold text-primary fs-4">
+                                        Rp {{ number_format($item->jumlah, 0, ',', '.') }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge 
+                                        @if($item->dari_kas == 'Kas Tunai') bg-info-subtle text-info
+                                        @elseif($item->dari_kas == 'Kas Besar') bg-warning-subtle text-warning
+                                        @else bg-success-subtle text-success
+                                        @endif
+                                        fw-semibold px-2 py-1">
+                                        {{ $item->dari_kas }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge 
+                                        @if($item->untuk_kas == 'Kas Tunai') bg-info-subtle text-info
+                                        @elseif($item->untuk_kas == 'Kas Besar') bg-warning-subtle text-warning
+                                        @else bg-success-subtle text-success
+                                        @endif
+                                        fw-semibold px-2 py-1">
+                                        {{ $item->untuk_kas }}
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge border border-secondary text-secondary px-3 py-1 fw-semibold">
+                                        {{ $item->user }}
+                                    </span>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="9" class="text-center text-muted py-4">
+                                    <i class="ti ti-database-off fs-1 mb-2"></i>
+                                    <p class="mb-0">Tidak ada data transfer</p>
+                                </td>
+                            </tr>
+                        @endforelse
                     </tbody>
+
+                    @if($transfer->count() > 0)
+                        <tfoot>
+                            <tr class="table-light">
+                                <td colspan="5" class="text-end fw-bolder fs-4">Total Transfer:</td>
+                                <td class="text-center">
+                                    <span class="fw-bold text-primary fs-4 fw-bolder">
+                                        Rp {{ number_format($total_transfer ?? 0, 0, ',', '.') }}
+                                    </span>
+                                </td>
+                                <td colspan="3"></td>
+                            </tr>
+                        </tfoot>
+                    @endif
                 </table>
             </div>
         </div>
@@ -161,7 +185,7 @@
                     <h5 class="modal-title" id="modalTitle">Tambah Data Transfer</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <form id="formTransfer" method="POST" action="#">
+                <form id="formTransfer" method="POST" action="{{ route('kas.transfer.store') }}">
                     @csrf
                     <input type="hidden" name="_method" id="formMethod" value="POST">
                     <input type="hidden" name="id" id="formId">
@@ -236,13 +260,7 @@
                 pageLength: 10,
                 order: [[3, 'desc']],
                 columnDefs: [
-                    { orderable: false, targets: [0, 1] },
-                    {
-                        targets: 1,
-                        render: function (data, type, row, meta) {
-                            return meta.row + meta.settings._iDisplayStart + 1;
-                        }
-                    }
+                    { orderable: false, targets: [0, 1] }
                 ],
                 initComplete: function () {
                     tableWrapper.css('opacity', 1);
@@ -364,7 +382,7 @@
             $('#modalTitle').text('Edit Data Transfer');
             $('#formMethod').val('PUT');
             $('#formId').val(id);
-            $('#formTransfer').attr('action', '/kas/transfer/' + id);
+            $('#formTransfer').attr('action', '/admin/transfer/' + id);
 
             // TODO: Load data via AJAX
             $('#modalForm').modal('show');
@@ -378,14 +396,8 @@
             }
 
             if (confirm('Apakah Anda yakin ingin menghapus ' + checked.length + ' data?')) {
-                checked.each(function () {
-                    const row = $(this).closest('tr');
-                    $('#tabelTransfer').DataTable().row(row).remove();
-                });
-                $('#tabelTransfer').DataTable().draw();
-
-                alert('Data berhasil dihapus!');
-                $('#selectAll').prop('checked', false);
+                // TODO: Implement delete via AJAX or form submission
+                alert('Fitur hapus akan diimplementasikan');
             }
         }
 

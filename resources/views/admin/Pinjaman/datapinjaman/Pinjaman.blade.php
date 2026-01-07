@@ -6,7 +6,6 @@
     <!-- DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css">
-    <link rel="stylesheet" href="{{ asset('assets/css/styles.min.css') }}" />
     <!-- Daterangepicker -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 
@@ -166,218 +165,130 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td class="text-center">
-                                <span class="badge bg-primary-subtle text-primary fw-semibold px-2 py-1">PJ001</span>
-                            </td>
-                            <td class="text-center text-muted">15 Des 2025<br><small>10:30</small></td>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <img src="./assets/images/profile/user-2.jpg" width="40" height="40"
-                                        class="rounded-circle me-2">
+                        @forelse($pinjaman as $item)
+                            <tr>
+                                <td class="text-center">
+                                    <span class="badge bg-primary-subtle text-primary fw-semibold px-2 py-1">
+                                        {{ $item->kode }}
+                                    </span>
+                                </td>
+                                <td class="text-center text-muted">
+                                    {{ \Carbon\Carbon::parse($item->tanggal_pinjam)->format('d M Y') }}<br>
+                                    <small>{{ \Carbon\Carbon::parse($item->tanggal_pinjam)->format('H:i') }}</small>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="{{ asset($item->anggota_foto) }}" width="40" height="40"
+                                            class="rounded-circle me-2" alt="Foto">
+                                        <div>
+                                            <strong>{{ $item->anggota_nama }}</strong><br>
+                                            <small class="text-muted">ID: {{ $item->anggota_id }} • {{ $item->anggota_lokasi }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td>
                                     <div>
-                                        <strong>Budi Santoso</strong><br>
-                                        <small class="text-muted">ID: 001234 • Jakarta</small>
+                                        <div class="d-flex justify-content-between border-bottom py-1">
+                                            <small class="text-muted">Nama Barang</small>
+                                            <strong>{{ $item->nama_barang }}</strong>
+                                        </div>
+
+                                        <div class="d-flex justify-content-between border-bottom py-1">
+                                            <small class="text-muted">Harga Barang</small>
+                                            <span>Rp {{ number_format($item->harga_barang, 0, ',', '.') }}</span>
+                                        </div>
+
+                                        <div class="d-flex justify-content-between border-bottom py-1">
+                                            <small class="text-muted">Lama Angsuran</small>
+                                            <span>{{ $item->lama_angsuran }} Bulan</span>
+                                        </div>
+
+                                        <div class="d-flex justify-content-between border-bottom py-1">
+                                            <small class="text-muted">Pokok Angsuran</small>
+                                            <span>Rp {{ number_format($item->pokok_angsuran, 0, ',', '.') }}</span>
+                                        </div>
+
+                                        <div class="d-flex justify-content-between border-bottom py-1">
+                                            <small class="text-muted">Bunga Pinjaman</small>
+                                            <span class="text-info">Rp {{ number_format($item->bunga_pinjaman, 0, ',', '.') }}</span>
+                                        </div>
+
+                                        <div class="d-flex justify-content-between pt-1">
+                                            <small class="text-muted">Biaya Admin</small>
+                                            <span class="text-warning">Rp {{ number_format($item->biaya_admin, 0, ',', '.') }}</span>
+                                        </div>
                                     </div>
-                                </div>
-                            </td>
+                                </td>
 
-                            <td>
-                                <div>
-
-                                    <div class="d-flex justify-content-between border-bottom py-1">
-                                        <small class="text-muted">Nama Barang</small>
-                                        <strong> Pinjaman Dana Tunai </strong>
-                                    </div>
-
-                                    <div class="d-flex justify-content-between border-bottom py-1">
-                                        <small class="text-muted">Harga Barang</small>
-                                        <span>Rp 2.600.000</span>
-                                    </div>
-
-                                    <div class="d-flex justify-content-between border-bottom py-1">
-                                        <small class="text-muted">Lama Angsuran</small>
-                                        <span>6 Bulan</span>
-                                    </div>
-
-                                    <div class="d-flex justify-content-between border-bottom py-1">
-                                        <small class="text-muted">Pokok Angsuran</small>
-                                        <span>Rp 433.333</span>
-                                    </div>
-
-                                    <div class="d-flex justify-content-between border-bottom py-1">
-                                        <small class="text-muted">Bunga Pinjaman</small>
-                                        <span class="text-info">Rp 130.000</span>
-                                    </div>
-
-                                    <div class="d-flex justify-content-between pt-1">
-                                        <small class="text-muted">Biaya Admin</small>
-                                        <span class="text-warning">Rp 0</span>
-                                    </div>
-
-                                </div>
-                            </td>
-
-                            <td>
-                                <div>
-
-                                    <div class="d-flex justify-content-between border-bottom py-1">
-                                        <small class="text-muted">Jumlah Angsuran</small>
-                                        <span>Rp 1.575.000</span>
-                                    </div>
-
-                                    <div class="d-flex justify-content-between border-bottom py-1">
-                                        <small class="text-muted">Jumlah Denda</small>
-                                        <span>Rp 0</span>
-                                    </div>
-
-                                    <div class="d-flex justify-content-between border-bottom py-1">
-                                        <small class="text-muted">Sudah Dibayar</small>
-                                        <span>Rp 0</span>
-                                    </div>
-
-                                    <div class="d-flex justify-content-between border-bottom py-1">
-                                        <small class="text-muted">Sisa Angsuran</small>
-                                        <span>1x</span>
-                                    </div>
-
-                                    <div class="d-flex justify-content-between pt-2">
-                                        <small class="text-muted fw-semibold">Sisa Tagihan</small>
-                                        <span class="fw-bold text-success fs-6">Rp 1.575.000</span>
-                                    </div>
-                                </div>
-                            </td>
-
-                            <td class="text-center">
-                                <span class="badge bg-danger-subtle text-danger px-3 py-2">
-                                    <i class="ti ti-x"></i> Belum Lunas
-                                </span>
-                            </td>
-                            <td class="text-center">
-                                <span class="badge border border-secondary text-secondary px-3 py-1">Admin</span>
-                            </td>
-                            <td class="text-center" style="min-width: 150px;">
-                                <div class="btn-group" role="group">
-                                    <div class="btn-group mt-1" role="group">
-                                        <a href="{{ route('pinjaman.pinjaman.detail', 1) }}">
-                                            <button class="btn btn-outline-info btn-sm">
-                                                <i class="ti ti-eye"></i> Detail
-                                            </button>
-                                        </a>
-                                        <button class="btn btn-primary btn-sm" onclick="cetakNota(1)">
-                                            <i class="ti ti-printer"></i> Nota
-                                        </button>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <!-- Sample Data Row 2 -->
-                        <tr>
-                            <td class="text-center">
-                                <span class="badge bg-primary-subtle text-primary fw-semibold px-2 py-1">PJ001</span>
-                            </td>
-                            <td class="text-center text-muted">15 Des 2025<br><small>10:30</small></td>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <img src="./assets/images/profile/user-2.jpg" width="40" height="40"
-                                        class="rounded-circle me-2">
+                                <td>
                                     <div>
-                                        <strong>Budi Santoso</strong><br>
-                                        <small class="text-muted">ID: 001234 • Jakarta</small>
+                                        <div class="d-flex justify-content-between border-bottom py-1">
+                                            <small class="text-muted">Jumlah Angsuran</small>
+                                            <span>Rp {{ number_format($item->jumlah_angsuran, 0, ',', '.') }}</span>
+                                        </div>
+
+                                        <div class="d-flex justify-content-between border-bottom py-1">
+                                            <small class="text-muted">Jumlah Denda</small>
+                                            <span>Rp {{ number_format($item->jumlah_denda, 0, ',', '.') }}</span>
+                                        </div>
+
+                                        <div class="d-flex justify-content-between border-bottom py-1">
+                                            <small class="text-muted">Sudah Dibayar</small>
+                                            <span>Rp {{ number_format($item->sudah_dibayar, 0, ',', '.') }}</span>
+                                        </div>
+
+                                        <div class="d-flex justify-content-between border-bottom py-1">
+                                            <small class="text-muted">Sisa Angsuran</small>
+                                            <span>{{ $item->sisa_angsuran }}x</span>
+                                        </div>
+
+                                        <div class="d-flex justify-content-between pt-2">
+                                            <small class="text-muted fw-semibold">Sisa Tagihan</small>
+                                            <span class="fw-bold text-success fs-6">Rp {{ number_format($item->sisa_tagihan, 0, ',', '.') }}</span>
+                                        </div>
                                     </div>
-                                </div>
-                            </td>
+                                </td>
 
-                            <td>
-                                <div>
-
-                                    <div class="d-flex justify-content-between border-bottom py-1">
-                                        <small class="text-muted">Nama Barang</small>
-                                        <strong> Pinjaman Dana Tunai </strong>
-                                    </div>
-
-                                    <div class="d-flex justify-content-between border-bottom py-1">
-                                        <small class="text-muted">Harga Barang</small>
-                                        <span>Rp 2.600.000</span>
-                                    </div>
-
-                                    <div class="d-flex justify-content-between border-bottom py-1">
-                                        <small class="text-muted">Lama Angsuran</small>
-                                        <span>6 Bulan</span>
-                                    </div>
-
-                                    <div class="d-flex justify-content-between border-bottom py-1">
-                                        <small class="text-muted">Pokok Angsuran</small>
-                                        <span>Rp 433.333</span>
-                                    </div>
-
-                                    <div class="d-flex justify-content-between border-bottom py-1">
-                                        <small class="text-muted">Bunga Pinjaman</small>
-                                        <span class="text-info">Rp 130.000</span>
-                                    </div>
-
-                                    <div class="d-flex justify-content-between pt-1">
-                                        <small class="text-muted">Biaya Admin</small>
-                                        <span class="text-warning">Rp 0</span>
-                                    </div>
-
-                                </div>
-                            </td>
-
-                            <td>
-                                <div>
-
-                                    <div class="d-flex justify-content-between border-bottom py-1">
-                                        <small class="text-muted">Jumlah Angsuran</small>
-                                        <span>Rp 1.575.000</span>
-                                    </div>
-
-                                    <div class="d-flex justify-content-between border-bottom py-1">
-                                        <small class="text-muted">Jumlah Denda</small>
-                                        <span>Rp 0</span>
-                                    </div>
-
-                                    <div class="d-flex justify-content-between border-bottom py-1">
-                                        <small class="text-muted">Sudah Dibayar</small>
-                                        <span>Rp 0</span>
-                                    </div>
-
-                                    <div class="d-flex justify-content-between border-bottom py-1">
-                                        <small class="text-muted">Sisa Angsuran</small>
-                                        <span>1x</span>
-                                    </div>
-
-                                    <div class="d-flex justify-content-between pt-2">
-                                        <small class="text-muted fw-semibold">Sisa Tagihan</small>
-                                        <span class="fw-bold text-success fs-6">Rp 1.575.000</span>
-                                    </div>
-                                </div>
-                            </td>
-
-                            <td class="text-center">
-                                <span class="badge bg-danger-subtle text-danger px-3 py-2">
-                                    <i class="ti ti-x"></i> Belum Lunas
-                                </span>
-                            </td>
-                            <td class="text-center">
-                                <span class="badge border border-secondary text-secondary px-3 py-1">Admin</span>
-                            </td>
-                            <td class="text-center" style="min-width: 150px;">
-                                <div class="btn-group" role="group">
-                                    <div class="btn-group mt-1" role="group">
-                                        <a href="{{ route('pinjaman.pinjaman.detail', 2) }}">
-                                            <button class="btn btn-outline-info btn-sm">
-                                                <i class="ti ti-eye"></i> Detail
+                                <td class="text-center">
+                                    @if($item->status_lunas == 'Lunas')
+                                        <span class="badge bg-success-subtle text-success px-3 py-2">
+                                            <i class="ti ti-check"></i> Lunas
+                                        </span>
+                                    @else
+                                        <span class="badge bg-danger-subtle text-danger px-3 py-2">
+                                            <i class="ti ti-x"></i> Belum Lunas
+                                        </span>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge border border-secondary text-secondary px-3 py-1">
+                                        {{ $item->user }}
+                                    </span>
+                                </td>
+                                <td class="text-center" style="min-width: 150px;">
+                                    <div class="btn-group" role="group">
+                                        <div class="btn-group mt-1" role="group">
+                                            <a href="{{ route('pinjaman.pinjaman.pinjaman.detail', $item->id) }}">
+                                                <button class="btn btn-outline-info btn-sm">
+                                                    <i class="ti ti-eye"></i> Detail
+                                                </button>
+                                            </a>
+                                            <button class="btn btn-primary btn-sm" onclick="cetakNota({{ $item->id }})">
+                                                <i class="ti ti-printer"></i> Nota
                                             </button>
-                                        </a>
-                                        <button class="btn btn-primary btn-sm" onclick="cetakNota(2)">
-                                            <i class="ti ti-printer"></i> Nota
-                                        </button>
+                                        </div>
                                     </div>
-                                </div>
-                            </td>
-                        </tr>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="8" class="text-center text-muted py-4">
+                                    <i class="ti ti-database-off fs-1 mb-2"></i>
+                                    <p class="mb-0">Tidak ada data pinjaman</p>
+                                </td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
@@ -388,7 +299,7 @@
     <div class="modal fade" id="modalFormPinjaman" tabindex="-1">
         <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
+                <div class="modal-header bg-light text-white">
                     <h5 class="modal-title" id="modalTitle">
                         <i class="ti ti-plus"></i> Tambah Data Pinjaman
                     </h5>
@@ -675,7 +586,7 @@
             const pinjamanId = $('#pinjamanId').val();
             const url = pinjamanId ?
                 `{{ url('pinjaman/pinjaman') }}/${pinjamanId}` :
-                '{{ route("pinjaman.pinjaman.store") }}';
+                '{{ route("pinjaman.pinjaman.pinjaman.store") }}';
 
             const method = pinjamanId ? 'PUT' : 'POST';
 
@@ -738,8 +649,14 @@
                     showConfirmButton: false
                 });
 
-                // TODO: Reload dengan filter
-                // location.href = `{{ route('pinjaman.pinjaman') }}?status=${status}&kode=${kode}&nama=${nama}&tanggal=${tanggal}`;
+                // Reload dengan filter
+                location.href = "{{ route('pinjaman.pinjaman.pinjaman') }}" + new URLSearchParams({
+                status,
+                kode,
+                nama,
+                tanggal
+            }).toString();
+
             }, 800);
         }
 
@@ -770,7 +687,36 @@
             const nama = $('#filterNama').val() || '';
             const tanggal = $('#filterTanggal').val() || '';
 
+            location.href = "{{ route('pinjaman.pinjaman.pinjaman') }}" + new URLSearchParams({
+            status,
+            kode,
+            nama,
+            tanggal
+        }).toString();
+
             window.open(url, '_blank');
         }
+
+        // Function: Format Currency Input
+        $('#jumlah').on('input', function (e) {
+            let value = e.target.value.replace(/[^0-9]/g, '');
+            if (value) {
+                value = parseInt(value).toLocaleString('id-ID');
+            }
+            e.target.value = value;
+        });
+
+        // Set default datetime on modal open
+        $('#modalFormPinjaman').on('show.bs.modal', function () {
+            if ($('#modalTitle').text().includes('Tambah')) {
+                const now = new Date();
+                const year = now.getFullYear();
+                const month = String(now.getMonth() + 1).padStart(2, '0');
+                const day = String(now.getDate()).padStart(2, '0');
+                const hours = String(now.getHours()).padStart(2, '0');
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                $('#tglPinjam').val(`${year}-${month}-${day}T${hours}:${minutes}`);
+            }
+        });
     </script>
 @endpush

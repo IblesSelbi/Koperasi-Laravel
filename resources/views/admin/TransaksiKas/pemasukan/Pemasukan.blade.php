@@ -30,6 +30,15 @@
         </div>
     @endif
 
+    <!-- Alert Error -->
+    @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="ti ti-alert-circle me-2"></i>
+            {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
     <!-- Toolbar Card -->
     <div class="card mb-3">
         <div class="card-body p-3">
@@ -92,82 +101,63 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td class="text-center">
-                                <input type="checkbox" class="row-checkbox form-check-input">
-                            </td>
-                            <td class="text-center text-muted fw-medium">1</td>
-                            <td>
-                                <span class="badge bg-primary-subtle text-primary fw-semibold px-2 py-1">
-                                    TRX00001
-                                </span>
-                            </td>
-                            <td class="text-muted">15 Desember 2025</td>
-                            <td>
-                                <div class="fw-semibold text-dark mb-1">Setoran Awal</div>
-                            </td>
-                            <td>
-                                <span class="badge bg-info-subtle text-info fw-semibold px-2 py-1">
-                                    Kas Tunai
-                                </span>
-                            </td>
-                            <td class="text-muted">Modal Awal</td>
-                            <td class="text-end">
-                                <span class="fw-bold text-success fs-4">
-                                    Rp 5.000.000
-                                </span>
-                            </td>
-                            <td class="text-center">
-                                <span class="badge border border-secondary text-secondary px-3 py-1 fw-semibold">
-                                    Admin
-                                </span>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="text-center">
-                                <input type="checkbox" class="row-checkbox form-check-input">
-                            </td>
-                            <td class="text-center text-muted fw-medium">2</td>
-                            <td>
-                                <span class="badge bg-primary-subtle text-primary fw-semibold px-2 py-1">
-                                    TRX00002
-                                </span>
-                            </td>
-                            <td class="text-muted">14 Desember 2025</td>
-                            <td>
-                                <div class="fw-semibold text-dark mb-1">Pendapatan Bunga</div>
-                            </td>
-                            <td>
-                                <span class="badge bg-warning-subtle text-warning fw-semibold px-2 py-1">
-                                    Kas Besar
-                                </span>
-                            </td>
-                            <td class="text-muted">Pendapatan Lainnya</td>
-                            <td class="text-end">
-                                <span class="fw-bold text-success fs-4">
-                                    Rp 1.500.000
-                                </span>
-                            </td>
-                            <td class="text-center">
-                                <span class="badge border border-secondary text-secondary px-3 py-1 fw-semibold">
-                                    Admin
-                                </span>
-                            </td>
-                        </tr>
+                        @forelse($pemasukan as $index => $item)
+                            <tr>
+                                <td class="text-center">
+                                    <input type="checkbox" class="row-checkbox form-check-input" data-id="{{ $item->id }}">
+                                </td>
+                                <td class="text-center text-muted fw-medium">{{ $index + 1 }}</td>
+                                <td>
+                                    <span class="badge bg-primary-subtle text-primary fw-semibold px-2 py-1">
+                                        {{ $item->kode_transaksi }}
+                                    </span>
+                                </td>
+                                <td class="text-muted">
+                                    {{ \Carbon\Carbon::parse($item->tanggal_transaksi)->format('d F Y') }}
+                                </td>
+                                <td>
+                                    <div class="fw-semibold text-dark mb-1">{{ $item->uraian }}</div>
+                                </td>
+                                <td>
+                                    <span class="badge {{ $item->untuk_kas == 'Kas Tunai' ? 'bg-info-subtle text-info' : 'bg-warning-subtle text-warning' }} fw-semibold px-2 py-1">
+                                        {{ $item->untuk_kas }}
+                                    </span>
+                                </td>
+                                <td class="text-muted">{{ $item->dari_akun }}</td>
+                                <td class="text-end">
+                                    <span class="fw-bold text-success fs-4">
+                                        Rp {{ number_format($item->jumlah, 0, ',', '.') }}
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge border border-secondary text-secondary px-3 py-1 fw-semibold">
+                                        {{ $item->user }}
+                                    </span>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="9" class="text-center text-muted py-4">
+                                    <i class="ti ti-database-off fs-1 mb-2"></i>
+                                    <p class="mb-0">Tidak ada data pemasukan</p>
+                                </td>
+                            </tr>
+                        @endforelse
                     </tbody>
 
-                    <tfoot>
-                        <tr class="table-light">
-                            <td colspan="7" class="text-end fw-bolder fs-4">Total Pengeluaran:</td>
-                            <td class="text-end">
-                                <span class="fw-bold text-success fs-4 fw-bolder">
-                                    Rp {{ number_format($total_pengeluaran ?? 0, 0, ',', '.') }}
-                                </span>
-                            </td>
-                            <td></td>
-                        </tr>
-                    </tfoot>
+                    @if($pemasukan->count() > 0)
+                        <tfoot>
+                            <tr class="table-light">
+                                <td colspan="7" class="text-end fw-bolder fs-4">Total Pemasukan:</td>
+                                <td class="text-end">
+                                    <span class="fw-bold text-success fs-4 fw-bolder">
+                                        Rp {{ number_format($total_pemasukan ?? 0, 0, ',', '.') }}
+                                    </span>
+                                </td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    @endif
                 </table>
             </div>
         </div>
@@ -181,7 +171,7 @@
                     <h5 class="modal-title" id="modalTitle">Tambah Data Pemasukan</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <form id="formPemasukan" method="POST" action="#">
+                <form id="formPemasukan" method="POST" action="{{ route('kas.pemasukan.store') }}">
                     @csrf
                     <input type="hidden" name="_method" id="formMethod" value="POST">
                     <input type="hidden" name="id" id="formId">
@@ -209,11 +199,10 @@
                             <select class="form-select" id="dariAkun" name="dari_akun" required>
                                 <option value="">-- Pilih Jenis Akun --</option>
                                 @foreach($akun_list as $akun)
-                                    <option value="{{ $akun->id ?? '' }}">
-                                        {{ $akun->nama ?? '-' }}
+                                    <option value="{{ $akun->id }}">
+                                        {{ $akun->nama }}
                                     </option>
                                 @endforeach
-
                             </select>
                         </div>
                     </div>
@@ -246,13 +235,7 @@
                 pageLength: 10,
                 order: [[3, 'desc']],
                 columnDefs: [
-                    { orderable: false, targets: [0, 1] },
-                    {
-                        targets: 1,
-                        render: function (data, type, row, meta) {
-                            return meta.row + 1;
-                        }
-                    }
+                    { orderable: false, targets: [0, 1] }
                 ]
             });
 
@@ -342,6 +325,7 @@
             $('#modalTitle').text('Tambah Data Pemasukan');
             $('#formPemasukan')[0].reset();
             $('#formMethod').val('POST');
+            $('#formPemasukan').attr('action', '{{ route("kas.pemasukan.store") }}');
 
             const now = new Date();
             $('#tglTransaksi').val(now.toISOString().slice(0, 16));
@@ -397,6 +381,5 @@
         function cetakLaporan() {
             window.print();
         }
-
     </script>
 @endpush

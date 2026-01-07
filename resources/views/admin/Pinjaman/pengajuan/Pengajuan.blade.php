@@ -123,7 +123,7 @@
                         </button>
                         <div class="ms-auto">
                             <span class="badge bg-primary-subtle text-primary px-3 py-2">
-                                <i class="ti ti-file-text"></i> Total Data: <strong id="totalData">5</strong>
+                                <i class="ti ti-file-text"></i> Total Data: <strong id="totalData">{{ $total_pengajuan }}</strong>
                             </span>
                         </div>
                     </div>
@@ -153,119 +153,149 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- Sample Data Row 1 -->
-                        <tr>
-                            <td class="text-center">
-                                <span class="badge bg-primary-subtle text-primary fw-semibold px-2 py-1">AJ001</span>
-                            </td>
-                            <td class="text-center text-muted">15 Des 2025</td>
-                            <td>
-                                <a href="javascript:void(0)" title="Lihat History Pinjaman Anggota"
-                                    class="text-decoration-none">
-                                    001234
-                                </a><br>
-                                <strong>Budi Santoso</strong><br>
-                                <small class="text-muted">Departemen IT</small>
-                            </td>
-                            <td class="text-center">
-                                <span class="badge bg-info-subtle text-info">Biasa</span>
-                            </td>
-                            <td class="text-end">
-                                <span class="fw-bold text-success fs-4">Rp 10.000.000</span>
-                            </td>
-                            <td class="text-center">
-                                <span class="badge bg-secondary">12</span>
-                            </td>
-                            <td>Untuk renovasi rumah</td>
-                            <td class="text-center">
-                                <span class="text-primary">
-                                    <i class="ti ti-clock"></i> Menunggu Konfirmasi
-                                </span>
-                            </td>
-                            <td>
-                                <small class="text-muted">Sisa Jml Pinjaman:</small> 2<br>
-                                <small class="text-muted">Sisa Jml Angsuran:</small> 8<br>
-                                <small class="text-muted">Sisa Tagihan:</small> Rp 5.000.000
-                            </td>
-                            <td class="text-center" style="min-width: 200px;">
-                                <div class="btn-group" role="group">
-                                    <button class="btn btn-success btn-sm" onclick="setujuiPengajuan(1)">
-                                        <i class="ti ti-check"></i> Setujui
-                                    </button>
-                                    <button class="btn btn-warning btn-sm" onclick="tolakPengajuan(1)">
-                                        <i class="ti ti-x"></i> Tolak
-                                    </button>
-                                </div>
-                                <div class="btn-group mt-1" role="group">
-                                    <button class="btn btn-danger btn-sm" onclick="batalkanPengajuan(1)">
-                                        <i class="ti ti-ban"></i> Batal
-                                    </button>
-                                    <button class="btn btn-secondary btn-sm" onclick="cetakPengajuan(1)">
-                                        <i class="ti ti-printer"></i> Cetak
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <!-- Sample Data Row 2 -->
-                        <tr>
-                            <td class="text-center">
-                                <span class="badge bg-primary-subtle text-primary fw-semibold px-2 py-1">AJ002</span>
-                            </td>
-                            <td class="text-center text-muted">14 Des 2025</td>
-                            <td>
-                                <a href="javascript:void(0)" title="Lihat History Pinjaman Anggota"
-                                    class="text-decoration-none">
-                                    001235
-                                </a><br>
-                                <strong>Siti Aminah</strong><br>
-                                <small class="text-muted">Departemen Keuangan</small>
-                            </td>
-                            <td class="text-center">
-                                <span class="badge bg-warning-subtle text-warning">Darurat</span>
-                            </td>
-                            <td class="text-end">
-                                <span class="fw-bold text-success fs-4">Rp 5.000.000</span>
-                            </td>
-                            <td class="text-center">
-                                <span class="badge bg-secondary">6</span>
-                            </td>
-                            <td>Keperluan medis mendesak</td>
-                            <td class="text-center">
-                                <span class="text-success">
-                                    <i class="ti ti-check"></i> Disetujui<br>
-                                    <small>Cair: 14 Des 2025</small>
-                                </span>
-                            </td>
-                            <td>
-                                <small class="text-muted">Sisa Jml Pinjaman:</small> 1<br>
-                                <small class="text-muted">Sisa Jml Angsuran:</small> 4<br>
-                                <small class="text-muted">Sisa Tagihan:</small> Rp 3.000.000
-                            </td>
-                            <td class="text-center" style="min-width: 200px;">
-                                <div class="btn-group" role="group">
-                                    <button class="btn btn-warning btn-sm" onclick="tolakPengajuan(2)">
-                                        <i class="ti ti-x"></i> Tolak
-                                    </button>
-                                    <button class="btn btn-primary btn-sm" onclick="pendingPengajuan(2)">
-                                        <i class="ti ti-clock"></i> Pending
-                                    </button>
-                                </div>
-                                <div class="btn-group mt-1" role="group">
-                                    <button class="btn btn-info btn-sm" onclick="terlaksanaPengajuan(2)">
-                                        <i class="ti ti-rocket"></i> Terlaksana
-                                    </button>
-                                </div>
-                                <div class="btn-group mt-1" role="group">
-                                    <button class="btn btn-danger btn-sm" onclick="hapusPengajuan(2)">
-                                        <i class="ti ti-trash"></i> Hapus
-                                    </button>
-                                    <button class="btn btn-secondary btn-sm" onclick="cetakPengajuan(2)">
-                                        <i class="ti ti-printer"></i> Cetak
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
+                        @forelse($pengajuan as $item)
+                            <tr>
+                                <td class="text-center">
+                                    <span class="badge bg-primary-subtle text-primary fw-semibold px-2 py-1">
+                                        {{ $item->id_ajuan }}
+                                    </span>
+                                </td>
+                                <td class="text-center text-muted">
+                                    {{ \Carbon\Carbon::parse($item->tanggal_pengajuan)->format('d M Y') }}
+                                </td>
+                                <td>
+                                    <a href="javascript:void(0)" title="Lihat History Pinjaman Anggota"
+                                        class="text-decoration-none">
+                                        {{ $item->anggota_id }}
+                                    </a><br>
+                                    <strong>{{ $item->anggota_nama }}</strong><br>
+                                    <small class="text-muted">{{ $item->anggota_departemen }}</small>
+                                </td>
+                                <td class="text-center">
+                                    @if($item->jenis_pinjaman == 'Biasa')
+                                        <span class="badge bg-info-subtle text-info">Biasa</span>
+                                    @elseif($item->jenis_pinjaman == 'Darurat')
+                                        <span class="badge bg-warning-subtle text-warning">Darurat</span>
+                                    @else
+                                        <span class="badge bg-success-subtle text-success">Barang</span>
+                                    @endif
+                                </td>
+                                <td class="text-end">
+                                    <span class="fw-bold text-success fs-4">Rp {{ number_format($item->jumlah, 0, ',', '.') }}</span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-secondary">{{ $item->jumlah_angsuran }}</span>
+                                </td>
+                                <td>{{ $item->keterangan }}</td>
+                                <td class="text-center">
+                                    @if($item->status == 0)
+                                        <span class="text-primary">
+                                            <i class="ti ti-clock"></i> Menunggu Konfirmasi
+                                        </span>
+                                    @elseif($item->status == 1)
+                                        <span class="text-success">
+                                            <i class="ti ti-check"></i> Disetujui<br>
+                                            @if($item->tanggal_cair)
+                                                <small>Cair: {{ \Carbon\Carbon::parse($item->tanggal_cair)->format('d M Y') }}</small>
+                                            @endif
+                                        </span>
+                                    @elseif($item->status == 2)
+                                        <span class="text-danger">
+                                            <i class="ti ti-x"></i> Ditolak
+                                        </span>
+                                    @elseif($item->status == 3)
+                                        <span class="text-info">
+                                            <i class="ti ti-rocket"></i> Terlaksana
+                                        </span>
+                                    @else
+                                        <span class="text-secondary">
+                                            <i class="ti ti-ban"></i> Batal
+                                        </span>
+                                    @endif
+                                </td>
+                                <td>
+                                    <small class="text-muted">Sisa Jml Pinjaman:</small> {{ $item->sisa_pinjaman }}<br>
+                                    <small class="text-muted">Sisa Jml Angsuran:</small> {{ $item->sisa_angsuran }}<br>
+                                    <small class="text-muted">Sisa Tagihan:</small> Rp {{ number_format($item->sisa_tagihan, 0, ',', '.') }}
+                                </td>
+                                <td class="text-center" style="min-width: 200px;">
+                                    @if($item->status == 0)
+                                        <!-- Pending/Menunggu Konfirmasi -->
+                                        <div class="btn-group" role="group">
+                                            <button class="btn btn-success btn-sm" onclick="setujuiPengajuan({{ $item->id }})">
+                                                <i class="ti ti-check"></i> Setujui
+                                            </button>
+                                            <button class="btn btn-warning btn-sm" onclick="tolakPengajuan({{ $item->id }})">
+                                                <i class="ti ti-x"></i> Tolak
+                                            </button>
+                                        </div>
+                                        <div class="btn-group mt-1" role="group">
+                                            <button class="btn btn-danger btn-sm" onclick="batalkanPengajuan({{ $item->id }})">
+                                                <i class="ti ti-ban"></i> Batal
+                                            </button>
+                                            <button class="btn btn-secondary btn-sm" onclick="cetakPengajuan({{ $item->id }})">
+                                                <i class="ti ti-printer"></i> Cetak
+                                            </button>
+                                        </div>
+                                    @elseif($item->status == 1)
+                                        <!-- Disetujui -->
+                                        <div class="btn-group" role="group">
+                                            <button class="btn btn-warning btn-sm" onclick="tolakPengajuan({{ $item->id }})">
+                                                <i class="ti ti-x"></i> Tolak
+                                            </button>
+                                            <button class="btn btn-primary btn-sm" onclick="pendingPengajuan({{ $item->id }})">
+                                                <i class="ti ti-clock"></i> Pending
+                                            </button>
+                                        </div>
+                                        <div class="btn-group mt-1" role="group">
+                                            <button class="btn btn-info btn-sm" onclick="terlaksanaPengajuan({{ $item->id }})">
+                                                <i class="ti ti-rocket"></i> Terlaksana
+                                            </button>
+                                        </div>
+                                        <div class="btn-group mt-1" role="group">
+                                            <button class="btn btn-danger btn-sm" onclick="hapusPengajuan({{ $item->id }})">
+                                                <i class="ti ti-trash"></i> Hapus
+                                            </button>
+                                            <button class="btn btn-secondary btn-sm" onclick="cetakPengajuan({{ $item->id }})">
+                                                <i class="ti ti-printer"></i> Cetak
+                                            </button>
+                                        </div>
+                                    @elseif($item->status == 3)
+                                        <!-- Terlaksana -->
+                                        <div class="btn-group" role="group">
+                                            <button class="btn btn-secondary btn-sm" onclick="belumTerlaksana({{ $item->id }})">
+                                                <i class="ti ti-arrow-back"></i> Kembalikan
+                                            </button>
+                                        </div>
+                                        <div class="btn-group mt-1" role="group">
+                                            <button class="btn btn-danger btn-sm" onclick="hapusPengajuan({{ $item->id }})">
+                                                <i class="ti ti-trash"></i> Hapus
+                                            </button>
+                                            <button class="btn btn-info btn-sm" onclick="cetakPengajuan({{ $item->id }})">
+                                                <i class="ti ti-printer"></i> Cetak
+                                            </button>
+                                        </div>
+                                    @else
+                                        <!-- Ditolak/Batal -->
+                                        <div class="btn-group" role="group">
+                                            <button class="btn btn-danger btn-sm" onclick="hapusPengajuan({{ $item->id }})">
+                                                <i class="ti ti-trash"></i> Hapus
+                                            </button>
+                                            <button class="btn btn-secondary btn-sm" onclick="cetakPengajuan({{ $item->id }})">
+                                                <i class="ti ti-printer"></i> Cetak
+                                            </button>
+                                        </div>
+                                    @endif
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="10" class="text-center text-muted py-4">
+                                    <i class="ti ti-database-off fs-1 mb-2"></i>
+                                    <p class="mb-0">Tidak ada data pengajuan</p>
+                                </td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
@@ -635,7 +665,7 @@
                 });
 
                 // Reload dengan filter
-                // location.href = `{{ route('pinjaman.pengajuan') }}?jenis=${jenis}&status=${status}&bulan=${bulan}&tanggal=${tanggal}`;
+                location.href = `{{ route('pinjaman.pengajuan') }}?jenis=${jenis}&status=${status}&bulan=${bulan}&tanggal=${tanggal}`;
             }, 800);
         }
 

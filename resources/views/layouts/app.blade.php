@@ -8,12 +8,54 @@
     <title>@yield('title', 'Dashboard') - Sistem Koperasi Akeno</title>
     <link rel="shortcut icon" type="image/png" href="{{ asset('assets/images/logos/logoAkeno-no-name.png') }}" />
     <link rel="stylesheet" href="{{ asset('assets/css/styles.min.css') }}" />
+    
+    @if(auth()->check() && session('user_role') !== 'admin')
+
+<style>
+    .body-wrapper.beranda-user {
+        overflow-y: auto !important;
+        height: 100vh !important; 
+    }
+    
+    .body-wrapper-inner.beranda-user {
+        padding-top: 20px;
+    }
+    
+    .body-wrapper.beranda-user .container-fluid {
+        max-width: 95%;
+        padding-left: 32px;
+        padding-right: 32px;
+        padding-top: 113px;
+    }
+    
+    /* Force header full width */
+    .app-header {
+        width: 100% !important;
+        max-width: 100% !important;
+        position: sticky !important; /* TAMBAHKAN INI - biar header fixed saat scroll */
+        top: 65px !important; /* Jarak dari topstrip */
+        z-index: 100;
+    }
+    
+    .app-header .navbar,
+    .app-header .container-fluid,
+    .app-header .container-sm,
+    .app-header .container-md,
+    .app-header .container-lg,
+    .app-header .container-xl,
+    .app-header .container-xxl {
+        max-width: 100% !important;
+    }
+</style>
+@endif
+    
     @stack('styles')
 </head>
 
 <body>
-    <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
-        data-sidebar-position="fixed" data-header-position="fixed">
+    <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" 
+         data-sidebartype="{{ request()->is('admin/*') ? 'full' : 'none' }}"
+         data-sidebar-position="fixed" data-header-position="fixed">
 
         {{-- App Topstrip --}}
         <div class="app-topstrip bg-dark py-6 px-3 w-100 d-lg-flex align-items-center justify-content-between">
@@ -27,13 +69,23 @@
             </div>
         </div>
 
-        {{-- Sidebar --}}
-        @include('layouts.sidebar')
+        {{-- Sidebar (hanya untuk admin) --}}
+        @if(request()->is('admin/*'))
+            @include('layouts.sidebar')
+        @endif
 
         {{-- Main wrapper --}}
-        <div class="body-wrapper">
-            {{-- Header (Navbar dengan Notifikasi & Profile) --}}
-            @include('layouts.header')
+        <div class="body-wrapper {{ auth()->check() && session('user_role') !== 'admin' ? 'beranda-user' : '' }}">
+            
+            {{-- Header untuk Admin --}}
+            @if(request()->is('admin/*'))
+                @include('layouts.header')
+            @endif
+
+           {{-- Header untuk User --}}
+            @if(auth()->check() && session('user_role') !== 'admin')
+                @include('layouts.UserHeader')
+            @endif
 
             {{-- Content --}}
             <div class="body-wrapper-inner">
@@ -51,9 +103,13 @@
 
     <script src="{{ asset('assets/libs/jquery/dist/jquery.min.js') }}"></script>
     <script src="{{ asset('assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ asset('assets/js/sidebarmenu.js') }}"></script>
-    <script src="{{ asset('assets/js/app.min.js') }}"></script>
-    <script src="{{ asset('assets/libs/simplebar/dist/simplebar.js') }}"></script>
+    
+    @if(request()->is('admin/*'))
+        <script src="{{ asset('assets/js/sidebarmenu.js') }}"></script>
+        <script src="{{ asset('assets/js/app.min.js') }}"></script>
+        <script src="{{ asset('assets/libs/simplebar/dist/simplebar.js') }}"></script>
+    @endif
+    
     <script src="https://cdn.jsdelivr.net/npm/iconify-icon@1.0.8/dist/iconify-icon.min.js"></script>
     
     <script>

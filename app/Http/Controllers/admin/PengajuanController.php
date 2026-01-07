@@ -12,6 +12,7 @@ class PengajuanController extends Controller
      */
     public function index(Request $request)
     {
+        // Dummy data pengajuan pinjaman
         $pengajuan = collect([
             (object)[
                 'id' => 1,
@@ -25,6 +26,7 @@ class PengajuanController extends Controller
                 'jumlah_angsuran' => 12,
                 'keterangan' => 'Untuk renovasi rumah',
                 'status' => 0, // 0=pending, 1=disetujui, 2=ditolak, 3=terlaksana, 4=batal
+                'tanggal_cair' => null,
                 'sisa_pinjaman' => 2,
                 'sisa_angsuran' => 8,
                 'sisa_tagihan' => 5000000,
@@ -45,8 +47,62 @@ class PengajuanController extends Controller
                 'sisa_pinjaman' => 1,
                 'sisa_angsuran' => 4,
                 'sisa_tagihan' => 3000000,
-            ]
+            ],
+            (object)[
+                'id' => 3,
+                'id_ajuan' => 'AJ003',
+                'tanggal_pengajuan' => '2025-12-13',
+                'tanggal_cair' => null,
+                'anggota_id' => '001236',
+                'anggota_nama' => 'Ahmad Hidayat',
+                'anggota_departemen' => 'Departemen Produksi',
+                'jenis_pinjaman' => 'Barang',
+                'jumlah' => 15000000,
+                'jumlah_angsuran' => 24,
+                'keterangan' => 'Pembelian motor',
+                'status' => 2, // Ditolak
+                'sisa_pinjaman' => 0,
+                'sisa_angsuran' => 0,
+                'sisa_tagihan' => 0,
+            ],
+            (object)[
+                'id' => 4,
+                'id_ajuan' => 'AJ004',
+                'tanggal_pengajuan' => '2025-12-12',
+                'tanggal_cair' => '2025-12-13',
+                'anggota_id' => '001237',
+                'anggota_nama' => 'Dewi Lestari',
+                'anggota_departemen' => 'Departemen Marketing',
+                'jenis_pinjaman' => 'Biasa',
+                'jumlah' => 8000000,
+                'jumlah_angsuran' => 12,
+                'keterangan' => 'Modal usaha',
+                'status' => 3, // Terlaksana
+                'sisa_pinjaman' => 1,
+                'sisa_angsuran' => 10,
+                'sisa_tagihan' => 6500000,
+            ],
+            (object)[
+                'id' => 5,
+                'id_ajuan' => 'AJ005',
+                'tanggal_pengajuan' => '2025-12-11',
+                'tanggal_cair' => null,
+                'anggota_id' => '001238',
+                'anggota_nama' => 'Eko Prasetyo',
+                'anggota_departemen' => 'Departemen HRD',
+                'jenis_pinjaman' => 'Darurat',
+                'jumlah' => 3000000,
+                'jumlah_angsuran' => 6,
+                'keterangan' => 'Biaya pendidikan',
+                'status' => 4, // Batal
+                'sisa_pinjaman' => 0,
+                'sisa_angsuran' => 0,
+                'sisa_tagihan' => 0,
+            ],
         ]);
+
+        // Hitung total data
+        $total_pengajuan = $pengajuan->count();
 
         $notifications = collect([
             (object)[
@@ -56,7 +112,7 @@ class PengajuanController extends Controller
             ]
         ]);
 
-        return view('admin.Pinjaman.pengajuan.Pengajuan', compact('pengajuan', 'notifications'));
+        return view('admin.Pinjaman.pengajuan.Pengajuan', compact('pengajuan', 'total_pengajuan', 'notifications'));
     }
 
     /**

@@ -6,6 +6,11 @@
     <!-- DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css">
+    <link rel="stylesheet" href="{{ asset('assets/css/styles.min.css') }}" />
+    <style>
+  
+</style>
+
 @endpush
 
 @section('content')
@@ -26,6 +31,15 @@
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             <i class="ti ti-check me-2"></i>
             {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
+    <!-- Alert Error -->
+    @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="ti ti-alert-circle me-2"></i>
+            {{ session('error') }}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     @endif
@@ -102,197 +116,197 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td class="text-center">
-                                <input type="checkbox" class="row-checkbox form-check-input">
-                            </td>
-                            <td class="text-center text-muted fw-medium">1</td>
-                            <td>
-                                <span class="badge bg-primary-subtle text-primary fw-semibold px-2 py-1">PNR00001</span>
-                            </td>
-                            <td class="text-muted">16 Desember 2025</td>
-                            <td class="text-center">
-                                <span class="badge bg-info-subtle text-info">A001</span>
-                            </td>
-                            <td>
-                                <div class="fw-semibold text-dark mb-0">Budi Santoso</div>
-                            </td>
-                            <td class="text-muted">Keuangan</td>
-                            <td>
-                                <span class="badge text-dark fw-semibold">Simpanan Wajib</span>
-                            </td>
-                            <td class="text-end">
-                                <span class="fw-bold text-danger fs-4">Rp 500.000</span>
-                            </td>
-                            <td class="text-center">
-                                <span class="badge border border-secondary text-secondary px-3 py-1 fw-semibold">Admin</span>
-                            </td>
-                            <td class="text-center">
-                                <button class="btn btn-sm btn-outline-primary" onclick="cetakNota(this)">
-                                    <i class="ti ti-printer"></i> Nota
-                                </button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="text-center">
-                                <input type="checkbox" class="row-checkbox form-check-input">
-                            </td>
-                            <td class="text-center text-muted fw-medium">2</td>
-                            <td>
-                                <span class="badge bg-primary-subtle text-primary fw-semibold px-2 py-1">PNR00002</span>
-                            </td>
-                            <td class="text-muted">15 Desember 2025</td>
-                            <td class="text-center">
-                                <span class="badge bg-info-subtle text-info">A002</span>
-                            </td>
-                            <td>
-                                <div class="fw-semibold text-dark mb-0">Siti Rahayu</div>
-                            </td>
-                            <td class="text-muted">Operasional</td>
-                            <td>
-                                <span class="badge text-dark fw-semibold">Simpanan Sukarela</span>
-                            </td>
-                            <td class="text-end">
-                                <span class="fw-bold text-danger fs-4">Rp 1.000.000</span>
-                            </td>
-                            <td class="text-center">
-                                <span class="badge border border-secondary text-secondary px-3 py-1 fw-semibold">Admin</span>
-                            </td>
-                            <td class="text-center">
-                                <button class="btn btn-sm btn-outline-primary" onclick="cetakNota(this)">
-                                    <i class="ti ti-printer"></i> Nota
-                                </button>
-                            </td>
-                        </tr>
+                        @forelse($penarikan as $index => $item)
+                            <tr>
+                                <td class="text-center">
+                                    <input type="checkbox" class="row-checkbox form-check-input" data-id="{{ $item->id }}">
+                                </td>
+                                <td class="text-center text-muted fw-medium">{{ $index + 1 }}</td>
+                                <td>
+                                    <span class="badge bg-primary-subtle text-primary fw-semibold px-2 py-1">
+                                        {{ $item->kode_transaksi }}
+                                    </span>
+                                </td>
+                                <td class="text-muted">
+                                    {{ \Carbon\Carbon::parse($item->tanggal_transaksi)->format('d F Y') }}
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-info-subtle text-info">{{ $item->id_anggota }}</span>
+                                </td>
+                                <td>
+                                    <div class="fw-semibold text-dark mb-0">{{ $item->nama_anggota }}</div>
+                                </td>
+                                <td class="text-muted">{{ $item->departemen }}</td>
+                                <td>
+                                    <span class="badge text-dark fw-semibold">{{ $item->jenis_simpanan }}</span>
+                                </td>
+                                <td class="text-end">
+                                    <span class="fw-bold text-danger fs-4">
+                                        Rp {{ number_format($item->jumlah, 0, ',', '.') }}
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge border border-secondary text-secondary px-3 py-1 fw-semibold">
+                                        {{ $item->user }}
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-outline-primary" onclick="cetakNota(this)">
+                                        <i class="ti ti-printer"></i> Nota
+                                    </button>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="11" class="text-center text-muted py-4">
+                                    <i class="ti ti-database-off fs-1 mb-2"></i>
+                                    <p class="mb-0">Tidak ada data penarikan tunai</p>
+                                </td>
+                            </tr>
+                        @endforelse
                     </tbody>
-                    <tfoot>
-                        <tr class="table-light">
-                            <td colspan="8" class="text-end fw-bolder fs-4">Total Penarikan:</td>
-                            <td class="text-end">
-                                <span class="fw-bold text-danger fs-4 fw-bolder">Rp 6.250.000</span>
-                            </td>
-                            <td colspan="2"></td>
-                        </tr>
-                    </tfoot>
+
+                    @if($penarikan->count() > 0)
+                        <tfoot>
+                            <tr class="table-light">
+                                <td colspan="8" class="text-end fw-bolder fs-4">Total Penarikan:</td>
+                                <td class="text-end">
+                                    <span class="fw-bold text-danger fs-4 fw-bolder">
+                                        Rp {{ number_format($total_penarikan ?? 0, 0, ',', '.') }}
+                                    </span>
+                                </td>
+                                <td colspan="2"></td>
+                            </tr>
+                        </tfoot>
+                    @endif
                 </table>
             </div>
         </div>
     </div>
 
     <!-- Modal Form -->
-    <div class="modal fade" id="modalForm" tabindex="-1">
-        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalTitle">Tambah Data Penarikan Tunai</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <form id="formPenarikan" method="POST" action="#">
-                    @csrf
-                    <input type="hidden" name="_method" id="formMethod" value="POST">
-                    <input type="hidden" name="id" id="formId">
+  <!-- Modal Form Penarikan Tunai -->
+<div class="modal fade" id="modalForm" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
 
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="col-md-8">
-                                <div class="mb-3">
-                                    <label class="form-label">Tanggal Transaksi <span class="text-danger">*</span></label>
-                                    <input type="datetime-local" class="form-control" id="tglTransaksi"
-                                        name="tanggal_transaksi" required>
-                                </div>
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle">Tambah Data Penarikan Tunai</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
 
-                                <h6 class="fw-semibold mb-3 text-primary">Identitas Penarik</h6>
+            <!-- Form -->
+            <form id="formPenarikan" method="POST" action="{{ route('simpanan.penarikan.store') }}">
+                @csrf
+                <input type="hidden" name="_method" id="formMethod" value="POST">
+                <input type="hidden" name="id" id="formId">
 
-                                <div class="mb-3">
-                                    <label class="form-label">Nama Penarik</label>
-                                    <input type="text" class="form-control" id="namaPenarik" name="nama_penarik"
-                                        placeholder="Masukkan nama penarik">
-                                </div>
+                <!-- Modal Body (SCROLL AREA) -->
+                <div class="modal-body">
 
-                                <div class="mb-3">
-                                    <label class="form-label">Nomor Identitas</label>
-                                    <input type="text" class="form-control" id="noIdentitas" name="no_identitas"
-                                        placeholder="Masukkan nomor identitas">
-                                </div>
+                    <div class="row">
+                        <!-- LEFT -->
+                        <div class="col-md-8">
 
-                                <div class="mb-3">
-                                    <label class="form-label">Alamat</label>
-                                    <textarea class="form-control" id="alamat" name="alamat" rows="2"
-                                        placeholder="Masukkan alamat"></textarea>
-                                </div>
+                            <div class="mb-3">
+                                <label class="form-label">Tanggal Transaksi <span class="text-danger">*</span></label>
+                                <input type="datetime-local" class="form-control" id="tglTransaksi"
+                                    name="tanggal_transaksi" required>
+                            </div>
 
-                                <h6 class="fw-semibold mb-3 text-primary mt-4">Identitas Anggota</h6>
+                            <h6 class="fw-semibold mb-3 text-primary">Identitas Penarik</h6>
 
-                                <div class="mb-3">
-                                    <label class="form-label">Nama Anggota <span class="text-danger">*</span></label>
-                                    <select class="form-select" id="namaAnggota" name="anggota_id" required>
-                                        <option value="">-- Pilih Anggota --</option>
-                                        @foreach($anggota_list as $anggota)
-                                            <option value="{{ $anggota->id ?? '' }}">
-                                                {{ $anggota->id_anggota ?? '' }} - {{ $anggota->nama ?? '' }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
+                            <div class="mb-3">
+                                <label class="form-label">Nama Penarik</label>
+                                <input type="text" class="form-control" name="nama_penarik">
+                            </div>
 
-                                <div class="mb-3">
-                                    <label class="form-label">Jenis Simpanan <span class="text-danger">*</span></label>
-                                    <select class="form-select" id="jenisSimpanan" name="jenis_simpanan" required>
-                                        <option value="">-- Pilih Simpanan --</option>
-                                        <option value="Simpanan Sukarela">Simpanan Sukarela</option>
-                                        <option value="Simpanan Pokok">Simpanan Pokok</option>
-                                        <option value="Simpanan Wajib">Simpanan Wajib</option>
-                                    </select>
-                                </div>
+                            <div class="mb-3">
+                                <label class="form-label">Nomor Identitas</label>
+                                <input type="text" class="form-control" name="no_identitas">
+                            </div>
 
-                                <div class="mb-3">
-                                    <label class="form-label">Jumlah Penarikan <span class="text-danger">*</span></label>
-                                    <div class="input-group">
-                                        <span class="input-group-text">Rp</span>
-                                        <input type="text" class="form-control" id="jumlah" name="jumlah" placeholder="0"
-                                            required>
-                                    </div>
-                                </div>
+                            <div class="mb-3">
+                                <label class="form-label">Alamat</label>
+                                <textarea class="form-control" name="alamat" rows="2"></textarea>
+                            </div>
 
-                                <div class="mb-3">
-                                    <label class="form-label">Keterangan</label>
-                                    <input type="text" class="form-control" id="keterangan" name="keterangan"
-                                        placeholder="Masukkan keterangan">
-                                </div>
+                            <h6 class="fw-semibold mb-3 text-primary mt-4">Identitas Anggota</h6>
 
-                                <div class="mb-3">
-                                    <label class="form-label">Ambil Dari Kas <span class="text-danger">*</span></label>
-                                    <select class="form-select" id="kas" name="kas" required>
-                                        <option value="">-- Pilih Kas --</option>
-                                        <option value="Kas Tunai">Kas Tunai</option>
-                                        <option value="Kas Besar">Kas Besar</option>
-                                    </select>
+                            <div class="mb-3">
+                                <label class="form-label">Nama Anggota <span class="text-danger">*</span></label>
+                                <select class="form-select" id="namaAnggota" name="anggota_id" required>
+                                    <option value="">-- Pilih Anggota --</option>
+                                    @foreach($anggota_list as $anggota)
+                                        <option value="{{ $anggota->id }}">
+                                            {{ $anggota->id_anggota }} - {{ $anggota->nama }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Jenis Simpanan <span class="text-danger">*</span></label>
+                                <select class="form-select" id="jenisSimpanan" name="jenis_simpanan" required>
+                                    <option value="">-- Pilih Simpanan --</option>
+                                    <option value="Simpanan Sukarela">Simpanan Sukarela</option>
+                                    <option value="Simpanan Pokok">Simpanan Pokok</option>
+                                    <option value="Simpanan Wajib">Simpanan Wajib</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Jumlah Penarikan <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text">Rp</span>
+                                    <input type="text" class="form-control" id="jumlah" name="jumlah" required>
                                 </div>
                             </div>
 
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label class="form-label">Foto Anggota</label>
-                                    <div class="border rounded p-3 text-center" style="min-height: 200px;">
-                                        <div id="fotoAnggota" class="d-flex align-items-center justify-content-center"
-                                            style="height: 180px;">
-                                            <span class="text-muted">Foto akan muncul setelah memilih anggota</span>
-                                        </div>
-                                    </div>
+                            <div class="mb-3">
+                                <label class="form-label">Keterangan</label>
+                                <input type="text" class="form-control" name="keterangan">
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Ambil Dari Kas <span class="text-danger">*</span></label>
+                                <select class="form-select" name="kas" required>
+                                    <option value="">-- Pilih Kas --</option>
+                                    <option value="Kas Tunai">Kas Tunai</option>
+                                    <option value="Kas Besar">Kas Besar</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- RIGHT -->
+                        <div class="col-md-4">
+                            <label class="form-label">Foto Anggota</label>
+                            <div class="border rounded p-3 text-center" style="min-height: 200px;">
+                                <div id="fotoAnggota"
+                                    class="d-flex align-items-center justify-content-center"
+                                    style="height: 180px;">
+                                    <span class="text-muted">Foto akan muncul setelah memilih anggota</span>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="ti ti-device-floppy"></i> Simpan
-                        </button>
-                    </div>
-                </form>
-            </div>
+
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="ti ti-device-floppy"></i> Simpan
+                    </button>
+                </div>
+            </form>
+
         </div>
     </div>
+</div>
+
 @endsection
 
 @push('scripts')
@@ -317,13 +331,7 @@
                 pageLength: 10,
                 order: [[3, 'desc']],
                 columnDefs: [
-                    { orderable: false, targets: [0, 1, 10] },
-                    {
-                        targets: 1,
-                        render: function (data, type, row, meta) {
-                            return meta.row + meta.settings._iDisplayStart + 1;
-                        }
-                    }
+                    { orderable: false, targets: [0, 1, 10] }
                 ],
                 initComplete: function () {
                     tableWrapper.css('opacity', 1);
@@ -480,7 +488,7 @@
             $('#modalTitle').text('Edit Data Penarikan Tunai');
             $('#formMethod').val('PUT');
             $('#formId').val(id);
-            $('#formPenarikan').attr('action', '/simpanan/penarikan/' + id);
+            $('#formPenarikan').attr('action', '/admin/penarikan/' + id);
 
             // TODO: Load data via AJAX
             $('#modalForm').modal('show');
@@ -494,14 +502,8 @@
             }
 
             if (confirm('Apakah Anda yakin ingin menghapus ' + checked.length + ' data?')) {
-                checked.each(function () {
-                    const row = $(this).closest('tr');
-                    table.row(row).remove();
-                });
-                table.draw();
-
-                alert('Data berhasil dihapus!');
-                $('#selectAll').prop('checked', false);
+                // TODO: Implement delete via AJAX or form submission
+                alert('Fitur hapus akan diimplementasikan');
             }
         }
 

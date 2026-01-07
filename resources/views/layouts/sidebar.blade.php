@@ -21,8 +21,8 @@
                     <iconify-icon icon="solar:menu-dots-linear" class="nav-small-cap-icon fs-4"></iconify-icon>
                     <span class="hide-menu">Home</span>
                 </li>
-                <li class="sidebar-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-                    <a class="sidebar-link" href="{{ route('dashboard') }}" aria-expanded="false">
+                <li class="sidebar-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                    <a class="sidebar-link" href="{{ route('admin.dashboard') }}" aria-expanded="false">
                         <i class="ti ti-atom"></i>
                         <span class="hide-menu">Dashboard</span>
                     </a>
@@ -128,8 +128,8 @@
                                 </div>
                             </a>
                         </li>
-                        <li class="sidebar-item {{ request()->routeIs('pinjaman.pinjaman') ? 'active' : '' }}">
-                            <a class="sidebar-link" href="{{ route('pinjaman.pinjaman') }}">
+                        <li class="sidebar-item {{ request()->routeIs('pinjaman.pinjaman.pinjaman') ? 'active' : '' }}">
+                            <a class="sidebar-link" href="{{ route('pinjaman.pinjaman.pinjaman') }}">
                                 <div class="d-flex align-items-center gap-3">
                                     <div class="round-16 d-flex align-items-center justify-content-center">
                                         <i class="ti ti-circle"></i>

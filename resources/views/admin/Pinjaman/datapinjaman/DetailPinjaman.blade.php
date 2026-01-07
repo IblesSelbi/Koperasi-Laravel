@@ -355,9 +355,9 @@
                         }
                     });
 
-                    // AJAX Request
+                    // AJAX Request - PERHATIKAN PERUBAHAN URL
                     $.ajax({
-                        url: `{{ url('pinjaman/pinjaman') }}/${id}/validasi-lunas`,
+                        url: `{{ url('admin/pinjaman/validasi-lunas') }}/${id}`,
                         type: 'POST',
                         data: {
                             _token: '{{ csrf_token() }}'

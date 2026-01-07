@@ -6,7 +6,7 @@
 <!-- Page Header -->
 <div class="row mb-3">
     <div class="col-12">
-        <h4 class="fw-semibold mb-1">Selamat Datang, {{ Auth::user()->name }}</h4>
+        <h4 class="fw-semibold mb-1">Selamat Datang, {{ Auth::user()->name ?? 'Admin' }}</h4>
         <p class="text-muted fs-3 mb-0">Silahkan pilih menu untuk mengoperasikan aplikasi</p>
     </div>
 </div>
@@ -244,7 +244,7 @@
                         </div>
                     </div>
                 </div>
-                <a href="{{ route('pinjaman.pinjaman') }}" class="btn btn-danger btn-sm w-100 mt-3">
+                <a href="{{ route('pinjaman.pinjaman.pinjaman') }}" class="btn btn-danger btn-sm w-100 mt-3">
                     <small>Lihat Detail</small>
                 </a>
             </div>

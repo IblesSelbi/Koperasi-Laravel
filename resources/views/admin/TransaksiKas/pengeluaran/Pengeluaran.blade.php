@@ -30,6 +30,15 @@
         </div>
     @endif
 
+    <!-- Alert Error -->
+    @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="ti ti-alert-circle me-2"></i>
+            {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
     <!-- Toolbar Card -->
     <div class="card mb-3">
         <div class="card-body p-3">
@@ -92,81 +101,68 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td class="text-center">
-                                <input type="checkbox" class="row-checkbox form-check-input">
-                            </td>
-                            <td class="text-center text-muted fw-medium">1</td>
-                            <td>
-                                <span class="badge bg-primary-subtle text-primary fw-semibold px-2 py-1">
-                                    TRX00001
-                                </span>
-                            </td>
-                            <td class="text-muted">2025-01-10</td>
-                            <td>
-                                <div class="fw-semibold text-dark mb-1">Biaya ATK</div>
-                            </td>
-                            <td>
-                                <span class="badge bg-info-subtle text-info fw-semibold px-2 py-1">
-                                    Kas Tunai
-                                </span>
-                            </td>
-                            <td class="text-muted">Beban Operasional</td>
-                            <td class="text-end">
-                                <span class="fw-bold text-success fs-4">
-                                    Rp 150.000
-                                </span>
-                            </td>
-                            <td class="text-center">
-                                <span class="badge border border-secondary text-secondary px-3 py-1 fw-semibold">
-                                    Admin
-                                </span>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="text-center">
-                                <input type="checkbox" class="row-checkbox form-check-input">
-                            </td>
-                            <td class="text-center text-muted fw-medium">2</td>
-                            <td>
-                                <span class="badge bg-primary-subtle text-primary fw-semibold px-2 py-1">
-                                    TRX00002
-                                </span>
-                            </td>
-                            <td class="text-muted">2025-01-11</td>
-                            <td>
-                                <div class="fw-semibold text-dark mb-1">Listrik Kantor</div>
-                            </td>
-                            <td>
-                                <span class="badge bg-warning-subtle text-warning fw-semibold px-2 py-1">
-                                    Kas Besar
-                                </span>
-                            </td>
-                            <td class="text-muted">Beban Utilitas</td>
-                            <td class="text-end">
-                                <span class="fw-bold text-success fs-4">
-                                    Rp 300.000
-                                </span>
-                            </td>
-                            <td class="text-center">
-                                <span class="badge border border-secondary text-secondary px-3 py-1 fw-semibold">
-                                    Admin
-                                </span>
-                            </td>
-                        </tr>
+                        @forelse($pengeluaran as $index => $item)
+                            <tr>
+                                <td class="text-center">
+                                    <input type="checkbox" class="row-checkbox form-check-input" data-id="{{ $item->id }}">
+                                </td>
+                                <td class="text-center text-muted fw-medium">{{ $index + 1 }}</td>
+                                <td>
+                                    <span class="badge bg-primary-subtle text-primary fw-semibold px-2 py-1">
+                                        {{ $item->kode_transaksi }}
+                                    </span>
+                                </td>
+                                <td class="text-muted">
+                                    {{ \Carbon\Carbon::parse($item->tanggal_transaksi)->format('d F Y') }}
+                                </td>
+                                <td>
+                                    <div class="fw-semibold text-dark mb-1">{{ $item->uraian }}</div>
+                                </td>
+                                <td>
+                                    <span class="badge 
+                                        @if($item->dari_kas == 'Kas Tunai') bg-info-subtle text-info
+                                        @elseif($item->dari_kas == 'Kas Besar') bg-warning-subtle text-warning
+                                        @else bg-success-subtle text-success
+                                        @endif
+                                        fw-semibold px-2 py-1">
+                                        {{ $item->dari_kas }}
+                                    </span>
+                                </td>
+                                <td class="text-muted">{{ $item->untuk_akun }}</td>
+                                <td class="text-end">
+                                    <span class="fw-bold text-danger fs-4">
+                                        Rp {{ number_format($item->jumlah, 0, ',', '.') }}
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge border border-secondary text-secondary px-3 py-1 fw-semibold">
+                                        {{ $item->user }}
+                                    </span>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="9" class="text-center text-muted py-4">
+                                    <i class="ti ti-database-off fs-1 mb-2"></i>
+                                    <p class="mb-0">Tidak ada data pengeluaran</p>
+                                </td>
+                            </tr>
+                        @endforelse
                     </tbody>
-                    <tfoot>
-                        <tr class="table-light">
-                            <td colspan="7" class="text-end fw-bolder fs-4">Total Pengeluaran:</td>
-                            <td class="text-end">
-                                <span class="fw-bold text-success fs-4 fw-bolder">
-                                    Rp {{ number_format($total_pengeluaran ?? 0, 0, ',', '.') }}
-                                </span>
-                            </td>
-                            <td></td>
-                        </tr>
-                    </tfoot>
+                    
+                    @if($pengeluaran->count() > 0)
+                        <tfoot>
+                            <tr class="table-light">
+                                <td colspan="7" class="text-end fw-bolder fs-4">Total Pengeluaran:</td>
+                                <td class="text-end">
+                                    <span class="fw-bold text-danger fs-4 fw-bolder">
+                                        Rp {{ number_format($total_pengeluaran ?? 0, 0, ',', '.') }}
+                                    </span>
+                                </td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    @endif
                 </table>
             </div>
         </div>
@@ -180,7 +176,7 @@
                     <h5 class="modal-title" id="modalTitle">Tambah Data Pengeluaran</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <form id="formPengeluaran" method="POST" action="#">
+                <form id="formPengeluaran" method="POST" action="{{ route('kas.pengeluaran.store') }}">
                     @csrf
                     <input type="hidden" name="_method" id="formMethod" value="POST">
                     <input type="hidden" name="id" id="formId">
@@ -217,8 +213,8 @@
                             <select class="form-select" id="untukAkun" name="untuk_akun" required>
                                 <option value="">-- Pilih Jenis Akun --</option>
                                 @foreach($akun_list as $akun)
-                                    <option value="{{ $akun->id ?? '' }}">
-                                        {{ $akun->nama ?? '-' }}
+                                    <option value="{{ $akun->id }}">
+                                        {{ $akun->nama }}
                                     </option>
                                 @endforeach
                             </select>
@@ -257,13 +253,7 @@
                 pageLength: 10,
                 order: [[3, 'desc']],
                 columnDefs: [
-                    { orderable: false, targets: [0, 1] },
-                    {
-                        targets: 1,
-                        render: function (data, type, row, meta) {
-                            return meta.row + meta.settings._iDisplayStart + 1;
-                        }
-                    }
+                    { orderable: false, targets: [0, 1] }
                 ],
                 initComplete: function () {
                     tableWrapper.css('opacity', 1);
@@ -385,7 +375,7 @@
             $('#modalTitle').text('Edit Data Pengeluaran');
             $('#formMethod').val('PUT');
             $('#formId').val(id);
-            $('#formPengeluaran').attr('action', '/kas/pengeluaran/' + id);
+            $('#formPengeluaran').attr('action', '/admin/pengeluaran/' + id);
 
             // TODO: Load data via AJAX
             $('#modalForm').modal('show');
@@ -399,14 +389,8 @@
             }
 
             if (confirm('Apakah Anda yakin ingin menghapus ' + checked.length + ' data?')) {
-                checked.forEach(function () {
-                    const row = $(this).closest('tr');
-                    $('#tabelPengeluaran').DataTable().row(row).remove();
-                });
-                $('#tabelPengeluaran').DataTable().draw();
-
-                alert('Data berhasil dihapus!');
-                $('#selectAll').prop('checked', false);
+                // TODO: Implement delete via AJAX or form submission
+                alert('Fitur hapus akan diimplementasikan');
             }
         }
 

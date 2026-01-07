@@ -9,8 +9,67 @@ class SetoranTunaiController extends Controller
 {
     public function index()
     {
-        // Data kosong untuk setoran tunai
-        $setoran = collect([]);
+        // Dummy data setoran tunai
+        $setoran = collect([
+            (object)[
+                'id' => 1,
+                'kode_transaksi' => 'STR00001',
+                'tanggal_transaksi' => '2025-12-16 09:00:00',
+                'id_anggota' => 'A001',
+                'nama_anggota' => 'Budi Santoso',
+                'departemen' => 'Keuangan',
+                'jenis_simpanan' => 'Simpanan Wajib',
+                'jumlah' => 500000,
+                'user' => 'Admin',
+            ],
+            (object)[
+                'id' => 2,
+                'kode_transaksi' => 'STR00002',
+                'tanggal_transaksi' => '2025-12-15 10:30:00',
+                'id_anggota' => 'A002',
+                'nama_anggota' => 'Siti Rahayu',
+                'departemen' => 'Operasional',
+                'jenis_simpanan' => 'Simpanan Sukarela',
+                'jumlah' => 2000000,
+                'user' => 'Kasir',
+            ],
+            (object)[
+                'id' => 3,
+                'kode_transaksi' => 'STR00003',
+                'tanggal_transaksi' => '2025-12-14 13:15:00',
+                'id_anggota' => 'A003',
+                'nama_anggota' => 'Ahmad Hidayat',
+                'departemen' => 'IT',
+                'jenis_simpanan' => 'Simpanan Pokok',
+                'jumlah' => 2500000,
+                'user' => 'Admin',
+            ],
+            (object)[
+                'id' => 4,
+                'kode_transaksi' => 'STR00004',
+                'tanggal_transaksi' => '2025-12-13 14:45:00',
+                'id_anggota' => 'A004',
+                'nama_anggota' => 'Dewi Lestari',
+                'departemen' => 'Marketing',
+                'jenis_simpanan' => 'Simpanan Wajib',
+                'jumlah' => 750000,
+                'user' => 'Kasir',
+            ],
+            (object)[
+                'id' => 5,
+                'kode_transaksi' => 'STR00005',
+                'tanggal_transaksi' => '2025-12-12 11:00:00',
+                'id_anggota' => 'A005',
+                'nama_anggota' => 'Eko Prasetyo',
+                'departemen' => 'Produksi',
+                'jenis_simpanan' => 'Simpanan Sukarela',
+                'jumlah' => 1500000,
+                'user' => 'Admin',
+            ],
+        ]);
+
+        // Hitung total setoran
+        $total_setoran = $setoran->sum('jumlah');
 
         // Data sample untuk dropdown anggota
         $anggota_list = collect([
@@ -45,7 +104,7 @@ class SetoranTunaiController extends Controller
 
         return view(
             'admin.simpanan.setorantunai.SetoranTunai',
-            compact('setoran', 'anggota_list', 'notifications')
+            compact('setoran', 'anggota_list', 'total_setoran', 'notifications')
         );
     }
 
