@@ -24,33 +24,29 @@
                                         style="width: auto; height: 80px;">
                                 </a>
 
-                                <!-- Role Switcher -->
-                                <div class="text-center mb-0">
-                                    <div class="role-switch">
-                                        <div class="role-slider" id="roleSlider"></div>
-                                        <button type="button" class="role-btn active" id="adminBtn"
-                                            onclick="switchRole('admin')">
-                                            Admin / Operator
-                                        </button>
-                                        <button type="button" class="role-btn" id="userBtn"
-                                            onclick="switchRole('user')">
-                                            User / Member
-                                        </button>
-                                    </div>
-                                </div>
-
                                 <!-- Register Form -->
-                                <div class="register-content" id="registerContent">
-                                    <p class="role-label" id="roleLabel">Register Admin</p>
-                                    
+                                <div class="register-content">
+                                    <p class="role-label">Register New Account</p>
+
                                     <!-- Session Status -->
                                     <x-auth-session-status class="mb-4" :status="session('status')" />
 
                                     <form method="POST" action="{{ route('register') }}">
                                         @csrf
 
-                                        <!-- Hidden Role Field -->
-                                        <input type="hidden" name="role" id="roleInput" value="admin">
+                                        <!-- Role Selection -->
+                                        <div class="mb-3">
+                                            <label for="role" class="form-label">Account Role</label>
+                                            <select class="form-select @error('role') is-invalid @enderror" 
+                                                id="role" name="role" required>
+                                                <option value="">-- Select Role --</option>
+                                                <option value="admin" {{ old('role') === 'admin' ? 'selected' : '' }}>Admin / Operator</option>
+                                                <option value="user" {{ old('role') === 'user' ? 'selected' : '' }}>User / Member</option>
+                                            </select>
+                                            @error('role')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
 
                                         <!-- Name -->
                                         <div class="mb-3">
@@ -90,7 +86,7 @@
                                         </div>
 
                                         <button type="submit" class="btn btn-primary w-100 py-8 fs-4 mb-4 rounded-2">
-                                            Sign Up
+                                            Create Account
                                         </button>
 
                                         <div class="d-flex align-items-center justify-content-center">
@@ -110,43 +106,6 @@
     <script src="{{ asset('assets/libs/jquery/dist/jquery.min.js') }}"></script>
     <script src="{{ asset('assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/iconify-icon@1.0.8/dist/iconify-icon.min.js"></script>
-
-    <script>
-        let currentRole = 'admin';
-
-        function switchRole(role) {
-            if (role === currentRole) return;
-
-            const content = document.getElementById('registerContent');
-            const slider = document.getElementById('roleSlider');
-            const adminBtn = document.getElementById('adminBtn');
-            const userBtn = document.getElementById('userBtn');
-            const roleLabel = document.getElementById('roleLabel');
-            const roleInput = document.getElementById('roleInput');
-
-            content.classList.add('hiding');
-
-            setTimeout(() => {
-                currentRole = role;
-
-                if (role === 'user') {
-                    slider.classList.add('user-active');
-                    adminBtn.classList.remove('active');
-                    userBtn.classList.add('active');
-                    roleLabel.textContent = 'Register User';
-                    roleInput.value = 'user';
-                } else {
-                    slider.classList.remove('user-active');
-                    adminBtn.classList.add('active');
-                    userBtn.classList.remove('active');
-                    roleLabel.textContent = 'Register Admin';
-                    roleInput.value = 'admin';
-                }
-
-                content.classList.remove('hiding');
-            }, 200);
-        }
-    </script>
 </body>
 
 </html>

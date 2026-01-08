@@ -141,10 +141,10 @@
                                     @endif
                                 </td>
                                 <td class="text-center">
-                                    <button class="btn btn-warning me-1" onclick="editData(this)">
+                                    <button class="btn btn-sm btn-warning me-1" onclick="editData(this)" title="Edit">
                                         <i class="ti ti-edit"></i>
                                     </button>
-                                    <button class="btn btn-danger" onclick="hapusData(this)">
+                                    <button class="btn btn-sm btn-danger" onclick="hapusData(this)" title="Hapus">
                                         <i class="ti ti-trash"></i>
                                     </button>
                                 </td>
@@ -382,25 +382,25 @@
             } else {
                 // Add new row
                 const newRow = `
-                        <tr data-id="${Date.now()}" data-kd="${kdAktiva}" data-jns="${jnsTransaksi}" data-akun="${akun}" data-pemasukan="${pemasukan}" data-pengeluaran="${pengeluaran}" data-aktif="${aktif}" data-laba="${labaRugi}">
-                            <td class="text-center text-muted fw-medium"></td>
-                            <td><span class="badge bg-primary-subtle text-primary fw-semibold">${kdAktiva}</span></td>
-                            <td><div class="fw-semibold text-dark">${jnsTransaksi}</div></td>
-                            <td><span class="badge bg-info-subtle text-info">${akun}</span></td>
-                            <td class="text-center">${pemasukan ? `<span class="badge bg-${pemasukan === 'Y' ? 'success' : 'danger'}-subtle text-${pemasukan === 'Y' ? 'success' : 'danger'} fw-semibold px-3 py-1">${pemasukan}</span>` : '-'}</td>
-                            <td class="text-center">${pengeluaran ? `<span class="badge bg-${pengeluaran === 'Y' ? 'success' : 'danger'}-subtle text-${pengeluaran === 'Y' ? 'success' : 'danger'} fw-semibold px-3 py-1">${pengeluaran}</span>` : '-'}</td>
-                            <td class="text-center">${aktif ? `<span class="badge bg-${aktif === 'Y' ? 'success' : 'danger'}-subtle text-${aktif === 'Y' ? 'success' : 'danger'} fw-semibold px-3 py-1">${aktif}</span>` : '-'}</td>
-                            <td class="text-center">${labaRugi ? `<span class="badge bg-warning-subtle text-warning fw-semibold">${labaRugi}</span>` : '-'}</td>
-                            <td class="text-center">
-                                <button class="btn btn-sm btn-warning me-1" onclick="editData(this)" title="Edit">
-                                    <i class="ti ti-edit"></i>
-                                </button>
-                                <button class="btn btn-sm btn-danger" onclick="hapusData(this)" title="Hapus">
-                                    <i class="ti ti-trash"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    `;
+                            <tr data-id="${Date.now()}" data-kd="${kdAktiva}" data-jns="${jnsTransaksi}" data-akun="${akun}" data-pemasukan="${pemasukan}" data-pengeluaran="${pengeluaran}" data-aktif="${aktif}" data-laba="${labaRugi}">
+                                <td class="text-center text-muted fw-medium"></td>
+                                <td><span class="badge bg-primary-subtle text-primary fw-semibold">${kdAktiva}</span></td>
+                                <td><div class="fw-semibold text-dark">${jnsTransaksi}</div></td>
+                                <td><span class="badge bg-info-subtle text-info">${akun}</span></td>
+                                <td class="text-center">${pemasukan ? `<span class="badge bg-${pemasukan === 'Y' ? 'success' : 'danger'}-subtle text-${pemasukan === 'Y' ? 'success' : 'danger'} fw-semibold px-3 py-1">${pemasukan}</span>` : '-'}</td>
+                                <td class="text-center">${pengeluaran ? `<span class="badge bg-${pengeluaran === 'Y' ? 'success' : 'danger'}-subtle text-${pengeluaran === 'Y' ? 'success' : 'danger'} fw-semibold px-3 py-1">${pengeluaran}</span>` : '-'}</td>
+                                <td class="text-center">${aktif ? `<span class="badge bg-${aktif === 'Y' ? 'success' : 'danger'}-subtle text-${aktif === 'Y' ? 'success' : 'danger'} fw-semibold px-3 py-1">${aktif}</span>` : '-'}</td>
+                                <td class="text-center">${labaRugi ? `<span class="badge bg-warning-subtle text-warning fw-semibold">${labaRugi}</span>` : '-'}</td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-warning me-1" onclick="editData(this)" title="Edit">
+                                        <i class="ti ti-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" onclick="hapusData(this)" title="Hapus">
+                                        <i class="ti ti-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
                 table.row.add($(newRow)).draw();
 
                 Swal.fire({

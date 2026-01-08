@@ -1,72 +1,48 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Admin\DataMaster;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class DataPenggunaController extends Controller
+class LamaAngsuranController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        // Dummy data pengguna
-        $dataPengguna = collect([
+        // Dummy data lama angsuran
+        $lamaAngsuran = collect([
             (object)[
                 'id' => 1,
-                'username' => 'admin',
-                'level' => 'admin',
-                'status' => 'Y',
+                'lama_angsuran' => 3,
+                'aktif' => 'Y',
             ],
             (object)[
-                'id' => 4,
-                'username' => 'user',
-                'level' => 'operator',
-                'status' => 'Y',
+                'id' => 2,
+                'lama_angsuran' => 6,
+                'aktif' => 'Y',
             ],
             (object)[
-                'id' => 5,
-                'username' => 'pinjaman',
-                'level' => 'pinjaman',
-                'status' => 'Y',
-            ],
-            (object)[
-                'id' => 7,
-                'username' => 'admin1',
-                'level' => 'operator',
-                'status' => 'Y',
-            ],
-            (object)[
-                'id' => 8,
-                'username' => 'anggota',
-                'level' => 'pinjaman',
-                'status' => 'Y',
-            ],
-            (object)[
-                'id' => 9,
-                'username' => 'test',
-                'level' => 'pinjaman',
-                'status' => 'Y',
-            ],
-            (object)[
-                'id' => 10,
-                'username' => 'pengguna99',
-                'level' => 'pinjaman',
-                'status' => 'Y',
+                'id' => 3,
+                'lama_angsuran' => 12,
+                'aktif' => 'Y',
             ],
             (object)[
                 'id' => 11,
-                'username' => 'yanto',
-                'level' => 'operator',
-                'status' => 'Y',
+                'lama_angsuran' => 24,
+                'aktif' => 'Y',
             ],
             (object)[
                 'id' => 12,
-                'username' => 'anggota100',
-                'level' => 'pinjaman',
-                'status' => 'Y',
+                'lama_angsuran' => 36,
+                'aktif' => 'Y',
+            ],
+            (object)[
+                'id' => 14,
+                'lama_angsuran' => 1,
+                'aktif' => 'Y',
             ],
         ]);
 
@@ -78,7 +54,7 @@ class DataPenggunaController extends Controller
             ]
         ]);
 
-        return view('admin.DataMaster.DataPengguna.DataPengguna', compact('dataPengguna', 'notifications'));
+        return view('admin.DataMaster.LamaAngsuran.LamaAngsuran', compact('lamaAngsuran', 'notifications'));
     }
 
     /**
@@ -114,7 +90,7 @@ class DataPenggunaController extends Controller
     public function export()
     {
         // TODO: Implement Excel export
-        return response('Export Excel Data Pengguna');
+        return response('Export Excel Lama Angsuran');
     }
 
     /**
@@ -123,6 +99,6 @@ class DataPenggunaController extends Controller
     public function cetak()
     {
         // TODO: Implement print view
-        return response('Cetak Laporan Data Pengguna');
+        return response('Cetak Laporan Lama Angsuran');
     }
 }

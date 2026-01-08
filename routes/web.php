@@ -2,60 +2,49 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Admin\DataMaster;
+use App\Http\Controllers\Admin\dash;
 use App\Http\Controllers\User;
-use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
-use App\Http\Controllers\User\DashboardController as UserDashboard;
+use App\Http\Controllers\Auth;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+
+use App\Http\Controllers\Admin\DataMaster\{
+    JenisSimpananController,
+    JenisAkunController,
+    DataKasController,
+    LamaAngsuranController,
+    DataBarangController,
+    DataAnggotaController,
+    DataPenggunaController
+};
 
 /*
 |--------------------------------------------------------------------------
 | LOGIN
 |--------------------------------------------------------------------------
 */
-Route::get('/login', function () {
-    return view('auth.login');
-})->name('login');
-
-Route::post('/login', function (Request $request) {
-    $credentials = $request->validate([
-        'email' => ['required', 'email'],
-        'password' => ['required'],
-    ]);
-
-    if (Auth::attempt($credentials, $request->filled('remember'))) {
-        $request->session()->regenerate();
-        session(['user_role' => $request->role ?? 'user']);
-
-        if ($request->role === 'admin') {
-            return redirect()->intended('/admin/dashboard');
-        }
-        return redirect()->intended('/dashboard');
-    }
-
-    return back()->withErrors([
-        'email' => 'The provided credentials do not match our records.',
-    ])->onlyInput('email');
+Route::get('/', function () {
+    return redirect('/login');
 });
+
+Route::get('/login', [Auth\AuthenticatedSessionController::class, 'create'])
+    ->middleware('guest')
+    ->name('login');
+
+Route::post('/login', [Auth\AuthenticatedSessionController::class, 'store'])
+    ->middleware('guest');
 
 /*
 |--------------------------------------------------------------------------
 | REGISTER
 |--------------------------------------------------------------------------
 */
-Route::get('/register', function () {
-    return view('auth.register');
-})->name('register');
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/register', [Auth\RegisteredUserController::class, 'create'])
+        ->name('register');
 
-Route::post('/register', function (Request $request) {
-    // TODO: Implement proper registration logic
-    session(['user_role' => $request->role ?? 'user']);
-
-    if ($request->role === 'admin') {
-        return redirect('/admin/dashboard');
-    }
-    return redirect('/dashboard');
+    Route::post('/register', [Auth\RegisteredUserController::class, 'store']);
 });
 
 /*
@@ -63,23 +52,29 @@ Route::post('/register', function (Request $request) {
 | LOGOUT
 |--------------------------------------------------------------------------
 */
-Route::post('/logout', function (Request $request) {
-    Auth::logout();
-    $request->session()->invalidate();
-    $request->session()->regenerateToken();
-
-    return redirect('/login');
-})->name('logout');
+Route::post('/logout', [Auth\AuthenticatedSessionController::class, 'destroy'])
+    ->middleware('auth')
+    ->name('logout');
 
 /*
 |--------------------------------------------------------------------------
 | DASHBOARD
 |--------------------------------------------------------------------------
 */
-Route::middleware('auth')->group(function () {
-    Route::get('/dashboard', [UserDashboard::class, 'index'])->name('dashboard');
-    Route::get('/admin/dashboard', [AdminDashboard::class, 'index'])->name('admin.dashboard');
-});
+Route::middleware(['auth', 'role:admin'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+        Route::get('/dashboard', [Admin\DashboardController::class, 'index'])
+            ->name('dashboard');
+    });
+
+Route::middleware(['auth', 'role:user'])
+    ->name('user.')
+    ->group(function () {
+        Route::get('/dashboard', [User\DashboardController::class, 'index'])
+            ->name('dashboard');
+    });
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -429,122 +424,114 @@ Route::middleware('auth')->prefix('admin')->name('laporan.')->group(function () 
         ->name('shu.cetak');
 });
 
-Route::middleware('auth')->prefix('admin')->name('master.')->group(function () {
-    // Route Jenis Simpanan
-    Route::get('/jenis-simpanan', [Admin\JenisSimpananController::class, 'index'])
-        ->name('jenis-simpanan');
-    Route::post('/jenis-simpanan', [Admin\JenisSimpananController::class, 'store'])
-        ->name('jenis-simpanan.store');
-    Route::put('/jenis-simpanan/{id}', [Admin\JenisSimpananController::class, 'update'])
-        ->name('jenis-simpanan.update');
-    Route::delete('/jenis-simpanan/{id}', [Admin\JenisSimpananController::class, 'destroy'])
-        ->name('jenis-simpanan.destroy');
-    Route::get('/jenis-simpanan/export', [Admin\JenisSimpananController::class, 'export'])
-        ->name('jenis-simpanan.export');
-    Route::get('/jenis-simpanan/cetak', [Admin\JenisSimpananController::class, 'cetak'])
-        ->name('jenis-simpanan.cetak');
+Route::middleware('auth')
+    ->prefix('admin')
+    ->name('master.')
+    ->group(function () {
 
-    // Route Jenis Akun
-    Route::get('/jenis-akun', [Admin\JenisAkunController::class, 'index'])
-        ->name('jenis-akun');
-    Route::post('/jenis-akun', [Admin\JenisAkunController::class, 'store'])
-        ->name('jenis-akun.store');
-    Route::put('/jenis-akun/{id}', [Admin\JenisAkunController::class, 'update'])
-        ->name('jenis-akun.update');
-    Route::delete('/jenis-akun/{id}', [Admin\JenisAkunController::class, 'destroy'])
-        ->name('jenis-akun.destroy');
-    Route::get('/jenis-akun/export', [Admin\JenisAkunController::class, 'export'])
-        ->name('jenis-akun.export');
-    Route::get('/jenis-akun/cetak', [Admin\JenisAkunController::class, 'cetak'])
-        ->name('jenis-akun.cetak');
+        /*
+        |--------------------------------------------------------------------------
+        | JENIS SIMPANAN
+        |--------------------------------------------------------------------------
+        */
+        Route::controller(JenisSimpananController::class)->group(function () {
+            Route::get('/jenis-simpanan', 'index')->name('jenis-simpanan');
+            Route::post('/jenis-simpanan', 'store')->name('jenis-simpanan.store');
+            Route::put('/jenis-simpanan/{id}', 'update')->name('jenis-simpanan.update');
+            Route::delete('/jenis-simpanan/{id}', 'destroy')->name('jenis-simpanan.destroy');
+            Route::get('/jenis-simpanan/export', 'export')->name('jenis-simpanan.export');
+            Route::get('/jenis-simpanan/cetak', 'cetak')->name('jenis-simpanan.cetak');
+        });
 
-    // Route Data Kas
-    Route::get('/data-kas', [Admin\DataKasController::class, 'index'])
-        ->name('data-kas');
-    Route::post('/data-kas', [Admin\DataKasController::class, 'store'])
-        ->name('data-kas.store');
-    Route::put('/data-kas/{id}', [Admin\DataKasController::class, 'update'])
-        ->name('data-kas.update');
-    Route::delete('/data-kas/{id}', [Admin\DataKasController::class, 'destroy'])
-        ->name('data-kas.destroy');
-    Route::get('/data-kas/export', [Admin\DataKasController::class, 'export'])
-        ->name('data-kas.export');
-    Route::get('/data-kas/cetak', [Admin\DataKasController::class, 'cetak'])
-        ->name('data-kas.cetak');
+        /*
+        |--------------------------------------------------------------------------
+        | JENIS AKUN
+        |--------------------------------------------------------------------------
+        */
+        Route::controller(JenisAkunController::class)->group(function () {
+            Route::get('/jenis-akun', 'index')->name('jenis-akun');
+            Route::post('/jenis-akun', 'store')->name('jenis-akun.store');
+            Route::put('/jenis-akun/{id}', 'update')->name('jenis-akun.update');
+            Route::delete('/jenis-akun/{id}', 'destroy')->name('jenis-akun.destroy');
+            Route::get('/jenis-akun/export', 'export')->name('jenis-akun.export');
+            Route::get('/jenis-akun/cetak', 'cetak')->name('jenis-akun.cetak');
+        });
 
-    // Route Lama Angsuran
-    Route::get('/lama-angsuran', [Admin\LamaAngsuranController::class, 'index'])
-        ->name('lama-angsuran');
-    Route::post('/lama-angsuran', [Admin\LamaAngsuranController::class, 'store'])
-        ->name('lama-angsuran.store');
-    Route::put('/lama-angsuran/{id}', [Admin\LamaAngsuranController::class, 'update'])
-        ->name('lama-angsuran.update');
-    Route::delete('/lama-angsuran/{id}', [Admin\LamaAngsuranController::class, 'destroy'])
-        ->name('lama-angsuran.destroy');
-    Route::get('/lama-angsuran/export', [Admin\LamaAngsuranController::class, 'export'])
-        ->name('lama-angsuran.export');
-    Route::get('/lama-angsuran/cetak', [Admin\LamaAngsuranController::class, 'cetak'])
-        ->name('lama-angsuran.cetak');
+        /*
+        |--------------------------------------------------------------------------
+        | DATA KAS
+        |--------------------------------------------------------------------------
+        */
+        Route::controller(DataKasController::class)->group(function () {
+            Route::get('/data-kas', 'index')->name('data-kas');
+            Route::post('/data-kas', 'store')->name('data-kas.store');
+            Route::put('/data-kas/{id}', 'update')->name('data-kas.update');
+            Route::delete('/data-kas/{id}', 'destroy')->name('data-kas.destroy');
+            Route::get('/data-kas/export', 'export')->name('data-kas.export');
+            Route::get('/data-kas/cetak', 'cetak')->name('data-kas.cetak');
+        });
 
-    // Route Data Barang
-    Route::get('/data-barang', [Admin\DataBarangController::class, 'index'])
-        ->name('data-barang');
-    Route::post('/data-barang', [Admin\DataBarangController::class, 'store'])
-        ->name('data-barang.store');
-    Route::put('/data-barang/{id}', [Admin\DataBarangController::class, 'update'])
-        ->name('data-barang.update');
-    Route::delete('/data-barang/{id}', [Admin\DataBarangController::class, 'destroy'])
-        ->name('data-barang.destroy');
-    Route::get('/data-barang/export', [Admin\DataBarangController::class, 'export'])
-        ->name('data-barang.export');
-    Route::get('/data-barang/cetak', [Admin\DataBarangController::class, 'cetak'])
-        ->name('data-barang.cetak');
+        /*
+        |--------------------------------------------------------------------------
+        | LAMA ANGSURAN
+        |--------------------------------------------------------------------------
+        */
+        Route::controller(LamaAngsuranController::class)->group(function () {
+            Route::get('/lama-angsuran', 'index')->name('lama-angsuran');
+            Route::post('/lama-angsuran', 'store')->name('lama-angsuran.store');
+            Route::put('/lama-angsuran/{id}', 'update')->name('lama-angsuran.update');
+            Route::delete('/lama-angsuran/{id}', 'destroy')->name('lama-angsuran.destroy');
+            Route::get('/lama-angsuran/export', 'export')->name('lama-angsuran.export');
+            Route::get('/lama-angsuran/cetak', 'cetak')->name('lama-angsuran.cetak');
+        });
 
-    // Route Data Anggota 
-    Route::get('/data-anggota/export', [Admin\DataAnggotaController::class, 'export'])
-        ->name('data-anggota.export');
+        /*
+        |--------------------------------------------------------------------------
+        | DATA BARANG
+        |--------------------------------------------------------------------------
+        */
+        Route::controller(DataBarangController::class)->group(function () {
+            Route::get('/data-barang', 'index')->name('data-barang');
+            Route::post('/data-barang', 'store')->name('data-barang.store');
+            Route::put('/data-barang/{id}', 'update')->name('data-barang.update');
+            Route::delete('/data-barang/{id}', 'destroy')->name('data-barang.destroy');
+            Route::get('/data-barang/export', 'export')->name('data-barang.export');
+            Route::get('/data-barang/cetak', 'cetak')->name('data-barang.cetak');
+        });
 
-    Route::get('/data-anggota/import', [Admin\DataAnggotaController::class, 'showImport'])
-        ->name('data-anggota.import');
+        /*
+        |--------------------------------------------------------------------------
+        | DATA ANGGOTA
+        |--------------------------------------------------------------------------
+        */
+        Route::controller(DataAnggotaController::class)->group(function () {
+            Route::get('/data-anggota', 'index')->name('data-anggota');
+            Route::post('/data-anggota', 'store')->name('data-anggota.store');
+            Route::put('/data-anggota/{id}', 'update')->name('data-anggota.update');
+            Route::delete('/data-anggota/{id}', 'destroy')->name('data-anggota.destroy');
 
-    Route::post('/data-anggota/import', [Admin\DataAnggotaController::class, 'processImport'])
-        ->name('data-anggota.import.process');
+            Route::get('/data-anggota/export', 'export')->name('data-anggota.export');
+            Route::get('/data-anggota/import', 'showImport')->name('data-anggota.import');
+            Route::post('/data-anggota/import', 'processImport')->name('data-anggota.import.process');
+            Route::get('/data-anggota/cetak', 'cetak')->name('data-anggota.cetak');
+        });
 
-    Route::get('/data-anggota/cetak', [Admin\DataAnggotaController::class, 'cetak'])
-        ->name('data-anggota.cetak');
+        /*
+        |--------------------------------------------------------------------------
+        | DATA PENGGUNA
+        |--------------------------------------------------------------------------
+        */
+        Route::controller(DataPenggunaController::class)->group(function () {
+            Route::get('/data-pengguna', 'index')->name('data-pengguna');
+            Route::post('/data-pengguna', 'store')->name('data-pengguna.store');
+            Route::put('/data-pengguna/{id}', 'update')->name('data-pengguna.update');
+            Route::delete('/data-pengguna/{id}', 'destroy')->name('data-pengguna.destroy');
 
-    Route::get('/data-anggota', [Admin\DataAnggotaController::class, 'index'])
-        ->name('data-anggota');
+            Route::get('/data-pengguna/export', 'export')->name('data-pengguna.export');
+            Route::get('/data-pengguna/cetak', 'cetak')->name('data-pengguna.cetak');
+        });
 
-    Route::post('/data-anggota', [Admin\DataAnggotaController::class, 'store'])
-        ->name('data-anggota.store');
-
-    Route::put('/data-anggota/{id}', [Admin\DataAnggotaController::class, 'update'])
-        ->name('data-anggota.update');
-
-    Route::delete('/data-anggota/{id}', [Admin\DataAnggotaController::class, 'destroy'])
-        ->name('data-anggota.destroy');
-
-
-    // Route Data Pengguna - Route SPESIFIK harus di ATAS route umum
-    Route::get('/data-pengguna/export', [Admin\DataPenggunaController::class, 'export'])
-        ->name('data-pengguna.export');
-
-    Route::get('/data-pengguna/cetak', [Admin\DataPenggunaController::class, 'cetak'])
-        ->name('data-pengguna.cetak');
-
-    Route::get('/data-pengguna', [Admin\DataPenggunaController::class, 'index'])
-        ->name('data-pengguna');
-
-    Route::post('/data-pengguna', [Admin\DataPenggunaController::class, 'store'])
-        ->name('data-pengguna.store');
-
-    Route::put('/data-pengguna/{id}', [Admin\DataPenggunaController::class, 'update'])
-        ->name('data-pengguna.update');
-
-    Route::delete('/data-pengguna/{id}', [Admin\DataPenggunaController::class, 'destroy'])
-        ->name('data-pengguna.destroy');
-});
+    });
 
 Route::middleware('auth')->prefix('admin')->name('setting.')->group(function () {
     Route::get('/identitas', [Admin\IdentitasKoperasiController::class, 'index'])

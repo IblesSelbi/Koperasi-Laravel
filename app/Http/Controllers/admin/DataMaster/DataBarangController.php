@@ -1,42 +1,45 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Admin\DataMaster;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class JenisSimpananController extends Controller
+class DataBarangController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        // Dummy data jenis simpanan
-        $jenisSimpanan = collect([
+        // Dummy data barang
+        $dataBarang = collect([
             (object)[
-                'id' => 32,
-                'jenis_simpanan' => 'Simpanan Sukarela',
+                'id' => 4,
+                'nama_barang' => 'Pinjaman Uang',
+                'type' => 'Uang',
+                'merk' => '-',
+                'harga' => 10000000,
+                'jumlah' => 101,
+                'keterangan' => '',
+            ],
+            (object)[
+                'id' => 6,
+                'nama_barang' => 'Pinjaman Dana Tunai',
+                'type' => 'Uang',
+                'merk' => '-',
+                'harga' => 0,
                 'jumlah' => 0,
-                'tampil' => 'Y',
+                'keterangan' => '-',
             ],
             (object)[
-                'id' => 40,
-                'jenis_simpanan' => 'Simpanan Pokok',
-                'jumlah' => 100000,
-                'tampil' => 'Y',
-            ],
-            (object)[
-                'id' => 41,
-                'jenis_simpanan' => 'Simpanan Wajib',
-                'jumlah' => 50000,
-                'tampil' => 'Y',
-            ],
-            (object)[
-                'id' => 42,
-                'jenis_simpanan' => 'asdf',
-                'jumlah' => 0,
-                'tampil' => 'Y',
+                'id' => 7,
+                'nama_barang' => 'HP Infinix Note 30 8/256 GB',
+                'type' => 'Barang',
+                'merk' => 'Infinix',
+                'harga' => 2600000,
+                'jumlah' => 3,
+                'keterangan' => 'Hp',
             ],
         ]);
 
@@ -48,7 +51,7 @@ class JenisSimpananController extends Controller
             ]
         ]);
 
-        return view('admin.DataMaster.JenisSimpanan.JenisSimpanan', compact('jenisSimpanan', 'notifications'));
+        return view('admin.DataMaster.DataBarang.DataBarang', compact('dataBarang', 'notifications'));
     }
 
     /**
@@ -84,7 +87,7 @@ class JenisSimpananController extends Controller
     public function export()
     {
         // TODO: Implement Excel export
-        return response('Export Excel Jenis Simpanan');
+        return response('Export Excel Data Barang');
     }
 
     /**
@@ -93,6 +96,6 @@ class JenisSimpananController extends Controller
     public function cetak()
     {
         // TODO: Implement print view
-        return response('Cetak Laporan Jenis Simpanan');
+        return response('Cetak Laporan Data Barang');
     }
 }

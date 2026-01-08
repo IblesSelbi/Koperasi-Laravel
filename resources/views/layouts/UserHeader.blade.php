@@ -13,8 +13,12 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-3">
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" 
-                       href="{{ route('dashboard') }}">
+                    <a class="nav-link {{ 
+                            $isAdmin 
+                                ? request()->routeIs('admin.dashboard') 
+                                : request()->routeIs('user.dashboard') 
+                        }}"
+                    href="{{ $isAdmin ? route('admin.dashboard') : route('user.dashboard') }}">
                         <i class="ti ti-home me-1"></i> Beranda
                     </a>
                 </li>
@@ -86,9 +90,9 @@
                         <a href="#" class="dropdown-item"><i class="ti ti-user"></i> Profil Saya</a>
                         <a href="#" class="dropdown-item"><i class="ti ti-camera"></i> Ubah Foto</a>
                         <a href="#" class="dropdown-item"><i class="ti ti-key"></i> Ubah Password</a>
-                        <form method="POST" action="{{ route('logout') }}">
+                        <form method="POST" action="{{ route('logout') }}" class="px-2">
                             @csrf
-                            <button type="submit" class="btn btn-outline-primary mx-2 mt-2 d-block w-100">
+                            <button type="submit" class="btn btn-outline-primary mt-1 d-block w-100">
                                 Logout
                             </button>
                         </form>

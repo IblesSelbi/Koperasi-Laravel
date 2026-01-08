@@ -75,7 +75,8 @@
     <div class="card">
         <div class="card-body">
             <div class="table-responsive">
-                <table id="tabelJenisSimpanan" class="table table-hover align-middle rounded-2 border overflow-hidden" style="width:100%">
+                <table id="tabelJenisSimpanan" class="table table-hover align-middle rounded-2 border overflow-hidden"
+                    style="width:100%">
                     <thead class="table-primary">
                         <tr>
                             <th class="text-center align-middle" width="50px">No</th>
@@ -87,8 +88,9 @@
                     </thead>
                     <tbody>
                         @foreach($jenisSimpanan as $index => $item)
-                            <tr data-id="{{ $item->id }}" data-jns="{{ $item->jenis_simpanan }}" data-jumlah="{{ $item->jumlah }}" data-tampil="{{ $item->tampil }}">
-                                <td class="text-center text-muted fw-medium">{{ $index + 1 }}</td>
+                            <tr data-id="{{ $item->id }}" data-jns="{{ $item->jenis_simpanan }}"
+                                data-jumlah="{{ $item->jumlah }}" data-tampil="{{ $item->tampil }}">
+                                <td class="text-center text-muted fw-medium"></td>
                                 <td>
                                     <div class="fw-semibold text-dark">{{ $item->jenis_simpanan }}</div>
                                 </td>
@@ -96,7 +98,8 @@
                                     <span class="fw-bold text-dark">Rp {{ number_format($item->jumlah, 0, ',', '.') }}</span>
                                 </td>
                                 <td class="text-center">
-                                    <span class="badge bg-{{ $item->tampil == 'Y' ? 'success' : 'danger' }}-subtle text-{{ $item->tampil == 'Y' ? 'success' : 'danger' }} fw-semibold px-3 py-1">
+                                    <span
+                                        class="badge bg-{{ $item->tampil == 'Y' ? 'success' : 'danger' }}-subtle text-{{ $item->tampil == 'Y' ? 'success' : 'danger' }} fw-semibold px-3 py-1">
                                         {{ $item->tampil }}
                                     </span>
                                 </td>
@@ -126,10 +129,12 @@
                 </div>
                 <div class="modal-body">
                     <form id="formJenisSimpanan">
+                        @csrf
                         <input type="hidden" id="editId" value="">
                         <div class="mb-3">
                             <label class="form-label">Jenis Simpanan <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="jnsSimpanan" placeholder="Masukkan jenis simpanan" maxlength="30" required>
+                            <input type="text" class="form-control" id="jnsSimpanan" placeholder="Masukkan jenis simpanan"
+                                maxlength="30" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Jumlah</label>
@@ -161,249 +166,193 @@
 
 @push('scripts')
     <!-- DataTables -->
-    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.bootstrap5.min.js"></script>
+    <script src="{{ asset('assets/datatables/js/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('assets/datatables/js/dataTables.bootstrap5.min.js') }}"></script>
+    <script src="{{ asset('assets/datatables/js/dataTables.buttons.min.js') }}"></script>
+    <script src="{{ asset('assets/datatables/js/buttons.bootstrap5.min.js') }}"></script>
 
     <!-- SweetAlert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="{{ asset('assets/sweetalert/sweetalert2.all.min.js') }}"></script>
+
 
     <script>
-        // Initialize DataTable
         let table;
+
+        // ===============================
+        // INIT DATATABLE
+        // ===============================
         $(document).ready(function () {
             table = $('#tabelJenisSimpanan').DataTable({
                 language: {
-                    url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/id.json'
+                    url: "{{ asset('assets/datatables/i18n/id.json') }}"
                 },
                 pageLength: 10,
-                order: [[0, 'asc']],
+                order: [],
                 columnDefs: [
-                    { orderable: false, targets: [4] },
-                    {
-                        targets: 0,
-                        render: function (data, type, row, meta) {
-                            return meta.row + 1;
-                        }
-                    }
+                    { orderable: false, targets: [0, 4] }
                 ]
             });
+
+            // 🔥 FIX NOMOR AGAR SELALU URUT
+            table.on('order.dt search.dt draw.dt', function () {
+                table.column(0, { search: 'applied', order: 'applied' })
+                    .nodes()
+                    .each(function (cell, i) {
+                        cell.innerHTML = i + 1;
+                    });
+            }).draw();
         });
 
-        // Format Currency
+        // ===============================
+        // FORMAT RUPIAH
+        // ===============================
         function formatRupiah(angka) {
             return new Intl.NumberFormat('id-ID').format(angka);
         }
 
-        // Tambah Data
+        // ===============================
+        // TAMBAH DATA
+        // ===============================
         function tambahData() {
-            document.getElementById('modalTitle').textContent = 'Tambah Jenis Simpanan';
+            document.getElementById('modalTitle').innerText = 'Tambah Jenis Simpanan';
             document.getElementById('formJenisSimpanan').reset();
             document.getElementById('editId').value = '';
             document.getElementById('tampil').value = 'Y';
 
-            const modal = new bootstrap.Modal(document.getElementById('modalForm'), {
+            new bootstrap.Modal(document.getElementById('modalForm'), {
                 backdrop: 'static',
                 keyboard: false
-            });
-            modal.show();
+            }).show();
         }
 
-        // Edit Data
+        // ===============================
+        // EDIT DATA
+        // ===============================
         function editData(btn) {
             const row = btn.closest('tr');
-            const id = row.getAttribute('data-id');
-            const jns = row.getAttribute('data-jns');
-            const jumlah = row.getAttribute('data-jumlah');
-            const tampil = row.getAttribute('data-tampil');
 
-            document.getElementById('modalTitle').textContent = 'Ubah Jenis Simpanan';
-            document.getElementById('editId').value = id;
-            document.getElementById('jnsSimpanan').value = jns;
-            document.getElementById('jumlah').value = formatRupiah(jumlah);
-            document.getElementById('tampil').value = tampil;
+            document.getElementById('modalTitle').innerText = 'Ubah Jenis Simpanan';
+            document.getElementById('editId').value = row.dataset.id;
+            document.getElementById('jnsSimpanan').value = row.dataset.jns;
+            document.getElementById('jumlah').value = formatRupiah(row.dataset.jumlah);
+            document.getElementById('tampil').value = row.dataset.tampil;
 
-            const modal = new bootstrap.Modal(document.getElementById('modalForm'), {
+            new bootstrap.Modal(document.getElementById('modalForm'), {
                 backdrop: 'static',
                 keyboard: false
-            });
-            modal.show();
+            }).show();
         }
 
-        // Simpan Data
+        // ===============================
+        // SIMPAN DATA (ADD & UPDATE)
+        // ===============================
         function simpanData() {
-            const form = document.getElementById('formJenisSimpanan');
-            if (!form.checkValidity()) {
-                form.reportValidity();
-                return;
-            }
+            const id = document.getElementById('editId').value;
+            const jenis_simpanan = document.getElementById('jnsSimpanan').value;
+            const jumlah = document.getElementById('jumlah').value.replace(/\./g, '');
+            const tampil = document.getElementById('tampil').value;
 
-            const editId = document.getElementById('editId').value;
-            const jnsSimpanan = document.getElementById('jnsSimpanan').value;
-            const jumlah = document.getElementById('jumlah').value.replace(/\./g, '') || '0';
-            const tampil = document.getElementById('tampil').value || 'Y';
+            const url = id
+                ? `/admin/jenis-simpanan/${id}`
+                : `/admin/jenis-simpanan`;
 
-            if (editId) {
-                // Update existing row
-                const rows = document.querySelectorAll('#tabelJenisSimpanan tbody tr');
-                rows.forEach(row => {
-                    if (row.getAttribute('data-id') === editId) {
-                        row.setAttribute('data-jns', jnsSimpanan);
-                        row.setAttribute('data-jumlah', jumlah);
-                        row.setAttribute('data-tampil', tampil);
-
-                        row.cells[1].innerHTML = `<div class="fw-semibold text-dark">${jnsSimpanan}</div>`;
-                        row.cells[2].innerHTML = `<span class="fw-bold text-dark">Rp ${formatRupiah(jumlah)}</span>`;
-                        row.cells[3].innerHTML = `<span class="badge bg-${tampil === 'Y' ? 'success' : 'danger'}-subtle text-${tampil === 'Y' ? 'success' : 'danger'} fw-semibold px-3 py-1">${tampil}</span>`;
-                    }
-                });
-                
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Berhasil!',
-                    text: 'Data berhasil diubah',
-                    timer: 1500,
-                    showConfirmButton: false
-                });
-            } else {
-                // Add new row
-                const newId = Date.now();
-                const newRow = `
-                    <tr data-id="${newId}" data-jns="${jnsSimpanan}" data-jumlah="${jumlah}" data-tampil="${tampil}">
-                        <td class="text-center text-muted fw-medium"></td>
-                        <td><div class="fw-semibold text-dark">${jnsSimpanan}</div></td>
-                        <td class="text-end"><span class="fw-bold text-dark">Rp ${formatRupiah(jumlah)}</span></td>
-                        <td class="text-center"><span class="badge bg-${tampil === 'Y' ? 'success' : 'danger'}-subtle text-${tampil === 'Y' ? 'success' : 'danger'} fw-semibold px-3 py-1">${tampil}</span></td>
-                        <td class="text-center">
-                            <button class="btn btn-sm btn-warning me-1" onclick="editData(this)" title="Edit">
-                                <i class="ti ti-edit"></i>
-                            </button>
-                            <button class="btn btn-sm btn-danger" onclick="hapusData(this)" title="Hapus">
-                                <i class="ti ti-trash"></i>
-                            </button>
-                        </td>
-                    </tr>
-                `;
-                table.row.add($(newRow)).draw();
-                
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Berhasil!',
-                    text: 'Data berhasil ditambahkan',
-                    timer: 1500,
-                    showConfirmButton: false
-                });
-            }
-
-            const modal = bootstrap.Modal.getInstance(document.getElementById('modalForm'));
-            modal.hide();
-        }
-
-        // Hapus Data
-        function hapusData(btn) {
-            Swal.fire({
-                title: 'Konfirmasi Hapus',
-                text: 'Apakah Anda yakin ingin menghapus data ini?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Ya, Hapus!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    const row = btn.closest('tr');
-                    table.row(row).remove().draw();
-                    
+            fetch(url, {
+                method: id ? 'PUT' : 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    jenis_simpanan,
+                    jumlah,
+                    tampil
+                })
+            })
+                .then(res => res.json())
+                .then(res => {
                     Swal.fire({
                         icon: 'success',
-                        title: 'Terhapus!',
-                        text: 'Data berhasil dihapus',
+                        title: 'Berhasil',
+                        text: res.message,
                         timer: 1500,
                         showConfirmButton: false
-                    });
+                    }).then(() => location.reload());
+                })
+                .catch(() => {
+                    Swal.fire('Error', 'Gagal menyimpan data', 'error');
+                });
+        }
+
+        // ===============================
+        // HAPUS DATA
+        // ===============================
+        function hapusData(btn) {
+            const id = btn.closest('tr').dataset.id;
+
+            Swal.fire({
+                title: 'Yakin hapus?',
+                text: 'Data tidak bisa dikembalikan',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, hapus',
+                cancelButtonText: 'Batal'
+            }).then(result => {
+                if (result.isConfirmed) {
+                    fetch(`/admin/jenis-simpanan/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        }
+                    })
+                        .then(res => res.json())
+                        .then(res => {
+                            Swal.fire('Terhapus!', res.message, 'success')
+                                .then(() => location.reload());
+                        });
                 }
             });
         }
 
-        // Cari Data
+        // ===============================
+        // CARI DATA
+        // ===============================
         function cariData() {
-            const search = document.getElementById('searchInput').value;
-            table.search(search).draw();
+            table.search(document.getElementById('searchInput').value).draw();
         }
 
-        // Reset Filter
+        // ===============================
+        // RESET FILTER
+        // ===============================
         function resetFilter() {
             document.getElementById('searchInput').value = '';
             table.search('').draw();
-            
+
             Swal.fire({
                 icon: 'info',
-                title: 'Filter Direset',
-                text: 'Pencarian telah dikembalikan',
-                timer: 1500,
+                title: 'Filter direset',
+                timer: 1200,
                 showConfirmButton: false
             });
         }
 
-        // Cetak Laporan
+        // ===============================
+        // CETAK & EXPORT (SERVER SIDE)
+        // ===============================
         function cetakLaporan() {
-            window.print();
+            window.location.href = "{{ route('master.jenis-simpanan.cetak') }}";
         }
 
-        // Ekspor Data ke Excel
         function eksporData() {
-            // Ambil semua data dari tabel
-            const rows = [];
-            const headers = ['No', 'Jenis Simpanan', 'Jumlah', 'Tampil'];
-            rows.push(headers);
-
-            // Ambil data dari DataTable
-            table.rows({ search: 'applied' }).every(function () {
-                const row = this.node();
-                const jns = row.getAttribute('data-jns');
-                const jumlah = row.getAttribute('data-jumlah');
-                const tampil = row.getAttribute('data-tampil');
-                const no = this.index() + 1;
-
-                rows.push([no, jns, jumlah, tampil]);
-            });
-
-            // Buat CSV content
-            let csvContent = '\ufeff'; // UTF-8 BOM untuk Excel
-            csvContent += rows.map(row => row.join(',')).join('\n');
-
-            // Download file
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            const url = URL.createObjectURL(blob);
-
-            const tanggal = new Date().toISOString().slice(0, 10);
-            link.setAttribute('href', url);
-            link.setAttribute('download', `Jenis_Simpanan_${tanggal}.csv`);
-            link.style.visibility = 'hidden';
-
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-
-            Swal.fire({
-                icon: 'success',
-                title: 'Export Berhasil',
-                text: 'File CSV akan segera diunduh',
-                timer: 1500,
-                showConfirmButton: false
-            });
+            window.location.href = "{{ route('master.jenis-simpanan.export') }}";
         }
 
-        // Format Currency Input
+        // ===============================
+        // FORMAT INPUT JUMLAH
+        // ===============================
         document.getElementById('jumlah').addEventListener('input', function (e) {
             let value = e.target.value.replace(/[^0-9]/g, '');
-            if (value) {
-                value = parseInt(value).toLocaleString('id-ID');
-            }
-            e.target.value = value;
+            e.target.value = value ? formatRupiah(value) : '';
         });
     </script>
+
 @endpush

@@ -24,15 +24,19 @@
                                         style="width: auto; height: 80px;">
                                 </a>
 
+                                @php
+                                    $selectedRole = old('switch_role', 'admin');
+                                @endphp
+
                                 <!-- Role Switcher -->
                                 <div class="text-center mb-0">
                                     <div class="role-switch">
-                                        <div class="role-slider" id="roleSlider"></div>
-                                        <button type="button" class="role-btn active" id="adminBtn"
+                                        <div class="role-slider {{ $selectedRole === 'user' ? 'user-active' : '' }}" id="roleSlider"></div>
+                                        <button type="button" class="role-btn {{ $selectedRole === 'admin' ? 'active' : '' }}" id="adminBtn"
                                             onclick="switchRole('admin')">
                                             Admin / Operator
                                         </button>
-                                        <button type="button" class="role-btn" id="userBtn"
+                                        <button type="button" class="role-btn {{ $selectedRole === 'user' ? 'active' : '' }}" id="userBtn"
                                             onclick="switchRole('user')">
                                             User / Member
                                         </button>
@@ -41,7 +45,9 @@
 
                                 <!-- Login Form -->
                                 <div class="login-content" id="loginContent">
-                                    <p class="role-label" id="roleLabel">Admin / Operator Login</p>
+                                    <p class="role-label" id="roleLabel">
+                                        {{ $selectedRole === 'user' ? 'User / Member Login' : 'Admin / Operator Login' }}
+                                    </p>
                                     
                                     <!-- Session Status -->
                                     <x-auth-session-status class="mb-4" :status="session('status')" />
@@ -50,7 +56,7 @@
                                         @csrf
 
                                         <!-- Hidden Role Field -->
-                                        <input type="hidden" name="role" id="roleInput" value="admin">
+                                        <input type="hidden" name="switch_role" id="switchRoleInput" value="{{ $selectedRole }}">
 
                                         <!-- Email -->
                                         <div class="mb-3">
@@ -91,12 +97,6 @@
                                             Sign In
                                         </button>
 
-                                        <div class="d-flex align-items-center justify-content-center">
-                                            <p class="fs-4 mb-0 fw-bold">Not Registered?</p>
-                                            <a class="text-primary fw-bold ms-2" href="{{ route('register') }}">
-                                                Create an account
-                                            </a>
-                                        </div>
                                     </form>
                                 </div>
                             </div>
@@ -112,7 +112,7 @@
     <script src="https://cdn.jsdelivr.net/npm/iconify-icon@1.0.8/dist/iconify-icon.min.js"></script>
 
     <script>
-        let currentRole = 'admin';
+        let currentRole = "{{ $selectedRole }}";
 
         function switchRole(role) {
             if (role === currentRole) return;
@@ -122,7 +122,7 @@
             const adminBtn = document.getElementById('adminBtn');
             const userBtn = document.getElementById('userBtn');
             const roleLabel = document.getElementById('roleLabel');
-            const roleInput = document.getElementById('roleInput');
+            const switchInput = document.getElementById('switchRoleInput');
 
             content.classList.add('hiding');
 
@@ -134,19 +134,20 @@
                     adminBtn.classList.remove('active');
                     userBtn.classList.add('active');
                     roleLabel.textContent = 'User / Member Login';
-                    roleInput.value = 'user';
+                    switchInput.value = 'user';
                 } else {
                     slider.classList.remove('user-active');
                     adminBtn.classList.add('active');
                     userBtn.classList.remove('active');
                     roleLabel.textContent = 'Admin / Operator Login';
-                    roleInput.value = 'admin';
+                    switchInput.value = 'admin';
                 }
 
                 content.classList.remove('hiding');
             }, 200);
         }
     </script>
+
 </body>
 
 </html>

@@ -2,12 +2,17 @@
 <aside class="left-sidebar shadow-sm">
     <div>
         <div class="brand-logo d-flex align-items-center justify-content-between shadow-sm">
-            <a href="{{ route('dashboard') }}" class="text-nowrap logo-img">
+           @auth
+            <a href="{{ auth()->user()->role->nama === 'admin'
+                ? route('admin.dashboard')
+                : route('user.dashboard') }}"
+            class="text-nowrap logo-img">
                 <img src="{{ asset('assets/images/logos/logoAkeno-no-name.png') }}" alt="Logo" style="height:37px;width:auto;">
                 <span class="fw-semibold fs-5 text-dark lh-1 ms-2">
                     Sistem <span class="fw-normal"> Koperasi</span>
                 </span>
             </a>
+            @endauth
             <div class="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
                 <i class="ti ti-x fs-6"></i>
             </div>

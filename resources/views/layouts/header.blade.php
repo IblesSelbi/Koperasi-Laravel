@@ -13,8 +13,8 @@
                    data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="ti ti-bell fs-7"></i>
                     <span class="position-absolute top-0 end-0 badge rounded-pill bg-danger notif-badge" 
-                          style="font-size:11px">
-                        {{ $notifications->count() ?? 0 }}
+                        style="font-size:11px">
+                        {{ isset($notifications) ? $notifications->count() : 0 }}
                     </span>
                 </a>
 
@@ -79,9 +79,14 @@
                                 <i class="ti ti-key fs-6"></i>
                                 <p class="mb-0 fs-3">Ubah Password</p>
                             </a>
-                            <form method="POST" action="{{ route('logout') }}">
+                            <a href="{{ route('register') }}" 
+                               class="d-flex align-items-center gap-2 dropdown-item">
+                                <i class="ti ti-user-plus fs-6"></i>
+                                <p class="mb-0 fs-3">Register Akun</p>
+                            </a>
+                            <form method="POST" action="{{ route('logout') }}" class="px-2">
                                 @csrf
-                                <button type="submit" class="btn btn-outline-primary mx-3 mt-2 d-block w-100">
+                                <button type="submit" class="btn btn-outline-primary mt-1 w-100">
                                     Logout
                                 </button>
                             </form>
