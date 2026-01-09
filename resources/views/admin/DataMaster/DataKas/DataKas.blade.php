@@ -3,9 +3,6 @@
 @section('title', 'Master Data - Data Kas')
 
 @push('styles')
-    <!-- DataTables CSS -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css">
 @endpush
 
 @section('content')
@@ -75,31 +72,31 @@
     <div class="card">
         <div class="card-body">
             <div class="table-responsive">
-                <table id="tabelDataKas"
-                    class="table table-hover align-middle rounded-2 border overflow-hidden nowrap-table" style="width:100%">
+                <table id="tabelDataKas" class="table table-hover align-middle rounded-2 border overflow-hidden"
+                    style="width:100%">
                     <thead class="table-primary">
                         <tr>
                             <th class="text-center align-middle" width="50px">No</th>
-                            <th class="align-middle" width="150px">Nama Kas</th>
-                            <th class="text-center" width="80px">Aktif</th>
-                            <th class="text-center" width="100px">Simpanan</th>
-                            <th class="text-center" width="100px">Penarikan</th>
-                            <th class="text-center" width="100px">Pinjaman</th>
-                            <th class="text-center" width="100px">Angsuran</th>
-                            <th class="text-center" width="130px">Pemasukan Kas</th>
-                            <th class="text-center" width="140px">Pengeluaran Kas</th>
-                            <th class="text-center" width="120px">Transfer Kas</th>
+                            <th>Nama Kas</th>
+                            <th class="text-center">Aktif</th>
+                            <th class="text-center">Simpanan</th>
+                            <th class="text-center">Penarikan</th>
+                            <th class="text-center">Pinjaman</th>
+                            <th class="text-center">Angsuran</th>
+                            <th class="text-center">Pemasukan Kas</th>
+                            <th class="text-center">Pengeluaran Kas</th>
+                            <th class="text-center">Transfer Kas</th>
                             <th class="text-center" width="150px">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($dataKas as $index => $item)
-                            <tr data-id="{{ $item->id }}" data-nama="{{ $item->nama_kas }}" data-aktif="{{ $item->aktif }}"
-                                data-simpan="{{ $item->simpanan }}" data-penarikan="{{ $item->penarikan }}"
-                                data-pinjaman="{{ $item->pinjaman }}" data-bayar="{{ $item->angsuran }}"
-                                data-pemasukan="{{ $item->pemasukan_kas }}" data-pengeluaran="{{ $item->pengeluaran_kas }}"
-                                data-transfer="{{ $item->transfer_kas }}">
-                                <td class="text-center text-muted fw-medium">{{ $index + 1 }}</td>
+                            <tr data-id="{{ $item->id }}" data-nama="{{ $item->nama_kas }}"
+                                data-aktif="{{ $item->aktif }}" data-simpanan="{{ $item->simpanan }}"
+                                data-penarikan="{{ $item->penarikan }}" data-pinjaman="{{ $item->pinjaman }}"
+                                data-angsuran="{{ $item->angsuran }}" data-pemasukan="{{ $item->pemasukan_kas }}"
+                                data-pengeluaran="{{ $item->pengeluaran_kas }}" data-transfer="{{ $item->transfer_kas }}">
+                                <td class="text-center text-muted fw-medium"></td>
                                 <td>
                                     <div class="fw-semibold text-dark">{{ $item->nama_kas }}</div>
                                 </td>
@@ -177,6 +174,7 @@
                 </div>
                 <div class="modal-body">
                     <form id="formDataKas">
+                        @csrf
                         <input type="hidden" id="editId" value="">
                         <div class="mb-3">
                             <label class="form-label">Nama Kas <span class="text-danger">*</span></label>
@@ -185,35 +183,15 @@
                         </div>
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Aktif</label>
-                                <select class="form-select" id="aktif">
-                                    <option value="">-- Pilih --</option>
+                                <label class="form-label">Aktif <span class="text-danger">*</span></label>
+                                <select class="form-select" id="aktif" required>
                                     <option value="Y" selected>Y</option>
                                     <option value="T">T</option>
                                 </select>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Simpanan</label>
-                                <select class="form-select" id="simpanan">
-                                    <option value="">-- Pilih --</option>
-                                    <option value="Y" selected>Y</option>
-                                    <option value="T">T</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Penarikan</label>
-                                <select class="form-select" id="penarikan">
-                                    <option value="">-- Pilih --</option>
-                                    <option value="Y" selected>Y</option>
-                                    <option value="T">T</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Pinjaman</label>
-                                <select class="form-select" id="pinjaman">
-                                    <option value="">-- Pilih --</option>
+                                <label class="form-label">Simpanan <span class="text-danger">*</span></label>
+                                <select class="form-select" id="simpanan" required>
                                     <option value="Y" selected>Y</option>
                                     <option value="T">T</option>
                                 </select>
@@ -221,17 +199,15 @@
                         </div>
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Angsuran</label>
-                                <select class="form-select" id="angsuran">
-                                    <option value="">-- Pilih --</option>
+                                <label class="form-label">Penarikan <span class="text-danger">*</span></label>
+                                <select class="form-select" id="penarikan" required>
                                     <option value="Y" selected>Y</option>
                                     <option value="T">T</option>
                                 </select>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Pemasukan Kas</label>
-                                <select class="form-select" id="pemasukanKas">
-                                    <option value="">-- Pilih --</option>
+                                <label class="form-label">Pinjaman <span class="text-danger">*</span></label>
+                                <select class="form-select" id="pinjaman" required>
                                     <option value="Y" selected>Y</option>
                                     <option value="T">T</option>
                                 </select>
@@ -239,17 +215,31 @@
                         </div>
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Pengeluaran Kas</label>
-                                <select class="form-select" id="pengeluaranKas">
-                                    <option value="">-- Pilih --</option>
+                                <label class="form-label">Angsuran <span class="text-danger">*</span></label>
+                                <select class="form-select" id="angsuran" required>
                                     <option value="Y" selected>Y</option>
                                     <option value="T">T</option>
                                 </select>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Transfer Kas</label>
-                                <select class="form-select" id="transferKas">
-                                    <option value="">-- Pilih --</option>
+                                <label class="form-label">Pemasukan Kas <span class="text-danger">*</span></label>
+                                <select class="form-select" id="pemasukanKas" required>
+                                    <option value="Y" selected>Y</option>
+                                    <option value="T">T</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Pengeluaran Kas <span class="text-danger">*</span></label>
+                                <select class="form-select" id="pengeluaranKas" required>
+                                    <option value="Y" selected>Y</option>
+                                    <option value="T">T</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Transfer Kas <span class="text-danger">*</span></label>
+                                <select class="form-select" id="transferKas" required>
                                     <option value="Y" selected>Y</option>
                                     <option value="T">T</option>
                                 </select>
@@ -269,51 +259,40 @@
 @endsection
 
 @push('scripts')
-    <!-- DataTables -->
-    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.bootstrap5.min.js"></script>
-
-    <!-- SweetAlert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        // Initialize DataTable
         let table;
+
+        // INIT DATATABLE
         $(document).ready(function () {
             table = $('#tabelDataKas').DataTable({
-                ordering: false,
                 language: {
-                    url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/id.json'
+                    url: "{{ asset('assets/datatables/i18n/id.json') }}"
                 },
                 pageLength: 10,
+                order: [],
                 scrollX: true,
                 columnDefs: [
-                    { orderable: false, targets: '_all' }
-                ],
-                drawCallback: function () {
-                    const api = this.api();
-                    const startIndex = api.context[0]._iDisplayStart;
-                    api.column(0, { page: 'current' }).nodes().each(function (cell, i) {
-                        cell.innerHTML = startIndex + i + 1;
-                    });
-                }
+                    { orderable: false, targets: [0, 10] }
+                ]
             });
+
+            // 🔥 FIX NOMOR AGAR SELALU URUT
+            table.on('order.dt search.dt draw.dt', function () {
+                table.column(0, { search: 'applied', order: 'applied' })
+                    .nodes()
+                    .each(function (cell, i) {
+                        cell.innerHTML = i + 1;
+                    });
+            }).draw();
         });
 
-        // Function untuk membuat badge
-        function createBadge(value) {
-            const badgeClass = value === 'Y' ? 'success' : 'danger';
-            return `<span class="badge bg-${badgeClass}-subtle text-${badgeClass} fw-semibold px-3 py-1">${value}</span>`;
-        }
-
-        // Tambah Data
+        // TAMBAH DATA
         function tambahData() {
-            document.getElementById('modalTitle').textContent = 'Tambah Jenis Kas';
+            document.getElementById('modalTitle').innerText = 'Tambah Jenis Kas';
             document.getElementById('formDataKas').reset();
             document.getElementById('editId').value = '';
-
+            
             // Set default values
             document.getElementById('aktif').value = 'Y';
             document.getElementById('simpanan').value = 'Y';
@@ -324,236 +303,138 @@
             document.getElementById('pengeluaranKas').value = 'Y';
             document.getElementById('transferKas').value = 'Y';
 
-            const modal = new bootstrap.Modal(document.getElementById('modalForm'), {
+            new bootstrap.Modal(document.getElementById('modalForm'), {
                 backdrop: 'static',
                 keyboard: false
-            });
-            modal.show();
+            }).show();
         }
 
-        // Edit Data
+        // EDIT DATA
         function editData(btn) {
             const row = btn.closest('tr');
-            const id = row.getAttribute('data-id');
-            const nama = row.getAttribute('data-nama');
-            const aktif = row.getAttribute('data-aktif');
-            const simpan = row.getAttribute('data-simpan');
-            const penarikan = row.getAttribute('data-penarikan');
-            const pinjaman = row.getAttribute('data-pinjaman');
-            const bayar = row.getAttribute('data-bayar');
-            const pemasukan = row.getAttribute('data-pemasukan');
-            const pengeluaran = row.getAttribute('data-pengeluaran');
-            const transfer = row.getAttribute('data-transfer');
 
-            document.getElementById('modalTitle').textContent = 'Ubah Jenis Kas';
-            document.getElementById('editId').value = id;
-            document.getElementById('namaKas').value = nama;
-            document.getElementById('aktif').value = aktif;
-            document.getElementById('simpanan').value = simpan;
-            document.getElementById('penarikan').value = penarikan;
-            document.getElementById('pinjaman').value = pinjaman;
-            document.getElementById('angsuran').value = bayar;
-            document.getElementById('pemasukanKas').value = pemasukan;
-            document.getElementById('pengeluaranKas').value = pengeluaran;
-            document.getElementById('transferKas').value = transfer;
+            document.getElementById('modalTitle').innerText = 'Ubah Jenis Kas';
+            document.getElementById('editId').value = row.dataset.id;
+            document.getElementById('namaKas').value = row.dataset.nama;
+            document.getElementById('aktif').value = row.dataset.aktif;
+            document.getElementById('simpanan').value = row.dataset.simpanan;
+            document.getElementById('penarikan').value = row.dataset.penarikan;
+            document.getElementById('pinjaman').value = row.dataset.pinjaman;
+            document.getElementById('angsuran').value = row.dataset.angsuran;
+            document.getElementById('pemasukanKas').value = row.dataset.pemasukan;
+            document.getElementById('pengeluaranKas').value = row.dataset.pengeluaran;
+            document.getElementById('transferKas').value = row.dataset.transfer;
 
-            const modal = new bootstrap.Modal(document.getElementById('modalForm'), {
+            new bootstrap.Modal(document.getElementById('modalForm'), {
                 backdrop: 'static',
                 keyboard: false
-            });
-            modal.show();
+            }).show();
         }
 
-        // Simpan Data
+        // SIMPAN DATA (ADD & UPDATE)
         function simpanData() {
-            const form = document.getElementById('formDataKas');
-            if (!form.checkValidity()) {
-                form.reportValidity();
-                return;
-            }
+            const id = document.getElementById('editId').value;
+            const nama_kas = document.getElementById('namaKas').value;
+            const aktif = document.getElementById('aktif').value;
+            const simpanan = document.getElementById('simpanan').value;
+            const penarikan = document.getElementById('penarikan').value;
+            const pinjaman = document.getElementById('pinjaman').value;
+            const angsuran = document.getElementById('angsuran').value;
+            const pemasukan_kas = document.getElementById('pemasukanKas').value;
+            const pengeluaran_kas = document.getElementById('pengeluaranKas').value;
+            const transfer_kas = document.getElementById('transferKas').value;
 
-            const editId = document.getElementById('editId').value;
-            const namaKas = document.getElementById('namaKas').value;
-            const aktif = document.getElementById('aktif').value || 'Y';
-            const simpanan = document.getElementById('simpanan').value || 'Y';
-            const penarikan = document.getElementById('penarikan').value || 'Y';
-            const pinjaman = document.getElementById('pinjaman').value || 'Y';
-            const angsuran = document.getElementById('angsuran').value || 'Y';
-            const pemasukanKas = document.getElementById('pemasukanKas').value || 'Y';
-            const pengeluaranKas = document.getElementById('pengeluaranKas').value || 'Y';
-            const transferKas = document.getElementById('transferKas').value || 'Y';
+            const url = id
+                ? `/admin/data-kas/${id}`
+                : `/admin/data-kas`;
 
-            if (editId) {
-                // Update existing row
-                const rows = document.querySelectorAll('#tabelDataKas tbody tr');
-                rows.forEach(row => {
-                    if (row.getAttribute('data-id') === editId) {
-                        row.setAttribute('data-nama', namaKas);
-                        row.setAttribute('data-aktif', aktif);
-                        row.setAttribute('data-simpan', simpanan);
-                        row.setAttribute('data-penarikan', penarikan);
-                        row.setAttribute('data-pinjaman', pinjaman);
-                        row.setAttribute('data-bayar', angsuran);
-                        row.setAttribute('data-pemasukan', pemasukanKas);
-                        row.setAttribute('data-pengeluaran', pengeluaranKas);
-                        row.setAttribute('data-transfer', transferKas);
-
-                        row.cells[1].innerHTML = `<div class="fw-semibold text-dark">${namaKas}</div>`;
-                        row.cells[2].innerHTML = createBadge(aktif);
-                        row.cells[3].innerHTML = createBadge(simpanan);
-                        row.cells[4].innerHTML = createBadge(penarikan);
-                        row.cells[5].innerHTML = createBadge(pinjaman);
-                        row.cells[6].innerHTML = createBadge(angsuran);
-                        row.cells[7].innerHTML = createBadge(pemasukanKas);
-                        row.cells[8].innerHTML = createBadge(pengeluaranKas);
-                        row.cells[9].innerHTML = createBadge(transferKas);
-                    }
-                });
-
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Berhasil!',
-                    text: 'Data berhasil diubah',
-                    timer: 1500,
-                    showConfirmButton: false
-                });
-            } else {
-                // Add new row
-                const newId = Date.now();
-                const newRow = `
-                                    <tr data-id="${newId}" data-nama="${namaKas}" data-aktif="${aktif}" data-simpan="${simpanan}" data-penarikan="${penarikan}" data-pinjaman="${pinjaman}" data-bayar="${angsuran}" data-pemasukan="${pemasukanKas}" data-pengeluaran="${pengeluaranKas}" data-transfer="${transferKas}">
-                                        <td class="text-center text-muted fw-medium"></td>
-                                        <td><div class="fw-semibold text-dark">${namaKas}</div></td>
-                                        <td class="text-center">${createBadge(aktif)}</td>
-                                        <td class="text-center">${createBadge(simpanan)}</td>
-                                        <td class="text-center">${createBadge(penarikan)}</td>
-                                        <td class="text-center">${createBadge(pinjaman)}</td>
-                                        <td class="text-center">${createBadge(angsuran)}</td>
-                                        <td class="text-center">${createBadge(pemasukanKas)}</td>
-                                        <td class="text-center">${createBadge(pengeluaranKas)}</td>
-                                        <td class="text-center">${createBadge(transferKas)}</td>
-                                        <td class="text-center">
-                                            <button class="btn btn-sm btn-warning me-1" onclick="editData(this)" title="Edit">
-                                                <i class="ti ti-edit"></i>
-                                            </button>
-                                            <button class="btn btn-sm btn-danger" onclick="hapusData(this)" title="Hapus">
-                                                <i class="ti ti-trash"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                `;
-                table.row.add($(newRow)).draw();
-
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Berhasil!',
-                    text: 'Data berhasil ditambahkan',
-                    timer: 1500,
-                    showConfirmButton: false
-                });
-            }
-
-            const modal = bootstrap.Modal.getInstance(document.getElementById('modalForm'));
-            modal.hide();
-        }
-
-        // Hapus Data
-        function hapusData(btn) {
-            Swal.fire({
-                title: 'Konfirmasi Hapus',
-                text: 'Apakah Anda yakin ingin menghapus data ini?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Ya, Hapus!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    const row = btn.closest('tr');
-                    table.row(row).remove().draw();
-
+            fetch(url, {
+                method: id ? 'PUT' : 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    nama_kas,
+                    aktif,
+                    simpanan,
+                    penarikan,
+                    pinjaman,
+                    angsuran,
+                    pemasukan_kas,
+                    pengeluaran_kas,
+                    transfer_kas
+                })
+            })
+                .then(res => res.json())
+                .then(res => {
                     Swal.fire({
                         icon: 'success',
-                        title: 'Terhapus!',
-                        text: 'Data berhasil dihapus',
+                        title: 'Berhasil',
+                        text: res.message,
                         timer: 1500,
                         showConfirmButton: false
-                    });
+                    }).then(() => location.reload());
+                })
+                .catch(() => {
+                    Swal.fire('Error', 'Gagal menyimpan data', 'error');
+                });
+        }
+
+        // HAPUS DATA
+        function hapusData(btn) {
+            const id = btn.closest('tr').dataset.id;
+
+            Swal.fire({
+                title: 'Yakin hapus?',
+                text: 'Data tidak bisa dikembalikan',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, hapus',
+                cancelButtonText: 'Batal'
+            }).then(result => {
+                if (result.isConfirmed) {
+                    fetch(`/admin/data-kas/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        }
+                    })
+                        .then(res => res.json())
+                        .then(res => {
+                            Swal.fire('Terhapus!', res.message, 'success')
+                                .then(() => location.reload());
+                        });
                 }
             });
         }
 
-        // Cari Data
+        // CARI DATA
         function cariData() {
-            const search = document.getElementById('searchInput').value;
-            table.search(search).draw();
+            table.search(document.getElementById('searchInput').value).draw();
         }
 
-        // Reset Filter
+        // RESET FILTER
         function resetFilter() {
             document.getElementById('searchInput').value = '';
             table.search('').draw();
 
             Swal.fire({
                 icon: 'info',
-                title: 'Filter Direset',
-                text: 'Pencarian telah dikembalikan',
-                timer: 1500,
+                title: 'Filter direset',
+                timer: 1200,
                 showConfirmButton: false
             });
         }
-
-        // Ekspor Data ke Excel
-        function eksporData() {
-            const rows = [];
-            const headers = ['No', 'Nama Kas', 'Aktif', 'Simpanan', 'Penarikan', 'Pinjaman', 'Angsuran', 'Pemasukan Kas', 'Pengeluaran Kas', 'Transfer Kas'];
-            rows.push(headers);
-
-            table.rows({ search: 'applied' }).every(function () {
-                const row = this.node();
-                const no = this.index() + 1;
-                const nama = row.getAttribute('data-nama');
-                const aktif = row.getAttribute('data-aktif');
-                const simpan = row.getAttribute('data-simpan');
-                const penarikan = row.getAttribute('data-penarikan');
-                const pinjaman = row.getAttribute('data-pinjaman');
-                const bayar = row.getAttribute('data-bayar');
-                const pemasukan = row.getAttribute('data-pemasukan');
-                const pengeluaran = row.getAttribute('data-pengeluaran');
-                const transfer = row.getAttribute('data-transfer');
-
-                rows.push([no, nama, aktif, simpan, penarikan, pinjaman, bayar, pemasukan, pengeluaran, transfer]);
-            });
-
-            let csvContent = '\ufeff';
-            csvContent += rows.map(row => row.join(',')).join('\n');
-
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            const url = URL.createObjectURL(blob);
-
-            const tanggal = new Date().toISOString().slice(0, 10);
-            link.setAttribute('href', url);
-            link.setAttribute('download', `Data_Kas_${tanggal}.csv`);
-            link.style.visibility = 'hidden';
-
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-
-            Swal.fire({
-                icon: 'success',
-                title: 'Export Berhasil',
-                text: 'File CSV akan segera diunduh',
-                timer: 1500,
-                showConfirmButton: false
-            });
-        }
-
-        // Cetak Laporan
+       
+        // CETAK & EXPORT (SERVER SIDE)
         function cetakLaporan() {
-            window.print();
+            window.location.href = "{{ route('master.data-kas.cetak') }}";
+        }
+
+        function eksporData() {
+            window.location.href = "{{ route('master.data-kas.export') }}";
         }
     </script>
+
 @endpush

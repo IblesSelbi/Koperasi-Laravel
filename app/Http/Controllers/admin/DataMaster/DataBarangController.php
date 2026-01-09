@@ -3,99 +3,76 @@
 namespace App\Http\Controllers\Admin\DataMaster;
 
 use App\Http\Controllers\Controller;
+use App\Models\Admin\DataBarang;
 use Illuminate\Http\Request;
 
 class DataBarangController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index(Request $request)
+    public function index()
     {
-        // Dummy data barang
-        $dataBarang = collect([
-            (object)[
-                'id' => 4,
-                'nama_barang' => 'Pinjaman Uang',
-                'type' => 'Uang',
-                'merk' => '-',
-                'harga' => 10000000,
-                'jumlah' => 101,
-                'keterangan' => '',
-            ],
-            (object)[
-                'id' => 6,
-                'nama_barang' => 'Pinjaman Dana Tunai',
-                'type' => 'Uang',
-                'merk' => '-',
-                'harga' => 0,
-                'jumlah' => 0,
-                'keterangan' => '-',
-            ],
-            (object)[
-                'id' => 7,
-                'nama_barang' => 'HP Infinix Note 30 8/256 GB',
-                'type' => 'Barang',
-                'merk' => 'Infinix',
-                'harga' => 2600000,
-                'jumlah' => 3,
-                'keterangan' => 'Hp',
-            ],
-        ]);
+        $dataBarang = DataBarang::orderBy('id', 'desc')->get();
 
-        $notifications = collect([
-            (object)[
-                'nama' => 'Hartati',
-                'tanggal_jatuh_tempo' => '2025-06-16',
-                'sisa_tagihan' => 1575000,
-            ]
-        ]);
-
-        return view('admin.DataMaster.DataBarang.DataBarang', compact('dataBarang', 'notifications'));
+        return view(
+            'admin.DataMaster.DataBarang.DataBarang',
+            compact('dataBarang')
+        );
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        // TODO: Implement store logic
-        return response()->json(['success' => true, 'message' => 'Data berhasil ditambahkan']);
+        $data = $request->validate([
+            'nama_barang' => 'required|string|max:255',
+            'type' => 'nullable|string|max:50',
+            'merk' => 'nullable|string|max:50',
+            'harga' => 'required|numeric|min:0',
+            'jumlah' => 'required|integer|min:0',
+            'keterangan' => 'nullable|string',
+        ]);
+
+        DataBarang::create($data);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data barang berhasil ditambahkan'
+        ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, $id)
     {
-        // TODO: Implement update logic
-        return response()->json(['success' => true, 'message' => 'Data berhasil diubah']);
+        $data = $request->validate([
+            'nama_barang' => 'required|string|max:255',
+            'type' => 'nullable|string|max:50',
+            'merk' => 'nullable|string|max:50',
+            'harga' => 'required|numeric|min:0',
+            'jumlah' => 'required|integer|min:0',
+            'keterangan' => 'nullable|string',
+        ]);
+
+        DataBarang::findOrFail($id)->update($data);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data barang berhasil diperbarui'
+        ]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy($id)
     {
-        // TODO: Implement delete logic
-        return response()->json(['success' => true, 'message' => 'Data berhasil dihapus']);
+        DataBarang::findOrFail($id)->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data barang berhasil dihapus'
+        ]);
     }
 
-    /**
-     * Export data to Excel
-     */
     public function export()
     {
-        // TODO: Implement Excel export
         return response('Export Excel Data Barang');
     }
 
-    /**
-     * Print report
-     */
     public function cetak()
     {
-        // TODO: Implement print view
         return response('Cetak Laporan Data Barang');
     }
 }

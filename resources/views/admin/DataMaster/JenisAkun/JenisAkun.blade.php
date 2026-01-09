@@ -1,11 +1,8 @@
 @extends('layouts.app')
 
-@section('title', 'Master Data - Jenis Akun Transaksi')
+@section('title', 'Master Data - Jenis Akun')
 
 @push('styles')
-    <!-- DataTables CSS -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css">
 @endpush
 
 @section('content')
@@ -14,8 +11,8 @@
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <h4 class="fw-semibold mb-1">Master Data - Jenis Akun Transaksi</h4>
-                    <p class="text-muted fs-3 mb-0">Kelola data jenis akun transaksi koperasi</p>
+                    <h4 class="fw-semibold mb-1">Master Data - Jenis Akun</h4>
+                    <p class="text-muted fs-3 mb-0">Kelola data jenis akun koperasi</p>
                 </div>
             </div>
         </div>
@@ -92,11 +89,11 @@
                     </thead>
                     <tbody>
                         @foreach($jenisAkun as $index => $item)
-                            <tr data-id="{{ $item->id }}" data-kd="{{ $item->kd_aktiva }}" data-jns="{{ $item->jns_transaksi }}"
-                                data-akun="{{ $item->akun }}" data-pemasukan="{{ $item->pemasukan }}"
-                                data-pengeluaran="{{ $item->pengeluaran }}" data-aktif="{{ $item->aktif }}"
-                                data-laba="{{ $item->laba_rugi }}">
-                                <td class="text-center text-muted fw-medium">{{ $index + 1 }}</td>
+                            <tr data-id="{{ $item->id }}" data-kd="{{ $item->kd_aktiva }}"
+                                data-jns="{{ $item->jns_transaksi }}" data-akun="{{ $item->akun }}"
+                                data-pemasukan="{{ $item->pemasukan }}" data-pengeluaran="{{ $item->pengeluaran }}"
+                                data-aktif="{{ $item->aktif }}" data-laba="{{ $item->laba_rugi }}">
+                                <td class="text-center text-muted fw-medium"></td>
                                 <td>
                                     <span class="badge bg-primary-subtle text-primary fw-semibold">{{ $item->kd_aktiva }}</span>
                                 </td>
@@ -107,31 +104,22 @@
                                     <span class="badge bg-info-subtle text-info">{{ $item->akun }}</span>
                                 </td>
                                 <td class="text-center">
-                                    @if($item->pemasukan == 'Y')
-                                        <span class="badge bg-success-subtle text-success fw-semibold px-3 py-1">Y</span>
-                                    @elseif($item->pemasukan == 'N')
-                                        <span class="badge bg-danger-subtle text-danger fw-semibold px-3 py-1">N</span>
-                                    @else
-                                        -
-                                    @endif
+                                    <span
+                                        class="badge bg-{{ $item->pemasukan == 'Y' ? 'success' : 'danger' }}-subtle text-{{ $item->pemasukan == 'Y' ? 'success' : 'danger' }} fw-semibold px-3 py-1">
+                                        {{ $item->pemasukan }}
+                                    </span>
                                 </td>
                                 <td class="text-center">
-                                    @if($item->pengeluaran == 'Y')
-                                        <span class="badge bg-success-subtle text-success fw-semibold px-3 py-1">Y</span>
-                                    @elseif($item->pengeluaran == 'N')
-                                        <span class="badge bg-danger-subtle text-danger fw-semibold px-3 py-1">N</span>
-                                    @else
-                                        -
-                                    @endif
+                                    <span
+                                        class="badge bg-{{ $item->pengeluaran == 'Y' ? 'success' : 'danger' }}-subtle text-{{ $item->pengeluaran == 'Y' ? 'success' : 'danger' }} fw-semibold px-3 py-1">
+                                        {{ $item->pengeluaran }}
+                                    </span>
                                 </td>
                                 <td class="text-center">
-                                    @if($item->aktif == 'Y')
-                                        <span class="badge bg-success-subtle text-success fw-semibold px-3 py-1">Y</span>
-                                    @elseif($item->aktif == 'N')
-                                        <span class="badge bg-danger-subtle text-danger fw-semibold px-3 py-1">N</span>
-                                    @else
-                                        -
-                                    @endif
+                                    <span
+                                        class="badge bg-{{ $item->aktif == 'Y' ? 'success' : 'danger' }}-subtle text-{{ $item->aktif == 'Y' ? 'success' : 'danger' }} fw-semibold px-3 py-1">
+                                        {{ $item->aktif }}
+                                    </span>
                                 </td>
                                 <td class="text-center">
                                     @if($item->laba_rugi)
@@ -166,18 +154,18 @@
                 </div>
                 <div class="modal-body">
                     <form id="formJenisAkun">
-                        <input type="hidden" id="dataId">
-
+                        @csrf
+                        <input type="hidden" id="editId" value="">
                         <div class="mb-3">
                             <label class="form-label">Kode Aktiva <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="kdAktiva" maxlength="5" required>
+                            <input type="text" class="form-control" id="kdAktiva" placeholder="Masukkan kode aktiva"
+                                maxlength="10" required>
                         </div>
-
                         <div class="mb-3">
                             <label class="form-label">Jenis Transaksi <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="jnsTransaksi" maxlength="50" required>
+                            <input type="text" class="form-control" id="jnsTransaksi" placeholder="Masukkan jenis transaksi"
+                                maxlength="100" required>
                         </div>
-
                         <div class="mb-3">
                             <label class="form-label">Akun <span class="text-danger">*</span></label>
                             <select class="form-select" id="akun" required>
@@ -186,34 +174,27 @@
                                 <option value="Pasiva">Pasiva</option>
                             </select>
                         </div>
-
                         <div class="mb-3">
                             <label class="form-label">Pemasukan <span class="text-danger">*</span></label>
                             <select class="form-select" id="pemasukan" required>
-                                <option value="">-- Pilih --</option>
-                                <option value="Y">Y</option>
-                                <option value="N">N</option>
+                                <option value="Y" selected>Y</option>
+                                <option value="T">T</option>
                             </select>
                         </div>
-
                         <div class="mb-3">
                             <label class="form-label">Pengeluaran <span class="text-danger">*</span></label>
                             <select class="form-select" id="pengeluaran" required>
-                                <option value="">-- Pilih --</option>
-                                <option value="Y">Y</option>
-                                <option value="N">N</option>
+                                <option value="Y" selected>Y</option>
+                                <option value="T">T</option>
                             </select>
                         </div>
-
                         <div class="mb-3">
                             <label class="form-label">Aktif <span class="text-danger">*</span></label>
                             <select class="form-select" id="aktif" required>
-                                <option value="">-- Pilih --</option>
-                                <option value="Y">Y</option>
-                                <option value="N">N</option>
+                                <option value="Y" selected>Y</option>
+                                <option value="T">T</option>
                             </select>
                         </div>
-
                         <div class="mb-3">
                             <label class="form-label">Laba Rugi</label>
                             <select class="form-select" id="labaRugi">
@@ -222,7 +203,6 @@
                                 <option value="BIAYA">BIAYA</option>
                             </select>
                         </div>
-
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -237,253 +217,182 @@
 @endsection
 
 @push('scripts')
-    <!-- DataTables -->
-    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.bootstrap5.min.js"></script>
-
-    <!-- SweetAlert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        // Initialize DataTable
         let table;
+
+        // ===============================
+        // INIT DATATABLE
+        // ===============================
         $(document).ready(function () {
             table = $('#tabelJenisAkun').DataTable({
-                ordering: false,
                 language: {
-                    url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/id.json'
+                    url: "{{ asset('assets/datatables/i18n/id.json') }}"
                 },
                 pageLength: 10,
+                order: [],
                 columnDefs: [
-                    { orderable: false, targets: '_all' }
-                ],
-                drawCallback: function () {
-                    const api = this.api();
-                    const startIndex = api.context[0]._iDisplayStart;
-                    api.column(0, { page: 'current' }).nodes().each(function (cell, i) {
-                        cell.innerHTML = startIndex + i + 1;
-                    });
-                }
+                    { orderable: false, targets: [0, 8] }
+                ]
             });
+
+            // 🔥 FIX NOMOR AGAR SELALU URUT
+            table.on('order.dt search.dt draw.dt', function () {
+                table.column(0, { search: 'applied', order: 'applied' })
+                    .nodes()
+                    .each(function (cell, i) {
+                        cell.innerHTML = i + 1;
+                    });
+            }).draw();
         });
 
-        // Tambah Data
+        // ===============================
+        // TAMBAH DATA
+        // ===============================
         function tambahData() {
-            document.getElementById('modalTitle').textContent = 'Tambah Jenis Akun';
+            document.getElementById('modalTitle').innerText = 'Tambah Jenis Akun';
             document.getElementById('formJenisAkun').reset();
-            document.getElementById('dataId').value = '';
+            document.getElementById('editId').value = '';
+            document.getElementById('aktif').value = 'Y';
 
-            const modal = new bootstrap.Modal(document.getElementById('modalForm'), {
+            new bootstrap.Modal(document.getElementById('modalForm'), {
                 backdrop: 'static',
                 keyboard: false
-            });
-            modal.show();
+            }).show();
         }
 
-        // Edit Data
-        function editData(button) {
-            const row = button.closest('tr');
-            const id = row.getAttribute('data-id');
+        // ===============================
+        // EDIT DATA
+        // ===============================
+        function editData(btn) {
+            const row = btn.closest('tr');
 
-            document.getElementById('modalTitle').textContent = 'Edit Jenis Akun';
-            document.getElementById('dataId').value = id;
+            document.getElementById('modalTitle').innerText = 'Ubah Jenis Akun';
+            document.getElementById('editId').value = row.dataset.id;
+            document.getElementById('kdAktiva').value = row.dataset.kd;
+            document.getElementById('jnsTransaksi').value = row.dataset.jns;
+            document.getElementById('akun').value = row.dataset.akun;
+            document.getElementById('pemasukan').value = row.dataset.pemasukan;
+            document.getElementById('pengeluaran').value = row.dataset.pengeluaran;
+            document.getElementById('aktif').value = row.dataset.aktif;
+            document.getElementById('labaRugi').value = row.dataset.laba;
 
-            document.getElementById('kdAktiva').value = row.getAttribute('data-kd');
-            document.getElementById('jnsTransaksi').value = row.getAttribute('data-jns');
-            document.getElementById('akun').value = row.getAttribute('data-akun');
-            document.getElementById('pemasukan').value = row.getAttribute('data-pemasukan');
-            document.getElementById('pengeluaran').value = row.getAttribute('data-pengeluaran');
-            document.getElementById('aktif').value = row.getAttribute('data-aktif');
-            document.getElementById('labaRugi').value = row.getAttribute('data-laba');
-
-            const modal = new bootstrap.Modal(document.getElementById('modalForm'), {
+            new bootstrap.Modal(document.getElementById('modalForm'), {
                 backdrop: 'static',
                 keyboard: false
-            });
-            modal.show();
+            }).show();
         }
 
-        // Hapus Data
-        function hapusData(button) {
-            Swal.fire({
-                title: 'Konfirmasi Hapus',
-                text: 'Apakah Anda yakin ingin menghapus data ini?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Ya, Hapus!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    const row = button.closest('tr');
-                    table.row(row).remove().draw();
-
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Terhapus!',
-                        text: 'Data berhasil dihapus',
-                        timer: 1500,
-                        showConfirmButton: false
-                    });
-                }
-            });
-        }
-
-        // Simpan Data
+        // ===============================
+        // SIMPAN DATA (ADD & UPDATE)
+        // ===============================
         function simpanData() {
-            const form = document.getElementById('formJenisAkun');
-            if (!form.checkValidity()) {
-                form.reportValidity();
-                return;
-            }
-
-            const dataId = document.getElementById('dataId').value;
-            const kdAktiva = document.getElementById('kdAktiva').value;
-            const jnsTransaksi = document.getElementById('jnsTransaksi').value;
+            const id = document.getElementById('editId').value;
+            const kd_aktiva = document.getElementById('kdAktiva').value;
+            const jns_transaksi = document.getElementById('jnsTransaksi').value;
             const akun = document.getElementById('akun').value;
             const pemasukan = document.getElementById('pemasukan').value;
             const pengeluaran = document.getElementById('pengeluaran').value;
             const aktif = document.getElementById('aktif').value;
-            const labaRugi = document.getElementById('labaRugi').value;
+            const laba_rugi = document.getElementById('labaRugi').value;
 
-            if (dataId) {
-                // Update existing row
-                const rows = document.querySelectorAll('#tabelJenisAkun tbody tr');
-                rows.forEach(row => {
-                    if (row.getAttribute('data-id') === dataId) {
-                        row.setAttribute('data-kd', kdAktiva);
-                        row.setAttribute('data-jns', jnsTransaksi);
-                        row.setAttribute('data-akun', akun);
-                        row.setAttribute('data-pemasukan', pemasukan);
-                        row.setAttribute('data-pengeluaran', pengeluaran);
-                        row.setAttribute('data-aktif', aktif);
-                        row.setAttribute('data-laba', labaRugi);
+            const url = id
+                ? `/admin/jenis-akun/${id}`
+                : `/admin/jenis-akun`;
 
-                        row.cells[1].innerHTML = `<span class="badge bg-primary-subtle text-primary fw-semibold">${kdAktiva}</span>`;
-                        row.cells[2].innerHTML = `<div class="fw-semibold text-dark">${jnsTransaksi}</div>`;
-                        row.cells[3].innerHTML = `<span class="badge bg-info-subtle text-info">${akun}</span>`;
-                        row.cells[4].innerHTML = pemasukan ? `<span class="badge bg-${pemasukan === 'Y' ? 'success' : 'danger'}-subtle text-${pemasukan === 'Y' ? 'success' : 'danger'} fw-semibold px-3 py-1">${pemasukan}</span>` : '-';
-                        row.cells[5].innerHTML = pengeluaran ? `<span class="badge bg-${pengeluaran === 'Y' ? 'success' : 'danger'}-subtle text-${pengeluaran === 'Y' ? 'success' : 'danger'} fw-semibold px-3 py-1">${pengeluaran}</span>` : '-';
-                        row.cells[6].innerHTML = aktif ? `<span class="badge bg-${aktif === 'Y' ? 'success' : 'danger'}-subtle text-${aktif === 'Y' ? 'success' : 'danger'} fw-semibold px-3 py-1">${aktif}</span>` : '-';
-                        row.cells[7].innerHTML = labaRugi ? `<span class="badge bg-warning-subtle text-warning fw-semibold">${labaRugi}</span>` : '-';
-                    }
+            fetch(url, {
+                method: id ? 'PUT' : 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    kd_aktiva,
+                    jns_transaksi,
+                    akun,
+                    pemasukan,
+                    pengeluaran,
+                    aktif,
+                    laba_rugi
+                })
+            })
+                .then(res => res.json())
+                .then(res => {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil',
+                        text: res.message,
+                        timer: 1500,
+                        showConfirmButton: false
+                    }).then(() => location.reload());
+                })
+                .catch(() => {
+                    Swal.fire('Error', 'Gagal menyimpan data', 'error');
                 });
-
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Berhasil!',
-                    text: 'Data berhasil diubah',
-                    timer: 1500,
-                    showConfirmButton: false
-                });
-            } else {
-                // Add new row
-                const newRow = `
-                            <tr data-id="${Date.now()}" data-kd="${kdAktiva}" data-jns="${jnsTransaksi}" data-akun="${akun}" data-pemasukan="${pemasukan}" data-pengeluaran="${pengeluaran}" data-aktif="${aktif}" data-laba="${labaRugi}">
-                                <td class="text-center text-muted fw-medium"></td>
-                                <td><span class="badge bg-primary-subtle text-primary fw-semibold">${kdAktiva}</span></td>
-                                <td><div class="fw-semibold text-dark">${jnsTransaksi}</div></td>
-                                <td><span class="badge bg-info-subtle text-info">${akun}</span></td>
-                                <td class="text-center">${pemasukan ? `<span class="badge bg-${pemasukan === 'Y' ? 'success' : 'danger'}-subtle text-${pemasukan === 'Y' ? 'success' : 'danger'} fw-semibold px-3 py-1">${pemasukan}</span>` : '-'}</td>
-                                <td class="text-center">${pengeluaran ? `<span class="badge bg-${pengeluaran === 'Y' ? 'success' : 'danger'}-subtle text-${pengeluaran === 'Y' ? 'success' : 'danger'} fw-semibold px-3 py-1">${pengeluaran}</span>` : '-'}</td>
-                                <td class="text-center">${aktif ? `<span class="badge bg-${aktif === 'Y' ? 'success' : 'danger'}-subtle text-${aktif === 'Y' ? 'success' : 'danger'} fw-semibold px-3 py-1">${aktif}</span>` : '-'}</td>
-                                <td class="text-center">${labaRugi ? `<span class="badge bg-warning-subtle text-warning fw-semibold">${labaRugi}</span>` : '-'}</td>
-                                <td class="text-center">
-                                    <button class="btn btn-sm btn-warning me-1" onclick="editData(this)" title="Edit">
-                                        <i class="ti ti-edit"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-danger" onclick="hapusData(this)" title="Hapus">
-                                        <i class="ti ti-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        `;
-                table.row.add($(newRow)).draw();
-
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Berhasil!',
-                    text: 'Data berhasil ditambahkan',
-                    timer: 1500,
-                    showConfirmButton: false
-                });
-            }
-
-            const modal = bootstrap.Modal.getInstance(document.getElementById('modalForm'));
-            modal.hide();
         }
 
-        // Cari Data
+        // ===============================
+        // HAPUS DATA
+        // ===============================
+        function hapusData(btn) {
+            const id = btn.closest('tr').dataset.id;
+
+            Swal.fire({
+                title: 'Yakin hapus?',
+                text: 'Data tidak bisa dikembalikan',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, hapus',
+                cancelButtonText: 'Batal'
+            }).then(result => {
+                if (result.isConfirmed) {
+                    fetch(`/admin/jenis-akun/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        }
+                    })
+                        .then(res => res.json())
+                        .then(res => {
+                            Swal.fire('Terhapus!', res.message, 'success')
+                                .then(() => location.reload());
+                        });
+                }
+            });
+        }
+
+        // ===============================
+        // CARI DATA
+        // ===============================
         function cariData() {
-            const search = document.getElementById('searchInput').value;
-            table.search(search).draw();
+            table.search(document.getElementById('searchInput').value).draw();
         }
 
-        // Reset Filter
+        // ===============================
+        // RESET FILTER
+        // ===============================
         function resetFilter() {
             document.getElementById('searchInput').value = '';
             table.search('').draw();
 
             Swal.fire({
                 icon: 'info',
-                title: 'Filter Direset',
-                text: 'Pencarian telah dikembalikan',
-                timer: 1500,
+                title: 'Filter direset',
+                timer: 1200,
                 showConfirmButton: false
             });
         }
 
-        // Ekspor Data
-        function eksporData() {
-            const rows = [];
-            const headers = ['No', 'Kode Aktiva', 'Jenis Transaksi', 'Akun', 'Pemasukan', 'Pengeluaran', 'Aktif', 'Laba Rugi'];
-            rows.push(headers);
-
-            table.rows({ search: 'applied' }).every(function () {
-                const row = this.node();
-                const no = this.index() + 1;
-                const kd = row.getAttribute('data-kd');
-                const jns = row.getAttribute('data-jns');
-                const akun = row.getAttribute('data-akun');
-                const pemasukan = row.getAttribute('data-pemasukan');
-                const pengeluaran = row.getAttribute('data-pengeluaran');
-                const aktif = row.getAttribute('data-aktif');
-                const laba = row.getAttribute('data-laba');
-
-                rows.push([no, kd, jns, akun, pemasukan, pengeluaran, aktif, laba]);
-            });
-
-            let csvContent = '\ufeff';
-            csvContent += rows.map(row => row.join(',')).join('\n');
-
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            const url = URL.createObjectURL(blob);
-
-            const tanggal = new Date().toISOString().slice(0, 10);
-            link.setAttribute('href', url);
-            link.setAttribute('download', `Jenis_Akun_${tanggal}.csv`);
-            link.style.visibility = 'hidden';
-
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-
-            Swal.fire({
-                icon: 'success',
-                title: 'Export Berhasil',
-                text: 'File CSV akan segera diunduh',
-                timer: 1500,
-                showConfirmButton: false
-            });
-        }
-
-        // Cetak Laporan
+        // ===============================
+        // CETAK & EXPORT (SERVER SIDE)
+        // ===============================
         function cetakLaporan() {
-            window.print();
+            window.location.href = "{{ route('master.jenis-akun.cetak') }}";
+        }
+
+        function eksporData() {
+            window.location.href = "{{ route('master.jenis-akun.export') }}";
         }
     </script>
+
 @endpush

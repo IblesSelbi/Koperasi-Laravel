@@ -11,9 +11,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Dashboard') - Sistem Koperasi Akeno</title>
+
+    <!-- Favicon -->
     <link rel="shortcut icon" type="image/png" href="{{ asset('assets/images/logos/logoAkeno-no-name.png') }}" />
-    <link rel="stylesheet" href="{{ asset('assets/css/styles.min.css') }}" />
-    
+
+    <!-- CSS Lokal -->
+    <link rel="stylesheet" href="{{ asset('assets/bootstrap/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/styles.min.css') }}">
+
+    <!-- CSS Lokal DataTables -->
+    <link rel="stylesheet" href="{{ asset('assets/datatables/css/dataTables.bootstrap5.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/datatables/css/dataTables.buttons.bootstrap5.min.css') }}">
+
+    <!-- Styles tambahan dari halaman lain -->
+    @stack('styles')
+
     @if(!$isAdmin)
         <style>
             .body-wrapper.beranda-user {
@@ -52,8 +64,6 @@
             }
         </style>
     @endif
-    
-    @stack('styles')
 </head>
 
 <body>
@@ -109,15 +119,25 @@
         </div>
     </div>
 
+    <!-- JS Lokal -->
     <script src="{{ asset('assets/libs/jquery/dist/jquery.min.js') }}"></script>
-    <script src="{{ asset('assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js') }}"></script>
-    
+    <script src="{{ asset('assets/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+
     @if($isAdmin)
         <script src="{{ asset('assets/js/sidebarmenu.js') }}"></script>
         <script src="{{ asset('assets/js/app.min.js') }}"></script>
         <script src="{{ asset('assets/libs/simplebar/dist/simplebar.js') }}"></script>
     @endif
-    
+
+    <!-- DataTables -->
+    <script src="{{ asset('assets/datatables/js/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('assets/datatables/js/dataTables.bootstrap5.min.js') }}"></script>
+    <script src="{{ asset('assets/datatables/js/dataTables.buttons.min.js') }}"></script>
+    <script src="{{ asset('assets/datatables/js/buttons.bootstrap5.min.js') }}"></script>
+
+    <!-- SweetAlert2 -->
+    <script src="{{ asset('assets/sweetalert/sweetalert2.min.js') }}"></script>
+
     <script>
         // Update Jam Real-time
         function updateJam() {
@@ -133,7 +153,8 @@
         setInterval(updateJam, 1000);
         updateJam();
     </script>
-    
+
+    <!-- Scripts tambahan dari halaman lain -->
     @stack('scripts')
 </body>
 

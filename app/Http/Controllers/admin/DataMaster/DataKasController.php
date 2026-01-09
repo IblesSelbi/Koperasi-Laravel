@@ -1,109 +1,84 @@
 <?php
 
 namespace App\Http\Controllers\Admin\DataMaster;
+
 use App\Http\Controllers\Controller;
+use App\Models\Admin\DataKas;
 use Illuminate\Http\Request;
 
 class DataKasController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index(Request $request)
+    public function index()
     {
-        // Dummy data kas
-        $dataKas = collect([
-            (object)[
-                'id' => 1,
-                'nama_kas' => 'Kas Tunai',
-                'aktif' => 'Y',
-                'simpanan' => 'Y',
-                'penarikan' => 'Y',
-                'pinjaman' => 'Y',
-                'angsuran' => 'Y',
-                'pemasukan_kas' => 'Y',
-                'pengeluaran_kas' => 'Y',
-                'transfer_kas' => 'Y',
-            ],
-            (object)[
-                'id' => 2,
-                'nama_kas' => 'Kas Besar',
-                'aktif' => 'Y',
-                'simpanan' => 'T',
-                'penarikan' => 'T',
-                'pinjaman' => 'Y',
-                'angsuran' => 'T',
-                'pemasukan_kas' => 'Y',
-                'pengeluaran_kas' => 'Y',
-                'transfer_kas' => 'Y',
-            ],
-            (object)[
-                'id' => 3,
-                'nama_kas' => 'Transfer',
-                'aktif' => 'Y',
-                'simpanan' => 'T',
-                'penarikan' => 'T',
-                'pinjaman' => 'T',
-                'angsuran' => 'T',
-                'pemasukan_kas' => 'Y',
-                'pengeluaran_kas' => 'Y',
-                'transfer_kas' => 'Y',
-            ],
-        ]);
+        $dataKas = DataKas::orderBy('id', 'desc')->get();
 
-        $notifications = collect([
-            (object)[
-                'nama' => 'Hartati',
-                'tanggal_jatuh_tempo' => '2025-06-16',
-                'sisa_tagihan' => 1575000,
-            ]
-        ]);
-
-        return view('admin.DataMaster.DataKas.DataKas', compact('dataKas', 'notifications'));
+        return view(
+            'admin.DataMaster.DataKas.DataKas',
+            compact('dataKas')
+        );
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        // TODO: Implement store logic
-        return response()->json(['success' => true, 'message' => 'Data berhasil ditambahkan']);
+        $data = $request->validate([
+            'nama_kas' => 'required|string|max:225',
+            'aktif' => 'required|in:Y,T',
+            'simpanan' => 'required|in:Y,T',
+            'penarikan' => 'required|in:Y,T',
+            'pinjaman' => 'required|in:Y,T',
+            'angsuran' => 'required|in:Y,T',
+            'pemasukan_kas' => 'required|in:Y,T',
+            'pengeluaran_kas' => 'required|in:Y,T',
+            'transfer_kas' => 'required|in:Y,T',
+        ]);
+
+        DataKas::create($data);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data kas berhasil ditambahkan'
+        ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, $id)
     {
-        // TODO: Implement update logic
-        return response()->json(['success' => true, 'message' => 'Data berhasil diubah']);
+        $data = $request->validate([
+            'nama_kas' => 'required|string|max:225',
+            'aktif' => 'required|in:Y,T',
+            'simpanan' => 'required|in:Y,T',
+            'penarikan' => 'required|in:Y,T',
+            'pinjaman' => 'required|in:Y,T',
+            'angsuran' => 'required|in:Y,T',
+            'pemasukan_kas' => 'required|in:Y,T',
+            'pengeluaran_kas' => 'required|in:Y,T',
+            'transfer_kas' => 'required|in:Y,T',
+        ]);
+
+        DataKas::findOrFail($id)->update($data);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data kas berhasil diperbarui'
+        ]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy($id)
     {
-        // TODO: Implement delete logic
-        return response()->json(['success' => true, 'message' => 'Data berhasil dihapus']);
+        DataKas::findOrFail($id)->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data kas berhasil dihapus'
+        ]);
     }
 
-    /**
-     * Export data to Excel
-     */
     public function export()
     {
-        // TODO: Implement Excel export
         return response('Export Excel Data Kas');
     }
 
-    /**
-     * Print report
-     */
     public function cetak()
     {
-        // TODO: Implement print view
         return response('Cetak Laporan Data Kas');
     }
 }

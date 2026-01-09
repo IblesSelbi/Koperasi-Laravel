@@ -3,9 +3,6 @@
 @section('title', 'Master Data - Lama Angsuran')
 
 @push('styles')
-    <!-- DataTables CSS -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css">
 @endpush
 
 @section('content')
@@ -95,7 +92,7 @@
                             @endphp
                             <tr data-id="{{ $item->id }}" data-lama="{{ $item->lama_angsuran }}"
                                 data-aktif="{{ $item->aktif }}">
-                                <td class="text-center text-muted fw-medium">{{ $index + 1 }}</td>
+                                <td class="text-center text-muted fw-medium"></td>
                                 <td>
                                     <div class="d-flex align-items-center">
                                         <div class="bg-{{ $color }}-subtle text-{{ $color }} rounded-circle d-flex align-items-center justify-content-center"
@@ -139,17 +136,17 @@
                 </div>
                 <div class="modal-body">
                     <form id="formLamaAngsuran">
+                        @csrf
                         <input type="hidden" id="editId" value="">
                         <div class="mb-3">
                             <label class="form-label">Lama Angsuran (Bulan) <span class="text-danger">*</span></label>
-                            <input type="number" class="form-control" id="lamaAngsuran" placeholder="Masukkan lama angsuran"
-                                min="1" max="120" required>
+                            <input type="number" class="form-control" id="lamaAngsuran"
+                                placeholder="Masukkan lama angsuran" min="1" max="120" required>
                             <div class="form-text">Masukkan jumlah bulan (contoh: 3, 6, 12, 24, 36)</div>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Aktif</label>
-                            <select class="form-select" id="aktif">
-                                <option value="">-- Pilih --</option>
+                            <label class="form-label">Aktif <span class="text-danger">*</span></label>
+                            <select class="form-select" id="aktif" required>
                                 <option value="Y" selected>Y</option>
                                 <option value="T">T</option>
                             </select>
@@ -168,254 +165,157 @@
 @endsection
 
 @push('scripts')
-    <!-- DataTables -->
-    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.bootstrap5.min.js"></script>
-
-    <!-- SweetAlert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        // Initialize DataTable
         let table;
+
+        // INIT DATATABLE
         $(document).ready(function () {
             table = $('#tabelLamaAngsuran').DataTable({
-                ordering: false,
                 language: {
-                    url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/id.json'
+                    url: "{{ asset('assets/datatables/i18n/id.json') }}"
                 },
                 pageLength: 10,
+                order: [],
                 columnDefs: [
-                    { orderable: false, targets: '_all' }
-                ],
-                drawCallback: function () {
-                    const api = this.api();
-                    const startIndex = api.context[0]._iDisplayStart;
-                    api.column(0, { page: 'current' }).nodes().each(function (cell, i) {
-                        cell.innerHTML = startIndex + i + 1;
-                    });
-                }
+                    { orderable: false, targets: [0, 3] }
+                ]
             });
+
+            // FIX NOMOR AGAR SELALU URUT
+            table.on('order.dt search.dt draw.dt', function () {
+                table.column(0, { search: 'applied', order: 'applied' })
+                    .nodes()
+                    .each(function (cell, i) {
+                        cell.innerHTML = i + 1;
+                    });
+            }).draw();
         });
 
         // Function untuk mendapatkan warna icon
-        function getIconColor(bulan) {
+        function getIconColor(index) {
             const colors = ['primary', 'info', 'warning', 'success', 'danger', 'secondary'];
-            return colors[Math.floor(Math.random() * colors.length)];
+            return colors[index % colors.length];
         }
 
-        // Tambah Data
+        // TAMBAH DATA
         function tambahData() {
-            document.getElementById('modalTitle').textContent = 'Tambah Lama Angsuran';
+            document.getElementById('modalTitle').innerText = 'Tambah Lama Angsuran';
             document.getElementById('formLamaAngsuran').reset();
             document.getElementById('editId').value = '';
             document.getElementById('aktif').value = 'Y';
 
-            const modal = new bootstrap.Modal(document.getElementById('modalForm'), {
+            new bootstrap.Modal(document.getElementById('modalForm'), {
                 backdrop: 'static',
                 keyboard: false
-            });
-            modal.show();
+            }).show();
         }
 
-        // Edit Data
+        // EDIT DATA
         function editData(btn) {
             const row = btn.closest('tr');
-            const id = row.getAttribute('data-id');
-            const lama = row.getAttribute('data-lama');
-            const aktif = row.getAttribute('data-aktif');
 
-            document.getElementById('modalTitle').textContent = 'Ubah Lama Angsuran';
-            document.getElementById('editId').value = id;
-            document.getElementById('lamaAngsuran').value = lama;
-            document.getElementById('aktif').value = aktif;
+            document.getElementById('modalTitle').innerText = 'Ubah Lama Angsuran';
+            document.getElementById('editId').value = row.dataset.id;
+            document.getElementById('lamaAngsuran').value = row.dataset.lama;
+            document.getElementById('aktif').value = row.dataset.aktif;
 
-            const modal = new bootstrap.Modal(document.getElementById('modalForm'), {
+            new bootstrap.Modal(document.getElementById('modalForm'), {
                 backdrop: 'static',
                 keyboard: false
-            });
-            modal.show();
+            }).show();
         }
 
-        // Simpan Data
+        // SIMPAN DATA (ADD & UPDATE)
         function simpanData() {
-            const form = document.getElementById('formLamaAngsuran');
-            if (!form.checkValidity()) {
-                form.reportValidity();
-                return;
-            }
+            const id = document.getElementById('editId').value;
+            const lama_angsuran = document.getElementById('lamaAngsuran').value;
+            const aktif = document.getElementById('aktif').value;
 
-            const editId = document.getElementById('editId').value;
-            const lamaAngsuran = document.getElementById('lamaAngsuran').value;
-            const aktif = document.getElementById('aktif').value || 'Y';
+            const url = id
+                ? `/admin/lama-angsuran/${id}`
+                : `/admin/lama-angsuran`;
 
-            if (editId) {
-                // Update existing row
-                const rows = document.querySelectorAll('#tabelLamaAngsuran tbody tr');
-                rows.forEach(row => {
-                    if (row.getAttribute('data-id') === editId) {
-                        row.setAttribute('data-lama', lamaAngsuran);
-                        row.setAttribute('data-aktif', aktif);
-
-                        const color = getIconColor(lamaAngsuran);
-
-                        row.cells[1].innerHTML = `
-                                <div class="d-flex align-items-center">
-                                    <div class="bg-${color}-subtle text-${color} rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                                        <i class="ti ti-calendar-time fs-5"></i>
-                                    </div>
-                                    <div class="ms-3">
-                                        <h6 class="mb-0 fw-semibold text-dark">${lamaAngsuran} Bulan</h6>
-                                    </div>
-                                </div>
-                            `;
-                        row.cells[2].innerHTML = `<span class="badge bg-${aktif === 'Y' ? 'success' : 'danger'}-subtle text-${aktif === 'Y' ? 'success' : 'danger'} fw-semibold px-3 py-1">${aktif}</span>`;
-                    }
-                });
-
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Berhasil!',
-                    text: 'Data berhasil diubah',
-                    timer: 1500,
-                    showConfirmButton: false
-                });
-            } else {
-                // Add new row
-                const newId = Date.now();
-                const color = getIconColor(lamaAngsuran);
-
-                const newRow = `
-                        <tr data-id="${newId}" data-lama="${lamaAngsuran}" data-aktif="${aktif}">
-                            <td class="text-center text-muted fw-medium"></td>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <div class="bg-${color}-subtle text-${color} rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                                        <i class="ti ti-calendar-time fs-5"></i>
-                                    </div>
-                                    <div class="ms-3">
-                                        <h6 class="mb-0 fw-semibold text-dark">${lamaAngsuran} Bulan</h6>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="text-center"><span class="badge bg-${aktif === 'Y' ? 'success' : 'danger'}-subtle text-${aktif === 'Y' ? 'success' : 'danger'} fw-semibold px-3 py-1">${aktif}</span></td>
-                            <td class="text-center">
-                                <button class="btn btn-sm btn-warning me-1" onclick="editData(this)" title="Edit">
-                                    <i class="ti ti-edit"></i>
-                                </button>
-                                <button class="btn btn-sm btn-danger" onclick="hapusData(this)" title="Hapus">
-                                    <i class="ti ti-trash"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    `;
-                table.row.add($(newRow)).draw();
-
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Berhasil!',
-                    text: 'Data berhasil ditambahkan',
-                    timer: 1500,
-                    showConfirmButton: false
-                });
-            }
-
-            const modal = bootstrap.Modal.getInstance(document.getElementById('modalForm'));
-            modal.hide();
-        }
-
-        // Hapus Data
-        function hapusData(btn) {
-            Swal.fire({
-                title: 'Konfirmasi Hapus',
-                text: 'Apakah Anda yakin ingin menghapus data ini?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Ya, Hapus!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    const row = btn.closest('tr');
-                    table.row(row).remove().draw();
-
+            fetch(url, {
+                method: id ? 'PUT' : 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    lama_angsuran,
+                    aktif
+                })
+            })
+                .then(res => res.json())
+                .then(res => {
                     Swal.fire({
                         icon: 'success',
-                        title: 'Terhapus!',
-                        text: 'Data berhasil dihapus',
+                        title: 'Berhasil',
+                        text: res.message,
                         timer: 1500,
                         showConfirmButton: false
-                    });
+                    }).then(() => location.reload());
+                })
+                .catch(() => {
+                    Swal.fire('Error', 'Gagal menyimpan data', 'error');
+                });
+        }
+
+        // HAPUS DATA
+        function hapusData(btn) {
+            const id = btn.closest('tr').dataset.id;
+
+            Swal.fire({
+                title: 'Yakin hapus?',
+                text: 'Data tidak bisa dikembalikan',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, hapus',
+                cancelButtonText: 'Batal'
+            }).then(result => {
+                if (result.isConfirmed) {
+                    fetch(`/admin/lama-angsuran/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        }
+                    })
+                        .then(res => res.json())
+                        .then(res => {
+                            Swal.fire('Terhapus!', res.message, 'success')
+                                .then(() => location.reload());
+                        });
                 }
             });
         }
 
-        // Cari Data
+        // CARI DATA
         function cariData() {
-            const search = document.getElementById('searchInput').value;
-            table.search(search).draw();
+            table.search(document.getElementById('searchInput').value).draw();
         }
 
-        // Reset Filter
+        // RESET FILTER
         function resetFilter() {
             document.getElementById('searchInput').value = '';
             table.search('').draw();
 
             Swal.fire({
                 icon: 'info',
-                title: 'Filter Direset',
-                text: 'Pencarian telah dikembalikan',
-                timer: 1500,
+                title: 'Filter direset',
+                timer: 1200,
                 showConfirmButton: false
             });
         }
 
-        // Ekspor Data ke Excel
-        function eksporData() {
-            const rows = [];
-            const headers = ['No', 'Lama Angsuran (Bulan)', 'Aktif'];
-            rows.push(headers);
-
-            table.rows({ search: 'applied' }).every(function () {
-                const row = this.node();
-                const no = this.index() + 1;
-                const lama = row.getAttribute('data-lama');
-                const aktif = row.getAttribute('data-aktif');
-
-                rows.push([no, lama, aktif]);
-            });
-
-            let csvContent = '\ufeff';
-            csvContent += rows.map(row => row.join(',')).join('\n');
-
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            const url = URL.createObjectURL(blob);
-
-            const tanggal = new Date().toISOString().slice(0, 10);
-            link.setAttribute('href', url);
-            link.setAttribute('download', `Lama_Angsuran_${tanggal}.csv`);
-            link.style.visibility = 'hidden';
-
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-
-            Swal.fire({
-                icon: 'success',
-                title: 'Export Berhasil',
-                text: 'File CSV akan segera diunduh',
-                timer: 1500,
-                showConfirmButton: false
-            });
-        }
-
-        // Cetak Laporan
+        // CETAK & EXPORT (SERVER SIDE)
         function cetakLaporan() {
-            window.print();
+            window.location.href = "{{ route('master.lama-angsuran.cetak') }}";
+        }
+
+        function eksporData() {
+            window.location.href = "{{ route('master.lama-angsuran.export') }}";
         }
     </script>
+
 @endpush

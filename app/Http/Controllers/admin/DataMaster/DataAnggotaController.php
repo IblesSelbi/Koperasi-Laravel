@@ -3,162 +3,296 @@
 namespace App\Http\Controllers\Admin\DataMaster;
 
 use App\Http\Controllers\Controller;
+use App\Models\Admin\DataAnggota;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class DataAnggotaController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index(Request $request)
+    public function index()
     {
-        // Dummy data anggota
-        $dataAnggota = collect([
-            (object)[
-                'id' => 1,
-                'photo' => 'assets/images/profile/user-1.jpg',
-                'id_anggota' => 'AG0001',
-                'username' => 'member1',
-                'nama' => 'Faisal',
-                'jenis_kelamin' => 'Laki-laki',
-                'tempat_lahir' => 'Jakarta',
-                'tanggal_lahir' => '1995-05-07',
-                'status' => 'Belum Kawin',
-                'departement' => 'Produksi BOPP',
-                'pekerjaan' => 'Lainnya',
-                'agama' => 'Islam',
-                'alamat' => 'Duren Sawit, Jakarta Timur',
-                'kota' => 'Jakarta',
-                'no_telp' => '089533222331',
-                'tanggal_registrasi' => '2023-05-11',
-                'jabatan' => 'Anggota',
-                'aktif' => 'Aktif',
-            ],
-            (object)[
-                'id' => 2,
-                'photo' => 'assets/images/profile/user-2.jpg',
-                'id_anggota' => 'AG0011',
-                'username' => 'cahyadi001',
-                'nama' => 'Cahyadi',
-                'jenis_kelamin' => 'Laki-laki',
-                'tempat_lahir' => 'Cirebon',
-                'tanggal_lahir' => '1990-03-15',
-                'status' => 'Kawin',
-                'departement' => '',
-                'pekerjaan' => 'Karyawan Swasta',
-                'agama' => 'Islam',
-                'alamat' => 'Jl Swasembada No 69 Kota Cirebon',
-                'kota' => 'Cirebon',
-                'no_telp' => '081234567890',
-                'tanggal_registrasi' => '2024-06-24',
-                'jabatan' => 'Anggota',
-                'aktif' => 'Aktif',
-            ],
-        ]);
+        $dataAnggota = DataAnggota::orderBy('id', 'desc')->get();
 
-        $notifications = collect([
-            (object)[
-                'nama' => 'Hartati',
-                'tanggal_jatuh_tempo' => '2025-06-16',
-                'sisa_tagihan' => 1575000,
-            ]
-        ]);
-
-        return view('admin.DataMaster.DataAnggota.DataAnggota', compact('dataAnggota', 'notifications'));
+        return view('admin.DataMaster.DataAnggota.DataAnggota', compact('dataAnggota'));
     }
 
-    /**
-     * Show the import page
-     */
-    public function showImport()
+    public function edit($id)
     {
-        $notifications = collect([
-            (object)[
-                'nama' => 'Hartati',
-                'tanggal_jatuh_tempo' => '2025-06-16',
-                'sisa_tagihan' => 1575000,
-            ]
-        ]);
+        $anggota = DataAnggota::findOrFail($id);
 
-        // Dummy data hasil import (untuk contoh tampilan)
-        $hasilImport = collect([
-            (object)[
-                'no' => 1,
-                'status' => 'success',
-                'id_anggota' => 'AG0012',
-                'username' => 'member_contoh',
-                'nama' => 'Nama Contoh',
-                'jenis_kelamin' => 'Laki-laki',
-                'alamat' => 'Jl. Contoh No. 123',
-                'kota' => 'Jakarta',
-                'jabatan' => 'Anggota',
-                'keterangan' => 'Berhasil diimport'
-            ],
-            (object)[
-                'no' => 2,
-                'status' => 'failed',
-                'id_anggota' => 'AG0013',
-                'username' => '',
-                'nama' => 'Test User',
-                'jenis_kelamin' => '',
-                'alamat' => 'Jl. Test',
-                'kota' => 'Bandung',
-                'jabatan' => 'Anggota',
-                'keterangan' => 'Username kosong, Jenis kelamin kosong'
-            ],
-        ]);
+        return response()->json([
+            'id' => $anggota->id,
+            'nama' => $anggota->nama,
+            'username' => $anggota->username,
+            'jenis_kelamin' => $anggota->jenis_kelamin,
+            'tempat_lahir' => $anggota->tempat_lahir,
 
-        return view('admin.DataMaster.DataAnggota.ImportAnggota', compact('notifications', 'hasilImport'));
+            'tanggal_lahir' => $anggota->tanggal_lahir
+                ? \Carbon\Carbon::parse($anggota->tanggal_lahir)->format('Y-m-d')
+                : null,
+
+            'status' => $anggota->status,
+            'departement' => $anggota->departement,
+            'pekerjaan' => $anggota->pekerjaan,
+            'agama' => $anggota->agama,
+            'alamat' => $anggota->alamat,
+            'kota' => $anggota->kota,
+            'no_telp' => $anggota->no_telp,
+
+            'tanggal_registrasi' => $anggota->tanggal_registrasi
+                ? \Carbon\Carbon::parse($anggota->tanggal_registrasi)->format('Y-m-d')
+                : null,
+
+            'jabatan' => $anggota->jabatan,
+            'aktif' => $anggota->aktif,
+        ]);
     }
 
-    /**
-     * Process import from Excel
-     */
-    public function processImport(Request $request)
-    {
-        // TODO: Implement Excel import logic
-        return response()->json(['success' => true, 'message' => 'Data berhasil diimport']);
-    }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        // TODO: Implement store logic
-        return response()->json(['success' => true, 'message' => 'Data berhasil ditambahkan']);
+        $data = $request->validate([
+            'nama' => 'required|string|max:255',
+            'username' => 'required|string|max:255|unique:Data_Anggota,username',
+            'password' => 'required|string|min:8|max:255',
+            'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
+            'tempat_lahir' => 'required|string|max:225',
+            'tanggal_lahir' => 'required|date',
+            'status' => 'nullable|in:Belum Kawin,Kawin,Cerai Hidup,Cerai Mati,Lainnya',
+            'departement' => 'nullable|string|max:100',
+            'pekerjaan' => 'nullable|string|max:100',
+            'agama' => 'nullable|string|max:50',
+            'alamat' => 'required|string',
+            'kota' => 'required|string|max:255',
+            'no_telp' => 'nullable|string|max:12',
+            'tanggal_registrasi' => 'required|date',
+            'jabatan' => 'required|in:Anggota,Pengurus',
+            'aktif' => 'required|in:Aktif,Non Aktif',
+            'photo' => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
+        ], [
+            'nama.required' => 'Nama lengkap wajib diisi',
+            'username.required' => 'Username wajib diisi',
+            'username.unique' => 'Username sudah digunakan',
+            'password.required' => 'Password wajib diisi',
+            'password.min' => 'Password minimal 8 karakter',
+            'jenis_kelamin.required' => 'Jenis kelamin wajib dipilih',
+            'tempat_lahir.required' => 'Tempat lahir wajib diisi',
+            'tanggal_lahir.required' => 'Tanggal lahir wajib diisi',
+            'alamat.required' => 'Alamat wajib diisi',
+            'kota.required' => 'Kota wajib diisi',
+            'tanggal_registrasi.required' => 'Tanggal registrasi wajib diisi',
+            'jabatan.required' => 'Jabatan wajib dipilih',
+            'aktif.required' => 'Status aktif wajib dipilih',
+            'photo.image' => 'File harus berupa gambar',
+            'photo.mimes' => 'Format foto harus JPG, JPEG, atau PNG',
+            'photo.max' => 'Ukuran foto maksimal 2MB'
+        ]);
+
+        // Generate ID Anggota
+        $data['id_anggota'] = DataAnggota::generateIdAnggota();
+
+        // Handle photo upload
+        if ($request->hasFile('photo')) {
+            $file = $request->file('photo');
+            $fileName = 'anggota_' . time() . '.' . $file->getClientOriginalExtension();
+            $path = $file->storeAs('public/anggota', $fileName);
+            $data['photo'] = 'storage/anggota/' . $fileName;
+        }
+
+        DataAnggota::create($data);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data anggota berhasil ditambahkan'
+        ], 200);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, $id)
     {
-        // TODO: Implement update logic
-        return response()->json(['success' => true, 'message' => 'Data berhasil diubah']);
+        $anggota = DataAnggota::findOrFail($id);
+
+        $data = $request->validate([
+            'nama' => 'required|string|max:255',
+            'username' => 'required|string|max:255|unique:Data_Anggota,username,' . $id,
+            'password' => 'nullable|string|min:8|max:255',
+            'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
+            'tempat_lahir' => 'required|string|max:225',
+            'tanggal_lahir' => 'required|date',
+            'status' => 'nullable|in:Belum Kawin,Kawin,Cerai Hidup,Cerai Mati,Lainnya',
+            'departement' => 'nullable|string|max:100',
+            'pekerjaan' => 'nullable|string|max:100',
+            'agama' => 'nullable|string|max:50',
+            'alamat' => 'required|string',
+            'kota' => 'required|string|max:255',
+            'no_telp' => 'nullable|string|max:12',
+            'tanggal_registrasi' => 'required|date',
+            'jabatan' => 'required|in:Anggota,Pengurus',
+            'aktif' => 'required|in:Aktif,Non Aktif',
+            'photo' => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
+        ], [
+            'nama.required' => 'Nama lengkap wajib diisi',
+            'username.required' => 'Username wajib diisi',
+            'username.unique' => 'Username sudah digunakan',
+            'password.min' => 'Password minimal 8 karakter',
+            'jenis_kelamin.required' => 'Jenis kelamin wajib dipilih',
+            'tempat_lahir.required' => 'Tempat lahir wajib diisi',
+            'tanggal_lahir.required' => 'Tanggal lahir wajib diisi',
+            'alamat.required' => 'Alamat wajib diisi',
+            'kota.required' => 'Kota wajib diisi',
+            'tanggal_registrasi.required' => 'Tanggal registrasi wajib diisi',
+            'jabatan.required' => 'Jabatan wajib dipilih',
+            'aktif.required' => 'Status aktif wajib dipilih',
+            'photo.image' => 'File harus berupa gambar',
+            'photo.mimes' => 'Format foto harus JPG, JPEG, atau PNG',
+            'photo.max' => 'Ukuran foto maksimal 2MB'
+        ]);
+
+        // Hapus password dari data jika kosong
+        if (empty($data['password'])) {
+            unset($data['password']);
+        }
+
+        // Handle photo upload
+        if ($request->hasFile('photo')) {
+            // Hapus foto lama jika bukan default
+            if ($anggota->photo && $anggota->photo !== 'assets/images/profile/user-1.jpg') {
+                $oldPhotoPath = str_replace('storage/', 'public/', $anggota->photo);
+                Storage::delete($oldPhotoPath);
+            }
+
+            $file = $request->file('photo');
+            $fileName = 'anggota_' . time() . '.' . $file->getClientOriginalExtension();
+            $path = $file->storeAs('public/anggota', $fileName);
+            $data['photo'] = 'storage/anggota/' . $fileName;
+        }
+
+        $anggota->update($data);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data anggota berhasil diperbarui'
+        ], 200);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy($id)
     {
-        // TODO: Implement delete logic
-        return response()->json(['success' => true, 'message' => 'Data berhasil dihapus']);
+        $anggota = DataAnggota::findOrFail($id);
+
+        // Hapus foto jika bukan default
+        if ($anggota->photo && $anggota->photo !== 'assets/images/profile/user-1.jpg') {
+            $photoPath = str_replace('storage/', 'public/', $anggota->photo);
+            Storage::delete($photoPath);
+        }
+
+        $anggota->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data anggota berhasil dihapus'
+        ]);
     }
 
-    /**
-     * Export data to Excel
-     */
+    public function showImport()
+    {
+        return view('admin.DataMaster.DataAnggota.ImportAnggota');
+    }
+
+    public function processImport(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'data' => 'required|array',
+                'data.*.username' => 'required|string|max:255|unique:Data_Anggota,username',
+                'data.*.nama' => 'required|string|max:255',
+                'data.*.jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
+                'data.*.tempat_lahir' => 'nullable|string|max:225',
+                'data.*.tanggal_lahir' => 'nullable|date',
+                'data.*.status' => 'nullable|in:Belum Kawin,Kawin,Cerai Hidup,Cerai Mati,Lainnya',
+                'data.*.departement' => 'nullable|string|max:100',
+                'data.*.pekerjaan' => 'nullable|string|max:100',
+                'data.*.agama' => 'nullable|string|max:50',
+                'data.*.alamat' => 'required|string',
+                'data.*.kota' => 'required|string|max:255',
+                'data.*.no_telp' => 'nullable|string|max:12',
+                'data.*.jabatan' => 'nullable|in:Anggota,Pengurus',
+            ], [
+                'data.*.username.required' => 'Username wajib diisi',
+                'data.*.username.unique' => 'Username sudah digunakan',
+                'data.*.nama.required' => 'Nama lengkap wajib diisi',
+                'data.*.jenis_kelamin.required' => 'Jenis kelamin wajib diisi',
+                'data.*.alamat.required' => 'Alamat wajib diisi',
+                'data.*.kota.required' => 'Kota wajib diisi',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validasi data gagal',
+                'errors' => $e->errors()
+            ], 422);
+        }
+
+        $successCount = 0;
+        $failCount = 0;
+        $results = [];
+
+        foreach ($request->data as $index => $row) {
+            try {
+                // Generate ID Anggota
+                $row['id_anggota'] = DataAnggota::generateIdAnggota();
+
+                // Set default values
+                $row['password'] = '12345678'; // Default password minimal 8 karakter
+                $row['tanggal_registrasi'] = date('Y-m-d');
+                $row['jabatan'] = $row['jabatan'] ?? 'Anggota';
+                $row['aktif'] = 'Aktif';
+
+                DataAnggota::create($row);
+
+                $results[] = [
+                    'status' => 'success',
+                    'id_anggota' => $row['id_anggota'],
+                    'username' => $row['username'],
+                    'nama' => $row['nama'],
+                    'jenis_kelamin' => $row['jenis_kelamin'] ?? '-',
+                    'alamat' => $row['alamat'] ?? '-',
+                    'kota' => $row['kota'] ?? '-',
+                    'jabatan' => $row['jabatan'],
+                    'keterangan' => 'Berhasil diimport'
+                ];
+
+                $successCount++;
+            } catch (\Exception $e) {
+                $results[] = [
+                    'status' => 'failed',
+                    'id_anggota' => '-',
+                    'username' => $row['username'] ?? '',
+                    'nama' => $row['nama'] ?? '',
+                    'jenis_kelamin' => $row['jenis_kelamin'] ?? '-',
+                    'alamat' => $row['alamat'] ?? '-',
+                    'kota' => $row['kota'] ?? '-',
+                    'jabatan' => $row['jabatan'] ?? '-',
+                    'keterangan' => $e->getMessage()
+                ];
+
+                $failCount++;
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => "$successCount data berhasil diimport" . ($failCount > 0 ? ", $failCount data gagal" : ""),
+            'successCount' => $successCount,
+            'failCount' => $failCount,
+            'results' => $results
+        ]);
+    }
+
     public function export()
     {
         // TODO: Implement Excel export
         return response('Export Excel Data Anggota');
     }
 
-    /**
-     * Print report
-     */
     public function cetak()
     {
         // TODO: Implement print view

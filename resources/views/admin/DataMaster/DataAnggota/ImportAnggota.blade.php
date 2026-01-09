@@ -3,7 +3,7 @@
 @section('title', 'Import Data Anggota')
 
 @push('styles')
-    <!-- DataTables CSS -->
+    <!-- DataTables CSS (CDN) -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
 @endpush
 
@@ -25,34 +25,6 @@
         </div>
     </div>
 
-    <!-- Alert Success -->
-    @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <div class="d-flex align-items-center">
-                <i class="ti ti-circle-check fs-4 me-2"></i>
-                <div>
-                    <strong>Import Berhasil!</strong>
-                    <p class="mb-0">{{ session('success') }}</p>
-                </div>
-            </div>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    @endif
-
-    <!-- Alert Error -->
-    @if(session('error'))
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <div class="d-flex align-items-center">
-                <i class="ti ti-alert-circle fs-4 me-2"></i>
-                <div>
-                    <strong>Import Gagal!</strong>
-                    <p class="mb-0">{{ session('error') }}</p>
-                </div>
-            </div>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    @endif
-
     <!-- Upload Form Card -->
     <div class="card mb-3 shadow-sm">
         <div class="card-header bg-primary-subtle text-white">
@@ -61,22 +33,28 @@
         <div class="card-body">
             <form id="formImport" enctype="multipart/form-data">
                 @csrf
+                <div class="row align-items-end">
+                    <div class="col-md-8">
+                        <label class="form-label fw-semibold">
+                            Pilih File Excel <span class="text-danger">*</span>
+                        </label>
+                        <input type="file" class="form-control" id="fileExcel" name="file_excel" accept=".xls,.xlsx"
+                            required>
+                    </div>
+
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="ti ti-upload"></i> Upload & Import
+                        </button>
+                    </div>
+                </div>
+
                 <div class="row">
                     <div class="col-md-8">
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Pilih File Excel <span class="text-danger">*</span></label>
-                            <input type="file" class="form-control" id="fileExcel" name="file_excel" accept=".xls,.xlsx" required>
-                            <small class="text-muted">
-                                <i class="ti ti-info-circle"></i> Format file: .xls atau .xlsx (Max: 5MB)
-                            </small>
-                        </div>
-                    </div>
-                    <div class="col-md-4 d-flex align-items-end">
-                        <div class="mb-3 w-100">
-                            <button type="submit" class="btn btn-primary w-100">
-                                <i class="ti ti-upload"></i> Upload & Import
-                            </button>
-                        </div>
+                        <small class="text-muted">
+                            <i class="ti ti-info-circle"></i>
+                            Format file: .xls atau .xlsx (Max: 5MB)
+                        </small>
                     </div>
                 </div>
             </form>
@@ -88,7 +66,9 @@
                     <strong>Informasi:</strong>
                     <ul class="mb-0 mt-2">
                         <li>Pastikan format file sesuai dengan template</li>
-                        <li>Kolom yang wajib diisi: Nama, Username, Jenis Kelamin, Alamat, Kota</li>
+                        <li>Kolom yang wajib diisi: Username, Nama Lengkap, Jenis Kelamin, Alamat, Kota</li>
+                        <li>Password default: <strong>12345678</strong> (minimal 8 karakter, bisa diubah setelah import)
+                        </li>
                         <li>Download template Excel: <a href="javascript:void(0)" onclick="downloadTemplate()"
                                 class="fw-bold">Template_Import_Anggota.xlsx</a></li>
                     </ul>
@@ -165,64 +145,30 @@
                             <th>Alamat</th>
                             <th>Kota</th>
                             <th>Jabatan</th>
-                            <th class="text-center" width="150px">Keterangan</th>
+                            <th class="text-center" width="200px">Keterangan</th>
                         </tr>
                     </thead>
                     <tbody id="bodyTabelHasil">
-                        @foreach($hasilImport as $item)
-                            <tr>
-                                <td class="text-center text-muted fw-medium">{{ $item->no }}</td>
-                                <td class="text-center">
-                                    @if($item->status === 'success')
-                                        <span class="badge bg-success-subtle text-success fw-semibold px-3 py-1">
-                                            <i class="ti ti-check"></i> Berhasil
-                                        </span>
-                                    @else
-                                        <span class="badge bg-danger-subtle text-danger fw-semibold px-3 py-1">
-                                            <i class="ti ti-x"></i> Gagal
-                                        </span>
-                                    @endif
-                                </td>
-                                <td>
-                                    <span class="badge bg-primary-subtle text-primary">{{ $item->id_anggota }}</span>
-                                </td>
-                                <td>{{ $item->username }}</td>
-                                <td><strong>{{ $item->nama }}</strong></td>
-                                <td>{{ $item->jenis_kelamin }}</td>
-                                <td>{{ $item->alamat }}</td>
-                                <td>{{ $item->kota }}</td>
-                                <td>{{ $item->jabatan }}</td>
-                                <td class="text-center {{ $item->status === 'success' ? 'text-success' : 'text-danger' }} fw-semibold">
-                                    {{ $item->keterangan }}
-                                </td>
-                            </tr>
-                        @endforeach
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
-
-    <!-- Footer -->
-    <div class="py-6 px-6 text-center mt-4">
-        <p class="mb-0 fs-4">Sistem Koperasi <strong>Akeno</strong> &copy; 2025</p>
-    </div>
 @endsection
 
 @push('scripts')
-    <!-- DataTables -->
+    <!-- DataTables (CDN) -->
     <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
-    <!-- SheetJS untuk parse Excel -->
+    <!-- SheetJS untuk parse Excel (CDN) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
     <script>
-        // Data hasil import
         let hasilImport = [];
         let table;
 
         // Handle Form Submit
-        document.getElementById('formImport').addEventListener('submit', function(e) {
+        document.getElementById('formImport').addEventListener('submit', function (e) {
             e.preventDefault();
 
             const fileInput = document.getElementById('fileExcel');
@@ -255,21 +201,17 @@
 
             // Read and parse Excel file
             const reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = function (e) {
                 try {
                     const data = new Uint8Array(e.target.result);
-                    const workbook = XLSX.read(data, {
-                        type: 'array'
-                    });
+                    const workbook = XLSX.read(data, { type: 'array' });
 
                     // Ambil sheet pertama
                     const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
                     const jsonData = XLSX.utils.sheet_to_json(firstSheet);
 
-                    // Process data
-                    setTimeout(() => {
-                        processImportData(jsonData);
-                    }, 1500); // Simulasi delay untuk loading
+                    // Validasi dan format data
+                    processAndSendData(jsonData);
 
                 } catch (error) {
                     document.getElementById('loadingIndicator').style.display = 'none';
@@ -279,71 +221,95 @@
             reader.readAsArrayBuffer(file);
         });
 
-        // Process imported data
-        function processImportData(data) {
-            hasilImport = [];
-            let successCount = 0;
-            let failCount = 0;
-            let idCounter = 12; // Start from AG0012
+        // Process and send data to server
+        function processAndSendData(jsonData) {
+            const validData = [];
 
-            data.forEach((row, index) => {
-                const result = {
-                    no: index + 1,
-                    status: 'success',
-                    idAnggota: `AG${String(idCounter).padStart(4, '0')}`,
+            jsonData.forEach((row) => {
+                // Format data sesuai dengan struktur database
+                const formattedRow = {
                     username: row.Username || row.username || '',
                     nama: row['Nama Lengkap'] || row.Nama || row.nama || '',
-                    jenisKelamin: row['Jenis Kelamin'] || row.JenisKelamin || '',
+                    jenis_kelamin: row['Jenis Kelamin'] || row.JenisKelamin || '',
+                    tempat_lahir: row['Tempat Lahir'] || row.TempatLahir || '',
+                    tanggal_lahir: formatTanggalExcel(row['Tanggal Lahir'] || row.TanggalLahir),
+                    status: row.Status || row.status || '',
+                    departement: row.Departement || row.departement || '',
+                    pekerjaan: row.Pekerjaan || row.pekerjaan || '',
+                    agama: row.Agama || row.agama || '',
                     alamat: row.Alamat || row.alamat || '',
                     kota: row.Kota || row.kota || '',
-                    jabatan: row.Jabatan || row.jabatan || 'Anggota',
-                    keterangan: ''
+                    no_telp: row['No Telepon'] || row.NoTelepon || row.no_telp || '',
+                    jabatan: row.Jabatan || row.jabatan || 'Anggota'
                 };
 
-                // Validasi data wajib
-                const errors = [];
-                if (!result.nama) errors.push('Nama kosong');
-                if (!result.username) errors.push('Username kosong');
-                if (!result.jenisKelamin) errors.push('Jenis kelamin kosong');
-                if (!result.alamat) errors.push('Alamat kosong');
-                if (!result.kota) errors.push('Kota kosong');
-
-                if (errors.length > 0) {
-                    result.status = 'failed';
-                    result.keterangan = errors.join(', ');
-                    failCount++;
-                } else {
-                    result.status = 'success';
-                    result.keterangan = 'Berhasil diimport';
-                    successCount++;
-                    idCounter++;
-                }
-
-                hasilImport.push(result);
+                validData.push(formattedRow);
             });
 
-            // Hide loading
-            document.getElementById('loadingIndicator').style.display = 'none';
+            // Send to server
+            fetch("{{ route('master.data-anggota.import.process') }}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ data: validData })
+            })
+                .then(res => res.json())
+                .then(response => {
+                    document.getElementById('loadingIndicator').style.display = 'none';
 
-            // Show success alert
-            if (successCount > 0) {
-                document.getElementById('successMessage').textContent =
-                    `${successCount} data berhasil diimport${failCount > 0 ? `, ${failCount} data gagal` : ''}.`;
-                document.getElementById('successAlert').style.display = 'block';
+                    if (response.success) {
+                        hasilImport = response.results;
+
+                        // Show success alert
+                        document.getElementById('successMessage').textContent = response.message;
+                        document.getElementById('successAlert').style.display = 'block';
+
+                        // Update counter
+                        document.getElementById('successCount').textContent = response.successCount;
+                        document.getElementById('failCount').textContent = response.failCount;
+
+                        // Display result table
+                        displayResultTable();
+
+                        // Reset form
+                        document.getElementById('formImport').reset();
+                    } else {
+                        showError(response.message || 'Gagal import data');
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('loadingIndicator').style.display = 'none';
+                    showError('Terjadi kesalahan saat mengirim data ke server');
+                    console.error('Error:', error);
+                });
+        }
+
+        // Format tanggal dari Excel
+        function formatTanggalExcel(tanggal) {
+            if (!tanggal) return null;
+
+            // Jika sudah format YYYY-MM-DD
+            if (typeof tanggal === 'string' && tanggal.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                return tanggal;
             }
 
-            if (failCount > 0 && successCount === 0) {
-                document.getElementById('errorMessage').textContent =
-                    `Semua data gagal diimport! Silakan periksa format file.`;
-                document.getElementById('errorAlert').style.display = 'block';
+            // Jika format DD/MM/YYYY
+            if (typeof tanggal === 'string' && tanggal.includes('/')) {
+                const parts = tanggal.split('/');
+                if (parts.length === 3) {
+                    return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+                }
             }
 
-            // Update counter
-            document.getElementById('successCount').textContent = successCount;
-            document.getElementById('failCount').textContent = failCount;
+            // Jika Excel date serial number
+            if (typeof tanggal === 'number') {
+                const date = XLSX.SSF.parse_date_code(tanggal);
+                return `${date.y}-${String(date.m).padStart(2, '0')}-${String(date.d).padStart(2, '0')}`;
+            }
 
-            // Show result table
-            displayResultTable();
+            return null;
         }
 
         // Display result table
@@ -351,7 +317,7 @@
             const tbody = document.getElementById('bodyTabelHasil');
             tbody.innerHTML = '';
 
-            hasilImport.forEach(row => {
+            hasilImport.forEach((row, index) => {
                 const statusBadge = row.status === 'success' ?
                     '<span class="badge bg-success-subtle text-success fw-semibold px-3 py-1"><i class="ti ti-check"></i> Berhasil</span>' :
                     '<span class="badge bg-danger-subtle text-danger fw-semibold px-3 py-1"><i class="ti ti-x"></i> Gagal</span>';
@@ -360,24 +326,24 @@
 
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td class="text-center text-muted fw-medium">${row.no}</td>
-                    <td class="text-center">${statusBadge}</td>
-                    <td><span class="badge bg-primary-subtle text-primary">${row.idAnggota}</span></td>
-                    <td>${row.username}</td>
-                    <td><strong>${row.nama}</strong></td>
-                    <td>${row.jenisKelamin}</td>
-                    <td>${row.alamat}</td>
-                    <td>${row.kota}</td>
-                    <td>${row.jabatan}</td>
-                    <td class="text-center ${keteranganClass} fw-semibold">${row.keterangan}</td>
-                `;
+                        <td class="text-center text-muted fw-medium">${index + 1}</td>
+                        <td class="text-center">${statusBadge}</td>
+                        <td><span class="badge bg-primary-subtle text-primary">${row.id_anggota || '-'}</span></td>
+                        <td>${row.username || '-'}</td>
+                        <td><strong>${row.nama || '-'}</strong></td>
+                        <td>${row.jenis_kelamin || '-'}</td>
+                        <td>${row.alamat || '-'}</td>
+                        <td>${row.kota || '-'}</td>
+                        <td>${row.jabatan || '-'}</td>
+                        <td class="text-center ${keteranganClass} fw-semibold">${row.keterangan || '-'}</td>
+                    `;
                 tbody.appendChild(tr);
             });
 
             // Show table card
             document.getElementById('resultTableCard').style.display = 'block';
 
-            // Init DataTable if not initialized
+            // Init DataTable
             if ($.fn.DataTable.isDataTable('#tabelHasil')) {
                 $('#tabelHasil').DataTable().destroy();
             }
@@ -387,9 +353,7 @@
                     url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/id.json'
                 },
                 pageLength: 10,
-                order: [
-                    [0, 'asc']
-                ],
+                order: [[0, 'asc']],
                 scrollX: true
             });
 
@@ -419,7 +383,7 @@
                 'Nama Lengkap': 'Nama Contoh',
                 'Jenis Kelamin': 'Laki-laki',
                 'Tempat Lahir': 'Jakarta',
-                'Tanggal Lahir': '01/01/1990',
+                'Tanggal Lahir': '1990-01-01',
                 'Status': 'Belum Kawin',
                 'Departement': 'Produksi BOPP',
                 'Pekerjaan': 'Karyawan Swasta',
@@ -445,17 +409,13 @@
                 return;
             }
 
-            const exportData = hasilImport.map(row => ({
-                'No': row.no,
+            const exportData = hasilImport.map((row, index) => ({
+                'No': index + 1,
                 'Status': row.status === 'success' ? 'Berhasil' : 'Gagal',
-                'ID Anggota': row.idAnggota,
-                'Username': row.username,
-                'Nama Lengkap': row.nama,
-                'Jenis Kelamin': row.jenisKelamin,
-                'Alamat': row.alamat,
-                'Kota': row.kota,
-                'Jabatan': row.jabatan,
-                'Keterangan': row.keterangan
+                'ID Anggota': row.id_anggota || '-',
+                'Username': row.username || '-',
+                'Nama Lengkap': row.nama || '-',
+                'Keterangan': row.keterangan || '-'
             }));
 
             const ws = XLSX.utils.json_to_sheet(exportData);

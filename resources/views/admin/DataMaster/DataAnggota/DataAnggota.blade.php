@@ -3,9 +3,6 @@
 @section('title', 'Master Data - Data Anggota')
 
 @push('styles')
-    <!-- DataTables CSS -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css">
     <style>
         #tabelDataAnggota thead th {
             white-space: nowrap;
@@ -104,17 +101,9 @@
                     </thead>
                     <tbody>
                         @foreach($dataAnggota as $item)
-                            <tr data-id="{{ $item->id }}" data-photo="{{ asset($item->photo) }}"
-                                data-id-anggota="{{ $item->id_anggota }}" data-username="{{ $item->username }}"
-                                data-nama="{{ $item->nama }}" data-jk="{{ $item->jenis_kelamin }}"
-                                data-tempat-lahir="{{ $item->tempat_lahir }}" data-tgl-lahir="{{ $item->tanggal_lahir }}"
-                                data-status="{{ $item->status }}" data-dept="{{ $item->departement }}"
-                                data-pekerjaan="{{ $item->pekerjaan }}" data-agama="{{ $item->agama }}"
-                                data-alamat="{{ $item->alamat }}" data-kota="{{ $item->kota }}" data-telp="{{ $item->no_telp }}"
-                                data-tgl-reg="{{ $item->tanggal_registrasi }}" data-jabatan="{{ $item->jabatan }}"
-                                data-aktif="{{ $item->aktif }}">
+                            <tr data-id="{{ $item->id }}">
                                 <td class="text-center">
-                                    <img src="{{ asset($item->photo) }}" class="rounded-circle" width="40" height="40">
+                                    <img src="{{ asset($item->photo_url) }}" class="rounded-circle" width="40" height="40">
                                 </td>
                                 <td class="text-center">
                                     <span
@@ -133,8 +122,7 @@
                                 <td>{{ $item->kota }}</td>
                                 <td>{{ $item->jabatan }}</td>
                                 <td>{{ $item->departement ?: '-' }}</td>
-                                <td class="text-center">{{ \Carbon\Carbon::parse($item->tanggal_registrasi)->format('d/m/Y') }}
-                                </td>
+                                <td class="text-center">{{ $item->tanggal_registrasi->format('d/m/Y') }}</td>
                                 <td class="text-center">
                                     <span
                                         class="badge bg-{{ $item->aktif == 'Aktif' ? 'success' : 'danger' }}-subtle text-{{ $item->aktif == 'Aktif' ? 'success' : 'danger' }} fw-semibold">
@@ -142,10 +130,11 @@
                                     </span>
                                 </td>
                                 <td class="text-center">
-                                    <button class="btn btn-sm btn-warning me-1" onclick="editData(this)" title="Edit">
+                                    <button class="btn btn-sm btn-warning me-1" onclick="editData({{ $item->id }})"
+                                        title="Edit">
                                         <i class="ti ti-edit"></i>
                                     </button>
-                                    <button class="btn btn-sm btn-danger" onclick="hapusData(this)" title="Hapus">
+                                    <button class="btn btn-sm btn-danger" onclick="hapusData({{ $item->id }})" title="Hapus">
                                         <i class="ti ti-trash"></i>
                                     </button>
                                 </td>
@@ -166,8 +155,10 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="formDataAnggota">
+                    <form id="formDataAnggota" enctype="multipart/form-data">
+                        @csrf
                         <input type="hidden" id="editId" value="">
+                        <input type="hidden" id="editMethod" value="">
 
                         <!-- Nama Lengkap -->
                         <div class="mb-3">
@@ -319,10 +310,11 @@
 
                         <!-- Password -->
                         <div class="mb-3">
-                            <label class="form-label">Password</label>
+                            <label class="form-label">Password <span class="text-danger" id="reqPassword">*</span></label>
                             <input type="password" class="form-control" id="password"
-                                placeholder="Kosongkan jika tidak ingin ubah">
-                            <small class="text-muted">Kosongkan password jika tidak ingin ubah/isi</small>
+                                placeholder="Masukkan password (minimal 8 karakter)" minlength="8" required>
+                            <small class="text-muted">Minimal 8 karakter. Kosongkan jika tidak ingin ubah (saat
+                                edit)</small>
                         </div>
 
                         <!-- Status Aktif -->
@@ -330,7 +322,7 @@
                             <label class="form-label">Aktif Keanggotaan <span class="text-danger">*</span></label>
                             <select class="form-select" id="aktif" required>
                                 <option value="">-- Pilih Status Aktif --</option>
-                                <option value="Aktif">Aktif</option>
+                                <option value="Aktif" selected>Aktif</option>
                                 <option value="Non Aktif">Non Aktif</option>
                             </select>
                         </div>
@@ -355,254 +347,257 @@
 @endsection
 
 @push('scripts')
-<!-- DataTables -->
-<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.bootstrap5.min.js"></script>
+    <script>
+        let table;
 
-<!-- SweetAlert2 -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-<script>
-    // Initialize DataTable
-    let table;
-    $(document).ready(function () {
-        table = $('#tabelDataAnggota').DataTable({
-            ordering: false,
-            language: {
-                url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/id.json'
-            },
-            pageLength: 10,
-            scrollX: true,
-            columnDefs: [
-                { orderable: false, targets: '_all' }
-            ]
+        // Init DataTable
+        $(document).ready(function () {
+            table = $('#tabelDataAnggota').DataTable({
+                language: {
+                    url: "{{ asset('assets/datatables/i18n/id.json') }}"
+                },
+                pageLength: 10,
+                order: [],
+                scrollX: true,
+                columnDefs: [
+                    { orderable: false, targets: '_all' }
+                ]
+            });
         });
-    });
 
-    // Format tanggal dari YYYY-MM-DD ke DD/MM/YYYY
-    function formatTanggal(tanggal) {
-        const [year, month, day] = tanggal.split('-');
-        return `${day}/${month}/${year}`;
-    }
+        // Tambah Data
+        function tambahData() {
+            document.getElementById('modalTitle').textContent = 'Tambah Data Anggota';
+            document.getElementById('formDataAnggota').reset();
+            document.getElementById('editId').value = '';
+            document.getElementById('editMethod').value = 'POST';
+            document.getElementById('password').required = true;
+            document.getElementById('reqPassword').style.display = 'inline';
 
-    // Generate ID Anggota otomatis
-    function generateIdAnggota() {
-        const rows = document.querySelectorAll('#tabelDataAnggota tbody tr');
-        let lastId = 0;
-        rows.forEach(row => {
-            const idAnggota = row.getAttribute('data-id-anggota');
-            if (idAnggota) {
-                const numId = parseInt(idAnggota.replace('AG', ''));
-                if (numId > lastId) lastId = numId;
+            // Set tanggal hari ini
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('tanggalRegistrasi').value = today;
+            document.getElementById('aktif').value = 'Aktif';
+
+            const modal = new bootstrap.Modal(document.getElementById('modalForm'), {
+                backdrop: 'static',
+                keyboard: false
+            });
+            modal.show();
+        }
+
+        // Edit Data
+        function editData(id) {
+            fetch(`/admin/data-anggota/${id}/edit`)
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('modalTitle').textContent = 'Ubah Data Anggota';
+                    document.getElementById('editId').value = data.id;
+                    document.getElementById('editMethod').value = 'PUT';
+                    document.getElementById('namaLengkap').value = data.nama;
+                    document.getElementById('username').value = data.username;
+                    document.getElementById('jenisKelamin').value = data.jenis_kelamin;
+                    document.getElementById('tempatLahir').value = data.tempat_lahir;
+                    document.getElementById('tanggalLahir').value = data.tanggal_lahir || '';
+                    document.getElementById('status').value = data.status || '';
+                    document.getElementById('departement').value = data.departement || '';
+                    document.getElementById('pekerjaan').value = data.pekerjaan || '';
+                    document.getElementById('agama').value = data.agama || '';
+                    document.getElementById('alamat').value = data.alamat;
+                    document.getElementById('kota').value = data.kota;
+                    document.getElementById('noTelp').value = data.no_telp || '';
+                    document.getElementById('tanggalRegistrasi').value = data.tanggal_registrasi || '';
+                    document.getElementById('jabatan').value = data.jabatan;
+                    document.getElementById('aktif').value = data.aktif;
+
+                    // Password tidak required saat edit
+                    document.getElementById('password').required = false;
+                    document.getElementById('password').value = '';
+                    document.getElementById('reqPassword').style.display = 'none';
+
+                    const modal = new bootstrap.Modal(document.getElementById('modalForm'), {
+                        backdrop: 'static',
+                        keyboard: false
+                    });
+                    modal.show();
+                });
+        }
+
+        // Simpan Data
+        function simpanData() {
+            const form = document.getElementById('formDataAnggota');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
             }
-        });
-        const newId = (lastId + 1).toString().padStart(4, '0');
-        return 'AG' + newId;
-    }
 
-    // Tambah Data
-    function tambahData() {
-        document.getElementById('modalTitle').textContent = 'Tambah Data Anggota';
-        document.getElementById('formDataAnggota').reset();
-        document.getElementById('editId').value = '';
+            const id = document.getElementById('editId').value;
+            const method = document.getElementById('editMethod').value || 'POST';
+            const url = id ? `/admin/data-anggota/${id}` : `/admin/data-anggota`;
+            const password = document.getElementById('password').value;
 
-        // Set tanggal hari ini
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('tanggalRegistrasi').value = today;
+            // Validasi password saat tambah data
+            if (!id && password.length < 8) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Validasi Gagal',
+                    text: 'Password minimal 8 karakter'
+                });
+                return;
+            }
 
-        const modal = new bootstrap.Modal(document.getElementById('modalForm'), {
-            backdrop: 'static',
-            keyboard: false
-        });
-        modal.show();
-    }
+            // Validasi password saat edit (jika diisi)
+            if (id && password && password.length < 8) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Validasi Gagal',
+                    text: 'Password minimal 8 karakter'
+                });
+                return;
+            }
 
-    // Edit Data
-    function editData(btn) {
-        const row = btn.closest('tr');
+            const formData = new FormData();
+            formData.append('_token', document.querySelector('meta[name="csrf-token"]').content);
+            if (method === 'PUT') {
+                formData.append('_method', 'PUT');
+            }
 
-        document.getElementById('modalTitle').textContent = 'Ubah Data Anggota';
-        document.getElementById('editId').value = row.getAttribute('data-id');
-        document.getElementById('namaLengkap').value = row.getAttribute('data-nama');
-        document.getElementById('username').value = row.getAttribute('data-username');
-        document.getElementById('jenisKelamin').value = row.getAttribute('data-jk');
-        document.getElementById('tempatLahir').value = row.getAttribute('data-tempat-lahir');
-        document.getElementById('tanggalLahir').value = row.getAttribute('data-tgl-lahir');
-        document.getElementById('status').value = row.getAttribute('data-status');
-        document.getElementById('departement').value = row.getAttribute('data-dept');
-        document.getElementById('pekerjaan').value = row.getAttribute('data-pekerjaan');
-        document.getElementById('agama').value = row.getAttribute('data-agama');
-        document.getElementById('alamat').value = row.getAttribute('data-alamat');
-        document.getElementById('kota').value = row.getAttribute('data-kota');
-        document.getElementById('noTelp').value = row.getAttribute('data-telp');
-        document.getElementById('tanggalRegistrasi').value = row.getAttribute('data-tgl-reg');
-        document.getElementById('jabatan').value = row.getAttribute('data-jabatan');
-        document.getElementById('aktif').value = row.getAttribute('data-aktif');
+            formData.append('nama', document.getElementById('namaLengkap').value);
+            formData.append('username', document.getElementById('username').value);
 
-        const modal = new bootstrap.Modal(document.getElementById('modalForm'), {
-            backdrop: 'static',
-            keyboard: false
-        });
-        modal.show();
-    }
+            if (password) {
+                formData.append('password', password);
+            }
 
-    // Simpan Data
-    function simpanData() {
-        const form = document.getElementById('formDataAnggota');
-        if (!form.checkValidity()) {
-            form.reportValidity();
-            return;
+            formData.append('jenis_kelamin', document.getElementById('jenisKelamin').value);
+            formData.append('tempat_lahir', document.getElementById('tempatLahir').value);
+            formData.append('tanggal_lahir', document.getElementById('tanggalLahir').value);
+            formData.append('status', document.getElementById('status').value);
+            formData.append('departement', document.getElementById('departement').value);
+            formData.append('pekerjaan', document.getElementById('pekerjaan').value);
+            formData.append('agama', document.getElementById('agama').value);
+            formData.append('alamat', document.getElementById('alamat').value);
+            formData.append('kota', document.getElementById('kota').value);
+            formData.append('no_telp', document.getElementById('noTelp').value);
+            formData.append('tanggal_registrasi', document.getElementById('tanggalRegistrasi').value);
+            formData.append('jabatan', document.getElementById('jabatan').value);
+            formData.append('aktif', document.getElementById('aktif').value);
+
+            const photoFile = document.getElementById('photo').files[0];
+            if (photoFile) {
+                formData.append('photo', photoFile);
+            }
+
+            fetch(url, {
+                method: 'POST',
+                body: formData
+            })
+                .then(async res => {
+                    const data = await res.json();
+
+                    if (!res.ok) {
+                        // Handle HTTP error status
+                        throw {
+                            status: res.status,
+                            data: data
+                        };
+                    }
+
+                    return data;
+                })
+                .then(res => {
+                    if (res.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil',
+                            text: res.message,
+                            timer: 1500,
+                            showConfirmButton: false
+                        }).then(() => location.reload());
+                    } else {
+                        // Handle validation errors from server
+                        let errorMessage = res.message || 'Gagal menyimpan data';
+                        if (res.errors) {
+                            errorMessage = Object.values(res.errors).flat().join('\n');
+                        }
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Validasi Gagal',
+                            text: errorMessage
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+
+                    let errorMessage = 'Terjadi kesalahan saat menyimpan data';
+
+                    if (error.status === 422 && error.data.errors) {
+                        // Validation error
+                        errorMessage = Object.values(error.data.errors).flat().join('\n');
+                    } else if (error.data && error.data.message) {
+                        errorMessage = error.data.message;
+                    }
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: errorMessage
+                    });
+                });
         }
 
-        const editId = document.getElementById('editId').value;
-        const namaLengkap = document.getElementById('namaLengkap').value;
-        const username = document.getElementById('username').value;
-        const jenisKelamin = document.getElementById('jenisKelamin').value;
-        const tempatLahir = document.getElementById('tempatLahir').value;
-        const tanggalLahir = document.getElementById('tanggalLahir').value;
-        const status = document.getElementById('status').value;
-        const departement = document.getElementById('departement').value;
-        const pekerjaan = document.getElementById('pekerjaan').value;
-        const agama = document.getElementById('agama').value;
-        const alamat = document.getElementById('alamat').value;
-        const kota = document.getElementById('kota').value;
-        const noTelp = document.getElementById('noTelp').value;
-        const tanggalRegistrasi = document.getElementById('tanggalRegistrasi').value;
-        const jabatan = document.getElementById('jabatan').value;
-        const aktif = document.getElementById('aktif').value;
-        const photoFile = document.getElementById('photo').files[0];
-
-        // Handle photo upload (simulasi)
-        let photoUrl = '{{ asset("assets/images/profile/user-1.jpg") }}';
-        if (photoFile) {
-            photoUrl = URL.createObjectURL(photoFile);
-        }
-
-        if (editId) {
-            // Update existing row
-            const rows = document.querySelectorAll('#tabelDataAnggota tbody tr');
-            rows.forEach(row => {
-                if (row.getAttribute('data-id') === editId) {
-                    const oldPhoto = row.getAttribute('data-photo');
-                    const newPhoto = photoFile ? photoUrl : oldPhoto;
-                    const idAnggota = row.getAttribute('data-id-anggota');
-
-                    // Update data attributes
-                    row.setAttribute('data-photo', newPhoto);
-                    row.setAttribute('data-username', username);
-                    row.setAttribute('data-nama', namaLengkap);
-                    row.setAttribute('data-jk', jenisKelamin);
-                    row.setAttribute('data-tempat-lahir', tempatLahir);
-                    row.setAttribute('data-tgl-lahir', tanggalLahir);
-                    row.setAttribute('data-status', status);
-                    row.setAttribute('data-dept', departement);
-                    row.setAttribute('data-pekerjaan', pekerjaan);
-                    row.setAttribute('data-agama', agama);
-                    row.setAttribute('data-alamat', alamat);
-                    row.setAttribute('data-kota', kota);
-                    row.setAttribute('data-telp', noTelp);
-                    row.setAttribute('data-tgl-reg', tanggalRegistrasi);
-                    row.setAttribute('data-jabatan', jabatan);
-                    row.setAttribute('data-aktif', aktif);
-
-                    // Update table cells
-                    row.cells[0].innerHTML = `<img src="${newPhoto}" class="rounded-circle" width="40" height="40">`;
-                    row.cells[2].innerHTML = `<div class="fw-semibold text-dark">${username}</div>`;
-                    row.cells[3].innerHTML = `<div class="fw-semibold text-dark">${namaLengkap}</div>`;
-                    row.cells[4].innerHTML = `<span class="badge bg-info-subtle text-info fw-semibold">${jenisKelamin}</span>`;
-                    row.cells[5].innerHTML = alamat;
-                    row.cells[6].innerHTML = kota;
-                    row.cells[7].innerHTML = jabatan;
-                    row.cells[8].innerHTML = departement || '-';
-                    row.cells[9].innerHTML = formatTanggal(tanggalRegistrasi);
-                    row.cells[10].innerHTML = `<span class="badge bg-${aktif === 'Aktif' ? 'success' : 'danger'}-subtle text-${aktif === 'Aktif' ? 'success' : 'danger'} fw-semibold">${aktif}</span>`;
+        // Hapus Data
+        function hapusData(id) {
+            Swal.fire({
+                title: 'Yakin hapus?',
+                text: 'Data tidak bisa dikembalikan',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, hapus',
+                cancelButtonText: 'Batal'
+            }).then(result => {
+                if (result.isConfirmed) {
+                    fetch(`/admin/data-anggota/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        }
+                    })
+                        .then(res => res.json())
+                        .then(res => {
+                            Swal.fire('Terhapus!', res.message, 'success')
+                                .then(() => location.reload());
+                        });
                 }
             });
-
-            Swal.fire({
-                icon: 'success',
-                title: 'Berhasil!',
-                text: 'Data berhasil diubah',
-                timer: 1500,
-                showConfirmButton: false
-            });
-        } else {
-            // Add new row
-            const newId = Date.now();
-            const idAnggota = generateIdAnggota();
-
-            const newRow = `
-                    <tr data-id="${newId}"
-                        data-photo="${photoUrl}"
-                        data-id-anggota="${idAnggota}"
-                        data-username="${username}"
-                        data-nama="${namaLengkap}"
-                        data-jk="${jenisKelamin}"
-                        data-tempat-lahir="${tempatLahir}"
-                        data-tgl-lahir="${tanggalLahir}"
-                        data-status="${status}"
-                        data-dept="${departement}"
-                        data-pekerjaan="${pekerjaan}"
-                        data-agama="${agama}"
-                        data-alamat="${alamat}"
-                        data-kota="${kota}"
-                        data-telp="${noTelp}"
-                        data-tgl-reg="${tanggalRegistrasi}"
-                        data-jabatan="${jabatan}"
-                        data-aktif="${aktif}">
-                        <td class="text-center">
-                            <img src="${photoUrl}" class="rounded-circle" width="40" height="40">
-                        </td>
-                        <td class="text-center">
-                            <span class="badge bg-primary-subtle text-primary fw-semibold">${idAnggota}</span>
-                        </td>
-                        <td><div class="fw-semibold text-dark">${username}</div></td>
-                        <td><div class="fw-semibold text-dark">${namaLengkap}</div></td>
-                        <td class="text-center">
-                            <span class="badge bg-info-subtle text-info fw-semibold">${jenisKelamin}</span>
-                        </td>
-                        <td>${alamat}</td>
-                        <td>${kota}</td>
-                        <td>${jabatan}</td>
-                        <td>${departement || '-'}</td>
-                        <td class="text-center">${formatTanggal(tanggalRegistrasi)}</td>
-                        <td class="text-center">
-                            <span class="badge bg-${aktif === 'Aktif' ? 'success' : 'danger'}-subtle text-${aktif === 'Aktif' ? 'success' : 'danger'} fw-semibold">${aktif}</span>
-                        </td>
-                        <td class="text-center">
-                            <button class="btn btn-sm btn-warning me-1" onclick="editData(this)" title="Edit">
-                                <i class="ti ti-edit"></i>
-                            </button>
-                            <button class="btn btn-sm btn-danger" onclick="hapusData(this)" title="Hapus">
-                                <i class="ti ti-trash"></i>
-                            </button>
-                        </td>
-                    </tr>
-                `;
-            table.row.add($(newRow)).draw();
-
-            Swal.fire({
-                icon: 'success',
-                title: 'Berhasil!',
-                text: 'Data berhasil ditambahkan',
-                timer: 1500,
-                showConfirmButton: false
-            });
-
-            // reset form
-            document.getElementById('formDataAnggota').reset();
-
-            // reset editId
-            document.getElementById('editId').value = '';
-
-            // tutup modal
-            $('#modalDataAnggota').modal('hide');
         }
 
-        return false;
-    }
+        // Cari Data
+        function cariData() {
+            table.search(document.getElementById('searchInput').value).draw();
+        }
 
-</script>
+        // Reset Filter
+        function resetFilter() {
+            document.getElementById('searchInput').value = '';
+            table.search('').draw();
+
+            Swal.fire({
+                icon: 'info',
+                title: 'Filter direset',
+                timer: 1200,
+                showConfirmButton: false
+            });
+        }
+
+        // Cetak & Export
+        function cetakLaporan() {
+            window.location.href = "{{ route('master.data-anggota.cetak') }}";
+        }
+
+        function eksporData() {
+            window.location.href = "{{ route('master.data-anggota.export') }}";
+        }
+    </script>
 @endpush

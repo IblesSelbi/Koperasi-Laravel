@@ -3,102 +3,68 @@
 namespace App\Http\Controllers\Admin\DataMaster;
 
 use App\Http\Controllers\Controller;
+use App\Models\Admin\LamaAngsuran;
 use Illuminate\Http\Request;
 
 class LamaAngsuranController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index(Request $request)
+    public function index()
     {
-        // Dummy data lama angsuran
-        $lamaAngsuran = collect([
-            (object)[
-                'id' => 1,
-                'lama_angsuran' => 3,
-                'aktif' => 'Y',
-            ],
-            (object)[
-                'id' => 2,
-                'lama_angsuran' => 6,
-                'aktif' => 'Y',
-            ],
-            (object)[
-                'id' => 3,
-                'lama_angsuran' => 12,
-                'aktif' => 'Y',
-            ],
-            (object)[
-                'id' => 11,
-                'lama_angsuran' => 24,
-                'aktif' => 'Y',
-            ],
-            (object)[
-                'id' => 12,
-                'lama_angsuran' => 36,
-                'aktif' => 'Y',
-            ],
-            (object)[
-                'id' => 14,
-                'lama_angsuran' => 1,
-                'aktif' => 'Y',
-            ],
-        ]);
+        $lamaAngsuran = LamaAngsuran::orderBy('id', 'desc')->get();
 
-        $notifications = collect([
-            (object)[
-                'nama' => 'Hartati',
-                'tanggal_jatuh_tempo' => '2025-06-16',
-                'sisa_tagihan' => 1575000,
-            ]
-        ]);
-
-        return view('admin.DataMaster.LamaAngsuran.LamaAngsuran', compact('lamaAngsuran', 'notifications'));
+        return view(
+            'admin.DataMaster.LamaAngsuran.LamaAngsuran',
+            compact('lamaAngsuran')
+        );
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        // TODO: Implement store logic
-        return response()->json(['success' => true, 'message' => 'Data berhasil ditambahkan']);
+        $data = $request->validate([
+            'lama_angsuran' => 'required|integer|min:1|max:120',
+            'aktif' => 'required|in:Y,T',
+        ]);
+
+        LamaAngsuran::create($data);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Lama angsuran berhasil ditambahkan'
+        ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, $id)
     {
-        // TODO: Implement update logic
-        return response()->json(['success' => true, 'message' => 'Data berhasil diubah']);
+        $data = $request->validate([
+            'lama_angsuran' => 'required|integer|min:1|max:120',
+            'aktif' => 'required|in:Y,T',
+        ]);
+
+        LamaAngsuran::findOrFail($id)->update($data);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Lama angsuran berhasil diperbarui'
+        ]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy($id)
     {
-        // TODO: Implement delete logic
-        return response()->json(['success' => true, 'message' => 'Data berhasil dihapus']);
+        LamaAngsuran::findOrFail($id)->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Lama angsuran berhasil dihapus'
+        ]);
     }
 
-    /**
-     * Export data to Excel
-     */
     public function export()
     {
-        // TODO: Implement Excel export
         return response('Export Excel Lama Angsuran');
     }
 
-    /**
-     * Print report
-     */
     public function cetak()
     {
-        // TODO: Implement print view
         return response('Cetak Laporan Lama Angsuran');
     }
 }

@@ -507,6 +507,7 @@ Route::middleware('auth')
         Route::controller(DataAnggotaController::class)->group(function () {
             Route::get('/data-anggota', 'index')->name('data-anggota');
             Route::post('/data-anggota', 'store')->name('data-anggota.store');
+            Route::get('/data-anggota/{id}/edit', 'edit')->name('data-anggota.edit'); 
             Route::put('/data-anggota/{id}', 'update')->name('data-anggota.update');
             Route::delete('/data-anggota/{id}', 'destroy')->name('data-anggota.destroy');
 
@@ -547,4 +548,4 @@ Route::middleware('auth')->prefix('admin')->name('setting.')->group(function () 
         ->name('suku-bunga.update');
 });
 
-// require __DIR__ . '/auth.php';
+require __DIR__ . '/auth.php';

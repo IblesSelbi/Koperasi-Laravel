@@ -3,9 +3,6 @@
 @section('title', 'Master Data - Jenis Simpanan')
 
 @push('styles')
-    <!-- DataTables CSS -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css">
 @endpush
 
 @section('content')
@@ -165,15 +162,6 @@
 @endsection
 
 @push('scripts')
-    <!-- DataTables -->
-    <script src="{{ asset('assets/datatables/js/jquery.dataTables.min.js') }}"></script>
-    <script src="{{ asset('assets/datatables/js/dataTables.bootstrap5.min.js') }}"></script>
-    <script src="{{ asset('assets/datatables/js/dataTables.buttons.min.js') }}"></script>
-    <script src="{{ asset('assets/datatables/js/buttons.bootstrap5.min.js') }}"></script>
-
-    <!-- SweetAlert2 -->
-    <script src="{{ asset('assets/sweetalert/sweetalert2.all.min.js') }}"></script>
-
 
     <script>
         let table;

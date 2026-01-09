@@ -6760,6 +6760,11 @@ fieldset:disabled .btn {
   transform: translateX(100%);
 }
 
+#tabelDataAnggota thead th {
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
 .login-content {
   transition: opacity 0.2s ease, transform 0.2s ease;
 }

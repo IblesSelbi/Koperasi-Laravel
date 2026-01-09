@@ -1,6 +1,1 @@
-<script src="{{ asset('assets/datatables/jquery.dataTables.min.js') }}"></script>
-<script src="{{ asset('assets/datatables/dataTables.bootstrap5.min.js') }}"></script>
-<script src="{{ asset('assets/datatables/buttons.dataTables.min.js') }}"></script>
-<script src="{{ asset('assets/datatables/buttons.bootstrap5.min.js') }}"></script>
-
-<script src="{{ asset('assets/sweetalert/sweetalert2.all.min.js') }}"></script>
+@import "bootstrap/dist/css/bootstrap.min.css";
