@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin\DataMaster;
 
 use App\Http\Controllers\Controller;
-use App\Models\Admin\LamaAngsuran;
+use App\Models\Admin\DataMaster\LamaAngsuran;
 use Illuminate\Http\Request;
 
 class LamaAngsuranController extends Controller

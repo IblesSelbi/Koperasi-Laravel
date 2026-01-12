@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin\DataMaster;
 
 use App\Http\Controllers\Controller;
-use App\Models\Admin\JenisAkun;
+use App\Models\Admin\DataMaster\JenisAkun;
 use Illuminate\Http\Request;
 
 class JenisAkunController extends Controller

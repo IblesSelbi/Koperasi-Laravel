@@ -2,9 +2,6 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin;
-
-use App\Http\Controllers\Admin\DataMaster;
-use App\Http\Controllers\Admin\dash;
 use App\Http\Controllers\User;
 use App\Http\Controllers\Auth;
 use Illuminate\Support\Facades\Route;
@@ -17,6 +14,11 @@ use App\Http\Controllers\Admin\DataMaster\{
     DataBarangController,
     DataAnggotaController,
     DataPenggunaController
+};
+use App\Http\Controllers\Admin\TransaksiKas\{
+    PemasukanController,
+    PengeluaranController,
+    TransferController
 };
 
 /*
@@ -141,44 +143,34 @@ Route::middleware('auth')
     ->name('kas.')
     ->group(function () {
 
-        // Pemasukan Routes
-        Route::get('/pemasukan', [Admin\PemasukanController::class, 'index'])
-            ->name('pemasukan');
+        // PEMASUKAN
+        Route::controller(PemasukanController::class)->group(function () {
+            Route::get('/pemasukan', 'index')->name('pemasukan');
+            Route::get('/pemasukan/{id}', 'show')->name('pemasukan.show');
+            Route::post('/pemasukan', 'store')->name('pemasukan.store');
+            Route::put('/pemasukan/{id}', 'update')->name('pemasukan.update');
+            Route::delete('/pemasukan/{id}', 'destroy')->name('pemasukan.destroy');
+            Route::get('/pemasukan/cetak', 'cetak')->name('pemasukan.cetak');
+        });
 
-        Route::post('/pemasukan', [Admin\PemasukanController::class, 'store'])
-            ->name('pemasukan.store');
+        // PENGELUARAN
+        Route::controller(PengeluaranController::class)->group(function () {
+            Route::get('/pengeluaran', 'index')->name('pengeluaran');
+            Route::get('/pengeluaran/{id}', 'show')->name('pengeluaran.show');
+            Route::post('/pengeluaran', 'store')->name('pengeluaran.store');
+            Route::put('/pengeluaran/{id}', 'update')->name('pengeluaran.update');
+            Route::delete('/pengeluaran/{id}', 'destroy')->name('pengeluaran.destroy');
+        });
 
-        Route::put('/pemasukan/{id}', [Admin\PemasukanController::class, 'update'])
-            ->name('pemasukan.update');
+        // TRANSFER
+        Route::controller(TransferController::class)->group(function () {
+                   Route::get('/transfer', 'index')->name('transfer');
+            Route::get('/transfer/{id}', 'show')->name('transfer.show');
+            Route::post('/transfer', 'store')->name('transfer.store');
+            Route::put('/transfer/{id}', 'update')->name('transfer.update');
+            Route::delete('/transfer/{id}', 'destroy')->name('transfer.destroy');
+        });
 
-        Route::delete('/pemasukan/{id}', [Admin\PemasukanController::class, 'destroy'])
-            ->name('pemasukan.destroy');
-
-        // Pengeluaran Routes
-        Route::get('/pengeluaran', [Admin\PengeluaranController::class, 'index'])
-            ->name('pengeluaran');
-
-        Route::post('/pengeluaran', [Admin\PengeluaranController::class, 'store'])
-            ->name('pengeluaran.store');
-
-        Route::put('/pengeluaran/{id}', [Admin\PengeluaranController::class, 'update'])
-            ->name('pengeluaran.update');
-
-        Route::delete('/pengeluaran/{id}', [Admin\PengeluaranController::class, 'destroy'])
-            ->name('pengeluaran.destroy');
-
-        // Transfer Routes
-        Route::get('/transfer', [Admin\TransferController::class, 'index'])
-            ->name('transfer');
-
-        Route::post('/transfer', [Admin\TransferController::class, 'store'])
-            ->name('transfer.store');
-
-        Route::put('/transfer/{id}', [Admin\TransferController::class, 'update'])
-            ->name('transfer.update');
-
-        Route::delete('/transfer/{id}', [Admin\TransferController::class, 'destroy'])
-            ->name('transfer.destroy');
     });
 
 Route::middleware('auth')->prefix('admin')->name('simpanan.')->group(function () {
@@ -429,11 +421,7 @@ Route::middleware('auth')
     ->name('master.')
     ->group(function () {
 
-        /*
-        |--------------------------------------------------------------------------
-        | JENIS SIMPANAN
-        |--------------------------------------------------------------------------
-        */
+        // JENIS SIMPANAN
         Route::controller(JenisSimpananController::class)->group(function () {
             Route::get('/jenis-simpanan', 'index')->name('jenis-simpanan');
             Route::post('/jenis-simpanan', 'store')->name('jenis-simpanan.store');
@@ -443,11 +431,7 @@ Route::middleware('auth')
             Route::get('/jenis-simpanan/cetak', 'cetak')->name('jenis-simpanan.cetak');
         });
 
-        /*
-        |--------------------------------------------------------------------------
-        | JENIS AKUN
-        |--------------------------------------------------------------------------
-        */
+        // JENIS AKUN
         Route::controller(JenisAkunController::class)->group(function () {
             Route::get('/jenis-akun', 'index')->name('jenis-akun');
             Route::post('/jenis-akun', 'store')->name('jenis-akun.store');
@@ -457,11 +441,7 @@ Route::middleware('auth')
             Route::get('/jenis-akun/cetak', 'cetak')->name('jenis-akun.cetak');
         });
 
-        /*
-        |--------------------------------------------------------------------------
-        | DATA KAS
-        |--------------------------------------------------------------------------
-        */
+        // DATA KAS
         Route::controller(DataKasController::class)->group(function () {
             Route::get('/data-kas', 'index')->name('data-kas');
             Route::post('/data-kas', 'store')->name('data-kas.store');
@@ -471,11 +451,7 @@ Route::middleware('auth')
             Route::get('/data-kas/cetak', 'cetak')->name('data-kas.cetak');
         });
 
-        /*
-        |--------------------------------------------------------------------------
-        | LAMA ANGSURAN
-        |--------------------------------------------------------------------------
-        */
+        // LAMA ANGSURAN
         Route::controller(LamaAngsuranController::class)->group(function () {
             Route::get('/lama-angsuran', 'index')->name('lama-angsuran');
             Route::post('/lama-angsuran', 'store')->name('lama-angsuran.store');
@@ -485,11 +461,7 @@ Route::middleware('auth')
             Route::get('/lama-angsuran/cetak', 'cetak')->name('lama-angsuran.cetak');
         });
 
-        /*
-        |--------------------------------------------------------------------------
-        | DATA BARANG
-        |--------------------------------------------------------------------------
-        */
+        // DATA BARANG
         Route::controller(DataBarangController::class)->group(function () {
             Route::get('/data-barang', 'index')->name('data-barang');
             Route::post('/data-barang', 'store')->name('data-barang.store');
@@ -499,15 +471,11 @@ Route::middleware('auth')
             Route::get('/data-barang/cetak', 'cetak')->name('data-barang.cetak');
         });
 
-        /*
-        |--------------------------------------------------------------------------
-        | DATA ANGGOTA
-        |--------------------------------------------------------------------------
-        */
+        // DATA ANGGOTA
         Route::controller(DataAnggotaController::class)->group(function () {
             Route::get('/data-anggota', 'index')->name('data-anggota');
             Route::post('/data-anggota', 'store')->name('data-anggota.store');
-            Route::get('/data-anggota/{id}/edit', 'edit')->name('data-anggota.edit'); 
+            Route::get('/data-anggota/{id}/edit', 'edit')->name('data-anggota.edit');
             Route::put('/data-anggota/{id}', 'update')->name('data-anggota.update');
             Route::delete('/data-anggota/{id}', 'destroy')->name('data-anggota.destroy');
 
@@ -517,11 +485,7 @@ Route::middleware('auth')
             Route::get('/data-anggota/cetak', 'cetak')->name('data-anggota.cetak');
         });
 
-        /*
-        |--------------------------------------------------------------------------
-        | DATA PENGGUNA
-        |--------------------------------------------------------------------------
-        */
+        // DATA PENGGUNA
         Route::controller(DataPenggunaController::class)->group(function () {
             Route::get('/data-pengguna', 'index')->name('data-pengguna');
             Route::post('/data-pengguna', 'store')->name('data-pengguna.store');

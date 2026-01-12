@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin\DataMaster;
 
 use App\Http\Controllers\Controller;
-use App\Models\Admin\DataPengguna;
+use App\Models\Admin\DataMaster\DataPengguna;
 use Illuminate\Http\Request;
 
 class DataPenggunaController extends Controller

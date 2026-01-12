@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Admin;
+namespace App\Models\Admin\DataMaster;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
@@ -52,17 +52,13 @@ class DataAnggota extends Model
     // Accessor untuk photo URL
     public function getPhotoUrlAttribute()
     {
-        if (!$this->photo) {
+        if (!$this->photo || $this->photo === 'assets/images/profile/user-1.jpg') {
             return asset('assets/images/profile/user-1.jpg');
         }
 
-        // kalau dari storage
-        if (str_starts_with($this->photo, 'storage/')) {
-            return asset($this->photo);
-        }
-
-        return asset('assets/images/profile/user-1.jpg');
+        return asset('storage/' . $this->photo);
     }
+
 
     // Auto hash password saat set
     public function setPasswordAttribute($value)

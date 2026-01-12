@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin\DataMaster;
 
 use App\Http\Controllers\Controller;
-use App\Models\Admin\DataKas;
+use App\Models\Admin\DataMaster\DataKas;
 use Illuminate\Http\Request;
 
 class DataKasController extends Controller

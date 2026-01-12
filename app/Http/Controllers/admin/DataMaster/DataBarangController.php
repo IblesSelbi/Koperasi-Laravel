@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin\DataMaster;
 
 use App\Http\Controllers\Controller;
-use App\Models\Admin\DataBarang;
+use App\Models\Admin\DataMaster\DataBarang;
 use Illuminate\Http\Request;
 
 class DataBarangController extends Controller
