@@ -269,7 +269,7 @@
                                 <td class="text-center" style="min-width: 150px;">
                                     <div class="btn-group" role="group">
                                         <div class="btn-group mt-1" role="group">
-                                            <a href="{{ route('pinjaman.pinjaman.pinjaman.detail', $item->id) }}">
+                                            <a href="{{ route('pinjaman.pinjaman.detail', $item->id) }}">
                                                 <button class="btn btn-outline-info btn-sm">
                                                     <i class="ti ti-eye"></i> Detail
                                                 </button>
@@ -586,7 +586,7 @@
             const pinjamanId = $('#pinjamanId').val();
             const url = pinjamanId ?
                 `{{ url('pinjaman/pinjaman') }}/${pinjamanId}` :
-                '{{ route("pinjaman.pinjaman.pinjaman.store") }}';
+                '{{ route("pinjaman.pinjaman.store") }}';
 
             const method = pinjamanId ? 'PUT' : 'POST';
 
@@ -650,7 +650,7 @@
                 });
 
                 // Reload dengan filter
-                location.href = "{{ route('pinjaman.pinjaman.pinjaman') }}" + new URLSearchParams({
+                location.href = "{{ route('pinjaman.pinjaman') }}" + new URLSearchParams({
                 status,
                 kode,
                 nama,
@@ -687,7 +687,7 @@
             const nama = $('#filterNama').val() || '';
             const tanggal = $('#filterTanggal').val() || '';
 
-            location.href = "{{ route('pinjaman.pinjaman.pinjaman') }}" + new URLSearchParams({
+            location.href = "{{ route('pinjaman.pinjaman') }}" + new URLSearchParams({
             status,
             kode,
             nama,

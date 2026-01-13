@@ -58,7 +58,8 @@
     <div class="card">
         <div class="card-body">
             <div class="table-responsive">
-                <table id="tabelTransfer" class="table table-hover align-middle" style="width:100%">
+                <table id="tabelTransfer" class="table table-hover align-middle rounded-2 border overflow-hidden"
+                    style="width:100%"> 
                     <thead class="table-primary">
                         <tr>
                             <th class="text-center" width="50px">
@@ -89,7 +90,7 @@
                                 <td class="text-muted">
                                     {{ $item->tanggal_transaksi->format('d M Y H:i') }}
                                 </td>
-                                <td>{{ $item->uraian }}</td>
+                                <td class="text-dark">{{ $item->uraian }}</td>
                                 <td>
                                     <span class="badge bg-warning-subtle text-warning">
                                         {{ $item->dariKas->nama_kas ?? '-' }}

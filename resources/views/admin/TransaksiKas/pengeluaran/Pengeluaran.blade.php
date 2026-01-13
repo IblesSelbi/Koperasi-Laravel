@@ -55,10 +55,11 @@
     </div>
 
     <!-- Data Table Card -->
-    <div class="card">
+     <div class="card">
         <div class="card-body">
             <div class="table-responsive">
-                <table id="tabelPengeluaran" class="table table-hover align-middle" style="width:100%">
+                <table id="tabelPengeluaran" class="table table-hover align-middle rounded-2 border overflow-hidden"
+                    style="width:100%"> 
                     <thead class="table-primary">
                         <tr>
                             <th class="text-center" width="50px">
@@ -89,13 +90,13 @@
                                 <td class="text-muted">
                                     {{ $item->tanggal_transaksi->format('d M Y H:i') }}
                                 </td>
-                                <td>{{ $item->uraian }}</td>
+                                <td class="text-dark">{{ $item->uraian }}</td>
                                 <td>
                                     <span class="badge bg-primary-subtle text-primary">
                                         {{ $item->dariKas->nama_kas ?? '-' }}
                                     </span>
                                 </td>
-                                <td class="text-muted">
+                                <td class="text-muted fw-semibold">
                                     {{ $item->untukAkun->jns_transaksi ?? '-' }}
                                 </td>
                                 <td class="text-end">

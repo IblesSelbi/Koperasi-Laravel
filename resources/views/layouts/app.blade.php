@@ -123,6 +123,7 @@
     <!-- JS Lokal -->
     <script src="{{ asset('assets/libs/jquery/dist/jquery.min.js') }}"></script>
     <script src="{{ asset('assets/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('assets/js/flatpickr.js') }}"></script>
 
     @if($isAdmin)
         <script src="{{ asset('assets/js/sidebarmenu.js') }}"></script>

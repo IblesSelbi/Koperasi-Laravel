@@ -101,13 +101,13 @@
                                 <td class="text-muted">
                                     {{ $item->tanggal_transaksi->format('d M Y H:i') }}
                                 </td>
-                                <td>{{ $item->uraian }}</td>
+                                <td class="text-dark">{{ $item->uraian }}</td>
                                 <td>
                                     <span class="badge bg-info-subtle text-info">
                                         {{ $item->untukKas->nama_kas ?? '-' }}
                                     </span>
                                 </td>
-                                <td class="text-muted">
+                                <td class="text-muted fw-semibold">
                                     {{ $item->dariAkun->jns_transaksi ?? '-' }}
                                 </td>
                                 <td class="text-end">

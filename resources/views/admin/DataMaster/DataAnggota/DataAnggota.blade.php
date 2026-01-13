@@ -8,6 +8,28 @@
             white-space: nowrap;
             vertical-align: middle;
         }
+        
+        /* Fix untuk tombol aksi agar horizontal */
+        #tabelDataAnggota tbody td:last-child {
+            white-space: nowrap !important;
+        }
+        
+        /* Pastikan kolom aksi tidak membungkus */
+        #tabelDataAnggota tbody td {
+            vertical-align: middle;
+        }
+        
+        /* Fix untuk responsive tanpa merusak layout tombol */
+        .dataTables_wrapper .dataTables_scroll {
+            overflow-x: auto;
+        }
+        
+        /* Tombol dalam satu baris */
+        .action-buttons {
+            display: inline-flex;
+            gap: 4px;
+            white-space: nowrap;
+        }
     </style>
 @endpush
 
@@ -106,8 +128,7 @@
                                     <img src="{{ asset($item->photo_url) }}" class="rounded-circle" width="40" height="40">
                                 </td>
                                 <td class="text-center">
-                                    <span
-                                        class="badge bg-primary-subtle text-primary fw-semibold">{{ $item->id_anggota }}</span>
+                                    <span class="badge bg-primary-subtle text-primary fw-semibold">{{ $item->id_anggota }}</span>
                                 </td>
                                 <td>
                                     <div class="fw-semibold text-dark">{{ $item->username }}</div>
@@ -124,19 +145,19 @@
                                 <td>{{ $item->departement ?: '-' }}</td>
                                 <td class="text-center">{{ $item->tanggal_registrasi->format('d/m/Y') }}</td>
                                 <td class="text-center">
-                                    <span
-                                        class="badge bg-{{ $item->aktif == 'Aktif' ? 'success' : 'danger' }}-subtle text-{{ $item->aktif == 'Aktif' ? 'success' : 'danger' }} fw-semibold">
+                                    <span class="badge bg-{{ $item->aktif == 'Aktif' ? 'success' : 'danger' }}-subtle text-{{ $item->aktif == 'Aktif' ? 'success' : 'danger' }} fw-semibold">
                                         {{ $item->aktif }}
                                     </span>
                                 </td>
                                 <td class="text-center">
-                                    <button class="btn btn-sm btn-warning me-1" onclick="editData({{ $item->id }})"
-                                        title="Edit">
-                                        <i class="ti ti-edit"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-danger" onclick="hapusData({{ $item->id }})" title="Hapus">
-                                        <i class="ti ti-trash"></i>
-                                    </button>
+                                    <div class="action-buttons">
+                                        <button class="btn btn-sm btn-warning" onclick="editData({{ $item->id }})" title="Edit">
+                                            <i class="ti ti-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="hapusData({{ $item->id }})" title="Hapus">
+                                            <i class="ti ti-trash"></i>
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         @endforeach
@@ -359,8 +380,17 @@
                 pageLength: 10,
                 order: [],
                 scrollX: true,
+                autoWidth: false,
                 columnDefs: [
-                    { orderable: false, targets: '_all' }
+                    { 
+                        orderable: false, 
+                        targets: '_all' 
+                    },
+                    {
+                        // Fix width untuk kolom aksi
+                        width: '150px',
+                        targets: -1
+                    }
                 ]
             });
         });
@@ -496,7 +526,6 @@
                     const data = await res.json();
 
                     if (!res.ok) {
-                        // Handle HTTP error status
                         throw {
                             status: res.status,
                             data: data
@@ -515,7 +544,6 @@
                             showConfirmButton: false
                         }).then(() => location.reload());
                     } else {
-                        // Handle validation errors from server
                         let errorMessage = res.message || 'Gagal menyimpan data';
                         if (res.errors) {
                             errorMessage = Object.values(res.errors).flat().join('\n');
@@ -533,7 +561,6 @@
                     let errorMessage = 'Terjadi kesalahan saat menyimpan data';
 
                     if (error.status === 422 && error.data.errors) {
-                        // Validation error
                         errorMessage = Object.values(error.data.errors).flat().join('\n');
                     } else if (error.data && error.data.message) {
                         errorMessage = error.data.message;

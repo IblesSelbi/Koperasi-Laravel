@@ -244,7 +244,7 @@
                         </div>
                     </div>
                 </div>
-                <a href="{{ route('pinjaman.pinjaman.pinjaman') }}" class="btn btn-danger btn-sm w-100 mt-3">
+                <a href="{{ route('pinjaman.pinjaman') }}" class="btn btn-danger btn-sm w-100 mt-3">
                     <small>Lihat Detail</small>
                 </a>
             </div>

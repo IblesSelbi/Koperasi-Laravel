@@ -20,6 +20,19 @@ use App\Http\Controllers\Admin\TransaksiKas\{
     PengeluaranController,
     TransferController
 };
+use App\Http\Controllers\Admin\Simpanan\{
+    SetoranTunaiController,
+    PenarikanTunaiController
+};
+use App\Http\Controllers\Admin\Pinjaman\{
+    PengajuanController,
+    PinjamanController,
+    BayarAngsuranController,
+    PinjamanLunasController
+};
+use App\Http\Controllers\User\PengajuanPinjaman\{
+    PengajuanUserController,
+};
 
 /*
 |--------------------------------------------------------------------------
@@ -90,48 +103,39 @@ Route::middleware('auth')->group(function () {
 | USERS - TAMBAHKAN MIDDLEWARE AUTH
 |--------------------------------------------------------------------------
 */
-// ========== USER ROUTES (Anggota/Member) ==========
-Route::middleware('auth')->group(function () {
+// USER ROUTES (Anggota/Member)
+Route::middleware('auth')
+    ->prefix('user')
+    ->group(function () {
 
-    // ========== PENGAJUAN PINJAMAN USER ==========
-    Route::prefix('user')->name('user.pengajuan.')->group(function () {
-        Route::get('/pengajuan', [User\PengajuanUserController::class, 'index'])
-            ->name('index');
+        // PENGAJUAN PINJAMAN
+        Route::controller(PengajuanUserController::class)
+            ->name('user.pengajuan.')
+            ->group(function () {
 
-        Route::get('/tambah', [User\PengajuanUserController::class, 'create'])
-            ->name('create');
+            Route::get('/pengajuan', 'index')->name('index');
+            Route::get('/pengajuan/tambah', 'create')->name('create');
 
-        Route::post('/', [User\PengajuanUserController::class, 'store'])
-            ->name('store');
+            Route::post('/pengajuan', 'store')->name('store');
+            Route::post('/pengajuan/update', 'update')->name('update');
 
-        Route::post('/update', [User\PengajuanUserController::class, 'update'])
-            ->name('update');
-
-        Route::post('/batal/{id}', [User\PengajuanUserController::class, 'batal'])
-            ->name('batal');
-
-        Route::get('/cetak/{id}', [User\PengajuanUserController::class, 'cetak'])
-            ->name('cetak');
-    });
-
-    // ========== LAPORAN USER ==========
-    Route::middleware('auth')->group(function () {
-        // ========== LAPORAN USER ==========
-        Route::prefix('user')->name('user.laporan.')->group(function () {
-            Route::get('/simpanan', [User\LaporanUserController::class, 'simpanan'])
-                ->name('simpanan');
-
-            Route::get('/pinjaman', [User\LaporanUserController::class, 'pinjaman'])
-                ->name('pinjaman');
-
-            Route::get('/pinjaman/{id}', [User\LaporanUserController::class, 'detailPinjaman'])
-                ->name('pinjaman.detail');
-
-            Route::get('/pembayaran', [User\LaporanUserController::class, 'pembayaran'])
-                ->name('pembayaran');
+            Route::post('/pengajuan/batal/{id}', 'batal')->name('batal');
+            Route::get('/pengajuan/cetak/{id}', 'cetak')->name('cetak');
         });
+
+        // LAPORAN
+        Route::controller(User\LaporanUserController::class)
+            ->name('user.laporan.')
+            ->group(function () {
+
+            Route::get('/laporan/simpanan', 'simpanan')->name('simpanan');
+            Route::get('/laporan/pinjaman', 'pinjaman')->name('pinjaman');
+            Route::get('/laporan/pinjaman/{id}', 'detailPinjaman')->name('pinjaman.detail');
+            Route::get('/laporan/pembayaran', 'pembayaran')->name('pembayaran');
+        });
+
     });
-});
+
 
 /*
 |--------------------------------------------------------------------------
@@ -164,7 +168,7 @@ Route::middleware('auth')
 
         // TRANSFER
         Route::controller(TransferController::class)->group(function () {
-                   Route::get('/transfer', 'index')->name('transfer');
+            Route::get('/transfer', 'index')->name('transfer');
             Route::get('/transfer/{id}', 'show')->name('transfer.show');
             Route::post('/transfer', 'store')->name('transfer.store');
             Route::put('/transfer/{id}', 'update')->name('transfer.update');
@@ -173,120 +177,90 @@ Route::middleware('auth')
 
     });
 
-Route::middleware('auth')->prefix('admin')->name('simpanan.')->group(function () {
-    // Setoran Tunai Routes
-    Route::get('/setoran', [Admin\SetoranTunaiController::class, 'index'])
-        ->name('setoran');
+Route::middleware('auth')
+    ->prefix('admin')
+    ->name('simpanan.')
+    ->group(function () {
 
-    Route::post('/setoran', [Admin\SetoranTunaiController::class, 'store'])
-        ->name('setoran.store');
+        // SETORAN TUNAI
+        Route::controller(SetoranTunaiController::class)->group(function () {
+            Route::get('/setoran', 'index')->name('setoran');
+            Route::get('/setoran/{id}', 'show')->name('setoran.show');
+            Route::post('/setoran', 'store')->name('setoran.store');
+            Route::put('/setoran/{id}', 'update')->name('setoran.update');
+            Route::delete('/setoran/{id}', 'destroy')->name('setoran.destroy');
+        });
 
-    Route::put('/setoran/{id}', [Admin\SetoranTunaiController::class, 'update'])
-        ->name('setoran.update');
+        // PENARIKAN TUNAI
+        Route::controller(PenarikanTunaiController::class)->group(function () {
+            Route::get('/penarikan', 'index')->name('penarikan');
+            Route::get('/penarikan/{id}', 'show')->name('penarikan.show');
+            Route::post('/penarikan', 'store')->name('penarikan.store');
+            Route::put('/penarikan/{id}', 'update')->name('penarikan.update');
+            Route::delete('/penarikan/{id}', 'destroy')->name('penarikan.destroy');
+        });
 
-    Route::delete('/setoran/{id}', [Admin\SetoranTunaiController::class, 'destroy'])
-        ->name('setoran.destroy');
+    });
 
-    // Penarikan Tunai Routes
-    Route::get('/penarikan', [Admin\PenarikanTunaiController::class, 'index'])
-        ->name('penarikan');
 
-    Route::post('/penarikan', [Admin\PenarikanTunaiController::class, 'store'])
-        ->name('penarikan.store');
+Route::middleware('auth')
+    ->prefix('admin')
+    ->name('pinjaman.')
+    ->group(function () {
 
-    Route::put('/penarikan/{id}', [Admin\PenarikanTunaiController::class, 'update'])
-        ->name('penarikan.update');
+        // PENGAJUAN PINJAMAN
+        Route::controller(PengajuanController::class)->group(function () {
+            Route::get('/pengajuan', 'index')->name('pengajuan');
+            Route::post('/pengajuan/aksi', 'aksi')->name('pengajuan.aksi');
 
-    Route::delete('/penarikan/{id}', [Admin\PenarikanTunaiController::class, 'destroy'])
-        ->name('penarikan.destroy');
-});
+            Route::get('/pengajuan/cetak', 'cetak')->name('pengajuan.cetak');
+            Route::get('/pengajuan/cetak-laporan', 'cetakLaporan')->name('pengajuan.cetak-laporan');
 
-Route::middleware('auth')->prefix('admin')->name('pinjaman.')->group(function () {
-    // ========== PENGAJUAN ROUTES ==========
-    Route::get('/pengajuan', [Admin\PengajuanController::class, 'index'])
-        ->name('pengajuan');
+            Route::get('/pengajuan/export/excel', 'exportExcel')->name('pengajuan.export.excel');
+            Route::get('/pengajuan/export/pdf', 'exportPDF')->name('pengajuan.export.pdf');
+        });
 
-    Route::post('/pengajuan/aksi', [Admin\PengajuanController::class, 'aksi'])
-        ->name('pengajuan.aksi');
+        // DATA PINJAMAN
+        Route::controller(PinjamanController::class)->group(function () {
+            Route::get('/pinjaman', 'index')->name('pinjaman');
+            Route::get('/pinjaman/{id}', 'detail')->name('pinjaman.detail');
 
-    Route::get('/pengajuan/cetak', [Admin\PengajuanController::class, 'cetak'])
-        ->name('pengajuan.cetak');
+            Route::post('/pinjaman', 'store')->name('pinjaman.store');
+            Route::put('/pinjaman/{id}', 'update')->name('pinjaman.update');
+            Route::delete('/pinjaman/{id}', 'destroy')->name('pinjaman.destroy');
 
-    Route::get('/pengajuan/cetak-laporan', [Admin\PengajuanController::class, 'cetakLaporan'])
-        ->name('pengajuan.cetak-laporan');
+            Route::get('/pinjaman/cetak/{id}', 'cetak')->name('pinjaman.cetak');
+            Route::post('/pinjaman/validasi-lunas/{id}', 'validasiLunas')->name('pinjaman.validasi-lunas');
 
-    Route::get('/pengajuan/export/excel', [Admin\PengajuanController::class, 'exportExcel'])
-        ->name('pengajuan.export.excel');
+            Route::get('/pinjaman/cetak-laporan', 'cetakLaporan')->name('pinjaman.cetak-laporan');
+            Route::get('/pinjaman/export/excel', 'exportExcel')->name('pinjaman.export.excel');
+            Route::get('/pinjaman/export/pdf', 'exportPDF')->name('pinjaman.export.pdf');
+        });
 
-    Route::get('/pengajuan/export/pdf', [Admin\PengajuanController::class, 'exportPDF'])
-        ->name('pengajuan.export.pdf');
+        // BAYAR ANGSURAN
+        Route::controller(BayarAngsuranController::class)->group(function () {
+            Route::get('/bayar', 'index')->name('bayar');
+            Route::post('/bayar/proses', 'proses')->name('bayar.proses');
 
-    // ========== PINJAMAN ROUTES ==========
-    Route::get('/pinjaman', [Admin\PinjamanController::class, 'index'])
-        ->name('pinjaman.pinjaman');
+            Route::get('/bayar/cetak-bukti/{id}', 'cetakBukti')->name('bayar.cetak-bukti');
+            Route::get('/bayar/detail/{id}', 'show')->name('bayar.detail');
+        });
 
-    Route::post('/pinjaman/store', [Admin\PinjamanController::class, 'store'])
-        ->name('pinjaman.pinjaman.store');
+        // PINJAMAN LUNAS
+        Route::controller(PinjamanLunasController::class)->group(function () {
+            Route::get('/lunas', 'index')->name('lunas');
 
-    Route::get('/pinjaman/cetak-laporan', [Admin\PinjamanController::class, 'cetakLaporan'])
-        ->name('pinjaman.pinjaman.cetak-laporan');
+            Route::get('/lunas/cetak-detail/{id}', 'cetakDetail')->name('lunas.cetak-detail');
+            Route::get('/lunas/cetak-laporan', 'cetakLaporan')->name('lunas.cetak-laporan');
 
-    Route::get('/pinjaman/export/excel', [Admin\PinjamanController::class, 'exportExcel'])
-        ->name('pinjaman.pinjaman.export.excel');
+            Route::get('/lunas/export/excel', 'exportExcel')->name('lunas.export.excel');
+            Route::get('/lunas/export/pdf', 'exportPDF')->name('lunas.export.pdf');
 
-    Route::get('/pinjaman/export/pdf', [Admin\PinjamanController::class, 'exportPDF'])
-        ->name('pinjaman.pinjaman.export.pdf');
+            Route::get('/lunas/{id}', 'show')->name('lunas.detail');
+        });
 
-    Route::get('/pinjaman/cetak/{id}', [Admin\PinjamanController::class, 'cetak'])
-        ->name('pinjaman.pinjaman.cetak');
+    });
 
-    Route::post('/pinjaman/validasi-lunas/{id}', [Admin\PinjamanController::class, 'validasiLunas'])
-        ->name('pinjaman.pinjaman.validasi-lunas');
-
-    // ===== ROUTE DENGAN {id} HARUS PALING BAWAH =====
-    Route::get('/pinjaman/detail/{id}', [Admin\PinjamanController::class, 'detail'])
-        ->name('pinjaman.pinjaman.detail');
-
-    Route::put('/pinjaman/{id}', [Admin\PinjamanController::class, 'update'])
-        ->name('pinjaman.pinjaman.update');
-
-    Route::delete('/pinjaman/{id}', [Admin\PinjamanController::class, 'destroy'])
-        ->name('pinjaman.pinjaman.destroy');
-
-    // ========== BAYAR ANGSURAN ROUTES ==========
-    Route::get('/bayar', [Admin\BayarAngsuranController::class, 'index'])
-        ->name('bayar');
-
-    Route::post('/bayar/proses', [Admin\BayarAngsuranController::class, 'proses'])
-        ->name('bayar.proses');
-
-    Route::get('/bayar/cetak-bukti/{id}', [Admin\BayarAngsuranController::class, 'cetakBukti'])
-        ->name('bayar.cetak-bukti');
-
-    Route::get('/bayar/detail/{id}', [Admin\BayarAngsuranController::class, 'show'])
-        ->name('bayar.detail');
-
-    // ========== PINJAMAN LUNAS ROUTES ==========
-    Route::get('/lunas', [Admin\PinjamanLunasController::class, 'index'])
-        ->name('lunas');
-
-    // Routes spesifik HARUS SEBELUM {id}
-    Route::get('/lunas/cetak-detail/{id}', [Admin\PinjamanLunasController::class, 'cetakDetail'])
-        ->name('lunas.cetak-detail');
-
-    Route::get('/lunas/cetak-laporan', [Admin\PinjamanLunasController::class, 'cetakLaporan'])
-        ->name('lunas.cetak-laporan');
-
-    Route::get('/lunas/export/excel', [Admin\PinjamanLunasController::class, 'exportExcel'])
-        ->name('lunas.export.excel');
-
-    Route::get('/lunas/export/pdf', [Admin\PinjamanLunasController::class, 'exportPDF'])
-        ->name('lunas.export.pdf');
-
-    // Route {id} HARUS PALING BAWAH
-    Route::get('/lunas/{id}', [Admin\PinjamanLunasController::class, 'show'])
-        ->name('lunas.detail');
-});
 
 Route::middleware('auth')->prefix('admin')->name('laporan.')->group(function () {
     // Route Data Anggota

@@ -3,41 +3,26 @@
 @section('title', 'Setoran Tunai')
 
 @push('styles')
-    <!-- DataTables CSS -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css">
+<style>
+    /* Nowrap untuk semua cell di tabel */
+    #tabelSetoran td,
+    #tabelSetoran th {
+        white-space: nowrap;
+    }
+</style>
 @endpush
 
 @section('content')
-    <!-- Page Header -->
     <div class="row mb-3">
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <h4 class="fw-semibold mb-1">Transaksi Setoran Tunai</h4>
-                    <p class="text-muted fs-3 mb-0">Kelola transaksi setoran tunai simpanan anggota</p>
+                    <p class="text-muted fs-3 mb-0">Kelola transaksi setoran simpanan anggota</p>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- Alert Success -->
-    @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="ti ti-check me-2"></i>
-            {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
-
-    <!-- Alert Error -->
-    @if(session('error'))
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="ti ti-alert-circle me-2"></i>
-            {{ session('error') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
 
     <!-- Toolbar Card -->
     <div class="card mb-3">
@@ -56,29 +41,29 @@
                 </div>
                 <div class="col-lg-auto ms-auto">
                     <select class="form-select form-select-sm" id="filterSimpanan" style="width: 200px;">
-                        <option value="">-- Tampilkan Akun --</option>
-                        <option value="Simpanan Sukarela">Simpanan Sukarela</option>
-                        <option value="Simpanan Pokok">Simpanan Pokok</option>
-                        <option value="Simpanan Wajib">Simpanan Wajib</option>
+                        <option value="">-- Filter Jenis Simpanan --</option>
+                        @foreach($jenis_simpanan_list as $js)
+                            <option value="{{ $js->jenis_simpanan }}">{{ $js->jenis_simpanan }}</option>
+                        @endforeach
                     </select>
                 </div>
                 <div class="col-lg-auto">
-                    <div class="input-group input-group-sm" style="width: 180px;">
-                        <input type="date" class="form-control" id="filterTanggal" placeholder="Pilih Tanggal">
+                    <div class="input-group input-group-sm" style="width: 200px;">
+                        <input type="text" class="form-control" id="filterTanggal" placeholder="Pilih Tanggal" readonly>
+                        <button class="btn btn-outline-secondary" type="button" id="btnTanggal">
+                            <i class="ti ti-calendar fs-4"></i>
+                        </button>
                     </div>
                 </div>
                 <div class="col-lg-auto">
                     <div class="input-group input-group-sm" style="width: 200px;">
-                        <input type="text" class="form-control" id="searchInput" placeholder="Cari Kode Transaksi">
+                        <input type="text" class="form-control" id="searchInput" placeholder="Cari transaksi...">
                         <button class="btn btn-primary" onclick="cariData()">
                             <i class="ti ti-search"></i>
                         </button>
                     </div>
                 </div>
                 <div class="col-lg-auto">
-                    <button class="btn btn-info btn-sm" onclick="cetakLaporan()">
-                        <i class="ti ti-printer"></i> Cetak
-                    </button>
                     <button class="btn btn-secondary btn-sm" onclick="resetFilter()">
                         <i class="ti ti-refresh"></i> Reset
                     </button>
@@ -91,144 +76,135 @@
     <div class="card">
         <div class="card-body">
             <div class="table-responsive">
-                <table id="tabelSetoran" class="table table-hover align-middle rounded-2 border overflow-hidden"
-                    style="width:100%">
+                <table id="tabelSetoran" class="table table-hover align-middle rounded-2 border overflow-hidden" style="width:100%">
                     <thead class="table-primary">
                         <tr>
-                            <th class="text-center" width="50px">
+                            <th class="text-center" width="50">
                                 <input type="checkbox" id="selectAll" class="form-check-input">
                             </th>
-                            <th class="text-center align-middle" width="20px">No</th>
+                            <th class="text-center" width="50">No</th>
                             <th>Kode Transaksi</th>
-                            <th>Tanggal Transaksi</th>
+                            <th>Tanggal</th>
                             <th>ID Anggota</th>
                             <th>Nama Anggota</th>
                             <th>Departemen</th>
                             <th>Jenis Simpanan</th>
                             <th class="text-end">Jumlah</th>
                             <th class="text-center">User</th>
-                            <th class="text-center" width="75px">Aksi</th>
+                            <th class="text-center" width="80">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($setoran as $index => $item)
-                            <tr>
-                                <td class="text-center">
+                        @foreach($setoran as $index => $item)
+                            <tr data-id="{{ $item->id }}">
+                                <td class="text-center" onclick="event.stopPropagation()">
                                     <input type="checkbox" class="row-checkbox form-check-input" data-id="{{ $item->id }}">
                                 </td>
-                                <td class="text-center text-muted fw-medium">{{ $index + 1 }}</td>
+                                <td class="text-center text-muted">{{ $index + 1 }}</td>
                                 <td>
-                                    <span class="badge bg-primary-subtle text-primary fw-semibold px-2 py-1">
+                                    <span class="badge bg-primary-subtle text-primary fw-semibold">
                                         {{ $item->kode_transaksi }}
                                     </span>
                                 </td>
                                 <td class="text-muted">
-                                    {{ \Carbon\Carbon::parse($item->tanggal_transaksi)->format('d F Y') }}
+                                    {{ $item->tanggal_transaksi->format('d M Y H:i') }}
                                 </td>
                                 <td class="text-center">
-                                    <span class="badge bg-info-subtle text-info">{{ $item->id_anggota }}</span>
+                                    <span class="badge bg-info-subtle text-info">
+                                        {{ $item->anggota->id_anggota ?? '-' }}
+                                    </span>
                                 </td>
+                                <td class="fw-semibold">{{ $item->anggota->nama ?? '-' }}</td>
+                                <td class="text-muted">{{ $item->anggota->departement ?? '-' }}</td>
                                 <td>
-                                    <div class="fw-semibold text-dark mb-0">{{ $item->nama_anggota }}</div>
+                                    <span class="badge bg-warning-subtle text-warning">
+                                        {{ $item->jenisSimpanan->jenis_simpanan ?? '-' }}
+                                    </span>
                                 </td>
-                                <td class="text-muted">{{ $item->departemen }}</td>
-                                <td>
-                                    <span class="badge text-dark fw-semibold">{{ $item->jenis_simpanan }}</span>
+                                <td class="text-end fw-bold text-success">
+                                    Rp {{ number_format($item->jumlah, 0, ',', '.') }}
                                 </td>
-                                <td class="text-end">
-                                    <span class="fw-bold text-success fs-4">
-                                        Rp {{ number_format($item->jumlah, 0, ',', '.') }}
+                                <td class="text-center">
+                                    <span class="badge border border-secondary text-secondary">
+                                        {{ $item->user->name ?? '-' }}
                                     </span>
                                 </td>
                                 <td class="text-center">
-                                    <span class="badge border border-secondary text-secondary px-3 py-1 fw-semibold">
-                                        {{ $item->user }}
-                                    </span>
-                                </td>
-                                <td class="text-center">
-                                    <button class="btn btn-sm btn-outline-primary" onclick="cetakNota(this)">
+                                    <button class="btn btn-sm btn-outline-primary" onclick="cetakNota({{ $item->id }})">
                                         <i class="ti ti-printer"></i> Nota
                                     </button>
                                 </td>
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="11" class="text-center text-muted py-4">
-                                    <i class="ti ti-database-off fs-1 mb-2"></i>
-                                    <p class="mb-0">Tidak ada data setoran tunai</p>
-                                </td>
-                            </tr>
-                        @endforelse
+                        @endforeach
                     </tbody>
-
-                    @if($setoran->count() > 0)
-                        <tfoot>
-                            <tr class="table-light">
-                                <td colspan="8" class="text-end fw-bolder fs-4">Total Setoran:</td>
-                                <td class="text-end">
-                                    <span class="fw-bold text-success fs-4 fw-bolder">
-                                        Rp {{ number_format($total_setoran ?? 0, 0, ',', '.') }}
-                                    </span>
-                                </td>
-                                <td colspan="2"></td>
-                            </tr>
-                        </tfoot>
-                    @endif
+                    <tfoot>
+                        <tr class="table-light">
+                            <th colspan="8" class="text-end fw-semibold">Total:</th>
+                            <th class="text-end fw-semibold text-success fs-4">
+                                Rp {{ number_format($total_setoran, 0, ',', '.') }}
+                            </th>
+                            <th colspan="2"></th>
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
+            
+            @if($setoran->isEmpty())
+                <div class="text-center text-muted py-4">
+                    <i class="ti ti-database-off fs-1"></i>
+                    <p class="mb-0">Tidak ada data setoran tunai</p>
+                </div>
+            @endif
         </div>
     </div>
 
     <!-- Modal Form -->
     <div class="modal fade" id="modalForm" tabindex="-1">
-       <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="modalTitle">Tambah Data Setoran Tunai</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <form id="formSetoran" method="POST" action="{{ route('simpanan.setoran.store') }}">
-                    @csrf
-                    <input type="hidden" name="_method" id="formMethod" value="POST">
-                    <input type="hidden" name="id" id="formId">
+                <form id="formSetoran">
+                    <input type="hidden" id="formId">
+                    <input type="hidden" id="formMethod" value="POST">
 
                     <div class="modal-body">
                         <div class="row">
                             <div class="col-md-8">
                                 <div class="mb-3">
                                     <label class="form-label">Tanggal Transaksi <span class="text-danger">*</span></label>
-                                    <input type="datetime-local" class="form-control" id="tglTransaksi"
-                                        name="tanggal_transaksi" required>
+                                    <input type="datetime-local" class="form-control" id="tanggalTransaksi" required>
                                 </div>
 
-                                <h6 class="fw-semibold mb-3 text-primary">Identitas Penyetor</h6>
+                                <h6 class="fw-semibold mb-3 text-primary">Identitas Penyetor (Opsional)</h6>
 
                                 <div class="mb-3">
                                     <label class="form-label">Nama Penyetor</label>
-                                    <input type="text" class="form-control" id="namaPenyetor" name="nama_penyetor"
-                                        placeholder="Masukkan nama penyetor">
+                                    <input type="text" class="form-control" id="namaPenyetor" placeholder="Jika bukan anggota sendiri">
                                 </div>
 
                                 <div class="mb-3">
                                     <label class="form-label">Nomor Identitas</label>
-                                    <input type="text" class="form-control" id="noIdentitas" name="no_identitas"
-                                        placeholder="Masukkan nomor identitas">
+                                    <input type="text" class="form-control" id="noIdentitas" placeholder="KTP/SIM">
                                 </div>
 
                                 <div class="mb-3">
                                     <label class="form-label">Alamat</label>
-                                    <textarea class="form-control" id="alamat" name="alamat" rows="2"
-                                        placeholder="Masukkan alamat"></textarea>
+                                    <textarea class="form-control" id="alamat" rows="2"></textarea>
                                 </div>
 
-                                <h6 class="fw-semibold mb-3 text-primary mt-4">Identitas Anggota</h6>
+                                <h6 class="fw-semibold mb-3 text-primary">Data Setoran</h6>
 
                                 <div class="mb-3">
                                     <label class="form-label">Nama Anggota <span class="text-danger">*</span></label>
-                                    <select class="form-select" id="namaAnggota" name="anggota_id" required>
+                                    <select class="form-select" id="anggotaId" required>
                                         <option value="">-- Pilih Anggota --</option>
                                         @foreach($anggota_list as $anggota)
-                                            <option value="{{ $anggota->id }}">
+                                            <option value="{{ $anggota->id }}" 
+                                                    data-photo="{{ $anggota->photo }}"
+                                                    data-dept="{{ $anggota->departement }}">
                                                 {{ $anggota->id_anggota }} - {{ $anggota->nama }}
                                             </option>
                                         @endforeach
@@ -237,48 +213,56 @@
 
                                 <div class="mb-3">
                                     <label class="form-label">Jenis Simpanan <span class="text-danger">*</span></label>
-                                    <select class="form-select" id="jenisSimpanan" name="jenis_simpanan" required>
-                                        <option value="">-- Pilih Simpanan --</option>
-                                        <option value="Simpanan Sukarela">Simpanan Sukarela</option>
-                                        <option value="Simpanan Pokok">Simpanan Pokok</option>
-                                        <option value="Simpanan Wajib">Simpanan Wajib</option>
+                                    <select class="form-select" id="jenisSimpananId" required>
+                                        <option value="">-- Pilih Jenis Simpanan --</option>
+                                        @foreach($jenis_simpanan_list as $js)
+                                            <option value="{{ $js->id }}" data-jumlah="{{ $js->jumlah }}">
+                                                {{ $js->jenis_simpanan }}
+                                                @if($js->jumlah > 0)
+                                                    (Rp {{ number_format($js->jumlah, 0, ',', '.') }})
+                                                @endif
+                                            </option>
+                                        @endforeach
                                     </select>
                                 </div>
 
                                 <div class="mb-3">
-                                    <label class="form-label">Jumlah Setoran <span class="text-danger">*</span></label>
+                                    <label class="form-label">Jumlah <span class="text-danger">*</span></label>
                                     <div class="input-group">
                                         <span class="input-group-text">Rp</span>
-                                        <input type="text" class="form-control" id="jumlah" name="jumlah" placeholder="0"
-                                            required>
+                                        <input type="text" class="form-control" id="jumlah" required>
                                     </div>
                                 </div>
 
                                 <div class="mb-3">
-                                    <label class="form-label">Keterangan</label>
-                                    <input type="text" class="form-control" id="keterangan" name="keterangan"
-                                        placeholder="Masukkan keterangan">
+                                    <label class="form-label">Masuk ke Kas <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="untukKasId" required>
+                                        <option value="">-- Pilih Kas --</option>
+                                        @foreach($kas_list as $kas)
+                                            <option value="{{ $kas->id }}">{{ $kas->nama_kas }}</option>
+                                        @endforeach
+                                    </select>
+                                    <small class="text-muted">Hanya kas yang aktif dan bisa simpanan</small>
                                 </div>
 
                                 <div class="mb-3">
-                                    <label class="form-label">Masuk ke Kas <span class="text-danger">*</span></label>
-                                    <select class="form-select" id="kas" name="kas" required>
-                                        <option value="">-- Pilih Kas --</option>
-                                        <option value="Kas Tunai">Kas Tunai</option>
-                                        <option value="Kas Besar">Kas Besar</option>
-                                    </select>
+                                    <label class="form-label">Keterangan</label>
+                                    <textarea class="form-control" id="keterangan" rows="2"></textarea>
                                 </div>
                             </div>
 
                             <div class="col-md-4">
                                 <div class="mb-3">
                                     <label class="form-label">Foto Anggota</label>
-                                    <div class="border rounded p-3 text-center" style="min-height: 200px;">
-                                        <div id="fotoAnggota" class="d-flex align-items-center justify-content-center"
-                                            style="height: 180px;">
-                                            <span class="text-muted">Foto akan muncul setelah memilih anggota</span>
+                                    <div class="border rounded p-3 text-center" style="min-height: 250px;">
+                                        <div id="fotoAnggota" class="d-flex align-items-center justify-content-center" style="height: 230px;">
+                                            <span class="text-muted">Pilih anggota untuk melihat foto</span>
                                         </div>
                                     </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Departemen</label>
+                                    <input type="text" class="form-control" id="departemenInfo" readonly>
                                 </div>
                             </div>
                         </div>
@@ -296,223 +280,322 @@
 @endsection
 
 @push('scripts')
-    <!-- DataTables -->
-    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.bootstrap5.min.js"></script>
+<script>
+    let fpTanggal;
 
-    <script>
-        let table;
-        $(document).ready(function () {
-            // Hide table initially
-            const tableWrapper = $('#tabelSetoran').closest('.card-body');
-            tableWrapper.css({ opacity: 0, transition: 'opacity 0.3s' });
-
-            // Initialize DataTable
-            table = $('#tabelSetoran').DataTable({
-                language: {
-                    url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/id.json'
-                },
-                pageLength: 10,
-                order: [[3, 'desc']],
-                columnDefs: [
-                    { orderable: false, targets: [0, 1, 10] }
-                ],
-                initComplete: function () {
-                    tableWrapper.css('opacity', 1);
-                }
-            });
-
-            // Filter by Simpanan Type
-            $('#filterSimpanan').on('change', function () {
-                table.column(7).search(this.value).draw();
-            });
-
-            // Redraw on pagination
-            table.on('draw', function () {
-                updateSelectAllState();
-            });
-
-            // Click row to select checkbox
-            $('#tabelSetoran tbody').on('click', 'tr', function (e) {
-                if ($(e.target).is('input[type="checkbox"]') || $(e.target).is('button') || $(e.target).closest('button').length) {
-                    e.stopPropagation();
-                    updateSelectAllState();
-                    return;
-                }
-
-                const checkbox = $(this).find('.row-checkbox');
-                checkbox.prop('checked', !checkbox.prop('checked'));
-                updateSelectAllState();
-            });
-
-            // Select All Checkbox
-            $('#selectAll').on('click', function (e) {
-                e.stopPropagation();
-                $('.row-checkbox').prop('checked', this.checked);
-                updateSelectAllState();
-            });
-
-            // Individual checkbox change
-            $(document).on('change', '.row-checkbox', function (e) {
-                e.stopPropagation();
-                updateSelectAllState();
-            });
-
-            // Update selectAll state
-            function updateSelectAllState() {
-                const checkboxes = $('.row-checkbox');
-                const checkedCheckboxes = $('.row-checkbox:checked');
-                const selectAll = $('#selectAll');
-
-                if (checkedCheckboxes.length === 0) {
-                    selectAll.prop('checked', false);
-                    selectAll.prop('indeterminate', false);
-                } else if (checkedCheckboxes.length === checkboxes.length) {
-                    selectAll.prop('checked', true);
-                    selectAll.prop('indeterminate', false);
-                } else {
-                    selectAll.prop('checked', false);
-                    selectAll.prop('indeterminate', true);
+    $(document).ready(function() {
+        // Initialize DataTable
+        const table = $('#tabelSetoran').DataTable({
+            pageLength: 10,
+            order: [[3, 'desc']],
+            scrollX: true,
+            columnDefs: [
+                { orderable: false, targets: [0, 1, 10] }
+            ],
+            language: {
+                lengthMenu: "Tampilkan _MENU_ data per halaman",
+                zeroRecords: "Data tidak ditemukan",
+                info: "Menampilkan halaman _PAGE_ dari _PAGES_",
+                infoEmpty: "Tidak ada data tersedia",
+                infoFiltered: "(difilter dari _MAX_ total data)",
+                search: "Cari:",
+                paginate: {
+                    first: "Pertama",
+                    last: "Terakhir",
+                    next: "Selanjutnya",
+                    previous: "Sebelumnya"
                 }
             }
-
-            // Handle Anggota Selection - Show Photo
-            $('#namaAnggota').on('change', function () {
-                const value = $(this).val();
-                const fotoContainer = $('#fotoAnggota');
-
-                if (value) {
-                    fotoContainer.html('<img src="{{ asset("assets/images/profile/user-1.jpg") }}" alt="Foto Anggota" class="img-fluid rounded" style="max-height: 180px;">');
-                } else {
-                    fotoContainer.html('<span class="text-muted">Foto akan muncul setelah memilih anggota</span>');
-                }
-            });
-
-            // Handle Jenis Simpanan Change - Auto fill amount
-            $('#jenisSimpanan').on('change', function () {
-                const jenis = $(this).val();
-                let amount = '';
-
-                if (jenis === 'Simpanan Wajib') {
-                    amount = '500.000';
-                } else if (jenis === 'Simpanan Pokok') {
-                    amount = '2.500.000';
-                }
-
-                if (amount) {
-                    $('#jumlah').val(amount);
-                    $('#jumlah').focus().select();
-                }
-            });
-
-            // Format Currency Input
-            $('#jumlah').on('input', function (e) {
-                let value = e.target.value.replace(/[^0-9]/g, '');
-                if (value) {
-                    value = parseInt(value).toLocaleString('id-ID');
-                }
-                e.target.value = value;
-            });
-
-            // Set default datetime on modal open
-            $('#modalForm').on('show.bs.modal', function () {
-                if ($('#modalTitle').text() === 'Tambah Data Setoran Tunai') {
-                    const now = new Date();
-                    $('#tglTransaksi').val(now.toISOString().slice(0, 16));
-                    $('#fotoAnggota').html('<span class="text-muted">Foto akan muncul setelah memilih anggota</span>');
-                }
-            });
-
-            // Fix checkbox styling
-            setTimeout(() => {
-                const theadCheckbox = document.getElementById('selectAll');
-                if (theadCheckbox) {
-                    theadCheckbox.style.backgroundColor = 'white';
-                    theadCheckbox.style.borderColor = '#495057';
-                    theadCheckbox.style.accentColor = '#0d6efd';
-                    theadCheckbox.style.width = '18px';
-                    theadCheckbox.style.height = '18px';
-                    theadCheckbox.style.cursor = 'pointer';
-                }
-
-                document.querySelectorAll('.row-checkbox').forEach(cb => {
-                    cb.style.cursor = 'pointer';
-                    cb.style.width = '18px';
-                    cb.style.height = '18px';
-                    cb.style.accentColor = '#0d6efd';
-                });
-            }, 100);
         });
 
-        // Functions
-        function tambahData() {
-            $('#modalTitle').text('Tambah Data Setoran Tunai');
-            $('#formSetoran')[0].reset();
-            $('#formMethod').val('POST');
-            $('#formSetoran').attr('action', '{{ route("simpanan.setoran.store") }}');
+        // Initialize Flatpickr
+        fpTanggal = flatpickr("#filterTanggal", {
+            mode: "range",
+            dateFormat: "d M Y",
+            locale: "id",
+            allowInput: false,
+            clickOpens: true,
+            onChange: function(selectedDates) {
+                if (selectedDates.length === 2) {
+                    filterByDateRange(selectedDates[0], selectedDates[1]);
+                }
+            }
+        });
 
-            const now = new Date();
-            $('#tglTransaksi').val(now.toISOString().slice(0, 16));
+        // Event listener untuk tombol kalender
+        $('#btnTanggal').on('click', function() {
+            fpTanggal.open();
+        });
 
-            $('#modalForm').modal('show');
+        // Event listener untuk input tanggal
+        $('#filterTanggal').on('click', function() {
+            fpTanggal.open();
+        });
+
+        // Filter by Jenis Simpanan
+        $('#filterSimpanan').on('change', function() {
+            table.column(7).search(this.value).draw();
+        });
+
+        // Click row to check checkbox
+        $('#tabelSetoran tbody').on('click', 'tr', function(e) {
+            if ($(e.target).is('input[type="checkbox"]') || $(e.target).is('button') || $(e.target).closest('button').length) return;
+            
+            const checkbox = $(this).find('.row-checkbox');
+            checkbox.prop('checked', !checkbox.prop('checked'));
+            $(this).toggleClass('table-active');
+        });
+
+        // Select All
+        $('#selectAll').on('click', function(e) {
+            e.stopPropagation();
+            const isChecked = this.checked;
+            $('.row-checkbox').prop('checked', isChecked);
+            if (isChecked) {
+                $('#tabelSetoran tbody tr').addClass('table-active');
+            } else {
+                $('#tabelSetoran tbody tr').removeClass('table-active');
+            }
+        });
+
+        // Handle Anggota Selection - Show Photo & Dept
+        $('#anggotaId').on('change', function() {
+            const selectedOption = $(this).find('option:selected');
+            const photo = selectedOption.data('photo') || 'assets/images/profile/user-1.jpg';
+            const dept = selectedOption.data('dept') || '-';
+            
+            if ($(this).val()) {
+                $('#fotoAnggota').html(`<img src="{{ asset('') }}${photo}" alt="Foto Anggota" class="img-fluid rounded" style="max-height: 230px;">`);
+                $('#departemenInfo').val(dept);
+            } else {
+                $('#fotoAnggota').html('<span class="text-muted">Pilih anggota untuk melihat foto</span>');
+                $('#departemenInfo').val('');
+            }
+        });
+
+        // Handle Jenis Simpanan - Auto fill
+        $('#jenisSimpananId').on('change', function() {
+            const selectedOption = $(this).find('option:selected');
+            const jumlah = selectedOption.data('jumlah');
+            
+            if (jumlah > 0) {
+                $('#jumlah').val(parseInt(jumlah).toLocaleString('id-ID'));
+            }
+        });
+
+        // Format Currency
+        $('#jumlah').on('input', function(e) {
+            let value = e.target.value.replace(/[^0-9]/g, '');
+            if (value) {
+                value = parseInt(value).toLocaleString('id-ID');
+            }
+            e.target.value = value;
+        });
+
+        // Set default datetime
+        $('#modalForm').on('show.bs.modal', function() {
+            if ($('#modalTitle').text() === 'Tambah Data Setoran Tunai') {
+                const now = new Date();
+                $('#tanggalTransaksi').val(now.toISOString().slice(0, 16));
+                $('#fotoAnggota').html('<span class="text-muted">Pilih anggota untuk melihat foto</span>');
+                $('#departemenInfo').val('');
+            }
+        });
+
+        // Submit Form
+        $('#formSetoran').on('submit', function(e) {
+            e.preventDefault();
+
+            const method = $('#formMethod').val();
+            const id = $('#formId').val();
+            const url = method === 'POST' 
+                ? '{{ route("simpanan.setoran.store") }}' 
+                : `/admin/setoran/${id}`;
+
+            const data = {
+                tanggal_transaksi: $('#tanggalTransaksi').val(),
+                anggota_id: $('#anggotaId').val(),
+                jenis_simpanan_id: $('#jenisSimpananId').val(),
+                jumlah: $('#jumlah').val().replace(/\./g, ''),
+                untuk_kas_id: $('#untukKasId').val(),
+                nama_penyetor: $('#namaPenyetor').val(),
+                no_identitas: $('#noIdentitas').val(),
+                alamat: $('#alamat').val(),
+                keterangan: $('#keterangan').val(),
+            };
+
+            fetch(url, {
+                method: method === 'POST' ? 'POST' : 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                body: JSON.stringify(data)
+            })
+            .then(res => res.json())
+            .then(res => {
+                if (res.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil!',
+                        text: res.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(() => location.reload());
+                }
+            })
+            .catch(err => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal!',
+                    text: 'Terjadi kesalahan saat menyimpan data'
+                });
+            });
+        });
+    });
+
+    function tambahData() {
+        $('#modalTitle').text('Tambah Data Setoran Tunai');
+        $('#formSetoran')[0].reset();
+        $('#formMethod').val('POST');
+        $('#formId').val('');
+        const now = new Date();
+        $('#tanggalTransaksi').val(now.toISOString().slice(0, 16));
+        $('#fotoAnggota').html('<span class="text-muted">Pilih anggota untuk melihat foto</span>');
+        $('#departemenInfo').val('');
+        $('#modalForm').modal('show');
+    }
+
+    function editData() {
+        const checked = $('.row-checkbox:checked');
+        if (checked.length === 0) {
+            Swal.fire('Peringatan', 'Pilih data yang akan diedit!', 'warning');
+            return;
+        }
+        if (checked.length > 1) {
+            Swal.fire('Peringatan', 'Pilih hanya satu data!', 'warning');
+            return;
         }
 
-        function editData() {
-            const checked = $('.row-checkbox:checked');
-            if (checked.length === 0) {
-                alert('Pilih data yang akan diedit!');
-                return;
+        const id = checked.first().data('id');
+        
+        Swal.fire({
+            title: 'Loading...',
+            text: 'Mengambil data',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
             }
-            if (checked.length > 1) {
-                alert('Pilih hanya satu data!');
-                return;
+        });
+        
+        fetch(`/admin/setoran/${id}`, {
+            headers: {
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
-
-            const id = checked.first().data('id');
+        })
+        .then(res => {
+            if (!res.ok) throw new Error('Network response was not ok');
+            return res.json();
+        })
+        .then(data => {
+            Swal.close();
+            
             $('#modalTitle').text('Edit Data Setoran Tunai');
             $('#formMethod').val('PUT');
-            $('#formId').val(id);
-            $('#formSetoran').attr('action', '/admin/setoran/' + id);
-
-            // TODO: Load data via AJAX
+            $('#formId').val(data.id);
+            
+            const date = new Date(data.tanggal_transaksi);
+            $('#tanggalTransaksi').val(date.toISOString().slice(0, 16));
+            
+            $('#anggotaId').val(data.anggota_id).trigger('change');
+            $('#jenisSimpananId').val(data.jenis_simpanan_id);
+            $('#jumlah').val(parseInt(data.jumlah).toLocaleString('id-ID'));
+            $('#untukKasId').val(data.untuk_kas_id);
+            $('#namaPenyetor').val(data.nama_penyetor);
+            $('#noIdentitas').val(data.no_identitas);
+            $('#alamat').val(data.alamat);
+            $('#keterangan').val(data.keterangan);
+            
             $('#modalForm').modal('show');
+        })
+        .catch(err => {
+            Swal.fire('Error', 'Gagal mengambil data!', 'error');
+            console.error('Error:', err);
+        });
+    }
+
+    function hapusData() {
+        const checked = $('.row-checkbox:checked');
+        if (checked.length === 0) {
+            Swal.fire('Peringatan', 'Pilih data yang akan dihapus!', 'warning');
+            return;
         }
 
-        function hapusData() {
-            const checked = $('.row-checkbox:checked');
-            if (checked.length === 0) {
-                alert('Pilih data yang akan dihapus!');
-                return;
+        Swal.fire({
+            title: 'Konfirmasi Hapus',
+            text: `Hapus ${checked.length} data setoran?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Hapus!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const ids = [];
+                checked.each(function() {
+                    ids.push($(this).data('id'));
+                });
+
+                Promise.all(ids.map(id => 
+                    fetch(`/admin/setoran/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        }
+                    })
+                )).then(() => {
+                    Swal.fire('Berhasil!', 'Data berhasil dihapus', 'success')
+                        .then(() => location.reload());
+                });
             }
+        });
+    }
 
-            if (confirm('Apakah Anda yakin ingin menghapus ' + checked.length + ' data?')) {
-                // TODO: Implement delete via AJAX or form submission
-                alert('Fitur hapus akan diimplementasikan');
-            }
-        }
+    function filterByDateRange(startDate, endDate) {
+        $.fn.dataTable.ext.search.push(function(settings, data) {
+            // data[3] = "15 Jan 2026 14:30"
+            const parts = data[3].split(' ');
+            const dateStr = `${parts[1]} ${parts[0]} ${parts[2]}`; 
+            const rowDate = new Date(dateStr);
 
-        function cariData() {
-            const search = $('#searchInput').val();
-            table.search(search).draw();
-        }
+            rowDate.setHours(0, 0, 0, 0);
+            startDate.setHours(0, 0, 0, 0);
+            endDate.setHours(23, 59, 59, 999);
 
-        function resetFilter() {
-            $('#searchInput').val('');
-            $('#filterTanggal').val('');
-            $('#filterSimpanan').val('');
-            table.search('').columns().search('').draw();
-        }
+            return rowDate >= startDate && rowDate <= endDate;
+        });
 
-        function cetakLaporan() {
-            window.print();
-        }
+        $('#tabelSetoran').DataTable().draw();
+        $.fn.dataTable.ext.search.pop();
+    }
 
-        function cetakNota(button) {
-            const row = button.closest('tr');
-            const kodeTransaksi = row.querySelector('td:nth-child(3)').textContent.trim();
-            alert('Mencetak nota untuk transaksi: ' + kodeTransaksi);
+    function cariData() {
+        const search = $('#searchInput').val();
+        $('#tabelSetoran').DataTable().search(search).draw();
+    }
+
+    function resetFilter() {
+        $('#searchInput').val('');
+        $('#filterSimpanan').val('');
+        $('#tabelSetoran').DataTable().search('').columns().search('').draw();
+
+        if (fpTanggal) {
+            fpTanggal.clear();
         }
-    </script>
+    }
+
+    function cetakNota(id) {
+        window.open(`/admin/setoran/cetak/${id}`, '_blank');
+    }
+</script>
 @endpush
