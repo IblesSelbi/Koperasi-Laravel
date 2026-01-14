@@ -110,8 +110,7 @@
                         <button class="btn btn-primary w-100" onclick="filterData()">
                             <i class="ti ti-search"></i> Cari
                         </button>
-                        <button class="btn btn-outline-secondary" onclick="resetFilter()" data-bs-toggle="tooltip"
-                            title="Reset Filter">
+                        <button class="btn btn-outline-secondary" onclick="resetFilter()" data-bs-toggle="tooltip" title="Reset Filter">
                             <i class="ti ti-refresh"></i>
                         </button>
                     </div>
@@ -123,7 +122,7 @@
                 <div class="col-12">
                     <div class="d-flex gap-2 flex-wrap">
                         <button class="btn btn-success btn-sm" onclick="tambahData()">
-                            <i class="ti ti-plus"></i> Tambah Pinjaman
+                            <i class="ti ti-plus"></i> Proses Pinjaman
                         </button>
                         <button class="btn btn-warning btn-sm" onclick="editData()">
                             <i class="ti ti-edit"></i> Edit
@@ -136,8 +135,7 @@
                         </button>
                         <div class="ms-auto">
                             <span class="badge bg-primary-subtle text-primary px-3 py-2">
-                                <i class="ti ti-file-text"></i> Total Data: <strong
-                                    id="totalData">{{ $pinjaman->count() }}</strong>
+                                <i class="ti ti-file-text"></i> Total Data: <strong id="totalData">{{ $pinjaman->count() }}</strong>
                             </span>
                         </div>
                     </div>
@@ -150,106 +148,92 @@
     <div class="card">
         <div class="card-body">
             <div class="table-responsive">
-                <table id="tabelPinjaman" class="table table-hover align-middle rounded-2 border overflow-hidden"
-                    style="width:100%">
+                <table id="tabelPinjaman" class="table table-hover align-middle rounded-2 border overflow-hidden" style="width:100%">
                     <thead class="table-primary">
                         <tr>
                             <th class="text-center align-middle">Kode</th>
-                            <th width="70px" class="text-center align-middle">Tanggal<br>Pinjam</th>
-                            <th width="200px" class="align-middle">Nama Anggota</th>
-                            <th width="350px" class="align-middle">Hitungan</th>
-                            <th width="250px" class="align-middle">Total Tagihan</th>
+                            <th class="text-center align-middle">Tanggal<br>Pinjam</th>
+                            <th class="align-middle">Nama Anggota</th>
+                            <th width="195px" class="align-middle">Hitungan</th>
+                            <th width="195px" class="align-middle">Total Tagihan</th>
                             <th class="text-center align-middle">Status<br>Lunas</th>
                             <th class="text-center align-middle">User</th>
-                            <th width="20px" class="text-center align-middle">Aksi</th>
+                            <th class="text-center align-middle">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($pinjaman as $item)
-                            <tr>
+                        @foreach($pinjaman as $item)
+                            <tr data-id="{{ $item->id }}">
                                 <td class="text-center">
                                     <span class="badge bg-primary-subtle text-primary fw-semibold px-2 py-1">
-                                        {{ $item->kode }}
+                                        {{ $item->kode_pinjaman }}
                                     </span>
                                 </td>
                                 <td class="text-center text-muted">
-                                    {{ \Carbon\Carbon::parse($item->tanggal_pinjam)->format('d M Y') }}<br>
-                                    <small>{{ \Carbon\Carbon::parse($item->tanggal_pinjam)->format('H:i') }}</small>
+                                    {{ $item->tanggal_pinjam->translatedFormat('d F Y') }}<br>
+                                    <small>{{ $item->tanggal_pinjam->format('H:i') }}</small>
                                 </td>
                                 <td>
                                     <div class="d-flex align-items-center">
-                                        <img src="{{ asset($item->anggota_foto) }}" width="40" height="40"
-                                            class="rounded-circle me-2" alt="Foto">
+                                        <img src="{{ asset($item->anggota->photo ?? 'assets/images/profile/user-1.jpg') }}" width="40" height="40" class="rounded-circle me-2" alt="Foto">
                                         <div>
-                                            <strong>{{ $item->anggota_nama }}</strong><br>
-                                            <small class="text-muted">ID: {{ $item->anggota_id }} • {{ $item->anggota_lokasi }}</small>
+                                            <strong>{{ $item->anggota->nama }}</strong><br>
+                                            <small class="text-muted">ID: {{ $item->anggota->id_anggota }} • {{ $item->anggota->kota }}</small>
                                         </div>
                                     </div>
                                 </td>
-
                                 <td>
                                     <div>
                                         <div class="d-flex justify-content-between border-bottom py-1">
-                                            <small class="text-muted">Nama Barang</small>
-                                            <strong>{{ $item->nama_barang }}</strong>
+                                            <small class="text-muted">Jenis Pinjaman</small>
+                                            <strong>{{ $item->jenis_pinjaman }}</strong>
                                         </div>
-
                                         <div class="d-flex justify-content-between border-bottom py-1">
-                                            <small class="text-muted">Harga Barang</small>
-                                            <span>Rp {{ number_format($item->harga_barang, 0, ',', '.') }}</span>
+                                            <small class="text-muted">Pokok Pinjaman</small>
+                                            <span>Rp {{ number_format($item->pokok_pinjaman, 0, ',', '.') }}</span>
                                         </div>
-
                                         <div class="d-flex justify-content-between border-bottom py-1">
                                             <small class="text-muted">Lama Angsuran</small>
-                                            <span>{{ $item->lama_angsuran }} Bulan</span>
+                                            <span>{{ $item->lamaAngsuran->lama_angsuran }} Bulan</span>
                                         </div>
-
                                         <div class="d-flex justify-content-between border-bottom py-1">
-                                            <small class="text-muted">Pokok Angsuran</small>
-                                            <span>Rp {{ number_format($item->pokok_angsuran, 0, ',', '.') }}</span>
+                                            <small class="text-muted">Angsuran Pokok</small>
+                                            <span>Rp {{ number_format($item->angsuran_pokok, 0, ',', '.') }}</span>
                                         </div>
-
                                         <div class="d-flex justify-content-between border-bottom py-1">
-                                            <small class="text-muted">Bunga Pinjaman</small>
-                                            <span class="text-info">Rp {{ number_format($item->bunga_pinjaman, 0, ',', '.') }}</span>
+                                            <small class="text-muted">Bunga ({{ $item->bunga_persen }}%)</small>
+                                            <span class="text-info">Rp {{ number_format($item->biaya_bunga * $item->lamaAngsuran->lama_angsuran, 0, ',', '.') }}</span>
                                         </div>
-
                                         <div class="d-flex justify-content-between pt-1">
                                             <small class="text-muted">Biaya Admin</small>
                                             <span class="text-warning">Rp {{ number_format($item->biaya_admin, 0, ',', '.') }}</span>
                                         </div>
                                     </div>
                                 </td>
-
                                 <td>
                                     <div>
                                         <div class="d-flex justify-content-between border-bottom py-1">
-                                            <small class="text-muted">Jumlah Angsuran</small>
+                                            <small class="text-muted">Total Angsuran</small>
                                             <span>Rp {{ number_format($item->jumlah_angsuran, 0, ',', '.') }}</span>
                                         </div>
-
-                                        <div class="d-flex justify-content-between border-bottom py-1">
-                                            <small class="text-muted">Jumlah Denda</small>
-                                            <span>Rp {{ number_format($item->jumlah_denda, 0, ',', '.') }}</span>
-                                        </div>
-
                                         <div class="d-flex justify-content-between border-bottom py-1">
                                             <small class="text-muted">Sudah Dibayar</small>
-                                            <span>Rp {{ number_format($item->sudah_dibayar, 0, ',', '.') }}</span>
+                                            <span>Rp {{ number_format($item->total_bayar, 0, ',', '.') }}</span>
                                         </div>
-
+                                        <div class="d-flex justify-content-between border-bottom py-1">
+                                            <small class="text-muted">Angsuran/Bulan</small>
+                                            <span>Rp {{ number_format($item->angsuran_pokok + $item->biaya_bunga, 0, ',', '.') }}</span>
+                                        </div>
                                         <div class="d-flex justify-content-between border-bottom py-1">
                                             <small class="text-muted">Sisa Angsuran</small>
                                             <span>{{ $item->sisa_angsuran }}x</span>
                                         </div>
-
                                         <div class="d-flex justify-content-between pt-2">
                                             <small class="text-muted fw-semibold">Sisa Tagihan</small>
                                             <span class="fw-bold text-success fs-6">Rp {{ number_format($item->sisa_tagihan, 0, ',', '.') }}</span>
                                         </div>
                                     </div>
                                 </td>
-
                                 <td class="text-center">
                                     @if($item->status_lunas == 'Lunas')
                                         <span class="badge bg-success-subtle text-success px-3 py-2">
@@ -263,149 +247,184 @@
                                 </td>
                                 <td class="text-center">
                                     <span class="badge border border-secondary text-secondary px-3 py-1">
-                                        {{ $item->user }}
+                                        {{ $item->user->name }}
                                     </span>
                                 </td>
                                 <td class="text-center" style="min-width: 150px;">
-                                    <div class="btn-group" role="group">
-                                        <div class="btn-group mt-1" role="group">
-                                            <a href="{{ route('pinjaman.pinjaman.detail', $item->id) }}">
-                                                <button class="btn btn-outline-info btn-sm">
-                                                    <i class="ti ti-eye"></i> Detail
-                                                </button>
-                                            </a>
-                                            <button class="btn btn-primary btn-sm" onclick="cetakNota({{ $item->id }})">
-                                                <i class="ti ti-printer"></i> Nota
-                                            </button>
-                                        </div>
+                                    <div class="btn-group-vertical" role="group">
+                                        <a href="{{ route('pinjaman.pinjaman.detail', $item->id) }}" class="btn btn-outline-info btn-sm">
+                                            <i class="ti ti-eye"></i> Detail
+                                        </a>
+                                        <button class="btn btn-primary btn-sm" onclick="cetakNota({{ $item->id }})">
+                                            <i class="ti ti-printer"></i> Nota
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="8" class="text-center text-muted py-4">
-                                    <i class="ti ti-database-off fs-1 mb-2"></i>
-                                    <p class="mb-0">Tidak ada data pinjaman</p>
-                                </td>
-                            </tr>
-                        @endforelse
+                        @endforeach
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <!-- Modal Form Tambah/Edit Pinjaman -->
+    <!-- Modal Form Tambah Pinjaman (Dari Pengajuan) -->
     <div class="modal fade" id="modalFormPinjaman" tabindex="-1">
-        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header bg-light text-white">
-                    <h5 class="modal-title" id="modalTitle">
-                        <i class="ti ti-plus"></i> Tambah Data Pinjaman
+                    <h5 class="modal-title">
+                        <i class="ti ti-plus"></i> Proses Pinjaman dari Pengajuan
                     </h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <form id="formPinjaman">
                         @csrf
-                        <input type="hidden" id="pinjamanId" name="id">
+                        <input type="hidden" id="pengajuanId" name="pengajuan_id">
 
-                        <div class="row">
-                            <div class="col-md-8">
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">Tanggal Pinjam <span
-                                            class="text-danger">*</span></label>
-                                    <input type="datetime-local" class="form-control" id="tglPinjam" name="tanggal_pinjam"
-                                        required>
+                        <!-- Step 1: Pilih Pengajuan -->
+                        <div id="step1">
+                            <div class="alert alert-info">
+                                <i class="ti ti-info-circle me-2"></i>
+                                <strong>Info:</strong> Pilih pengajuan yang sudah disetujui untuk diproses menjadi pinjaman
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Pilih Pengajuan yang Disetujui <span class="text-danger">*</span></label>
+                                <select class="form-select" id="selectPengajuan" required>
+                                    <option value="">-- Pilih Pengajuan --</option>
+                                </select>
+                                <small class="text-muted">Hanya pengajuan dengan status "Disetujui" yang ditampilkan</small>
+                            </div>
+
+                            <div id="loadingPengajuan" class="text-center py-4" style="display: none;">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
                                 </div>
+                                <p class="mt-2 text-muted">Memuat data pengajuan...</p>
+                            </div>
+                        </div>
 
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">Nama Anggota <span
-                                            class="text-danger">*</span></label>
-                                    <select class="form-select" id="anggotaId" name="anggota_id" required>
-                                        <option value="">-- Pilih Anggota --</option>
-                                        <option value="001234">001234 - Budi Santoso (Jakarta)</option>
-                                        <option value="001235">001235 - Siti Aminah (Bandung)</option>
-                                        <option value="001236">001236 - Ahmad Hidayat (Surabaya)</option>
-                                        <option value="001237">001237 - Dewi Lestari (Semarang)</option>
-                                        <option value="001238">001238 - Eko Prasetyo (Yogyakarta)</option>
-                                    </select>
-                                </div>
+                        <!-- Step 2: Detail Pengajuan & Form Pinjaman -->
+                        <div id="step2" style="display: none;">
+                            <div class="row">
+                                <!-- Kolom Kiri: Info Pengajuan -->
+                                <div class="col-md-6">
+                                    <div class="card border">
+                                        <div class="card-header bg-light">
+                                            <h6 class="mb-0"><i class="ti ti-file-text me-2"></i>Informasi Pengajuan</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <table class="table table-sm table-borderless">
+                                                <tr>
+                                                    <td width="40%"><strong>Kode Pengajuan</strong></td>
+                                                    <td>: <span id="infoPengajuanKode">-</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>Tanggal Pengajuan</strong></td>
+                                                    <td>: <span id="infoPengajuanTanggal">-</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>Nama Anggota</strong></td>
+                                                    <td>: <span id="infoPengajuanNama">-</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>ID Anggota</strong></td>
+                                                    <td>: <span id="infoPengajuanIdAnggota">-</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>Jenis Pinjaman</strong></td>
+                                                    <td>: <span id="infoPengajuanJenis">-</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>Jumlah Pinjaman</strong></td>
+                                                    <td>: <strong class="text-primary" id="infoPengajuanJumlah">-</strong></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>Lama Angsuran</strong></td>
+                                                    <td>: <span id="infoPengajuanLama">-</span></td>
+                                                </tr>
+                                            </table>
 
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">Nama Barang <span
-                                            class="text-danger">*</span></label>
-                                    <select class="form-select" id="barangId" name="barang_id" required>
-                                        <option value="">-- Pilih Barang --</option>
-                                        <option value="1">HP Infinix Note 30 8/256 GB - Rp 2.600.000</option>
-                                        <option value="2">Pinjaman Dana Tunai - Rp 0</option>
-                                        <option value="3">Pinjaman Uang - Rp 10.000.000</option>
-                                    </select>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">Harga Barang <span
-                                            class="text-danger">*</span></label>
-                                    <div class="input-group">
-                                        <span class="input-group-text">Rp</span>
-                                        <input type="text" class="form-control" id="jumlah" name="jumlah" placeholder="0"
-                                            required>
+                                            <!-- Foto Anggota -->
+                                            <div class="text-center mt-3 pt-3 border-top">
+                                                <label class="form-label fw-semibold d-block mb-2">Foto Anggota</label>
+                                                <div id="anggotaPhoto" class="border rounded p-2 mx-auto" style="height: 200px; width: 150px;">
+                                                    <div class="d-flex align-items-center justify-content-center h-100 text-muted">
+                                                        <i class="ti ti-user" style="font-size: 64px;"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <small class="text-muted">Masukkan jumlah pinjaman atau harga barang</small>
                                 </div>
 
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">Lama Angsuran <span
-                                            class="text-danger">*</span></label>
-                                    <select class="form-select" id="lamaAngsuran" name="lama_angsuran" required>
-                                        <option value="">-- Pilih Angsuran --</option>
-                                        <option value="1">1 Bulan</option>
-                                        <option value="3">3 Bulan</option>
-                                        <option value="6">6 Bulan</option>
-                                        <option value="12">12 Bulan</option>
-                                        <option value="24">24 Bulan</option>
-                                        <option value="36">36 Bulan</option>
-                                    </select>
-                                </div>
+                                <!-- Kolom Kanan: Proyeksi & Form -->
+                                <div class="col-md-6">
+                                    <!-- Proyeksi Angsuran -->
+                                    <div class="card border border-success mb-3">
+                                        <div class="card-header bg-success-subtle">
+                                            <h6 class="mb-0 text-success"><i class="ti ti-calculator me-2"></i>Proyeksi Angsuran</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <table class="table table-sm">
+                                                <tr>
+                                                    <td><strong>Pokok Pinjaman</strong></td>
+                                                    <td class="text-end"><span id="proyeksiPokok">Rp 0</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>Bunga (5%)</strong></td>
+                                                    <td class="text-end"><span id="proyeksiBunga">Rp 0</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>Biaya Admin</strong></td>
+                                                    <td class="text-end"><span id="proyeksiAdmin">Rp 0</span></td>
+                                                </tr>
+                                                <tr class="border-top">
+                                                    <td><strong>Total Angsuran</strong></td>
+                                                    <td class="text-end"><strong class="text-success" id="proyeksiTotal">Rp 0</strong></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>Angsuran/Bulan</strong></td>
+                                                    <td class="text-end"><strong class="text-primary" id="proyeksiPerBulan">Rp 0</strong></td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div>
 
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">Bunga</label>
-                                    <input type="text" class="form-control bg-light" id="bunga" value="5%" readonly>
-                                </div>
+                                    <!-- Form Input -->
+                                    <div class="card border">
+                                        <div class="card-header bg-light">
+                                            <h6 class="mb-0"><i class="ti ti-edit me-2"></i>Form Pinjaman</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <label class="form-label fw-semibold">Tanggal Pinjam <span class="text-danger">*</span></label>
+                                                <input type="datetime-local" class="form-control" id="tglPinjam" name="tanggal_pinjam" required>
+                                            </div>
 
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">Biaya Admin</label>
-                                    <input type="text" class="form-control bg-light" id="biayaAdm" value="Rp 0" readonly>
-                                </div>
+                                            <div class="mb-3">
+                                                <label class="form-label fw-semibold">Ambil Dari Kas <span class="text-danger">*</span></label>
+                                                <select class="form-select" id="kasId" name="dari_kas_id" required>
+                                                    <option value="">-- Pilih Kas --</option>
+                                                </select>
+                                            </div>
 
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">Ambil Dari Kas <span
-                                            class="text-danger">*</span></label>
-                                    <select class="form-select" id="kasId" name="kas_id" required>
-                                        <option value="">-- Pilih Kas --</option>
-                                        <option value="1">Kas Tunai</option>
-                                        <option value="2">Kas Besar</option>
-                                    </select>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">Keterangan</label>
-                                    <textarea class="form-control" id="keterangan" name="keterangan" rows="3"
-                                        placeholder="Tambahkan keterangan (opsional)"></textarea>
+                                            <div class="mb-3">
+                                                <label class="form-label fw-semibold">Keterangan</label>
+                                                <textarea class="form-control" id="keterangan" name="keterangan" rows="3" placeholder="Tambahkan keterangan (opsional)"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div class="col-md-4">
-                                <div class="text-center">
-                                    <label class="form-label fw-semibold d-block mb-2">Foto Anggota</label>
-                                    <div id="anggotaPhoto" class="border rounded p-2"
-                                        style="height: 180px; width: 135px; margin: 0 auto;">
-                                        <div class="d-flex align-items-center justify-content-center h-100 text-muted">
-                                            <i class="ti ti-user" style="font-size: 48px;"></i>
-                                        </div>
-                                    </div>
-                                    <small class="text-muted d-block mt-2">Foto akan muncul setelah memilih anggota</small>
-                                </div>
+                            <!-- Tombol Kembali -->
+                            <div class="mt-3">
+                                <button type="button" class="btn btn-outline-secondary" onclick="backToStep1()">
+                                    <i class="ti ti-arrow-left"></i> Kembali ke Pilih Pengajuan
+                                </button>
                             </div>
                         </div>
                     </form>
@@ -414,29 +433,116 @@
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                         <i class="ti ti-x"></i> Batal
                     </button>
-                    <button type="button" class="btn btn-primary" onclick="simpanPinjaman()">
-                        <i class="ti ti-check"></i> Simpan
+                    <button type="button" class="btn btn-primary" id="btnSimpan" onclick="simpanPinjaman()" style="display: none;">
+                        <i class="ti ti-check"></i> Proses Pinjaman
                     </button>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Modal Edit Pinjaman -->
+<div class="modal fade" id="modalEditPinjaman" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-2">
+            <div class="modal-header bg-light text-white">
+                <h5 class="modal-title">
+                    <i class="ti ti-edit"></i> Edit Data Pinjaman
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formEditPinjaman">
+                    @csrf
+                    <input type="hidden" id="editPinjamanId" name="id">
+
+                    <div class="alert alert-info">
+                        <i class="ti ti-info-circle me-2"></i>
+                        Hanya beberapa field yang dapat diedit setelah pinjaman dibuat
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Tanggal Pinjam <span class="text-danger">*</span></label>
+                        <input type="datetime-local" class="form-control" id="editTglPinjam" name="tanggal_pinjam" required>
+                    </div>
+
+                    <!-- TAMBAHAN: Lama Angsuran -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Lama Angsuran <span class="text-danger">*</span></label>
+                        <select class="form-select" id="editLamaAngsuran" name="lama_angsuran_id" required>
+                            <option value="">-- Pilih Lama Angsuran --</option>
+                        </select>
+                        <small class="text-muted">Perubahan lama angsuran akan menghitung ulang angsuran</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Dari Kas <span class="text-danger">*</span></label>
+                        <select class="form-select" id="editKasId" name="dari_kas_id" required>
+                            <option value="">-- Pilih Kas --</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Keterangan</label>
+                        <textarea class="form-control" id="editKeterangan" name="keterangan" rows="3"></textarea>
+                    </div>
+
+                    <!-- TAMBAHAN: Preview Perhitungan Ulang -->
+                    <div id="editProyeksiContainer" class="card border border-info mb-3" style="display: none;">
+                        <div class="card-header bg-info-subtle">
+                            <h6 class="mb-0 text-info"><i class="ti ti-calculator me-2"></i>Perhitungan Baru</h6>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-sm mb-0">
+                                <tr>
+                                    <td><strong>Angsuran Pokok</strong></td>
+                                    <td class="text-end"><span id="editProyeksiPokok">Rp 0</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Biaya Bunga</strong></td>
+                                    <td class="text-end"><span id="editProyeksiBunga">Rp 0</span></td>
+                                </tr>
+                                <tr class="border-top">
+                                    <td><strong>Total Angsuran</strong></td>
+                                    <td class="text-end"><strong class="text-success" id="editProyeksiTotal">Rp 0</strong></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Angsuran/Bulan</strong></td>
+                                    <td class="text-end"><strong class="text-primary" id="editProyeksiPerBulan">Rp 0</strong></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="ti ti-x"></i> Batal
+                </button>
+                <button type="button" class="btn btn-warning" onclick="updatePinjaman()">
+                    <i class="ti ti-check"></i> Update
+                </button>
+            </div>
+        </div>
+    </div>
+</div> 
 @endsection
 
 @push('scripts')
     <!-- DataTables -->
-    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+    <script src="{{ asset('assets/datatables/js/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('assets/datatables/js/dataTables.bootstrap5.min.js') }}"></script>
 
     <!-- SweetAlert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="{{ asset('assets/sweetalert/sweetalert2.min.js') }}"></script>
 
-    <!-- Daterangepicker -->
+    <!-- Moment.js & Daterangepicker -->
     <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 
     <script>
         let table;
+        let selectedRow = null;
 
         $(document).ready(function () {
             // Hide table initially
@@ -446,7 +552,21 @@
             // Initialize DataTable
             table = $('#tabelPinjaman').DataTable({
                 language: {
-                    url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/id.json'
+                    "sProcessing": "Sedang memproses...",
+                    "sLengthMenu": "Tampilkan _MENU_ entri",
+                    "sZeroRecords": "Tidak ditemukan data yang sesuai",
+                    "sInfo": "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
+                    "sInfoEmpty": "Menampilkan 0 sampai 0 dari 0 entri",
+                    "sInfoFiltered": "(disaring dari _MAX_ entri keseluruhan)",
+                    "sInfoPostFix": "",
+                    "sSearch": "Cari:",
+                    "sUrl": "",
+                    "oPaginate": {
+                        "sFirst": "Pertama",
+                        "sPrevious": "Sebelumnya",
+                        "sNext": "Selanjutnya",
+                        "sLast": "Terakhir"
+                    }
                 },
                 pageLength: 10,
                 order: [[1, 'desc']],
@@ -462,10 +582,11 @@
             $('#filterTanggal').daterangepicker({
                 autoUpdateInput: false,
                 locale: {
-                    cancelLabel: 'Clear',
-                    applyLabel: 'Terapkan',
                     cancelLabel: 'Batal',
-                    format: 'DD/MM/YYYY'
+                    applyLabel: 'Terapkan',
+                    format: 'DD/MM/YYYY',
+                    daysOfWeek: ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'],
+                    monthNames: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember']
                 }
             });
 
@@ -484,29 +605,188 @@
             });
 
             // Table row selection
-            $('#tabelPinjaman tbody').on('click', 'tr', function () {
+            $('#tabelPinjaman tbody').on('click', 'tr', function (e) {
+                // Jangan select jika klik tombol
+                if ($(e.target).closest('button, a').length) {
+                    return;
+                }
+                
                 if ($(this).hasClass('selected')) {
                     $(this).removeClass('selected');
+                    selectedRow = null;
                 } else {
                     table.$('tr.selected').removeClass('selected');
                     $(this).addClass('selected');
+                    selectedRow = $(this).data('id');
                 }
             });
         });
 
+        // Load pengajuan yang disetujui saat modal dibuka
+        $('#modalFormPinjaman').on('show.bs.modal', function () {
+            loadPengajuanDisetujui();
+            loadKasList();
+            
+            // Set default datetime
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            $('#tglPinjam').val(`${year}-${month}-${day}T${hours}:${minutes}`);
+        });
+
+        // Load data pengajuan yang sudah disetujui
+        function loadPengajuanDisetujui() {
+            $('#loadingPengajuan').show();
+            $('#selectPengajuan').prop('disabled', true);
+            
+            $.ajax({
+                url: '{{ route("pinjaman.pinjaman.pengajuan-disetujui") }}',
+                type: 'GET',
+                success: function(response) {
+                    $('#loadingPengajuan').hide();
+                    $('#selectPengajuan').prop('disabled', false);
+                    
+                    const select = $('#selectPengajuan');
+                    select.html('<option value="">-- Pilih Pengajuan --</option>');
+                    
+                    if (response.data && response.data.length > 0) {
+                        response.data.forEach(function(item) {
+                            const option = `<option value="${item.id}">
+                                ${item.kode_pengajuan} - ${item.anggota.nama} - Rp ${formatRupiah(item.jumlah)} - ${item.lama_angsuran.lama_angsuran} Bulan
+                            </option>`;
+                            select.append(option);
+                        });
+                    } else {
+                        select.html('<option value="">Tidak ada pengajuan yang disetujui</option>');
+                    }
+                },
+                error: function() {
+                    $('#loadingPengajuan').hide();
+                    $('#selectPengajuan').prop('disabled', false);
+                    Swal.fire('Error', 'Gagal memuat data pengajuan', 'error');
+                }
+            });
+        }
+
+        // Load list kas untuk dropdown
+        function loadKasList() {
+            $.ajax({
+                url: '{{ route("pinjaman.kas.list") }}',
+                type: 'GET',
+                success: function(response) {
+                    const kasSelect = $('#kasId, #editKasId');
+                    kasSelect.html('<option value="">-- Pilih Kas --</option>');
+                    
+                    if (response.data) {
+                        response.data.forEach(function(kas) {
+                            kasSelect.append(`<option value="${kas.id}">${kas.nama_kas}</option>`);
+                        });
+                    }
+                },
+                error: function() {
+                    // Fallback ke data dummy jika endpoint belum ada
+                    const kasSelect = $('#kasId, #editKasId');
+                    kasSelect.html(`
+                        <option value="">-- Pilih Kas --</option>
+                        <option value="1">Kas Tunai</option>
+                        <option value="2">Kas Besar</option>
+                    `);
+                }
+            });
+        }
+
+        // Event ketika pengajuan dipilih
+        $('#selectPengajuan').on('change', function() {
+            const pengajuanId = $(this).val();
+            
+            if (!pengajuanId) {
+                backToStep1();
+                return;
+            }
+            
+            loadDetailPengajuan(pengajuanId);
+        });
+
+        // Load detail pengajuan dan proyeksi
+        function loadDetailPengajuan(pengajuanId) {
+            Swal.fire({
+                title: 'Memuat Data...',
+                text: 'Mohon tunggu sebentar',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                willOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            
+            $.ajax({
+                url: `{{ url("admin/pinjaman/pengajuan-detail") }}/${pengajuanId}`,
+                type: 'GET',
+                success: function(response) {
+                    Swal.close();
+                    
+                    const pengajuan = response.data.pengajuan;
+                    const proyeksi = response.data.proyeksi;
+                    
+                    // Set pengajuan ID
+                    $('#pengajuanId').val(pengajuan.id);
+                    
+                    // Tampilkan info pengajuan
+                    $('#infoPengajuanKode').text(pengajuan.kode_pengajuan);
+                    $('#infoPengajuanTanggal').text(formatTanggal(pengajuan.tanggal_pengajuan));
+                    $('#infoPengajuanNama').text(pengajuan.anggota.nama);
+                    $('#infoPengajuanIdAnggota').text(pengajuan.anggota.id_anggota);
+                    $('#infoPengajuanJenis').text(pengajuan.jenis_pinjaman);
+                    $('#infoPengajuanJumlah').text('Rp ' + formatRupiah(pengajuan.jumlah));
+                    $('#infoPengajuanLama').text(pengajuan.lama_angsuran.lama_angsuran + ' Bulan');
+                    
+                    // Tampilkan foto anggota
+                    if (pengajuan.anggota.photo) {
+                        $('#anggotaPhoto').html(`<img src="${pengajuan.anggota.photo}" class="img-fluid rounded" alt="Foto">`);
+                    }
+                    
+                    // Tampilkan proyeksi
+                    $('#proyeksiPokok').text('Rp ' + formatRupiah(proyeksi.pokok_pinjaman));
+                    $('#proyeksiBunga').text('Rp ' + formatRupiah(proyeksi.biaya_bunga * pengajuan.lama_angsuran.lama_angsuran));
+                    $('#proyeksiAdmin').text('Rp ' + formatRupiah(proyeksi.biaya_admin));
+                    $('#proyeksiTotal').text('Rp ' + formatRupiah(proyeksi.jumlah_angsuran));
+                    $('#proyeksiPerBulan').text('Rp ' + formatRupiah(proyeksi.angsuran_per_bulan));
+                    
+                    // Pindah ke step 2
+                    $('#step1').hide();
+                    $('#step2').show();
+                    $('#btnSimpan').show();
+                },
+                error: function(xhr) {
+                    Swal.fire('Error', xhr.responseJSON?.message || 'Gagal memuat detail pengajuan', 'error');
+                }
+            });
+        }
+
+        // Kembali ke step 1
+        function backToStep1() {
+            $('#step2').hide();
+            $('#step1').show();
+            $('#btnSimpan').hide();
+            $('#selectPengajuan').val('');
+            $('#formPinjaman')[0].reset();
+        }
+
         // Function: Tambah Data
         function tambahData() {
-            $('#modalTitle').html('<i class="ti ti-plus"></i> Tambah Data Pinjaman');
             $('#formPinjaman')[0].reset();
-            $('#pinjamanId').val('');
-            $('#anggotaPhoto').html('<div class="d-flex align-items-center justify-content-center h-100 text-muted"><i class="ti ti-user" style="font-size: 48px;"></i></div>');
+            $('#step1').show();
+            $('#step2').hide();
+            $('#btnSimpan').hide();
             $('#modalFormPinjaman').modal('show');
         }
 
-        // Function: Edit Data
+        // Update Function: Edit Data
         function editData() {
-            var row = table.row('.selected').data();
-            if (!row) {
+            if (!selectedRow) {
                 Swal.fire({
                     icon: 'warning',
                     title: 'Peringatan!',
@@ -516,15 +796,32 @@
                 return;
             }
 
-            $('#modalTitle').html('<i class="ti ti-edit"></i> Edit Data Pinjaman');
-            // TODO: Load data ke form
-            $('#modalFormPinjaman').modal('show');
+            // Load data pinjaman
+            $.ajax({
+                url: `{{ url('admin/pinjaman') }}/${selectedRow}/edit`,
+                type: 'GET',
+                success: function(response) {
+                    $('#editPinjamanId').val(response.data.id);
+                    $('#editTglPinjam').val(response.data.tanggal_pinjam);
+                    $('#editKasId').val(response.data.dari_kas_id);
+                    $('#editLamaAngsuran').val(response.data.lama_angsuran_id); // TAMBAHAN
+                    $('#editKeterangan').val(response.data.keterangan);
+                    
+                    loadKasList();
+                    loadLamaAngsuranList(); // TAMBAHAN
+                    
+                    $('#editProyeksiContainer').hide(); // Reset proyeksi
+                    $('#modalEditPinjaman').modal('show');
+                },
+                error: function() {
+                    Swal.fire('Error', 'Gagal memuat data pinjaman', 'error');
+                }
+            });
         }
 
         // Function: Hapus Data
         function hapusData() {
-            var row = table.row('.selected').data();
-            if (!row) {
+            if (!selectedRow) {
                 Swal.fire({
                     icon: 'warning',
                     title: 'Peringatan!',
@@ -536,7 +833,7 @@
 
             Swal.fire({
                 title: 'Hapus Data Pinjaman?',
-                text: 'Data pinjaman dan seluruh angsurannya akan dihapus permanen!',
+                text: 'Data pinjaman akan dihapus dan status pengajuan akan dikembalikan!',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: '<i class="ti ti-trash"></i> Ya, Hapus',
@@ -548,19 +845,107 @@
                 }
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // TODO: Process deletion via AJAX
                     Swal.fire({
-                        icon: 'success',
-                        title: 'Berhasil!',
-                        text: 'Data pinjaman berhasil dihapus',
-                        timer: 2000,
-                        showConfirmButton: false
-                    }).then(() => {
-                        location.reload();
+                        title: 'Memproses...',
+                        text: 'Mohon tunggu sebentar',
+                        allowOutsideClick: false,
+                        showConfirmButton: false,
+                        willOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    $.ajax({
+                        url: `{{ url('admin/pinjaman') }}/${selectedRow}`,
+                        type: 'DELETE',
+                        data: {
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function(response) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil!',
+                                text: response.message || 'Data pinjaman berhasil dihapus',
+                                timer: 2000,
+                                showConfirmButton: false
+                            }).then(() => {
+                                location.reload();
+                            });
+                        },
+                        error: function(xhr) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal!',
+                                text: xhr.responseJSON?.message || 'Terjadi kesalahan, silakan coba lagi'
+                            });
+                        }
                     });
                 }
             });
         }
+
+        // Load list lama angsuran
+        function loadLamaAngsuranList() {
+            $.ajax({
+                url: '{{ route("master.lama-angsuran.list") }}',
+                type: 'GET',
+                success: function(response) {
+                    const select = $('#editLamaAngsuran');
+                    select.html('<option value="">-- Pilih Lama Angsuran --</option>');
+                    
+                    if (response.data) {
+                        response.data.forEach(function(item) {
+                            select.append(`<option value="${item.id}">${item.lama_angsuran} Bulan</option>`);
+                        });
+                    }
+                },
+                error: function() {
+                    // Fallback ke data dummy jika endpoint belum ada
+                    const select = $('#editLamaAngsuran');
+                    select.html(`
+                        <option value="">-- Pilih Lama Angsuran --</option>
+                        <option value="1">6 Bulan</option>
+                        <option value="2">12 Bulan</option>
+                        <option value="3">18 Bulan</option>
+                        <option value="4">24 Bulan</option>
+                    `);
+                }
+            });
+        }
+
+        // Hitung ulang proyeksi saat lama angsuran berubah
+        $('#editLamaAngsuran').on('change', function() {
+            const lamaAngsuranId = $(this).val();
+            const pinjamanId = $('#editPinjamanId').val();
+            
+            if (!lamaAngsuranId || !pinjamanId) {
+                $('#editProyeksiContainer').hide();
+                return;
+            }
+            
+            // Ambil data pinjaman untuk hitung ulang
+            $.ajax({
+                url: `{{ url('admin/pinjaman') }}/${pinjamanId}/recalculate`,
+                type: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    lama_angsuran_id: lamaAngsuranId
+                },
+                success: function(response) {
+                    const proyeksi = response.data;
+                    
+                    $('#editProyeksiPokok').text('Rp ' + formatRupiah(proyeksi.angsuran_pokok));
+                    $('#editProyeksiBunga').text('Rp ' + formatRupiah(proyeksi.biaya_bunga * proyeksi.lama_angsuran));
+                    $('#editProyeksiTotal').text('Rp ' + formatRupiah(proyeksi.jumlah_angsuran));
+                    $('#editProyeksiPerBulan').text('Rp ' + formatRupiah(proyeksi.angsuran_per_bulan));
+                    
+                    $('#editProyeksiContainer').show();
+                },
+                error: function() {
+                    $('#editProyeksiContainer').hide();
+                }
+            });
+        });
 
         // Function: Simpan Pinjaman
         function simpanPinjaman() {
@@ -583,23 +968,16 @@
                 }
             });
 
-            const pinjamanId = $('#pinjamanId').val();
-            const url = pinjamanId ?
-                `{{ url('pinjaman/pinjaman') }}/${pinjamanId}` :
-                '{{ route("pinjaman.pinjaman.store") }}';
-
-            const method = pinjamanId ? 'PUT' : 'POST';
-
             $.ajax({
-                url: url,
-                type: method,
+                url: '{{ route("pinjaman.pinjaman.store") }}',
+                type: 'POST',
                 data: Object.fromEntries(formData),
                 success: function (response) {
                     $('#modalFormPinjaman').modal('hide');
                     Swal.fire({
                         icon: 'success',
                         title: 'Berhasil!',
-                        text: response.message || 'Data pinjaman berhasil disimpan',
+                        text: response.message || 'Pinjaman berhasil diproses',
                         timer: 2000,
                         showConfirmButton: false
                     }).then(() => {
@@ -616,9 +994,56 @@
             });
         }
 
+        // Update pinjaman (untuk modal edit)
+        function updatePinjaman() {
+            const form = $('#formEditPinjaman');
+            const formData = new FormData(form[0]);
+            const id = $('#editPinjamanId').val();
+            
+            if (!form[0].checkValidity()) {
+                form[0].reportValidity();
+                return;
+            }
+            
+            Swal.fire({
+                title: 'Memproses...',
+                text: 'Mohon tunggu sebentar',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                willOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            
+            $.ajax({
+                url: `{{ url('admin/pinjaman') }}/${id}`,
+                type: 'PUT',
+                data: Object.fromEntries(formData),
+                success: function(response) {
+                    $('#modalEditPinjaman').modal('hide');
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil!',
+                        text: response.message || 'Data pinjaman berhasil diupdate',
+                        timer: 2000,
+                        showConfirmButton: false
+                    }).then(() => {
+                        location.reload();
+                    });
+                },
+                error: function(xhr) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal!',
+                        text: xhr.responseJSON?.message || 'Terjadi kesalahan'
+                    });
+                }
+            });
+        }
+
         // Function: Cetak Nota
         function cetakNota(id) {
-            const url = `{{ url('pinjaman/pinjaman/cetak') }}/${id}`;
+            const url = `{{ url('admin/pinjaman/cetak') }}/${id}`;
             window.open(url, '_blank');
         }
 
@@ -640,23 +1065,14 @@
             });
 
             setTimeout(() => {
-                Swal.close();
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Filter Diterapkan!',
-                    text: 'Data berhasil difilter',
-                    timer: 1500,
-                    showConfirmButton: false
-                });
+                const params = new URLSearchParams({
+                    status: status,
+                    kode: kode,
+                    nama: nama,
+                    tanggal: tanggal
+                }).toString();
 
-                // Reload dengan filter
-                location.href = "{{ route('pinjaman.pinjaman') }}" + new URLSearchParams({
-                status,
-                kode,
-                nama,
-                tanggal
-            }).toString();
-
+                location.href = "{{ route('pinjaman.pinjaman') }}" + '?' + params;
             }, 800);
         }
 
@@ -687,36 +1103,27 @@
             const nama = $('#filterNama').val() || '';
             const tanggal = $('#filterTanggal').val() || '';
 
-            location.href = "{{ route('pinjaman.pinjaman') }}" + new URLSearchParams({
-            status,
-            kode,
-            nama,
-            tanggal
-        }).toString();
+            const params = new URLSearchParams({
+                status: status,
+                kode: kode,
+                nama: nama,
+                tanggal: tanggal
+            }).toString();
 
+            const url = "{{ route('pinjaman.pinjaman.cetak.laporan') }}" + '?' + params;
             window.open(url, '_blank');
         }
 
-        // Function: Format Currency Input
-        $('#jumlah').on('input', function (e) {
-            let value = e.target.value.replace(/[^0-9]/g, '');
-            if (value) {
-                value = parseInt(value).toLocaleString('id-ID');
-            }
-            e.target.value = value;
-        });
+        // Helper: Format rupiah
+        function formatRupiah(angka) {
+            return new Intl.NumberFormat('id-ID').format(angka);
+        }
 
-        // Set default datetime on modal open
-        $('#modalFormPinjaman').on('show.bs.modal', function () {
-            if ($('#modalTitle').text().includes('Tambah')) {
-                const now = new Date();
-                const year = now.getFullYear();
-                const month = String(now.getMonth() + 1).padStart(2, '0');
-                const day = String(now.getDate()).padStart(2, '0');
-                const hours = String(now.getHours()).padStart(2, '0');
-                const minutes = String(now.getMinutes()).padStart(2, '0');
-                $('#tglPinjam').val(`${year}-${month}-${day}T${hours}:${minutes}`);
-            }
-        });
+        // Helper: Format tanggal
+        function formatTanggal(tanggal) {
+            const date = new Date(tanggal);
+            const options = { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' };
+            return date.toLocaleDateString('id-ID', options);
+        }
     </script>
 @endpush

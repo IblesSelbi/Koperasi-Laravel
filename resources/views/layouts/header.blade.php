@@ -55,8 +55,10 @@
                 <!-- Tanggal dan Jam -->
                 <li class="nav-item me-3">
                     <span class="text-dark">
-                        <i class="ti ti-calendar"></i> <span id="tanggal">{{ date('d F Y') }}</span> &nbsp;
-                        <i class="ti ti-clock"></i> <span id="jam">00:00:00</span>
+                        <i class="ti ti-calendar"></i>
+                        <span id="tanggal">{{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}</span> &nbsp;
+                        <i class="ti ti-clock"></i>
+                        <span id="jam">00:00:00</span>
                     </span>
                 </li>
 

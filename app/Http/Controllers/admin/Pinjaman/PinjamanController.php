@@ -3,7 +3,18 @@
 namespace App\Http\Controllers\Admin\Pinjaman;
 
 use App\Http\Controllers\Controller;
+use App\Models\Admin\Pinjaman\Pinjaman;
+use App\Models\Admin\Pinjaman\PengajuanPinjaman;
+use App\Models\Admin\Pinjaman\BayarAngsuran;
+use App\Models\Admin\DataMaster\DataAnggota;
+use App\Models\Admin\DataMaster\DataBarang;
+use App\Models\Admin\DataMaster\DataKas;
+use App\Models\Admin\DataMaster\LamaAngsuran;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class PinjamanController extends Controller
 {
@@ -12,127 +23,67 @@ class PinjamanController extends Controller
      */
     public function index(Request $request)
     {
-        // Dummy data pinjaman
-        $pinjaman = collect([
-            (object)[
-                'id' => 1,
-                'kode' => 'PJ001',
-                'tanggal_pinjam' => '2025-12-15 10:30:00',
-                'anggota_id' => '001234',
-                'anggota_nama' => 'Budi Santoso',
-                'anggota_departemen' => 'Departemen IT',
-                'anggota_lokasi' => 'Jakarta',
-                'anggota_foto' => 'assets/images/profile/user-2.jpg',
-                'nama_barang' => 'Pinjaman Dana Tunai',
-                'harga_barang' => 2600000,
-                'lama_angsuran' => 6,
-                'pokok_angsuran' => 433333,
-                'bunga_pinjaman' => 130000,
-                'biaya_admin' => 0,
-                'jumlah_angsuran' => 1575000,
-                'jumlah_denda' => 0,
-                'sudah_dibayar' => 0,
-                'sisa_angsuran' => 1,
-                'sisa_tagihan' => 1575000,
-                'status_lunas' => 'Belum',
-                'user' => 'Admin',
-            ],
-            (object)[
-                'id' => 2,
-                'kode' => 'PJ002',
-                'tanggal_pinjam' => '2025-12-14 14:20:00',
-                'anggota_id' => '001235',
-                'anggota_nama' => 'Siti Aminah',
-                'anggota_departemen' => 'Departemen Keuangan',
-                'anggota_lokasi' => 'Bandung',
-                'anggota_foto' => 'assets/images/profile/user-3.jpg',
-                'nama_barang' => 'HP Samsung Galaxy A54',
-                'harga_barang' => 4500000,
-                'lama_angsuran' => 12,
-                'pokok_angsuran' => 375000,
-                'bunga_pinjaman' => 225000,
-                'biaya_admin' => 45000,
-                'jumlah_angsuran' => 4770000,
-                'jumlah_denda' => 50000,
-                'sudah_dibayar' => 2385000,
-                'sisa_angsuran' => 6,
-                'sisa_tagihan' => 2385000,
-                'status_lunas' => 'Belum',
-                'user' => 'Kasir',
-            ],
-            (object)[
-                'id' => 3,
-                'kode' => 'PJ003',
-                'tanggal_pinjam' => '2025-12-13 09:00:00',
-                'anggota_id' => '001236',
-                'anggota_nama' => 'Ahmad Hidayat',
-                'anggota_departemen' => 'Departemen Produksi',
-                'anggota_lokasi' => 'Surabaya',
-                'anggota_foto' => 'assets/images/profile/user-4.jpg',
-                'nama_barang' => 'Pinjaman Modal Usaha',
-                'harga_barang' => 15000000,
-                'lama_angsuran' => 24,
-                'pokok_angsuran' => 625000,
-                'bunga_pinjaman' => 750000,
-                'biaya_admin' => 150000,
-                'jumlah_angsuran' => 15900000,
-                'jumlah_denda' => 0,
-                'sudah_dibayar' => 7950000,
-                'sisa_angsuran' => 12,
-                'sisa_tagihan' => 7950000,
-                'status_lunas' => 'Belum',
-                'user' => 'Admin',
-            ],
-            (object)[
-                'id' => 4,
-                'kode' => 'PJ004',
-                'tanggal_pinjam' => '2025-12-12 11:15:00',
-                'anggota_id' => '001237',
-                'anggota_nama' => 'Dewi Lestari',
-                'anggota_departemen' => 'Departemen Marketing',
-                'anggota_lokasi' => 'Semarang',
-                'anggota_foto' => 'assets/images/profile/user-5.jpg',
-                'nama_barang' => 'Laptop ASUS VivoBook',
-                'harga_barang' => 7000000,
-                'lama_angsuran' => 12,
-                'pokok_angsuran' => 583333,
-                'bunga_pinjaman' => 350000,
-                'biaya_admin' => 70000,
-                'jumlah_angsuran' => 7420000,
-                'jumlah_denda' => 0,
-                'sudah_dibayar' => 7420000,
-                'sisa_angsuran' => 0,
-                'sisa_tagihan' => 0,
-                'status_lunas' => 'Lunas',
-                'user' => 'Admin',
-            ],
-            (object)[
-                'id' => 5,
-                'kode' => 'PJ005',
-                'tanggal_pinjam' => '2025-12-11 16:20:00',
-                'anggota_id' => '001238',
-                'anggota_nama' => 'Eko Prasetyo',
-                'anggota_departemen' => 'Departemen HRD',
-                'anggota_lokasi' => 'Yogyakarta',
-                'anggota_foto' => 'assets/images/profile/user-6.jpg',
-                'nama_barang' => 'Pinjaman Pendidikan',
-                'harga_barang' => 12000000,
-                'lama_angsuran' => 18,
-                'pokok_angsuran' => 666667,
-                'bunga_pinjaman' => 600000,
-                'biaya_admin' => 120000,
-                'jumlah_angsuran' => 12720000,
-                'jumlah_denda' => 0,
-                'sudah_dibayar' => 12720000,
-                'sisa_angsuran' => 0,
-                'sisa_tagihan' => 0,
-                'status_lunas' => 'Lunas',
-                'user' => 'Admin',
-            ],
-        ]);
+        $query = Pinjaman::with(['anggota', 'pengajuan', 'lamaAngsuran', 'barang', 'kas', 'user']);
 
+        // Filter by Status
+        if ($request->filled('status')) {
+            $query->byStatus($request->status);
+        }
+
+        // Filter by Kode
+        if ($request->filled('kode')) {
+            $query->where('kode_pinjaman', 'like', '%' . $request->kode . '%');
+        }
+
+        // Filter by Nama Anggota
+        if ($request->filled('nama')) {
+            $query->whereHas('anggota', function ($q) use ($request) {
+                $q->where('nama', 'like', '%' . $request->nama . '%');
+            });
+        }
+
+        // Filter by Tanggal Range
+        if ($request->filled('tanggal')) {
+            $dates = explode(' - ', $request->tanggal);
+            if (count($dates) === 2) {
+                try {
+                    $startDate = Carbon::createFromFormat('d/m/Y', trim($dates[0]))->startOfDay();
+                    $endDate = Carbon::createFromFormat('d/m/Y', trim($dates[1]))->endOfDay();
+
+                    $query->whereBetween('tanggal_pinjam', [$startDate, $endDate]);
+                } catch (\Exception $e) {
+                    Log::warning('Invalid tanggal format: ' . $request->tanggal);
+                }
+            }
+        }
+
+        $pinjaman = $query->orderBy('tanggal_pinjam', 'desc')->get();
+
+        // Hitung data untuk setiap pinjaman
+        foreach ($pinjaman as $item) {
+            // TODO: Implementasi setelah ada tabel pembayaran
+            $item->sudah_dibayar = 0;
+            $item->sisa_angsuran = $item->lamaAngsuran->lama_angsuran;
+            $item->jumlah_denda = 0;
+            $item->sisa_tagihan = $item->jumlah_angsuran;
+
+            // Data untuk view
+            $item->nama_barang = $item->barang ? $item->barang->nama_barang : 'Pinjaman Tunai';
+            $item->harga_barang = $item->pokok_pinjaman;
+            $item->lama_angsuran = $item->lamaAngsuran->lama_angsuran;
+            $item->pokok_angsuran = $item->angsuran_pokok;
+            $item->bunga_pinjaman = $item->biaya_bunga;
+
+            // Data anggota
+            $item->anggota_nama = $item->anggota->nama;
+            $item->anggota_id = $item->anggota->id_anggota;
+            $item->anggota_lokasi = $item->anggota->kota;
+            $item->anggota_foto = $item->anggota->photo;
+        }
+
+        // Notifikasi dummy
         $notifications = collect([
-            (object)[
+            (object) [
                 'nama' => 'Hartati',
                 'tanggal_jatuh_tempo' => '2025-06-16',
                 'sisa_tagihan' => 1575000,
@@ -148,22 +99,118 @@ class PinjamanController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'pengajuan_id' => 'required|exists:pengajuan_pinjaman,id',
             'tanggal_pinjam' => 'required|date',
-            'anggota_id' => 'required|string',
-            'barang_id' => 'required|string',
-            'jumlah' => 'required|numeric|min:0',
-            'lama_angsuran' => 'required|integer|min:1',
-            'kas_id' => 'required|string',
+            'dari_kas_id' => 'required|exists:data_kas,id',
             'keterangan' => 'nullable|string',
         ]);
 
-        // TODO: Process storage
-        // $pinjaman = Pinjaman::create($validated);
+        DB::beginTransaction();
+        try {
+            // Ambil data pengajuan
+            $pengajuan = PengajuanPinjaman::with(['anggota', 'lamaAngsuran'])->findOrFail($validated['pengajuan_id']);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Data pinjaman berhasil disimpan'
-        ]);
+            // Validasi pengajuan sudah disetujui
+            if ($pengajuan->status != 1) {
+                throw new \Exception('Hanya pengajuan yang disetujui yang dapat diproses menjadi pinjaman');
+            }
+
+            // Validasi pengajuan belum pernah diproses
+            $existingPinjaman = Pinjaman::where('pengajuan_id', $pengajuan->id)->first();
+            if ($existingPinjaman) {
+                throw new \Exception('Pengajuan ini sudah pernah diproses menjadi pinjaman');
+            }
+
+            // Generate kode pinjaman
+            $kodePinjaman = Pinjaman::generateKodePinjaman();
+
+            // Hitung angsuran
+            $lamaAngsuran = $pengajuan->lamaAngsuran->lama_angsuran;
+            $pokokPinjaman = $pengajuan->jumlah;
+            $angsuranPokok = $pokokPinjaman / $lamaAngsuran;
+
+            // Bunga 5% per angsuran
+            $bungaPersen = 5;
+            $biayaBunga = ($pokokPinjaman * $bungaPersen / 100) / $lamaAngsuran;
+
+            // Biaya admin
+            $biayaAdmin = 0;
+
+            // Total angsuran
+            $jumlahAngsuran = $pokokPinjaman + ($biayaBunga * $lamaAngsuran) + $biayaAdmin;
+
+            // Buat pinjaman
+            $pinjaman = Pinjaman::create([
+                'kode_pinjaman' => $kodePinjaman,
+                'pengajuan_id' => $pengajuan->id,
+                'tanggal_pinjam' => $validated['tanggal_pinjam'],
+                'anggota_id' => $pengajuan->anggota_id,
+                'barang_id' => null,
+                'jenis_pinjaman' => $pengajuan->jenis_pinjaman,
+                'pokok_pinjaman' => $pokokPinjaman,
+                'lama_angsuran_id' => $pengajuan->lama_angsuran_id,
+                'angsuran_pokok' => $angsuranPokok,
+                'bunga_persen' => $bungaPersen,
+                'biaya_bunga' => $biayaBunga,
+                'biaya_admin' => $biayaAdmin,
+                'jumlah_angsuran' => $jumlahAngsuran,
+                'dari_kas_id' => $validated['dari_kas_id'],
+                'keterangan' => $validated['keterangan'],
+                'status_lunas' => 'Belum',
+                'user_id' => Auth::id(),
+            ]);
+
+            // AUTO GENERATE ANGSURAN
+            $this->generateAngsuran($pinjaman);
+
+            // Update status pengajuan menjadi terlaksana
+            $pengajuan->status = 3;
+            $pengajuan->save();
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Pinjaman dan jadwal angsuran berhasil dibuat',
+                'data' => $pinjaman
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error creating pinjaman: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 400);
+        }
+    }
+
+    private function generateAngsuran(Pinjaman $pinjaman)
+    {
+        $lamaAngsuran = $pinjaman->lamaAngsuran->lama_angsuran;
+        $angsuranPerBulan = $pinjaman->angsuran_pokok + $pinjaman->biaya_bunga;
+        $tanggalMulai = Carbon::parse($pinjaman->tanggal_pinjam);
+
+        for ($i = 1; $i <= $lamaAngsuran; $i++) {
+            // Tanggal jatuh tempo: tanggal pinjam + ($i bulan)
+            $tanggalJatuhTempo = $tanggalMulai->copy()->addMonths($i);
+
+            BayarAngsuran::create([
+                'kode_bayar' => BayarAngsuran::generateKodeBayar(),
+                'pinjaman_id' => $pinjaman->id,
+                'angsuran_ke' => $i,
+                'tanggal_jatuh_tempo' => $tanggalJatuhTempo,
+                'tanggal_bayar' => null,
+                'jumlah_angsuran' => $angsuranPerBulan,
+                'jumlah_bayar' => 0,
+                'denda' => 0,
+                'ke_kas_id' => null,
+                'status_bayar' => 'Belum',
+                'keterangan' => null,
+                'user_id' => null,
+            ]);
+        }
     }
 
     /**
@@ -173,21 +220,113 @@ class PinjamanController extends Controller
     {
         $validated = $request->validate([
             'tanggal_pinjam' => 'required|date',
-            'anggota_id' => 'required|string',
-            'barang_id' => 'required|string',
-            'jumlah' => 'required|numeric|min:0',
-            'lama_angsuran' => 'required|integer|min:1',
-            'kas_id' => 'required|string',
+            'lama_angsuran_id' => 'required|exists:lama_angsuran,id',
+            'dari_kas_id' => 'required|exists:data_kas,id',
             'keterangan' => 'nullable|string',
         ]);
 
-        // TODO: Process update
-        // $pinjaman = Pinjaman::findOrFail($id);
-        // $pinjaman->update($validated);
+        DB::beginTransaction();
+        try {
+            $pinjaman = Pinjaman::findOrFail($id);
+
+            // Cek apakah sudah ada pembayaran
+            $adaPembayaran = $pinjaman->angsuran()->where('status_bayar', 'Lunas')->exists();
+
+            if ($adaPembayaran && $pinjaman->lama_angsuran_id != $validated['lama_angsuran_id']) {
+                throw new \Exception('Tidak dapat mengubah lama angsuran karena sudah ada pembayaran');
+            }
+
+            $lamaAngsuranBerubah = $pinjaman->lama_angsuran_id != $validated['lama_angsuran_id'];
+
+            if ($lamaAngsuranBerubah) {
+                // Hapus angsuran lama (yang belum dibayar)
+                $pinjaman->angsuran()->where('status_bayar', 'Belum')->delete();
+
+                // Hitung ulang
+                $lamaAngsuran = LamaAngsuran::findOrFail($validated['lama_angsuran_id']);
+                $pokokPinjaman = $pinjaman->pokok_pinjaman;
+                $angsuranPokok = $pokokPinjaman / $lamaAngsuran->lama_angsuran;
+                $bungaPersen = 5;
+                $biayaBunga = ($pokokPinjaman * $bungaPersen / 100) / $lamaAngsuran->lama_angsuran;
+                $jumlahAngsuran = $pokokPinjaman + ($biayaBunga * $lamaAngsuran->lama_angsuran) + $pinjaman->biaya_admin;
+
+                $pinjaman->update([
+                    'tanggal_pinjam' => $validated['tanggal_pinjam'],
+                    'lama_angsuran_id' => $validated['lama_angsuran_id'],
+                    'angsuran_pokok' => $angsuranPokok,
+                    'biaya_bunga' => $biayaBunga,
+                    'jumlah_angsuran' => $jumlahAngsuran,
+                    'dari_kas_id' => $validated['dari_kas_id'],
+                    'keterangan' => $validated['keterangan'],
+                ]);
+
+                // Regenerate angsuran
+                $this->generateAngsuran($pinjaman);
+            } else {
+                $pinjaman->update([
+                    'tanggal_pinjam' => $validated['tanggal_pinjam'],
+                    'dari_kas_id' => $validated['dari_kas_id'],
+                    'keterangan' => $validated['keterangan'],
+                ]);
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Data pinjaman berhasil diupdate' . ($lamaAngsuranBerubah ? ' dan jadwal angsuran telah di-generate ulang' : '')
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error updating pinjaman: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 400);
+        }
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit($id)
+    {
+        $pinjaman = Pinjaman::findOrFail($id);
 
         return response()->json([
             'success' => true,
-            'message' => 'Data pinjaman berhasil diupdate'
+            'data' => [
+                'id' => $pinjaman->id,
+                'tanggal_pinjam' => $pinjaman->tanggal_pinjam->format('Y-m-d\TH:i'),
+                'lama_angsuran_id' => $pinjaman->lama_angsuran_id,
+                'dari_kas_id' => $pinjaman->dari_kas_id,
+                'keterangan' => $pinjaman->keterangan,
+            ]
+        ]);
+    }
+
+    public function recalculate(Request $request, $id)
+    {
+        $pinjaman = Pinjaman::findOrFail($id);
+        $lamaAngsuran = LamaAngsuran::findOrFail($request->lama_angsuran_id);
+
+        $pokokPinjaman = $pinjaman->pokok_pinjaman;
+        $angsuranPokok = $pokokPinjaman / $lamaAngsuran->lama_angsuran;
+        $bungaPersen = 5;
+        $biayaBunga = ($pokokPinjaman * $bungaPersen / 100) / $lamaAngsuran->lama_angsuran;
+        $jumlahAngsuran = $pokokPinjaman + ($biayaBunga * $lamaAngsuran->lama_angsuran) + $pinjaman->biaya_admin;
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'lama_angsuran' => $lamaAngsuran->lama_angsuran,
+                'angsuran_pokok' => $angsuranPokok,
+                'biaya_bunga' => $biayaBunga,
+                'jumlah_angsuran' => $jumlahAngsuran,
+                'angsuran_per_bulan' => ($angsuranPokok + $biayaBunga),
+            ]
         ]);
     }
 
@@ -196,102 +335,130 @@ class PinjamanController extends Controller
      */
     public function destroy($id)
     {
-        // TODO: Process deletion
-        // $pinjaman = Pinjaman::findOrFail($id);
-        // $pinjaman->delete();
+        DB::beginTransaction();
+        try {
+            $pinjaman = Pinjaman::findOrFail($id);
+
+            // Cek apakah sudah ada pembayaran
+            $adaPembayaran = $pinjaman->angsuran()->where('status_bayar', 'Lunas')->exists();
+
+            if ($adaPembayaran) {
+                throw new \Exception('Tidak dapat menghapus pinjaman karena sudah ada pembayaran');
+            }
+
+            // Hapus semua angsuran
+            $pinjaman->angsuran()->delete();
+
+            // Kembalikan status pengajuan
+            if ($pinjaman->pengajuan) {
+                $pinjaman->pengajuan->status = 1;
+                $pinjaman->pengajuan->save();
+            }
+
+            $pinjaman->delete();
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Data pinjaman dan jadwal angsuran berhasil dihapus'
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error deleting pinjaman: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 400);
+        }
+    }
+
+    /**
+     * Get pengajuan yang sudah disetujui untuk dropdown
+     */
+    public function getPengajuanDisetujui()
+    {
+        $pengajuan = PengajuanPinjaman::with(['anggota', 'lamaAngsuran'])
+            ->where('status', 1) // Disetujui
+            ->whereNotIn('id', function ($query) {
+                $query->select('pengajuan_id')
+                    ->from('pinjaman')
+                    ->whereNull('deleted_at');
+            })
+            ->orderBy('tanggal_pengajuan', 'desc')
+            ->get();
 
         return response()->json([
             'success' => true,
-            'message' => 'Data pinjaman berhasil dihapus'
+            'data' => $pengajuan
         ]);
     }
 
     /**
-     * Show the detail of a specific pinjaman
+     * Get detail pengajuan
      */
-    public function show($id)
+    public function getDetailPengajuan($id)
     {
-        // TODO: Get real data from database
-        $pinjaman = (object)[
-            'id' => $id,
-            'kode' => 'TPJ00019',
-            'tanggal_pinjam' => '2025-12-07',
-            'tanggal_tempo' => '2026-12-07',
-            'lama_pinjaman' => 12,
-            'anggota_id' => 'AG0008',
-            'anggota_nama' => 'Widi Aljatsiyah',
-            'anggota_departemen' => '-',
-            'anggota_ttl' => 'Lampung, 16 Juni 2023',
-            'anggota_kota' => 'Kota Tasikmalaya',
-            'anggota_foto' => 'assets/images/profile/user-2.jpg',
-            'pokok_pinjaman' => 2600000,
-            'angsuran_pokok' => 216667,
-            'biaya_bunga' => 130000,
-            'jumlah_angsuran' => 346700,
-            'sisa_angsuran' => 9,
-            'sudah_dibayar' => 1040100,
-            'jumlah_denda' => 0,
-            'sisa_tagihan' => 3120300,
-            'status_lunas' => 'Belum Lunas',
-        ];
+        $pengajuan = PengajuanPinjaman::with(['anggota', 'lamaAngsuran'])
+            ->findOrFail($id);
 
-        // Simulasi tagihan
-        $simulasi = collect();
-        $bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-        for ($i = 1; $i <= 12; $i++) {
-            $simulasi->push((object)[
-                'bulan_ke' => $i,
-                'angsuran_pokok' => 216667,
-                'angsuran_bunga' => 130000,
-                'biaya_admin' => 0,
-                'jumlah_angsuran' => 346700,
-                'tanggal_tempo' => "15 {$bulan[$i - 1]} 2026"
+        // Hitung proyeksi angsuran
+        $lamaAngsuran = $pengajuan->lamaAngsuran->lama_angsuran;
+        $pokokPinjaman = $pengajuan->jumlah;
+        $angsuranPokok = $pokokPinjaman / $lamaAngsuran;
+        $bungaPersen = 5;
+        $biayaBunga = ($pokokPinjaman * $bungaPersen / 100) / $lamaAngsuran;
+        $biayaAdmin = 0;
+        $jumlahAngsuran = $pokokPinjaman + ($biayaBunga * $lamaAngsuran) + $biayaAdmin;
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'pengajuan' => $pengajuan,
+                'proyeksi' => [
+                    'pokok_pinjaman' => $pokokPinjaman,
+                    'angsuran_pokok' => $angsuranPokok,
+                    'bunga_persen' => $bungaPersen,
+                    'biaya_bunga' => $biayaBunga,
+                    'biaya_admin' => $biayaAdmin,
+                    'jumlah_angsuran' => $jumlahAngsuran,
+                    'angsuran_per_bulan' => ($angsuranPokok + $biayaBunga),
+                ]
+            ]
+        ]);
+    }
+
+    /**
+     * Validasi pinjaman sebagai lunas
+     */
+    public function validasiLunas($id)
+    {
+        DB::beginTransaction();
+        try {
+            $pinjaman = Pinjaman::findOrFail($id);
+
+            // TODO: Validasi sudah lunas semua angsuran
+
+            $pinjaman->status_lunas = 'Lunas';
+            $pinjaman->save();
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Pinjaman telah divalidasi sebagai lunas'
             ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat validasi'
+            ], 400);
         }
-
-        // Detail transaksi pembayaran
-        $transaksi = collect([
-            (object)[
-                'no' => 1,
-                'kode_bayar' => 'TBY00019',
-                'tanggal_bayar' => '2025-12-07',
-                'angsuran_ke' => 1,
-                'jenis_pembayaran' => 'Angsuran',
-                'jumlah_bayar' => 346700,
-                'denda' => 0,
-                'user' => 'admin'
-            ],
-            (object)[
-                'no' => 2,
-                'kode_bayar' => 'TBY00021',
-                'tanggal_bayar' => '2025-12-07',
-                'angsuran_ke' => 3,
-                'jenis_pembayaran' => 'Angsuran',
-                'jumlah_bayar' => 346700,
-                'denda' => 0,
-                'user' => 'admin'
-            ],
-            (object)[
-                'no' => 3,
-                'kode_bayar' => 'TBY00020',
-                'tanggal_bayar' => '2025-12-07',
-                'angsuran_ke' => 2,
-                'jenis_pembayaran' => 'Angsuran',
-                'jumlah_bayar' => 346700,
-                'denda' => 0,
-                'user' => 'admin'
-            ]
-        ]);
-
-        $notifications = collect([
-            (object)[
-                'nama' => 'Hartati',
-                'tanggal_jatuh_tempo' => '2025-06-16',
-                'sisa_tagihan' => 1575000,
-            ]
-        ]);
-
-        return view('admin.Pinjaman.datapinjaman.DetailPinjaman', compact('pinjaman', 'simulasi', 'transaksi', 'notifications'));
     }
 
     /**
@@ -299,31 +466,10 @@ class PinjamanController extends Controller
      */
     public function cetak($id)
     {
-        // TODO: Get data and generate print view
-        $pinjaman = (object)[
-            'kode' => 'PJ001',
-            'tanggal_pinjam' => '2025-12-15',
-            'anggota_nama' => 'Budi Santoso',
-            'jumlah' => 2600000,
-        ];
-        
-        return view('admin.pinjaman.cetak_nota', compact('pinjaman'));
-    }
+        $pinjaman = Pinjaman::with(['anggota', 'pengajuan', 'lamaAngsuran', 'kas', 'user'])
+            ->findOrFail($id);
 
-    /**
-     * Validate pinjaman as lunas (paid off)
-     */
-    public function validasiLunas($id)
-    {
-        // TODO: Update status to lunas
-        // $pinjaman = Pinjaman::findOrFail($id);
-        // $pinjaman->status_lunas = 'Lunas';
-        // $pinjaman->save();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Pinjaman telah divalidasi sebagai lunas'
-        ]);
+        return view('admin.Pinjaman.datapinjaman.cetak', compact('pinjaman'));
     }
 
     /**
@@ -336,18 +482,44 @@ class PinjamanController extends Controller
         $nama = $request->get('nama', '');
         $tanggal = $request->get('tanggal', '');
 
-        // Sample data for print view
-        $pinjaman = collect([
-            (object)[
-                'kode' => 'PJ001',
-                'tanggal_pinjam' => '2025-12-15',
-                'anggota_nama' => 'Budi Santoso',
-                'jumlah' => 2600000,
-                'status_lunas' => 'Belum',
-            ],
-        ]);
-        
-        return view('admin.pinjaman.cetak_laporan', compact('pinjaman', 'status', 'kode', 'nama', 'tanggal'));
+        $query = Pinjaman::with(['anggota', 'pengajuan', 'lamaAngsuran', 'barang', 'kas', 'user']);
+
+        if ($status !== '') {
+            $query->byStatus($status);
+        }
+
+        if ($kode) {
+            $query->where('kode_pinjaman', 'like', '%' . $kode . '%');
+        }
+
+        if ($nama) {
+            $query->whereHas('anggota', function ($q) use ($nama) {
+                $q->where('nama', 'like', '%' . $nama . '%');
+            });
+        }
+
+        if ($tanggal) {
+            $dates = explode(' - ', $tanggal);
+            if (count($dates) === 2) {
+                try {
+                    $startDate = Carbon::createFromFormat('d/m/Y', trim($dates[0]))->startOfDay();
+                    $endDate = Carbon::createFromFormat('d/m/Y', trim($dates[1]))->endOfDay();
+                    $query->whereBetween('tanggal_pinjam', [$startDate, $endDate]);
+                } catch (\Exception $e) {
+                    Log::warning('Invalid tanggal format in cetak: ' . $tanggal);
+                }
+            }
+        }
+
+        $pinjaman = $query->orderBy('tanggal_pinjam', 'desc')->get();
+
+        return view('admin.Pinjaman.datapinjaman.cetakLaporan', compact(
+            'pinjaman',
+            'status',
+            'kode',
+            'nama',
+            'tanggal'
+        ));
     }
 
     /**
@@ -356,9 +528,7 @@ class PinjamanController extends Controller
     public function exportExcel()
     {
         // TODO: Implement Excel export using Laravel Excel
-        // return Excel::download(new PinjamanExport, 'data-pinjaman.xlsx');
-        
-        return response('Export Excel Data Pinjaman');
+        return response()->download(public_path('dummy.xlsx'));
     }
 
     /**
@@ -366,11 +536,7 @@ class PinjamanController extends Controller
      */
     public function exportPDF()
     {
-        // TODO: Implement PDF export using DomPDF or similar
-        // $pinjaman = Pinjaman::with('anggota')->get();
-        // $pdf = PDF::loadView('admin.pinjaman.export_pdf_pinjaman', compact('pinjaman'));
-        // return $pdf->download('data-pinjaman.pdf');
-        
-        return response('Export PDF Data Pinjaman');
+        // TODO: Implement PDF export
+        return response()->download(public_path('dummy.pdf'));
     }
 }

@@ -58,6 +58,22 @@ class LamaAngsuranController extends Controller
         ]);
     }
 
+    /**
+     * Get list of lama angsuran for dropdown
+     */
+    public function list()
+    {
+        $lamaAngsuran = LamaAngsuran::select('id', 'lama_angsuran')
+            ->where('aktif', 'Y') 
+            ->orderBy('lama_angsuran', 'asc')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $lamaAngsuran
+        ]);
+    }
+
     public function export()
     {
         return response('Export Excel Lama Angsuran');

@@ -316,9 +316,8 @@
     </div>
 @endsection
 
-@push('scripts')
-    <!-- SweetAlert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    @push('scripts')
+    <script src="{{ asset('assets/sweetalert/sweetalert2.min.js') }}"></script>
 
     <script>
         // Calculate initial total on page load
@@ -337,8 +336,7 @@
             const danaPend = parseFloat(document.getElementById('dana_pend').value) || 0;
             const danaSosial = parseFloat(document.getElementById('dana_sosial').value) || 0;
 
-            const total = danaCadangan + jasaUsaha + jasaAnggota + jasaModal + danaPengurus + danaKaryawan + danaPend +
-                danaSosial;
+            const total = danaCadangan + jasaUsaha + jasaAnggota + jasaModal + danaPengurus + danaKaryawan + danaPend + danaSosial;
             const sisa = 100 - total;
 
             // Update display
@@ -366,7 +364,9 @@
                 document.getElementById('sisaDana').className = 'text-success fw-bold';
             }
 
-            // Show alert if over 100%
+            // VALIDASI 100% - DINONAKTIFKAN
+            // Uncomment jika ingin mengaktifkan validasi 100%
+            /*
             if (total > 100) {
                 Swal.fire({
                     icon: 'warning',
@@ -375,9 +375,11 @@
                     toast: true,
                     position: 'top-end',
                     showConfirmButton: false,
-                    timer: 3000
+                    timer: 3000,
+                    timerProgressBar: true
                 });
             }
+            */
         }
 
         // Auto calculate on input change
@@ -397,19 +399,14 @@
                 showCancelButton: true,
                 confirmButtonText: 'Ya, Reset',
                 cancelButtonText: 'Batal',
-                confirmButtonColor: '#dc3545'
+                confirmButtonColor: '#dc3545',
+                customClass: {
+                    confirmButton: 'btn btn-danger',
+                    cancelButton: 'btn btn-secondary'
+                }
             }).then((result) => {
                 if (result.isConfirmed) {
-                    document.getElementById('formSukuBunga').reset();
-                    hitungTotal();
-
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Form Direset',
-                        text: 'Form telah dikembalikan ke nilai awal',
-                        timer: 1500,
-                        showConfirmButton: false
-                    });
+                    location.reload();
                 }
             });
         }
@@ -418,16 +415,22 @@
         document.getElementById('formSukuBunga').addEventListener('submit', function(e) {
             e.preventDefault();
 
-            // Validasi total persentase
-            const total = parseFloat(document.getElementById('totalDana').textContent);
+            // VALIDASI TOTAL 100% - DINONAKTIFKAN
+            // Uncomment jika ingin mengaktifkan validasi submit
+            /*
+            const totalText = document.getElementById('totalDana').textContent;
+            const total = parseFloat(totalText.replace('%', ''));
+            
             if (total > 100) {
                 Swal.fire({
                     icon: 'error',
                     title: 'Validasi Gagal',
-                    text: 'Total persentase dana melebihi 100%. Harap sesuaikan nilai-nilai terlebih dahulu.'
+                    text: 'Total persentase dana melebihi 100%. Harap sesuaikan nilai-nilai terlebih dahulu.',
+                    confirmButtonColor: '#dc3545'
                 });
                 return;
             }
+            */
 
             // Disable button & show loading
             const btnSubmit = document.getElementById('btnSubmit');
@@ -449,59 +452,49 @@
                 }
             });
 
-            // Simulate AJAX request
-            setTimeout(() => {
-                // Success response
+            // AJAX Request
+            fetch('{{ route("setting.suku-bunga.update") }}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil!',
+                        text: data.message,
+                        timer: 2000,
+                        showConfirmButton: false
+                    }).then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal!',
+                        text: data.message || 'Terjadi kesalahan saat menyimpan data',
+                        confirmButtonColor: '#dc3545'
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
                 Swal.fire({
-                    icon: 'success',
-                    title: 'Berhasil!',
-                    text: 'Setting biaya dan administrasi berhasil diupdate',
-                    timer: 2000,
-                    showConfirmButton: false
-                }).then(() => {
-                    // Reset button
-                    btnSubmit.disabled = false;
-                    btnSubmit.innerHTML = btnText;
-                });
-
-                /* Production AJAX:
-                fetch('{{ route('setting.suku-bunga.update') }}', {
-                  method: 'POST',
-                  body: formData,
-                  headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                  }
-                })
-                .then(response => response.json())
-                .then(data => {
-                  if(data.success) {
-                    Swal.fire({
-                      icon: 'success',
-                      title: 'Berhasil!',
-                      text: data.message,
-                      timer: 2000
-                    });
-                  } else {
-                    Swal.fire({
-                      icon: 'error',
-                      title: 'Gagal!',
-                      text: data.message
-                    });
-                  }
-                })
-                .catch(error => {
-                  Swal.fire({
                     icon: 'error',
                     title: 'Error!',
-                    text: 'Tidak dapat terhubung ke server'
-                  });
-                })
-                .finally(() => {
-                  btnSubmit.disabled = false;
-                  btnSubmit.innerHTML = btnText;
+                    text: 'Tidak dapat terhubung ke server',
+                    confirmButtonColor: '#dc3545'
                 });
-                */
-            }, 1500);
+            })
+            .finally(() => {
+                btnSubmit.disabled = false;
+                btnSubmit.innerHTML = btnText;
+            });
         });
 
         // Number input validation (prevent negative values)
@@ -519,12 +512,15 @@
                     this.value = 0;
                 }
 
-                // Limit percentage fields to max 100
+                // BATASAN MAX 100% - DINONAKTIFKAN
+                // Uncomment jika ingin membatasi input maksimal 100%
+                /*
                 if (this.name !== 'biaya_adm' && this.name !== 'denda' && this.name !== 'denda_hari') {
                     if (this.value > 100) {
                         this.value = 100;
                     }
                 }
+                */
             });
         });
 

@@ -3,11 +3,13 @@
 @section('title', 'Data Pengajuan Pinjaman')
 
 @push('styles')
-    <!-- DataTables CSS -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css">
     <!-- Daterangepicker -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    <style>
+        #tabelPengajuan th {
+            white-space: nowrap;
+        }
+    </style>
 @endpush
 
 @section('content')
@@ -141,10 +143,10 @@
                     <thead class="table-primary">
                         <tr>
                             <th width="70px" class="text-center align-middle">ID Ajuan</th>
-                            <th class="text-center align-middle">Tanggal<br>Pengajuan</th>
-                            <th width="150px" class="align-middle">Anggota</th>
+                            <th class="text-center align-middle">Tanggal Pengajuan</th>
+                            <th width="140px" class="align-middle">Anggota</th>
                             <th class="text-center align-middle">Jenis</th>
-                            <th width="120px" class="text-end align-middle">Jumlah</th>
+                            <th width="150px" class="text-end align-middle">Jumlah</th>
                             <th class="text-center align-middle" title="Jumlah Angsuran">Bln</th>
                             <th width="150px" class="align-middle">Keterangan</th>
                             <th width="130px" class="text-center align-middle">Status</th>
@@ -166,10 +168,10 @@
                                 <td>
                                     <a href="javascript:void(0)" title="Lihat History Pinjaman Anggota"
                                         class="text-decoration-none">
-                                        {{ $item->anggota_id }}
+                                        {{ $item->anggota->kode_anggota }}
                                     </a><br>
-                                    <strong>{{ $item->anggota_nama }}</strong><br>
-                                    <small class="text-muted">{{ $item->anggota_departemen }}</small>
+                                    <strong>{{ $item->anggota->nama }}</strong><br>
+                                    <small class="text-muted">{{ $item->anggota->departemen }}</small>
                                 </td>
                                 <td class="text-center">
                                     @if($item->jenis_pinjaman == 'Biasa')
