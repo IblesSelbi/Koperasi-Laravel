@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Admin\Pinjaman\Pinjaman;
 use App\Models\Admin\Pinjaman\PengajuanPinjaman;
 use App\Models\Admin\Pinjaman\BayarAngsuran;
+use App\Models\Admin\Pinjaman\DetailBayarAngsuran;
 use App\Models\Admin\DataMaster\DataAnggota;
 use App\Models\Admin\DataMaster\DataBarang;
 use App\Models\Admin\DataMaster\DataKas;
@@ -289,6 +290,78 @@ class PinjamanController extends Controller
     }
 
     /**
+     * Display detail pinjaman
+     */
+    /**
+     * Display detail pinjaman
+     */
+    public function show($id)
+    {
+        $pinjaman = Pinjaman::with([
+            'anggota',
+            'lamaAngsuran',
+            'detailPembayaran.user',
+            'detailPembayaran.kas',
+            'kas',
+            'user'
+        ])->findOrFail($id);
+
+        // Data anggota
+        $pinjaman->anggota_id = $pinjaman->anggota->id_anggota;
+        $pinjaman->anggota_nama = $pinjaman->anggota->nama;
+        $pinjaman->anggota_departemen = $pinjaman->anggota->departement ?? '-';
+        $pinjaman->anggota_ttl = $pinjaman->anggota->tempat_lahir . ', ' .
+            Carbon::parse($pinjaman->anggota->tanggal_lahir)->translatedFormat('d F Y');
+        $pinjaman->anggota_kota = $pinjaman->anggota->kota;
+        $pinjaman->anggota_foto = $pinjaman->anggota->photo;
+
+        // Data pinjaman
+        $pinjaman->kode = $pinjaman->kode_pinjaman;
+        $pinjaman->lama_pinjaman = $pinjaman->lamaAngsuran->lama_angsuran;
+        $pinjaman->tanggal_tempo = $pinjaman->tanggal_pinjam->copy()->addMonths($pinjaman->lama_pinjaman);
+
+        // Simulasi jadwal angsuran
+        $simulasi = collect();
+        $angsuranPerBulan = $pinjaman->angsuran_pokok + $pinjaman->biaya_bunga;
+        $tanggalMulai = Carbon::parse($pinjaman->tanggal_pinjam);
+
+        for ($i = 1; $i <= $pinjaman->lama_pinjaman; $i++) {
+            $simulasi->push((object) [
+                'bulan_ke' => $i,
+                'angsuran_pokok' => $pinjaman->angsuran_pokok,
+                'angsuran_bunga' => $pinjaman->biaya_bunga,
+                'biaya_admin' => ($i == 1) ? $pinjaman->biaya_admin : 0,
+                'jumlah_angsuran' => $angsuranPerBulan + (($i == 1) ? $pinjaman->biaya_admin : 0),
+                'tanggal_tempo' => $tanggalMulai->copy()->addMonths($i)->translatedFormat('d F Y')
+            ]);
+        }
+
+        // PERBAIKAN: Ambil dari DetailBayarAngsuran
+        $transaksi = DetailBayarAngsuran::with(['kas', 'user', 'angsuran'])
+            ->where('pinjaman_id', $id)
+            ->orderBy('tanggal_bayar', 'asc')
+            ->get()
+            ->map(function ($item, $index) {
+                return (object) [
+                    'no' => $index + 1,
+                    'kode_bayar' => $item->kode_bayar,
+                    'tanggal_bayar' => Carbon::parse($item->tanggal_bayar)->translatedFormat('d F Y H:i'),
+                    'angsuran_ke' => $item->angsuran_ke,
+                    'jenis_pembayaran' => $item->kas->nama_kas ?? '-',
+                    'jumlah_bayar' => $item->jumlah_bayar,
+                    'denda' => $item->denda,
+                    'user' => $item->user->name ?? '-',
+                ];
+            });
+
+        return view('admin.Pinjaman.datapinjaman.DetailPinjaman', compact(
+            'pinjaman',
+            'simulasi',
+            'transaksi'
+        ));
+    }
+
+    /**
      * Show the form for editing the specified resource.
      */
     public function edit($id)
@@ -328,6 +401,28 @@ class PinjamanController extends Controller
                 'angsuran_per_bulan' => ($angsuranPokok + $biayaBunga),
             ]
         ]);
+    }
+
+    public function getKasList()
+    {
+        try {
+            $kasList = DataKas::select('id', 'nama_kas', 'saldo')
+                ->where('status', 'Aktif')
+                ->orderBy('nama_kas', 'asc')
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'data' => $kasList
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error getting kas list: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal memuat data kas'
+            ], 500);
+        }
     }
 
     /**

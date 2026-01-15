@@ -62,6 +62,38 @@ class BayarAngsuran extends Model
     }
 
     /**
+     * Relasi ke DetailBayarAngsuran (pembayaran aktual) - ONE TO MANY
+     */
+    public function detailPembayaran()
+    {
+        return $this->hasMany(DetailBayarAngsuran::class, 'bayar_angsuran_id');
+    }
+
+    /**
+     * Relasi ke DetailBayarAngsuran (pembayaran terakhir) - ONE TO ONE
+     */
+    public function pembayaranTerakhir()
+    {
+        return $this->hasOne(DetailBayarAngsuran::class, 'bayar_angsuran_id')->latest();
+    }
+
+    /**
+     * Check apakah sudah ada pembayaran
+     */
+    public function getHasPembayaranAttribute()
+    {
+        return $this->detailPembayaran()->exists();
+    }
+
+    /**
+     * Get total yang sudah dibayar dari detail pembayaran
+     */
+    public function getTotalDibayarAttribute()
+    {
+        return $this->detailPembayaran()->sum('total_bayar');
+    }
+
+    /**
      * Generate kode bayar otomatis
      */
     public static function generateKodeBayar()
@@ -131,7 +163,6 @@ class BayarAngsuran extends Model
 
         return $jatuhTempo->diffInDays(now());
     }
-
 
     /**
      * Get status keterlambatan

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin\Pinjaman;
 use App\Http\Controllers\Controller;
 use App\Models\Admin\Pinjaman\Pinjaman;
 use App\Models\Admin\Pinjaman\BayarAngsuran;
+use App\Models\Admin\Pinjaman\DetailBayarAngsuran;
 use App\Models\Admin\DataMaster\DataKas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -52,12 +53,10 @@ class BayarAngsuranController extends Controller
 
         // Hitung data untuk setiap pinjaman
         foreach ($pinjaman as $item) {
-            // Data angsuran - FIXED: Tidak ada circular reference
             $item->lama_angsuran = $item->lamaAngsuran->lama_angsuran;
             $item->bunga_angsuran = $item->biaya_bunga;
             $item->angsuran_per_bulan = $item->angsuran_pokok + $item->biaya_bunga;
             
-            // Data anggota
             $item->anggota_nama = $item->anggota->nama;
             $item->anggota_id = $item->anggota->id_anggota;
             $item->anggota_kota = $item->anggota->kota;
@@ -74,7 +73,6 @@ class BayarAngsuranController extends Controller
             ->map(function ($item) {
                 return (object) [
                     'nama' => $item->pinjaman->anggota->nama,
-                    // FIXED: Gunakan translatedFormat untuk Bahasa Indonesia
                     'tanggal_jatuh_tempo' => $item->tanggal_jatuh_tempo->translatedFormat('d F Y'),
                     'sisa_tagihan' => $item->jumlah_angsuran,
                 ];
@@ -88,43 +86,54 @@ class BayarAngsuranController extends Controller
      */
     public function show($id)
     {
-        $pinjaman = Pinjaman::with(['anggota', 'lamaAngsuran', 'angsuran.user', 'kas'])
-            ->findOrFail($id);
+        $pinjaman = Pinjaman::with([
+            'anggota', 
+            'lamaAngsuran', 
+            'angsuran.detailPembayaran.user',
+            'angsuran.detailPembayaran.kas',
+            'kas'
+        ])->findOrFail($id);
 
-        // Data pembayaran angsuran
-        $pembayaran = $pinjaman->angsuran()
+        // Data jadwal angsuran dari tabel bayar_angsuran
+        $jadwalAngsuran = $pinjaman->angsuran()
             ->orderBy('angsuran_ke', 'asc')
             ->get();
 
-        // FIXED: Hitung data agregat - langsung simpan di variable berbeda
+        // Data pembayaran aktual dari tabel detail_bayar_angsuran
+        $pembayaran = DetailBayarAngsuran::with(['angsuran', 'kas', 'user'])
+            ->where('pinjaman_id', $id)
+            ->orderBy('tanggal_bayar', 'desc')
+            ->get();
+
+        // Hitung data agregat
         $pinjaman->lama_pinjaman = $pinjaman->lamaAngsuran->lama_angsuran;
-        $pinjaman->sudah_dibayar = $pinjaman->total_bayar; // Dari accessor
-        $pinjaman->jumlah_denda = $pinjaman->total_denda; // Dari accessor
-        $pinjaman->total_sisa_tagihan = $pinjaman->sisa_tagihan; // Dari accessor
-        $pinjaman->jumlah_sisa_angsuran = $pinjaman->sisa_angsuran; // Dari accessor
+        $pinjaman->sudah_dibayar = $pinjaman->total_bayar;
+        $pinjaman->jumlah_denda = $pinjaman->total_denda;
+        $pinjaman->total_sisa_tagihan = $pinjaman->sisa_tagihan;
+        $pinjaman->jumlah_sisa_angsuran = $pinjaman->sisa_angsuran;
 
         // Data anggota
         $pinjaman->anggota_id = $pinjaman->anggota->id_anggota;
         $pinjaman->anggota_nama = $pinjaman->anggota->nama;
-        $pinjaman->anggota_departemen = $pinjaman->anggota->departemen ?? '-';
-        
-        // FIXED: Gunakan translatedFormat untuk Bahasa Indonesia
+        $pinjaman->anggota_departement = $pinjaman->anggota->departement ?? '-';
         $pinjaman->anggota_ttl = $pinjaman->anggota->tempat_lahir . ', ' . 
                                   Carbon::parse($pinjaman->anggota->tanggal_lahir)->translatedFormat('d F Y');
         $pinjaman->anggota_kota = $pinjaman->anggota->kota;
         $pinjaman->anggota_foto = $pinjaman->anggota->photo;
 
-        // Notifikasi (bisa dihapus atau ambil dari database)
-        $notifications = collect([]);
-
         // Data kas untuk dropdown
-        $kasList = DataKas::orderBy('nama_kas')->get();
+        $kasList = DataKas::where('aktif', 'Y')->orderBy('nama_kas')->get();
 
-        return view('admin.Pinjaman.bayar.DetailBayarAngsuran', compact('pinjaman', 'pembayaran', 'notifications', 'kasList'));
+        return view('admin.Pinjaman.bayar.DetailBayarAngsuran', compact(
+            'pinjaman', 
+            'jadwalAngsuran',
+            'pembayaran', 
+            'kasList'
+        ));
     }
 
     /**
-     * Store new payment (from detail page)
+     * Store new payment ke detail_bayar_angsuran
      */
     public function bayar(Request $request)
     {
@@ -139,14 +148,27 @@ class BayarAngsuranController extends Controller
 
         DB::beginTransaction();
         try {
-            $angsuran = BayarAngsuran::findOrFail($validated['angsuran_id']);
+            $angsuran = BayarAngsuran::with('pinjaman')->findOrFail($validated['angsuran_id']);
 
             // Validasi belum lunas
             if ($angsuran->status_bayar === 'Lunas') {
                 throw new \Exception('Angsuran ini sudah lunas');
             }
 
-            // Update angsuran
+            // Simpan ke detail_bayar_angsuran (kode TBY auto-generate)
+            $detailBayar = DetailBayarAngsuran::create([
+                'bayar_angsuran_id' => $angsuran->id,
+                'pinjaman_id' => $angsuran->pinjaman_id,
+                'angsuran_ke' => $angsuran->angsuran_ke,
+                'tanggal_bayar' => $validated['tanggal_bayar'],
+                'jumlah_bayar' => $validated['jumlah_bayar'],
+                'denda' => $validated['denda'] ?? 0,
+                'ke_kas_id' => $validated['ke_kas_id'],
+                'keterangan' => $validated['keterangan'],
+                'user_id' => Auth::id(),
+            ]);
+
+            // Update status di bayar_angsuran
             $angsuran->update([
                 'tanggal_bayar' => $validated['tanggal_bayar'],
                 'jumlah_bayar' => $validated['jumlah_bayar'],
@@ -170,7 +192,8 @@ class BayarAngsuranController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Pembayaran angsuran berhasil disimpan',
-                'angsuran_id' => $angsuran->id
+                'kode_bayar' => $detailBayar->kode_bayar,
+                'detail_id' => $detailBayar->id
             ]);
 
         } catch (\Exception $e) {
@@ -193,21 +216,30 @@ class BayarAngsuranController extends Controller
             'tanggal_bayar' => 'required|date',
             'jumlah_bayar' => 'required|numeric|min:0',
             'denda' => 'nullable|numeric|min:0',
+            'ke_kas_id' => 'required|exists:data_kas,id',
             'keterangan' => 'nullable|string',
         ]);
 
         DB::beginTransaction();
         try {
-            $angsuran = BayarAngsuran::findOrFail($id);
+            // Update detail pembayaran
+            $detailBayar = DetailBayarAngsuran::findOrFail($id);
+            
+            $detailBayar->update([
+                'tanggal_bayar' => $validated['tanggal_bayar'],
+                'jumlah_bayar' => $validated['jumlah_bayar'],
+                'denda' => $validated['denda'] ?? 0,
+                'ke_kas_id' => $validated['ke_kas_id'],
+                'keterangan' => $validated['keterangan'],
+            ]);
 
-            if ($angsuran->status_bayar !== 'Lunas') {
-                throw new \Exception('Hanya pembayaran yang sudah lunas yang dapat diupdate');
-            }
-
+            // Update juga di bayar_angsuran
+            $angsuran = $detailBayar->angsuran;
             $angsuran->update([
                 'tanggal_bayar' => $validated['tanggal_bayar'],
                 'jumlah_bayar' => $validated['jumlah_bayar'],
                 'denda' => $validated['denda'] ?? 0,
+                'ke_kas_id' => $validated['ke_kas_id'],
                 'keterangan' => $validated['keterangan'],
             ]);
 
@@ -236,13 +268,11 @@ class BayarAngsuranController extends Controller
     {
         DB::beginTransaction();
         try {
-            $angsuran = BayarAngsuran::findOrFail($id);
+            // Hapus dari detail_bayar_angsuran
+            $detailBayar = DetailBayarAngsuran::findOrFail($id);
+            $angsuran = $detailBayar->angsuran;
 
-            if ($angsuran->status_bayar !== 'Lunas') {
-                throw new \Exception('Hanya pembayaran yang sudah lunas yang dapat dihapus');
-            }
-
-            // Reset angsuran
+            // Reset status di bayar_angsuran
             $angsuran->update([
                 'tanggal_bayar' => null,
                 'jumlah_bayar' => 0,
@@ -252,6 +282,9 @@ class BayarAngsuranController extends Controller
                 'keterangan' => null,
                 'user_id' => null,
             ]);
+
+            // Hapus detail pembayaran
+            $detailBayar->delete();
 
             // Update status pinjaman
             $pinjaman = $angsuran->pinjaman;
@@ -282,22 +315,96 @@ class BayarAngsuranController extends Controller
      */
     public function getDetail($id)
     {
-        $angsuran = BayarAngsuran::with(['pinjaman.anggota'])
-            ->findOrFail($id);
+        try {
+            $angsuran = BayarAngsuran::with(['pinjaman.anggota'])
+                ->findOrFail($id);
 
-        return response()->json([
-            'success' => true,
-            'data' => [
-                'id' => $angsuran->id,
-                'angsuran_ke' => $angsuran->angsuran_ke,
-                // FIXED: Gunakan format biasa untuk API (Y-m-d)
-                'tanggal_jatuh_tempo' => $angsuran->tanggal_jatuh_tempo->format('Y-f-d'),
-                'jumlah_angsuran' => $angsuran->jumlah_angsuran,
-                'status' => $angsuran->status_bayar,
-                'is_terlambat' => $angsuran->is_terlambat,
-                'hari_terlambat' => $angsuran->hari_terlambat,
-            ]
-        ]);
+            // Hitung denda jika terlambat
+            $denda = 0;
+            $hariTerlambat = 0;
+            
+            if ($angsuran->status_bayar == 'Belum') {
+                $hariTerlambat = max(0, now()->diffInDays($angsuran->tanggal_jatuh_tempo, false) * -1);
+                if ($hariTerlambat > 0) {
+                    // Ambil dari setting suku bunga
+                    $dendaPerHari = 5000; // TODO: Ambil dari tabel suku_bunga
+                    $denda = $hariTerlambat * $dendaPerHari;
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'id' => $angsuran->id,
+                    'angsuran_ke' => $angsuran->angsuran_ke,
+                    'tanggal_jatuh_tempo' => $angsuran->tanggal_jatuh_tempo->format('Y-m-d'),
+                    'tanggal_jatuh_tempo_formatted' => $angsuran->tanggal_jatuh_tempo->translatedFormat('d F Y'),
+                    'jumlah_angsuran' => $angsuran->jumlah_angsuran,
+                    'status' => $angsuran->status_bayar,
+                    'is_terlambat' => now()->gt($angsuran->tanggal_jatuh_tempo),
+                    'hari_terlambat' => $hariTerlambat,
+                    'denda_otomatis' => $denda,
+                ]
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error get detail: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengambil data angsuran'
+            ], 500);
+        }
+    }
+
+    /**
+     * Get detail pembayaran untuk edit (TAMBAHKAN INI) ⭐
+     */
+    public function getPembayaran($id)
+    {
+        try {
+            // $id adalah bayar_angsuran_id
+            $angsuran = BayarAngsuran::with(['detailPembayaran' => function($query) {
+                $query->latest();
+            }])->findOrFail($id);
+            
+            if ($angsuran->status_bayar !== 'Lunas') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Angsuran belum dibayar'
+                ], 400);
+            }
+
+            // Ambil pembayaran terakhir
+            $pembayaran = $angsuran->detailPembayaran->first();
+            
+            if (!$pembayaran) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Data pembayaran tidak ditemukan'
+                ], 404);
+            }
+            
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'id' => $pembayaran->id,
+                    'kode_bayar' => $pembayaran->kode_bayar,
+                    'angsuran_ke' => $angsuran->angsuran_ke,
+                    'tanggal_bayar' => Carbon::parse($pembayaran->tanggal_bayar)->format('Y-m-d\TH:i'),
+                    'jumlah_bayar' => $pembayaran->jumlah_bayar,
+                    'denda' => $pembayaran->denda ?? 0,
+                    'ke_kas_id' => $pembayaran->ke_kas_id,
+                    'keterangan' => $pembayaran->keterangan ?? '',
+                ]
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error get pembayaran: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengambil data pembayaran: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -305,10 +412,15 @@ class BayarAngsuranController extends Controller
      */
     public function cetakNota($id)
     {
-        $angsuran = BayarAngsuran::with(['pinjaman.anggota', 'pinjaman.lamaAngsuran', 'kas', 'user'])
-            ->findOrFail($id);
+        $detailBayar = DetailBayarAngsuran::with([
+            'pinjaman.anggota', 
+            'pinjaman.lamaAngsuran', 
+            'angsuran',
+            'kas', 
+            'user'
+        ])->findOrFail($id);
 
-        return view('admin.Pinjaman.bayar.cetak_nota', compact('angsuran'));
+        return view('admin.Pinjaman.bayar.cetak_nota', compact('detailBayar'));
     }
 
     /**

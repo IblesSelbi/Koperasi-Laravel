@@ -143,7 +143,7 @@
                                 </div>
                             </a>
                         </li>
-                        <li class="sidebar-item {{ request()->routeIs('pinjaman.bayar') ? 'active' : '' }}">
+                        <li class="sidebar-item {{ request()->routeIs('pinjaman.bayar*') ? 'active' : '' }}">
                             <a class="sidebar-link" href="{{ route('pinjaman.bayar') }}">
                                 <div class="d-flex align-items-center gap-3">
                                     <div class="round-16 d-flex align-items-center justify-content-center">
@@ -153,6 +153,7 @@
                                 </div>
                             </a>
                         </li>
+
                         <li class="sidebar-item {{ request()->routeIs('pinjaman.lunas') ? 'active' : '' }}">
                             <a class="sidebar-link" href="{{ route('pinjaman.lunas') }}">
                                 <div class="d-flex align-items-center gap-3">

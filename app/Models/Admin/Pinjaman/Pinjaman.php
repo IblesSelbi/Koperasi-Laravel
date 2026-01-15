@@ -47,6 +47,18 @@ class Pinjaman extends Model
         'jumlah_angsuran' => 'decimal:2',
     ];
 
+    // ✅ TAMBAHKAN APPENDS agar accessor otomatis ter-load
+    protected $appends = [
+        'total_bayar',
+        'total_denda',
+        'sisa_tagihan',
+        'sisa_angsuran',
+    ];
+
+    // ========================================
+    // RELASI
+    // ========================================
+
     /**
      * Relasi ke Anggota
      */
@@ -96,12 +108,111 @@ class Pinjaman extends Model
     }
 
     /**
-     * Relasi ke Bayar Angsuran (NEW)
+     * Relasi ke Jadwal Angsuran (bayar_angsuran)
      */
     public function angsuran()
     {
         return $this->hasMany(BayarAngsuran::class, 'pinjaman_id');
     }
+
+    /**
+     * ✅ PERBAIKAN: Relasi ke Detail Pembayaran Aktual
+     */
+    public function detailPembayaran()
+    {
+        return $this->hasMany(DetailBayarAngsuran::class, 'pinjaman_id');
+    }
+
+    // ========================================
+    // ACCESSOR (Computed Attributes)
+    // ========================================
+
+    /**
+     * ✅ PERBAIKAN: Hitung total sudah dibayar dari detail_bayar_angsuran
+     */
+    public function getTotalBayarAttribute()
+    {
+        return $this->detailPembayaran()->sum('jumlah_bayar') ?? 0;
+    }
+
+    /**
+     * ✅ PERBAIKAN: Hitung total denda dari detail_bayar_angsuran
+     */
+    public function getTotalDendaAttribute()
+    {
+        return $this->detailPembayaran()->sum('denda') ?? 0;
+    }
+
+    /**
+     * Hitung sisa tagihan (jumlah_angsuran - total_bayar + denda)
+     */
+    public function getSisaTagihanAttribute()
+    {
+        // Sisa tagihan = Total angsuran - Yang sudah dibayar + Denda
+        return $this->jumlah_angsuran - $this->total_bayar;
+    }
+
+    /**
+     * Hitung sisa angsuran (berapa bulan lagi)
+     */
+    public function getSisaAngsuranAttribute()
+    {
+        $totalAngsuran = $this->lamaAngsuran ? $this->lamaAngsuran->lama_angsuran : 0;
+        $sudahBayar = $this->angsuran()->where('status_bayar', 'Lunas')->count();
+        
+        return $totalAngsuran - $sudahBayar;
+    }
+
+    /**
+     * Get angsuran yang sudah dibayar
+     */
+    public function getAngsuranLunasAttribute()
+    {
+        return $this->angsuran()->where('status_bayar', 'Lunas')->count();
+    }
+
+    /**
+     * Get angsuran yang belum dibayar
+     */
+    public function getAngsuranBelumAttribute()
+    {
+        return $this->angsuran()->where('status_bayar', 'Belum')->count();
+    }
+
+    /**
+     * Check ada angsuran terlambat
+     */
+    public function getAdaTerlambatAttribute()
+    {
+        return $this->angsuran()
+            ->where('status_bayar', 'Belum')
+            ->where('tanggal_jatuh_tempo', '<', now())
+            ->exists();
+    }
+
+    // ========================================
+    // SCOPE
+    // ========================================
+
+    /**
+     * Scope untuk filter by status
+     */
+    public function scopeByStatus($query, $status)
+    {
+        return $query->where('status_lunas', $status);
+    }
+
+    /**
+     * Scope untuk filter by jenis
+     */
+    public function scopeByJenis($query, $jenis)
+    {
+        return $query->where('jenis_pinjaman', $jenis);
+    }
+
+    // ========================================
+    // HELPER METHODS
+    // ========================================
 
     /**
      * Generate kode pinjaman otomatis
@@ -120,87 +231,5 @@ class Pinjaman extends Model
         $newNumber = $lastNumber + 1;
 
         return 'PJ' . str_pad($newNumber, 5, '0', STR_PAD_LEFT);
-    }
-
-    /**
-     * Scope untuk filter by status
-     */
-    public function scopeByStatus($query, $status)
-    {
-        return $query->where('status_lunas', $status);
-    }
-
-    /**
-     * Scope untuk filter by jenis
-     */
-    public function scopeByJenis($query, $jenis)
-    {
-        return $query->where('jenis_pinjaman', $jenis);
-    }
-
-    /**
-     * Hitung total sudah dibayar (NEW - dari tabel bayar_angsuran)
-     */
-    public function getTotalBayarAttribute()
-    {
-        return $this->angsuran()
-            ->where('status_bayar', 'Lunas')
-            ->sum('jumlah_bayar');
-    }
-
-    /**
-     * Hitung total denda (NEW)
-     */
-    public function getTotalDendaAttribute()
-    {
-        return $this->angsuran()
-            ->where('status_bayar', 'Lunas')
-            ->sum('denda');
-    }
-
-    /**
-     * Hitung sisa tagihan
-     */
-    public function getSisaTagihanAttribute()
-    {
-        return $this->jumlah_angsuran - $this->total_bayar;
-    }
-
-    /**
-     * Hitung sisa angsuran (NEW - dari tabel bayar_angsuran)
-     */
-    public function getSisaAngsuranAttribute()
-    {
-        $totalAngsuran = $this->lamaAngsuran ? $this->lamaAngsuran->lama_angsuran : 0;
-        $sudahBayar = $this->angsuran()->where('status_bayar', 'Lunas')->count();
-        
-        return $totalAngsuran - $sudahBayar;
-    }
-
-    /**
-     * Get angsuran yang sudah dibayar (NEW)
-     */
-    public function getAngsuranLunasAttribute()
-    {
-        return $this->angsuran()->where('status_bayar', 'Lunas')->count();
-    }
-
-    /**
-     * Get angsuran yang belum dibayar (NEW)
-     */
-    public function getAngsuranBelumAttribute()
-    {
-        return $this->angsuran()->where('status_bayar', 'Belum')->count();
-    }
-
-    /**
-     * Check ada angsuran terlambat (NEW)
-     */
-    public function getAdaTerlambatAttribute()
-    {
-        return $this->angsuran()
-            ->where('status_bayar', 'Belum')
-            ->where('tanggal_jatuh_tempo', '<', now())
-            ->exists();
     }
 }

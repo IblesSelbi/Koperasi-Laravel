@@ -234,10 +234,8 @@ Route::middleware('auth')
             // API untuk Modal (sebelum CRUD resources)
             Route::get('/pinjaman/pengajuan-disetujui', 'getPengajuanDisetujui')->name('pinjaman.pengajuan-disetujui');
             Route::get('/pinjaman/pengajuan-detail/{id}', 'getDetailPengajuan')->name('pinjaman.detail-pengajuan');
-
-            Route::get('/pinjaman/kas-list', 'getKasList')->name('kas.list');
-            Route::post('pinjaman/{id}/recalculate', [PinjamanController::class, 'recalculate'])->name('pinjaman.pinjaman.recalculate');
-            Route::get('master/lama-angsuran/list', [LamaAngsuranController::class, 'list'])->name('master.lama-angsuran.list');
+            Route::get('/pinjaman/kas-list', 'getKasList')->name('pinjaman.kas-list');
+            Route::post('/pinjaman/{id}/recalculate', 'recalculate')->name('pinjaman.recalculate');
 
             // Cetak & Export (sebelum {id} route)
             Route::get('/pinjaman/cetak-laporan', 'cetakLaporan')->name('pinjaman.cetak.laporan');
@@ -260,12 +258,14 @@ Route::middleware('auth')
         Route::controller(BayarAngsuranController::class)->group(function () {
             Route::get('/bayar', 'index')->name('bayar');
             Route::get('/bayar/detail/{id}', 'show')->name('bayar.detail');
-            Route::post('/bayar/proses', 'bayar')->name('bayar.proses');
-            Route::put('/bayar/{id}', 'update')->name('bayar.update');
-            Route::delete('/bayar/{id}', 'destroy')->name('bayar.destroy');
-            Route::get('/bayar/cetak/{id}', 'cetakNota')->name('bayar.cetak');
+            Route::get('/bayar/{id}', 'show')->name('bayar.show');
+            Route::get('/bayar/get-detail/{id}', 'getDetail')->name('bayar.getDetail');
+            Route::post('/bayar/proses', 'bayar')->name('bayar.store');
+            Route::get('/bayar/get-pembayaran/{id}', 'getPembayaran')->name('bayar.getPembayaran');
+            Route::put('/bayar/update/{id}', 'update')->name('bayar.update');
+            Route::delete('/bayar/destroy/{id}', 'destroy')->name('bayar.destroy');
+            Route::get('/bayar/cetak-nota/{id}', 'cetakNota')->name('bayar.cetak'); // ← UBAH INI
         });
-
 
         // PINJAMAN LUNAS
         Route::controller(PinjamanLunasController::class)->group(function () {
@@ -448,13 +448,16 @@ Route::middleware('auth')
 
         // LAMA ANGSURAN
         Route::controller(LamaAngsuranController::class)->group(function () {
+            // API Endpoints 
+            Route::get('/lama-angsuran/list', 'list')->name('lama-angsuran.list');
+            Route::get('/lama-angsuran/export', 'export')->name('lama-angsuran.export');
+            Route::get('/lama-angsuran/cetak', 'cetak')->name('lama-angsuran.cetak');
+
+            // Index & CRUD
             Route::get('/lama-angsuran', 'index')->name('lama-angsuran');
-            Route::get('lama-angsuran/list', [LamaAngsuranController::class, 'list'])->name('lama-angsuran.list');
             Route::post('/lama-angsuran', 'store')->name('lama-angsuran.store');
             Route::put('/lama-angsuran/{id}', 'update')->name('lama-angsuran.update');
             Route::delete('/lama-angsuran/{id}', 'destroy')->name('lama-angsuran.destroy');
-            Route::get('/lama-angsuran/export', 'export')->name('lama-angsuran.export');
-            Route::get('/lama-angsuran/cetak', 'cetak')->name('lama-angsuran.cetak');
         });
 
         // DATA BARANG

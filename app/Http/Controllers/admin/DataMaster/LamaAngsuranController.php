@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin\DataMaster;
 use App\Http\Controllers\Controller;
 use App\Models\Admin\DataMaster\LamaAngsuran;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log; // ✅ TAMBAHKAN INI
 
 class LamaAngsuranController extends Controller
 {
@@ -63,15 +64,24 @@ class LamaAngsuranController extends Controller
      */
     public function list()
     {
-        $lamaAngsuran = LamaAngsuran::select('id', 'lama_angsuran')
-            ->where('aktif', 'Y') 
-            ->orderBy('lama_angsuran', 'asc')
-            ->get();
+        try {
+            $lamaAngsuran = LamaAngsuran::select('id', 'lama_angsuran')
+                ->where('aktif', 'Y') // ✅ TAMBAHKAN: hanya ambil yang aktif
+                ->orderBy('lama_angsuran', 'asc')
+                ->get();
 
-        return response()->json([
-            'success' => true,
-            'data' => $lamaAngsuran
-        ]);
+            return response()->json([
+                'success' => true,
+                'data' => $lamaAngsuran
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error getting lama angsuran list: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal memuat data lama angsuran'
+            ], 500);
+        }
     }
 
     public function export()

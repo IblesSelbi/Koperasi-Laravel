@@ -230,7 +230,7 @@
                                         </div>
                                         <div class="d-flex justify-content-between pt-2">
                                             <small class="text-muted fw-semibold">Sisa Tagihan</small>
-                                            <span class="fw-bold text-success fs-6">Rp {{ number_format($item->sisa_tagihan, 0, ',', '.') }}</span>
+                                            <span class="fw-semibold text-success fs-4">Rp {{ number_format($item->sisa_tagihan, 0, ',', '.') }}</span>
                                         </div>
                                     </div>
                                 </td>
@@ -240,7 +240,7 @@
                                             <i class="ti ti-check"></i> Lunas
                                         </span>
                                     @else
-                                        <span class="badge bg-danger-subtle text-danger px-3 py-2">
+                                        <span class="badge bg-danger-subtle shadow-sm text-danger px-2 py-2">
                                             <i class="ti ti-x"></i> Belum Lunas
                                         </span>
                                     @endif
@@ -674,20 +674,22 @@
         // Load list kas untuk dropdown
         function loadKasList() {
             $.ajax({
-                url: '{{ route("pinjaman.kas.list") }}',
+                // ✅ FIX: Route name untuk kas
+                url: '{{ route("pinjaman.pinjaman.kas-list") }}',
                 type: 'GET',
                 success: function(response) {
                     const kasSelect = $('#kasId, #editKasId');
                     kasSelect.html('<option value="">-- Pilih Kas --</option>');
                     
-                    if (response.data) {
+                    if (response.data && response.data.length > 0) {
                         response.data.forEach(function(kas) {
                             kasSelect.append(`<option value="${kas.id}">${kas.nama_kas}</option>`);
                         });
                     }
                 },
-                error: function() {
-                    // Fallback ke data dummy jika endpoint belum ada
+                error: function(xhr) {
+                    console.error('Error loading kas list:', xhr);
+                    // Fallback ke data dummy jika endpoint gagal
                     const kasSelect = $('#kasId, #editKasId');
                     kasSelect.html(`
                         <option value="">-- Pilih Kas --</option>
@@ -887,20 +889,22 @@
         // Load list lama angsuran
         function loadLamaAngsuranList() {
             $.ajax({
-                url: '{{ route("master.lama-angsuran.list") }}',
+                // ✅ FIX: Route name harus sesuai dengan prefix 'master.'
+                url: '{{ route("master.lama-angsuran.list") }}',  // BUKAN 'lama-angsuran.list'
                 type: 'GET',
                 success: function(response) {
                     const select = $('#editLamaAngsuran');
                     select.html('<option value="">-- Pilih Lama Angsuran --</option>');
                     
-                    if (response.data) {
+                    if (response.data && response.data.length > 0) {
                         response.data.forEach(function(item) {
                             select.append(`<option value="${item.id}">${item.lama_angsuran} Bulan</option>`);
                         });
                     }
                 },
-                error: function() {
-                    // Fallback ke data dummy jika endpoint belum ada
+                error: function(xhr) {
+                    console.error('Error loading lama angsuran:', xhr);
+                    // Fallback ke data dummy jika endpoint gagal
                     const select = $('#editLamaAngsuran');
                     select.html(`
                         <option value="">-- Pilih Lama Angsuran --</option>

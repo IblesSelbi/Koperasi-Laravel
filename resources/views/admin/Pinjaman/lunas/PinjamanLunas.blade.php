@@ -143,7 +143,7 @@
                         @foreach($pinjamanLunas as $item)
                         <tr>
                             <td class="text-center">
-                                <span class="badge bg-success-subtle text-primary fw-semibold px-2 py-1">{{ $item->kode }}</span>
+                                <span class="badge bg-primary-subtle text-primary fw-semibold px-2 py-1">{{ $item->kode }}</span>
                             </td>
                             <td>
                                 <div class="d-flex align-items-center">
