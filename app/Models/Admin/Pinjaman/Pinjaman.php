@@ -35,6 +35,8 @@ class Pinjaman extends Model
         'keterangan',
         'status_lunas',
         'user_id',
+        'deleted_by',        // TAMBAHAN untuk soft delete
+        'alasan_hapus',      // TAMBAHAN untuk soft delete
     ];
 
     protected $casts = [
@@ -45,9 +47,10 @@ class Pinjaman extends Model
         'biaya_bunga' => 'decimal:2',
         'biaya_admin' => 'decimal:2',
         'jumlah_angsuran' => 'decimal:2',
+        'deleted_at' => 'datetime',  // TAMBAHAN
     ];
 
-    // ✅ TAMBAHKAN APPENDS agar accessor otomatis ter-load
+    // Accessor otomatis ter-load
     protected $appends = [
         'total_bayar',
         'total_denda',
@@ -108,6 +111,14 @@ class Pinjaman extends Model
     }
 
     /**
+     * TAMBAHAN: Relasi ke User yang menghapus
+     */
+    public function deletedBy()
+    {
+        return $this->belongsTo(User::class, 'deleted_by');
+    }
+
+    /**
      * Relasi ke Jadwal Angsuran (bayar_angsuran)
      */
     public function angsuran()
@@ -116,7 +127,7 @@ class Pinjaman extends Model
     }
 
     /**
-     * ✅ PERBAIKAN: Relasi ke Detail Pembayaran Aktual
+     * Relasi ke Detail Pembayaran Aktual
      */
     public function detailPembayaran()
     {
@@ -128,28 +139,31 @@ class Pinjaman extends Model
     // ========================================
 
     /**
-     * ✅ PERBAIKAN: Hitung total sudah dibayar dari detail_bayar_angsuran
+     * Hitung total sudah dibayar dari detail_bayar_angsuran (exclude yang dihapus)
      */
     public function getTotalBayarAttribute()
     {
-        return $this->detailPembayaran()->sum('jumlah_bayar') ?? 0;
+        return $this->detailPembayaran()
+            ->whereNull('deleted_at')
+            ->sum('jumlah_bayar') ?? 0;
     }
 
     /**
-     * ✅ PERBAIKAN: Hitung total denda dari detail_bayar_angsuran
+     * Hitung total denda dari detail_bayar_angsuran (exclude yang dihapus)
      */
     public function getTotalDendaAttribute()
     {
-        return $this->detailPembayaran()->sum('denda') ?? 0;
+        return $this->detailPembayaran()
+            ->whereNull('deleted_at')
+            ->sum('denda') ?? 0;
     }
 
     /**
-     * Hitung sisa tagihan (jumlah_angsuran - total_bayar + denda)
+     * Hitung sisa tagihan (jumlah_angsuran - total_bayar)
      */
     public function getSisaTagihanAttribute()
     {
-        // Sisa tagihan = Total angsuran - Yang sudah dibayar + Denda
-        return $this->jumlah_angsuran - $this->total_bayar;
+        return max(0, $this->jumlah_angsuran - $this->total_bayar);
     }
 
     /**
@@ -157,10 +171,10 @@ class Pinjaman extends Model
      */
     public function getSisaAngsuranAttribute()
     {
-        $totalAngsuran = $this->lamaAngsuran ? $this->lamaAngsuran->lama_angsuran : 0;
-        $sudahBayar = $this->angsuran()->where('status_bayar', 'Lunas')->count();
-        
-        return $totalAngsuran - $sudahBayar;
+        return $this->angsuran()
+            ->where('status_bayar', 'Belum')
+            ->whereNull('deleted_at')
+            ->count();
     }
 
     /**
@@ -168,7 +182,10 @@ class Pinjaman extends Model
      */
     public function getAngsuranLunasAttribute()
     {
-        return $this->angsuran()->where('status_bayar', 'Lunas')->count();
+        return $this->angsuran()
+            ->where('status_bayar', 'Lunas')
+            ->whereNull('deleted_at')
+            ->count();
     }
 
     /**
@@ -176,7 +193,10 @@ class Pinjaman extends Model
      */
     public function getAngsuranBelumAttribute()
     {
-        return $this->angsuran()->where('status_bayar', 'Belum')->count();
+        return $this->angsuran()
+            ->where('status_bayar', 'Belum')
+            ->whereNull('deleted_at')
+            ->count();
     }
 
     /**
@@ -187,7 +207,28 @@ class Pinjaman extends Model
         return $this->angsuran()
             ->where('status_bayar', 'Belum')
             ->where('tanggal_jatuh_tempo', '<', now())
+            ->whereNull('deleted_at')
             ->exists();
+    }
+
+    /**
+     * TAMBAHAN: Check apakah pinjaman sudah pernah ada pembayaran
+     */
+    public function getSudahAdaPembayaranAttribute()
+    {
+        return $this->angsuran()
+            ->where('status_bayar', 'Lunas')
+            ->exists();
+    }
+
+    /**
+     * TAMBAHAN: Format tanggal dihapus
+     */
+    public function getTanggalHapusFormattedAttribute()
+    {
+        return $this->deleted_at ? 
+            $this->deleted_at->translatedFormat('d F Y H:i') : 
+            null;
     }
 
     // ========================================
@@ -208,6 +249,30 @@ class Pinjaman extends Model
     public function scopeByJenis($query, $jenis)
     {
         return $query->where('jenis_pinjaman', $jenis);
+    }
+
+    /**
+     * TAMBAHAN: Scope untuk yang aktif (tidak dihapus)
+     */
+    public function scopeAktif($query)
+    {
+        return $query->whereNull('deleted_at');
+    }
+
+    /**
+     * TAMBAHAN: Scope untuk yang sudah dihapus
+     */
+    public function scopeTerhapus($query)
+    {
+        return $query->onlyTrashed();
+    }
+
+    /**
+     * TAMBAHAN: Scope untuk filter berdasarkan range tanggal
+     */
+    public function scopeFilterTanggal($query, $startDate, $endDate)
+    {
+        return $query->whereBetween('tanggal_pinjam', [$startDate, $endDate]);
     }
 
     // ========================================
@@ -231,5 +296,70 @@ class Pinjaman extends Model
         $newNumber = $lastNumber + 1;
 
         return 'PJ' . str_pad($newNumber, 5, '0', STR_PAD_LEFT);
+    }
+
+    /**
+     * TAMBAHAN: Method untuk soft delete dengan alasan
+     */
+    public function softDeleteWithReason($alasan, $userId)
+    {
+        $this->deleted_by = $userId;
+        $this->alasan_hapus = $alasan;
+        $this->save();
+        
+        return $this->delete();
+    }
+
+    /**
+     * TAMBAHAN: Method untuk restore pinjaman
+     */
+    public function restorePinjaman()
+    {
+        $this->deleted_by = null;
+        $this->alasan_hapus = null;
+        $this->save();
+        
+        return $this->restore();
+    }
+
+    /**
+     * TAMBAHAN: Check apakah bisa dihapus
+     */
+    public function canDelete()
+    {
+        // Tidak bisa hapus jika sudah divalidasi lunas
+        $sudahValidasiLunas = \App\Models\Admin\Pinjaman\PinjamanLunas::where('pinjaman_id', $this->id)
+            ->exists();
+        
+        if ($sudahValidasiLunas) {
+            return [
+                'can_delete' => false,
+                'reason' => 'Pinjaman sudah divalidasi lunas. Batalkan validasi lunas terlebih dahulu.'
+            ];
+        }
+
+        return [
+            'can_delete' => true,
+            'require_reason' => $this->sudah_ada_pembayaran
+        ];
+    }
+
+    /**
+     * TAMBAHAN: Get info lengkap untuk riwayat
+     */
+    public function getRiwayatInfoAttribute()
+    {
+        return [
+            'id' => $this->id,
+            'kode' => $this->kode_pinjaman,
+            'anggota' => $this->anggota->nama ?? '-',
+            'jumlah' => $this->pokok_pinjaman,
+            'tanggal_pinjam' => $this->tanggal_pinjam->translatedFormat('d F Y'),
+            'tanggal_hapus' => $this->tanggal_hapus_formatted,
+            'dihapus_oleh' => $this->deletedBy->name ?? 'System',
+            'alasan' => $this->alasan_hapus ?? '-',
+            'sudah_ada_pembayaran' => $this->sudah_ada_pembayaran,
+            'total_sudah_dibayar' => $this->total_bayar,
+        ];
     }
 }

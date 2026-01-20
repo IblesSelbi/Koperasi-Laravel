@@ -226,29 +226,31 @@ Route::middleware('auth')
             Route::get('/pengajuan/export/pdf', 'exportPDF')->name('pengajuan.export.pdf');
         });
 
-        // DATA PEMINJAMAN
         Route::controller(PinjamanController::class)->group(function () {
-            // List & Filter
             Route::get('/pinjaman', 'index')->name('pinjaman');
 
-            // API untuk Modal (sebelum CRUD resources)
+            // NEW: Soft Delete Routes
+            Route::get('/pinjaman/{id}/delete-info', 'getDeleteInfo')->name('pinjaman.delete-info');
+            Route::delete('/pinjaman/{id}/soft-delete-with-reason', 'softDeleteWithReason')->name('pinjaman.soft-delete-reason');
+            Route::get('/pinjaman/riwayat-hapus', 'riwayatHapus')->name('pinjaman.riwayat-hapus');
+            Route::post('/pinjaman/{id}/restore', 'restore')->name('pinjaman.restore');
+            Route::delete('/pinjaman/{id}/force-delete', 'forceDelete')->name('pinjaman.force-delete');
+
+            // Existing routes...
             Route::get('/pinjaman/pengajuan-disetujui', 'getPengajuanDisetujui')->name('pinjaman.pengajuan-disetujui');
             Route::get('/pinjaman/pengajuan-detail/{id}', 'getDetailPengajuan')->name('pinjaman.detail-pengajuan');
             Route::get('/pinjaman/kas-list', 'getKasList')->name('pinjaman.kas-list');
             Route::post('/pinjaman/{id}/recalculate', 'recalculate')->name('pinjaman.recalculate');
 
-            // Cetak & Export (sebelum {id} route)
             Route::get('/pinjaman/cetak-laporan', 'cetakLaporan')->name('pinjaman.cetak.laporan');
             Route::get('/pinjaman/export/excel', 'exportExcel')->name('pinjaman.export.excel');
             Route::get('/pinjaman/export/pdf', 'exportPDF')->name('pinjaman.export.pdf');
 
-            // CRUD Resources
             Route::post('/pinjaman', 'store')->name('pinjaman.store');
             Route::get('/pinjaman/{id}/edit', 'edit')->name('pinjaman.edit');
             Route::put('/pinjaman/{id}', 'update')->name('pinjaman.update');
             Route::delete('/pinjaman/{id}', 'destroy')->name('pinjaman.destroy');
 
-            // Actions & Detail (di akhir)
             Route::get('/pinjaman/{id}', 'show')->name('pinjaman.detail');
             Route::get('/pinjaman/cetak/{id}', 'cetak')->name('pinjaman.cetak');
             Route::post('/pinjaman/validasi-lunas/{id}', 'validasiLunas')->name('pinjaman.validasi-lunas');
@@ -263,22 +265,44 @@ Route::middleware('auth')
             Route::post('/bayar/proses', 'bayar')->name('bayar.store');
             Route::get('/bayar/get-pembayaran/{id}', 'getPembayaran')->name('bayar.getPembayaran');
             Route::put('/bayar/update/{id}', 'update')->name('bayar.update');
-            Route::delete('/bayar/destroy/{id}', 'destroy')->name('bayar.destroy');
-            Route::get('/bayar/cetak-nota/{id}', 'cetakNota')->name('bayar.cetak'); // ← UBAH INI
+
+            // Soft Delete & Restore
+            Route::delete('/bayar/soft-delete/{id}', 'softDelete')->name('bayar.softDelete');
+            Route::post('/bayar/restore/{id}', 'restore')->name('bayar.restore');
+            Route::get('/bayar/riwayat-hapus/{pinjamanId}', 'riwayatHapus')->name('bayar.riwayatHapus');
+            Route::delete('/bayar/force-delete/{id}', 'forceDelete')->name('bayar.forceDelete');
+
+            Route::get('/bayar/cetak-nota/{id}', 'cetakNota')->name('bayar.cetak');
+
+            // Route untuk Validasi Lunas
+            Route::post('/bayar/validasi-lunas/{id}', 'validasiLunas')->name('bayar.validasi');
         });
 
-        // PINJAMAN LUNAS
+        // routes/web.php - di dalam group Pinjaman Lunas
         Route::controller(PinjamanLunasController::class)->group(function () {
             Route::get('/lunas', 'index')->name('lunas');
 
+            // Route spesifik di atas route dengan {id}
+            Route::get('/lunas/riwayat-batal', 'riwayatBatal')->name('lunas.riwayat-batal');
             Route::get('/lunas/cetak-detail/{id}', 'cetakDetail')->name('lunas.cetak-detail');
             Route::get('/lunas/cetak-laporan', 'cetakLaporan')->name('lunas.cetak-laporan');
-
             Route::get('/lunas/export/excel', 'exportExcel')->name('lunas.export.excel');
             Route::get('/lunas/export/pdf', 'exportPDF')->name('lunas.export.pdf');
 
+            // Batalkan pelunasan (Admin Only)
+            Route::post('/lunas/batalkan/{id}', 'batalkanLunas')
+                ->name('lunas.batalkan')
+                ->middleware('role:admin');
+
+            // Restore pelunasan (Admin Only)
+            Route::post('/lunas/restore/{id}', 'restorePelunasan')
+                ->name('lunas.restore')
+                ->middleware('role:admin');
+
+            // Route dengan {id} di paling bawah
             Route::get('/lunas/{id}', 'show')->name('lunas.detail');
         });
+
 
     });
 

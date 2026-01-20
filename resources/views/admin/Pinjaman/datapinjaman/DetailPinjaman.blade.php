@@ -29,11 +29,6 @@
                     <a href="{{ route('pinjaman.bayar.show', $pinjaman->id) }}" class="btn btn-primary">
                         <i class="ti ti-wallet"></i> Bayar Angsuran
                     </a>
-                    @if($pinjaman->status_lunas != 'Lunas')
-                    <button class="btn btn-info" onclick="validasiLunas({{ $pinjaman->id }})">
-                        <i class="ti ti-check"></i> Validasi Lunas
-                    </button>
-                    @endif
                 </div>
             </div>
         </div>
@@ -227,7 +222,7 @@
                 <div class="row text-center">
                     <div class="col-md-2 col-6 mb-3 mb-md-0">
                         <p class="text-muted mb-1"><i class="ti ti-calendar-stats"></i> Sisa Angsuran</p>
-                        <span class="fw-semibold fs-6 text-primary">{{ $pinjaman->sisa_angsuran }} Bulan</span>
+                        <span class="fw-semibold fs-5 text-primary">{{ $pinjaman->sisa_angsuran }} Bulan</span>
                     </div>
                     <div class="col-md-2 col-6 mb-3 mb-md-0">
                         <p class="text-muted mb-1"><i class="ti ti-coins"></i> Dibayar</p>
@@ -414,68 +409,5 @@
             window.open(url, '_blank');
         }
 
-        // Function: Validasi Lunas
-        function validasiLunas(id) {
-            Swal.fire({
-                title: 'Validasi Pelunasan?',
-                html: `
-                    <div class="text-start">
-                        <p>Apakah Anda yakin pinjaman ini sudah lunas?</p>
-                        <div class="alert alert-warning">
-                            <i class="ti ti-alert-triangle me-2"></i>
-                            Pastikan semua angsuran telah dibayar sebelum melakukan validasi
-                        </div>
-                    </div>
-                `,
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: '<i class="ti ti-check"></i> Ya, Sudah Lunas',
-                cancelButtonText: '<i class="ti ti-x"></i> Batal',
-                confirmButtonColor: '#198754',
-                customClass: {
-                    confirmButton: 'btn btn-success',
-                    cancelButton: 'btn btn-secondary'
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    Swal.fire({
-                        title: 'Memproses...',
-                        text: 'Mohon tunggu sebentar',
-                        allowOutsideClick: false,
-                        showConfirmButton: false,
-                        willOpen: () => {
-                            Swal.showLoading();
-                        }
-                    });
-
-                    $.ajax({
-                        url: `{{ url('admin/pinjaman/validasi-lunas') }}/${id}`,
-                        type: 'POST',
-                        data: {
-                            _token: '{{ csrf_token() }}'
-                        },
-                        success: function(response) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Berhasil!',
-                                text: response.message || 'Pinjaman telah divalidasi sebagai lunas',
-                                confirmButtonText: 'OK',
-                                confirmButtonColor: '#198754'
-                            }).then(() => {
-                                location.reload();
-                            });
-                        },
-                        error: function(xhr) {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Gagal!',
-                                text: xhr.responseJSON?.message || 'Terjadi kesalahan saat validasi',
-                                confirmButtonColor: '#dc3545'
-                            });
-                        }
-                    });
-                }
-            });
-        }
     </script>
 @endpush

@@ -57,8 +57,8 @@
                         <label class="form-label fw-semibold mb-2">
                             <i class="ti ti-calendar text-primary"></i> Rentang Tanggal Pinjam
                         </label>
-                        <input type="text" class="form-control" name="tanggal" id="filterTanggal" 
-                               value="{{ request('tanggal') }}" placeholder="Pilih tanggal..." readonly>
+                        <input type="text" class="form-control" name="tanggal" id="filterTanggal"
+                            value="{{ request('tanggal') }}" placeholder="Pilih tanggal..." readonly>
                     </div>
 
                     <!-- Kode Transaksi -->
@@ -66,8 +66,8 @@
                         <label class="form-label fw-semibold mb-2">
                             <i class="ti ti-barcode text-info"></i> Kode Transaksi
                         </label>
-                        <input type="text" class="form-control" name="kode" id="filterKode" 
-                               value="{{ request('kode') }}" placeholder="Masukkan kode...">
+                        <input type="text" class="form-control" name="kode" id="filterKode" value="{{ request('kode') }}"
+                            placeholder="Masukkan kode...">
                     </div>
 
                     <!-- Nama Anggota -->
@@ -75,8 +75,8 @@
                         <label class="form-label fw-semibold mb-2">
                             <i class="ti ti-user text-warning"></i> Nama Anggota
                         </label>
-                        <input type="text" class="form-control" name="nama" id="filterNama" 
-                               value="{{ request('nama') }}" placeholder="Nama anggota...">
+                        <input type="text" class="form-control" name="nama" id="filterNama" value="{{ request('nama') }}"
+                            placeholder="Nama anggota...">
                     </div>
 
                     <!-- Action Buttons -->
@@ -86,8 +86,8 @@
                             <button type="submit" class="btn btn-primary w-100">
                                 <i class="ti ti-search"></i> Cari
                             </button>
-                            <a href="{{ route('pinjaman.bayar') }}" class="btn btn-outline-secondary" 
-                               data-bs-toggle="tooltip" title="Reset Filter">
+                            <a href="{{ route('pinjaman.bayar') }}" class="btn btn-outline-secondary"
+                                data-bs-toggle="tooltip" title="Reset Filter">
                                 <i class="ti ti-refresh"></i>
                             </a>
                         </div>
@@ -100,7 +100,8 @@
                 <div class="col-12">
                     <div class="d-flex gap-2 flex-wrap align-items-center">
                         <span class="badge bg-info-subtle text-info rounded-2 border px-3 py-2">
-                            <i class="ti ti-info-circle"></i> Klik tombol "Detail" untuk melihat dan memproses pembayaran angsuran
+                            <i class="ti ti-info-circle"></i> Klik tombol "Detail" untuk melihat dan memproses pembayaran
+                            angsuran
                         </span>
                         <div class="ms-auto">
                             <span class="badge bg-primary-subtle text-primary px-3 py-2">
@@ -113,6 +114,7 @@
         </div>
     </div>
 
+    <!-- Data Table Card -->
     <!-- Data Table Card -->
     <div class="card">
         <div class="card-body">
@@ -136,7 +138,8 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($pinjaman as $item)
+                        {{-- ✅ GANTI @forelse JADI @foreach --}}
+                        @foreach($pinjaman as $item)
                             <tr class="{{ $item->ada_terlambat ? 'table-danger' : '' }}">
                                 <td class="text-center">
                                     <span class="badge bg-primary-subtle text-primary fw-semibold px-2 py-1">
@@ -147,12 +150,13 @@
                                     {{ $item->tanggal_pinjam->format('d M Y') }}
                                 </td>
                                 <td class="text-center">
-                                    <span class="badge bg-secondary-subtle text-secondary">{{ $item->anggota_id }}</span>
+                                    <span class="badge fw-semibold bg-secondary-subtle text-secondary">{{ $item->anggota_id }}</span>
                                 </td>
                                 <td>
                                     <div class="d-flex align-items-center">
                                         <img src="{{ asset($item->anggota_foto) }}" width="40" height="40"
-                                            class="rounded-circle me-2" onerror="this.src='{{ asset('assets/images/profile/user-1.jpg') }}'">
+                                            class="rounded-circle me-2"
+                                            onerror="this.src='{{ asset('assets/images/profile/user-1.jpg') }}'">
                                         <div>
                                             <strong>{{ $item->anggota_nama }}</strong><br>
                                             <small class="text-muted">{{ $item->anggota_kota }}</small>
@@ -163,13 +167,16 @@
                                     <span class="fw-bold">Rp {{ number_format($item->pokok_pinjaman, 0, ',', '.') }}</span>
                                 </td>
                                 <td class="text-center">
-                                    <span class="badge bg-info-subtle text-info">{{ $item->lama_angsuran }} Bulan</span>
+                                    <span class="badge fw-semibold bg-info-subtle text-info">{{ $item->lama_angsuran }} Bulan</span>
                                 </td>
                                 <td class="text-end fw-bold">Rp {{ number_format($item->angsuran_pokok, 0, ',', '.') }}</td>
-                                <td class="text-end text-info fw-bold">Rp {{ number_format($item->bunga_angsuran, 0, ',', '.') }}</td>
-                                <td class="text-end fw-bold text-warning">Rp {{ number_format($item->biaya_admin, 0, ',', '.') }}</td>
+                                <td class="text-end text-info fw-bold">Rp
+                                    {{ number_format($item->bunga_angsuran, 0, ',', '.') }}</td>
+                                <td class="text-end fw-bold text-warning">Rp
+                                    {{ number_format($item->biaya_admin, 0, ',', '.') }}</td>
                                 <td class="text-end">
-                                    <span class="fw-bold text-success fs-5">Rp {{ number_format($item->angsuran_per_bulan, 0, ',', '.') }}</span>
+                                    <span class="fw-bold text-success fs-5">Rp
+                                        {{ number_format($item->angsuran_per_bulan, 0, ',', '.') }}</span>
                                 </td>
                                 <td class="text-center">
                                     <span class="badge {{ $item->sisa_angsuran > 0 ? 'bg-warning' : 'bg-success' }}">
@@ -180,73 +187,49 @@
                                     @endif
                                 </td>
                                 <td class="text-center">
-                                   <a href="{{ route('pinjaman.bayar.detail', $item->id) }}"
-                                    class="btn btn-success btn-sm" data-bs-toggle="tooltip" title="Lihat Detail & Bayar">
+                                    <a href="{{ route('pinjaman.bayar.detail', $item->id) }}" class="btn btn-success btn-sm"
+                                        data-bs-toggle="tooltip" title="Lihat Detail & Bayar">
                                         <i class="ti ti-eye"></i> Bayar
                                     </a>
                                 </td>
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="12" class="text-center py-4">
-                                    <i class="ti ti-inbox fs-1 text-muted"></i>
-                                    <p class="text-muted mb-0">Tidak ada data pinjaman yang belum lunas</p>
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- Info Card -->
-    <div class="card mt-3 border-start border-1 border-warning">
-        <div class="card-body">
-            <div class="d-flex align-items-center">
-                <i class="ti ti-info-circle fs-8 text-warning me-3"></i>
-                <div>
-                    <h6 class="mb-1 fw-semibold">Informasi</h6>
-                    <p class="mb-0 text-muted">
-                        • Baris berwarna <strong class="text-danger">merah muda</strong> menunjukkan pinjaman yang memiliki angsuran terlambat<br>
-                        • Klik tombol <strong>"Detail"</strong> untuk melihat riwayat pembayaran dan memproses angsuran<br>
-                        • Jadwal angsuran <strong>otomatis ter-generate</strong> saat pinjaman dibuat<br>
-                        • Pastikan data pembayaran sudah benar sebelum menyimpan
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    @if($notifications->isNotEmpty())
-    <!-- Notification Card -->
-    <div class="card mt-3 border-start border-1 border-danger">
-        <div class="card-header bg-danger-subtle">
-            <h6 class="mb-0 text-danger"><i class="ti ti-bell-ringing me-2"></i>Pengingat Jatuh Tempo (7 Hari Ke Depan)</h6>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-sm mb-0">
-                    <thead>
-                        <tr>
-                            <th>Nama Anggota</th>
-                            <th>Tanggal Jatuh Tempo</th>
-                            <th class="text-end">Jumlah Angsuran</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($notifications as $notif)
-                        <tr>
-                            <td><strong>{{ $notif->nama }}</strong></td>
-                            <td>{{ \Carbon\Carbon::parse($notif->tanggal_jatuh_tempo)->format('d M Y') }}</td>
-                            <td class="text-end"><strong>Rp {{ number_format($notif->sisa_tagihan, 0, ',', '.') }}</strong></td>
-                        </tr>
                         @endforeach
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
+
+    @if($notifications->isNotEmpty())
+        <!-- Notification Card -->
+        <div class="card mt-3 border-start border-1 border-danger">
+            <div class="card-header bg-danger-subtle">
+                <h6 class="mb-0 text-danger"><i class="ti ti-bell-ringing me-2"></i>Pengingat Jatuh Tempo (7 Hari Ke Depan)</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm mb-0">
+                        <thead>
+                            <tr>
+                                <th>Nama Anggota</th>
+                                <th>Tanggal Jatuh Tempo</th>
+                                <th class="text-end">Jumlah Angsuran</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($notifications as $notif)
+                                <tr>
+                                    <td><strong>{{ $notif->nama }}</strong></td>
+                                    <td>{{ \Carbon\Carbon::parse($notif->tanggal_jatuh_tempo)->format('d M Y') }}</td>
+                                    <td class="text-end"><strong>Rp {{ number_format($notif->sisa_tagihan, 0, ',', '.') }}</strong>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     @endif
 
 @endsection
@@ -262,10 +245,28 @@
         let table;
 
         $(document).ready(function () {
-            // Initialize DataTable
+            // ✅ Initialize DataTable dengan custom empty message
             table = $('#tabelAngsuran').DataTable({
                 language: {
-                    url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/id.json'
+                    url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/id.json',
+                    // ✅ TAMBAHKAN INI - Custom message untuk empty table
+                    emptyTable: `
+                        <div class="py-5">
+                            <div class="text-center">
+                                <i class="ti ti-inbox" style="font-size: 4rem; color: #adb5bd;"></i>
+                                <p class="text-muted mt-3 mb-0">Tidak ada data pinjaman yang belum lunas</p>
+                            </div>
+                        </div>
+                    `,
+                    // ✅ Custom message untuk search result empty
+                    zeroRecords: `
+                        <div class="py-5">
+                            <div class="text-center">
+                                <i class="ti ti-search-off" style="font-size: 4rem; color: #adb5bd;"></i>
+                                <p class="text-muted mt-3 mb-0">Tidak ada data yang cocok dengan pencarian</p>
+                            </div>
+                        </div>
+                    `
                 },
                 pageLength: 10,
                 order: [[1, 'desc']],

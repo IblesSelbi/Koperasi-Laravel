@@ -11,6 +11,7 @@ use App\Models\Admin\DataMaster\DataAnggota;
 use App\Models\Admin\DataMaster\DataBarang;
 use App\Models\Admin\DataMaster\DataKas;
 use App\Models\Admin\DataMaster\LamaAngsuran;
+use App\Models\Admin\Setting\SukuBunga;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -82,6 +83,9 @@ class PinjamanController extends Controller
             $item->anggota_foto = $item->anggota->photo;
         }
 
+        // ✅ Ambil setting suku bunga untuk ditampilkan di view
+        $sukuBunga = SukuBunga::getSetting();
+
         // Notifikasi dummy
         $notifications = collect([
             (object) [
@@ -91,7 +95,7 @@ class PinjamanController extends Controller
             ]
         ]);
 
-        return view('admin.Pinjaman.datapinjaman.Pinjaman', compact('pinjaman', 'notifications'));
+        return view('admin.Pinjaman.datapinjaman.Pinjaman', compact('pinjaman', 'sukuBunga', 'notifications'));
     }
 
     /**
@@ -122,6 +126,11 @@ class PinjamanController extends Controller
                 throw new \Exception('Pengajuan ini sudah pernah diproses menjadi pinjaman');
             }
 
+            // ✅ Ambil setting suku bunga dari database
+            $sukuBunga = SukuBunga::getSetting();
+            $bungaPersen = $sukuBunga->bg_pinjam; // Ambil dari setting
+            $biayaAdmin = $sukuBunga->biaya_adm ?? 0; // Ambil dari setting
+
             // Generate kode pinjaman
             $kodePinjaman = Pinjaman::generateKodePinjaman();
 
@@ -130,12 +139,14 @@ class PinjamanController extends Controller
             $pokokPinjaman = $pengajuan->jumlah;
             $angsuranPokok = $pokokPinjaman / $lamaAngsuran;
 
-            // Bunga 5% per angsuran
-            $bungaPersen = 5;
-            $biayaBunga = ($pokokPinjaman * $bungaPersen / 100) / $lamaAngsuran;
-
-            // Biaya admin
-            $biayaAdmin = 0;
+            // ✅ Hitung bunga berdasarkan tipe dari setting
+            if ($sukuBunga->pinjaman_bunga_tipe == 'A') {
+                // Tipe A: Persen Bunga dikali angsuran per bulan
+                $biayaBunga = ($angsuranPokok * $bungaPersen / 100);
+            } else {
+                // Tipe B: Persen Bunga dikali total pinjaman, dibagi lama angsuran
+                $biayaBunga = ($pokokPinjaman * $bungaPersen / 100) / $lamaAngsuran;
+            }
 
             // Total angsuran
             $jumlahAngsuran = $pokokPinjaman + ($biayaBunga * $lamaAngsuran) + $biayaAdmin;
@@ -243,18 +254,29 @@ class PinjamanController extends Controller
                 // Hapus angsuran lama (yang belum dibayar)
                 $pinjaman->angsuran()->where('status_bayar', 'Belum')->delete();
 
+                // ✅ Ambil setting suku bunga
+                $sukuBunga = SukuBunga::getSetting();
+                $bungaPersen = $sukuBunga->bg_pinjam;
+
                 // Hitung ulang
                 $lamaAngsuran = LamaAngsuran::findOrFail($validated['lama_angsuran_id']);
                 $pokokPinjaman = $pinjaman->pokok_pinjaman;
                 $angsuranPokok = $pokokPinjaman / $lamaAngsuran->lama_angsuran;
-                $bungaPersen = 5;
-                $biayaBunga = ($pokokPinjaman * $bungaPersen / 100) / $lamaAngsuran->lama_angsuran;
+
+                // ✅ Hitung bunga berdasarkan tipe
+                if ($sukuBunga->pinjaman_bunga_tipe == 'A') {
+                    $biayaBunga = ($angsuranPokok * $bungaPersen / 100);
+                } else {
+                    $biayaBunga = ($pokokPinjaman * $bungaPersen / 100) / $lamaAngsuran->lama_angsuran;
+                }
+
                 $jumlahAngsuran = $pokokPinjaman + ($biayaBunga * $lamaAngsuran->lama_angsuran) + $pinjaman->biaya_admin;
 
                 $pinjaman->update([
                     'tanggal_pinjam' => $validated['tanggal_pinjam'],
                     'lama_angsuran_id' => $validated['lama_angsuran_id'],
                     'angsuran_pokok' => $angsuranPokok,
+                    'bunga_persen' => $bungaPersen,
                     'biaya_bunga' => $biayaBunga,
                     'jumlah_angsuran' => $jumlahAngsuran,
                     'dari_kas_id' => $validated['dari_kas_id'],
@@ -289,9 +311,6 @@ class PinjamanController extends Controller
         }
     }
 
-    /**
-     * Display detail pinjaman
-     */
     /**
      * Display detail pinjaman
      */
@@ -336,7 +355,7 @@ class PinjamanController extends Controller
             ]);
         }
 
-        // PERBAIKAN: Ambil dari DetailBayarAngsuran
+        // Ambil dari DetailBayarAngsuran
         $transaksi = DetailBayarAngsuran::with(['kas', 'user', 'angsuran'])
             ->where('pinjaman_id', $id)
             ->orderBy('tanggal_bayar', 'asc')
@@ -385,10 +404,20 @@ class PinjamanController extends Controller
         $pinjaman = Pinjaman::findOrFail($id);
         $lamaAngsuran = LamaAngsuran::findOrFail($request->lama_angsuran_id);
 
+        // ✅ Ambil setting suku bunga
+        $sukuBunga = SukuBunga::getSetting();
+        $bungaPersen = $sukuBunga->bg_pinjam;
+
         $pokokPinjaman = $pinjaman->pokok_pinjaman;
         $angsuranPokok = $pokokPinjaman / $lamaAngsuran->lama_angsuran;
-        $bungaPersen = 5;
-        $biayaBunga = ($pokokPinjaman * $bungaPersen / 100) / $lamaAngsuran->lama_angsuran;
+
+        // ✅ Hitung bunga berdasarkan tipe
+        if ($sukuBunga->pinjaman_bunga_tipe == 'A') {
+            $biayaBunga = ($angsuranPokok * $bungaPersen / 100);
+        } else {
+            $biayaBunga = ($pokokPinjaman * $bungaPersen / 100) / $lamaAngsuran->lama_angsuran;
+        }
+
         $jumlahAngsuran = $pokokPinjaman + ($biayaBunga * $lamaAngsuran->lama_angsuran) + $pinjaman->biaya_admin;
 
         return response()->json([
@@ -397,6 +426,7 @@ class PinjamanController extends Controller
                 'lama_angsuran' => $lamaAngsuran->lama_angsuran,
                 'angsuran_pokok' => $angsuranPokok,
                 'biaya_bunga' => $biayaBunga,
+                'bunga_persen' => $bungaPersen,
                 'jumlah_angsuran' => $jumlahAngsuran,
                 'angsuran_per_bulan' => ($angsuranPokok + $biayaBunga),
             ]
@@ -434,38 +464,243 @@ class PinjamanController extends Controller
         try {
             $pinjaman = Pinjaman::findOrFail($id);
 
-            // Cek apakah sudah ada pembayaran
-            $adaPembayaran = $pinjaman->angsuran()->where('status_bayar', 'Lunas')->exists();
+            // ✅ Cek apakah bisa dihapus
+            $canDelete = $pinjaman->canDelete();
 
-            if ($adaPembayaran) {
-                throw new \Exception('Tidak dapat menghapus pinjaman karena sudah ada pembayaran');
+            if (!$canDelete['can_delete']) {
+                throw new \Exception($canDelete['reason']);
             }
 
-            // Hapus semua angsuran
-            $pinjaman->angsuran()->delete();
+            // ✅ Jika sudah ada pembayaran, wajib isi alasan
+            if ($canDelete['require_reason']) {
+                return response()->json([
+                    'success' => false,
+                    'require_reason' => true,
+                    'message' => 'Pinjaman ini sudah ada pembayaran. Mohon berikan alasan penghapusan.'
+                ], 400);
+            }
 
-            // Kembalikan status pengajuan
+            // ✅ Soft delete tanpa alasan jika belum ada pembayaran
+            $pinjaman->deleted_by = Auth::id();
+            $pinjaman->save();
+            $pinjaman->delete();
+
+            // ✅ Soft delete jadwal angsuran terkait
+            BayarAngsuran::where('pinjaman_id', $id)->delete();
+
+            // ✅ Kembalikan status pengajuan
             if ($pinjaman->pengajuan) {
-                $pinjaman->pengajuan->status = 1;
+                $pinjaman->pengajuan->status = 1; // Kembali ke "Disetujui"
                 $pinjaman->pengajuan->save();
             }
-
-            $pinjaman->delete();
 
             DB::commit();
 
             return response()->json([
                 'success' => true,
-                'message' => 'Data pinjaman dan jadwal angsuran berhasil dihapus'
+                'message' => 'Pinjaman berhasil dihapus dan dipindahkan ke riwayat'
             ]);
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error deleting pinjaman: ' . $e->getMessage());
+            Log::error('Error soft deleting pinjaman: ' . $e->getMessage());
 
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage()
+            ], 400);
+        }
+    }
+
+    /**
+     * Soft delete dengan alasan
+     */
+    public function softDeleteWithReason(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'alasan_hapus' => 'required|string|min:10|max:500'
+        ], [
+            'alasan_hapus.required' => 'Alasan penghapusan wajib diisi',
+            'alasan_hapus.min' => 'Alasan minimal 10 karakter',
+            'alasan_hapus.max' => 'Alasan maksimal 500 karakter'
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $pinjaman = Pinjaman::findOrFail($id);
+
+            // ✅ Validasi
+            $canDelete = $pinjaman->canDelete();
+            if (!$canDelete['can_delete']) {
+                throw new \Exception($canDelete['reason']);
+            }
+
+            // ✅ Soft delete dengan alasan
+            $pinjaman->softDeleteWithReason($validated['alasan_hapus'], Auth::id());
+
+            // ✅ Soft delete jadwal angsuran
+            BayarAngsuran::where('pinjaman_id', $id)->delete();
+
+            // ✅ Kembalikan status pengajuan
+            if ($pinjaman->pengajuan) {
+                $pinjaman->pengajuan->status = 1;
+                $pinjaman->pengajuan->save();
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Pinjaman berhasil dihapus dengan alasan: ' . $validated['alasan_hapus']
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error soft deleting with reason: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 400);
+        }
+    }
+
+    /**
+     * Tampilkan riwayat pinjaman terhapus
+     */
+    public function riwayatHapus()
+    {
+        $pinjamanTerhapus = Pinjaman::onlyTrashed()
+            ->with(['anggota', 'lamaAngsuran', 'deletedBy', 'pengajuan'])
+            ->orderBy('deleted_at', 'desc')
+            ->get()
+            ->map(function ($item) {
+                return $item->riwayat_info;
+            });
+
+        return view('admin.Pinjaman.datapinjaman.RiwayatHapus', compact('pinjamanTerhapus'));
+    }
+
+    /**
+     * Restore pinjaman dari soft delete
+     */
+    public function restore($id)
+    {
+        DB::beginTransaction();
+        try {
+            $pinjaman = Pinjaman::onlyTrashed()->findOrFail($id);
+
+            // ✅ Validasi: pengajuan masih ada dan belum diproses ulang
+            $pengajuanSudahDiproses = Pinjaman::where('pengajuan_id', $pinjaman->pengajuan_id)
+                ->where('id', '!=', $id)
+                ->whereNull('deleted_at')
+                ->exists();
+
+            if ($pengajuanSudahDiproses) {
+                throw new \Exception('Pengajuan ini sudah diproses menjadi pinjaman baru. Tidak dapat dipulihkan.');
+            }
+
+            // ✅ Restore pinjaman
+            $pinjaman->restorePinjaman();
+
+            // ✅ Restore jadwal angsuran
+            BayarAngsuran::onlyTrashed()
+                ->where('pinjaman_id', $id)
+                ->restore();
+
+            // ✅ Update status pengajuan kembali
+            if ($pinjaman->pengajuan) {
+                $pinjaman->pengajuan->status = 3; // Terlaksana
+                $pinjaman->pengajuan->save();
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Pinjaman berhasil dipulihkan'
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error restoring pinjaman: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 400);
+        }
+    }
+
+    /**
+     * Hapus permanen dari database
+     */
+    public function forceDelete($id)
+    {
+        DB::beginTransaction();
+        try {
+            $pinjaman = Pinjaman::onlyTrashed()->findOrFail($id);
+
+            // ✅ Validasi: hanya bisa force delete jika BELUM ada pembayaran
+            if ($pinjaman->sudah_ada_pembayaran) {
+                throw new \Exception('Tidak dapat menghapus permanen karena sudah ada riwayat pembayaran');
+            }
+
+            // ✅ Force delete jadwal angsuran
+            BayarAngsuran::onlyTrashed()
+                ->where('pinjaman_id', $id)
+                ->forceDelete();
+
+            // ✅ Force delete pinjaman
+            $pinjaman->forceDelete();
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Pinjaman berhasil dihapus permanen dari database'
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error force deleting pinjaman: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 400);
+        }
+    }
+
+    /**
+     * Get detail pinjaman untuk modal konfirmasi
+     */
+    public function getDeleteInfo($id)
+    {
+        try {
+            $pinjaman = Pinjaman::with(['anggota', 'lamaAngsuran'])->findOrFail($id);
+            $canDelete = $pinjaman->canDelete();
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'kode_pinjaman' => $pinjaman->kode_pinjaman,
+                    'anggota_nama' => $pinjaman->anggota->nama,
+                    'pokok_pinjaman' => $pinjaman->pokok_pinjaman,
+                    'jumlah_angsuran' => $pinjaman->jumlah_angsuran,
+                    'sudah_dibayar' => $pinjaman->total_bayar,
+                    'sisa_tagihan' => $pinjaman->sisa_tagihan,
+                    'sudah_ada_pembayaran' => $pinjaman->sudah_ada_pembayaran,
+                    'can_delete' => $canDelete['can_delete'],
+                    'require_reason' => $canDelete['require_reason'] ?? false,
+                    'reason' => $canDelete['reason'] ?? null
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengambil info pinjaman'
             ], 400);
         }
     }
@@ -499,13 +734,23 @@ class PinjamanController extends Controller
         $pengajuan = PengajuanPinjaman::with(['anggota', 'lamaAngsuran'])
             ->findOrFail($id);
 
+        // ✅ Ambil setting suku bunga
+        $sukuBunga = SukuBunga::getSetting();
+        $bungaPersen = $sukuBunga->bg_pinjam;
+        $biayaAdmin = $sukuBunga->biaya_adm ?? 0;
+
         // Hitung proyeksi angsuran
         $lamaAngsuran = $pengajuan->lamaAngsuran->lama_angsuran;
         $pokokPinjaman = $pengajuan->jumlah;
         $angsuranPokok = $pokokPinjaman / $lamaAngsuran;
-        $bungaPersen = 5;
-        $biayaBunga = ($pokokPinjaman * $bungaPersen / 100) / $lamaAngsuran;
-        $biayaAdmin = 0;
+
+        // ✅ Hitung bunga berdasarkan tipe
+        if ($sukuBunga->pinjaman_bunga_tipe == 'A') {
+            $biayaBunga = ($angsuranPokok * $bungaPersen / 100);
+        } else {
+            $biayaBunga = ($pokokPinjaman * $bungaPersen / 100) / $lamaAngsuran;
+        }
+
         $jumlahAngsuran = $pokokPinjaman + ($biayaBunga * $lamaAngsuran) + $biayaAdmin;
 
         return response()->json([

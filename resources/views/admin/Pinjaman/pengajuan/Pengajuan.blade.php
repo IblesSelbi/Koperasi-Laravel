@@ -166,12 +166,12 @@
                                     {{ \Carbon\Carbon::parse($item->tanggal_pengajuan)->format('d M Y') }}
                                 </td>
                                 <td>
-                                    <a href="javascript:void(0)" title="Lihat History Pinjaman Anggota"
-                                        class="text-decoration-none">
-                                        {{ $item->anggota->kode_anggota }}
-                                    </a><br>
-                                    <strong>{{ $item->anggota->nama }}</strong><br>
-                                    <small class="text-muted">{{ $item->anggota->departemen }}</small>
+                                    <div class="d-flex align-items-center">
+                                        <div>
+                                            <strong>{{ $item->anggota->nama }}</strong><br>
+                                            <small class="text-muted">ID: {{ $item->anggota->id_anggota }} {{ $item->anggota->departement }}</small>
+                                        </div>
+                                    </div>
                                 </td>
                                 <td class="text-center">
                                     @if($item->jenis_pinjaman == 'Biasa')
