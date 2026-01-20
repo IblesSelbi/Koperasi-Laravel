@@ -684,8 +684,8 @@
                     if (response.data && response.data.length > 0) {
                         response.data.forEach(function (item) {
                             const option = `<option value="${item.id}">
-                                        ${item.kode_pengajuan} - ${item.anggota.nama} - Rp ${formatRupiah(item.jumlah)} - ${item.lama_angsuran.lama_angsuran} Bulan
-                                    </option>`;
+                                            ${item.kode_pengajuan} - ${item.anggota.nama} - Rp ${formatRupiah(item.jumlah)} - ${item.lama_angsuran.lama_angsuran} Bulan
+                                        </option>`;
                             select.append(option);
                         });
                     } else {
@@ -719,10 +719,10 @@
                     console.error('Error loading kas list:', xhr);
                     const kasSelect = $('#kasId, #editKasId');
                     kasSelect.html(`
-                                <option value="">-- Pilih Kas --</option>
-                                <option value="1">Kas Tunai</option>
-                                <option value="2">Kas Besar</option>
-                            `);
+                                    <option value="">-- Pilih Kas --</option>
+                                    <option value="1">Kas Tunai</option>
+                                    <option value="2">Kas Besar</option>
+                                `);
                 }
             });
         }
@@ -777,7 +777,7 @@
                         $('#anggotaPhoto').html(`<img src="${pengajuan.anggota.photo}" class="img-fluid rounded" alt="Foto">`);
                     }
 
-                    // ✅ PERBAIKAN: Update persentase bunga dinamis
+                    // PERBAIKAN: Update persentase bunga dinamis
                     $('#proyeksiPersen').text(proyeksi.bunga_persen + '%');
 
                     // Tampilkan proyeksi
@@ -850,7 +850,7 @@
             });
         }
 
-        // ✅ Function: Hapus Data dengan Soft Delete
+        // Function: Hapus Data dengan Soft Delete
         function hapusData() {
             if (!selectedRow) {
                 Swal.fire({
@@ -881,20 +881,38 @@
             });
         }
 
-        // ✅ Show Delete Confirmation Modal
+        // Show Delete Confirmation Modal
         function showDeleteConfirmation(data) {
             // Jika tidak bisa dihapus
             if (!data.can_delete) {
+                // Cek apakah karena sudah validasi lunas
+                const isValidasiLunas = data.reason && data.reason.includes('validasi lunas');
+
                 Swal.fire({
                     icon: 'error',
                     title: 'Tidak Dapat Dihapus',
                     html: `
-                                <div class="alert alert-danger text-start">
-                                    <i class="ti ti-alert-circle"></i>
-                                    ${data.reason}
+                            <div class="alert alert-danger text-start mb-3">
+                                <i class="ti ti-alert-circle"></i>
+                                ${data.reason}
+                            </div>
+                            ${isValidasiLunas ? `
+                                <div class="alert alert-info text-start">
+                                    <i class="ti ti-info-circle me-2"></i>
+                                    Untuk menghapus pinjaman ini, Anda harus membatalkan validasi lunas terlebih dahulu.
                                 </div>
-                            `,
-                    confirmButtonColor: '#dc3545'
+                            ` : ''}
+                        `,
+                    showCancelButton: isValidasiLunas,
+                    confirmButtonText: isValidasiLunas ? '<i class="ti ti-eye"></i> Lihat Detail Validasi Lunas' : 'OK',
+                    cancelButtonText: 'Tutup',
+                    confirmButtonColor: isValidasiLunas ? '#0d6efd' : '#dc3545',
+                    allowOutsideClick: false
+                }).then((result) => {
+                    if (result.isConfirmed && isValidasiLunas) {
+                        // Redirect ke halaman detail pinjaman lunas
+                        window.location.href = "{{ route('pinjaman.lunas.detail', ':id') }}".replace(':id', selectedRow);
+                    }
                 });
                 return;
             }
@@ -904,57 +922,57 @@
                 Swal.fire({
                     title: 'Konfirmasi Penghapusan',
                     html: `
-                                <div class="text-start">
-                                    <div class="alert alert-warning mb-3">
-                                        <i class="ti ti-alert-triangle me-2"></i>
-                                        <strong>Perhatian!</strong> Pinjaman ini sudah ada pembayaran.
-                                    </div>
+                                    <div class="text-start">
+                                        <div class="alert alert-warning mb-3">
+                                            <i class="ti ti-alert-triangle me-2"></i>
+                                            <strong>Perhatian!</strong> Pinjaman ini sudah ada pembayaran.
+                                        </div>
 
-                                    <div class="card border-info mb-3">
-                                        <div class="card-body p-3">
-                                            <table class="table table-sm table-borderless mb-0">
-                                                <tr>
-                                                    <td class="text-muted">Kode Pinjaman</td>
-                                                    <td>:</td>
-                                                    <td><strong>${data.kode_pinjaman}</strong></td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="text-muted">Anggota</td>
-                                                    <td>:</td>
-                                                    <td>${data.anggota_nama}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="text-muted">Pokok Pinjaman</td>
-                                                    <td>:</td>
-                                                    <td>Rp ${formatRupiah(data.pokok_pinjaman)}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="text-muted">Sudah Dibayar</td>
-                                                    <td>:</td>
-                                                    <td class="text-success"><strong>Rp ${formatRupiah(data.sudah_dibayar)}</strong></td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="text-muted">Sisa Tagihan</td>
-                                                    <td>:</td>
-                                                    <td class="text-danger"><strong>Rp ${formatRupiah(data.sisa_tagihan)}</strong></td>
-                                                </tr>
-                                            </table>
+                                        <div class="card border-info mb-3">
+                                            <div class="card-body p-3">
+                                                <table class="table table-sm table-borderless mb-0">
+                                                    <tr>
+                                                        <td class="text-muted">Kode Pinjaman</td>
+                                                        <td>:</td>
+                                                        <td><strong>${data.kode_pinjaman}</strong></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-muted">Anggota</td>
+                                                        <td>:</td>
+                                                        <td>${data.anggota_nama}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-muted">Pokok Pinjaman</td>
+                                                        <td>:</td>
+                                                        <td>Rp ${formatRupiah(data.pokok_pinjaman)}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-muted">Sudah Dibayar</td>
+                                                        <td>:</td>
+                                                        <td class="text-success"><strong>Rp ${formatRupiah(data.sudah_dibayar)}</strong></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-muted">Sisa Tagihan</td>
+                                                        <td>:</td>
+                                                        <td class="text-danger"><strong>Rp ${formatRupiah(data.sisa_tagihan)}</strong></td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label class="form-label fw-semibold">Alasan Penghapusan <span class="text-danger">*</span></label>
+                                            <textarea class="form-control" id="alasanHapus" rows="3" 
+                                                placeholder="Jelaskan alasan penghapusan pinjaman ini (minimal 10 karakter)"></textarea>
+                                            <small class="text-muted">Alasan ini akan disimpan sebagai audit trail</small>
+                                        </div>
+
+                                        <div class="alert alert-info mb-0">
+                                            <i class="ti ti-info-circle me-2"></i>
+                                            Data akan dipindahkan ke <strong>Riwayat Hapus</strong> dan dapat dipulihkan kembali.
                                         </div>
                                     </div>
-
-                                    <div class="mb-3">
-                                        <label class="form-label fw-semibold">Alasan Penghapusan <span class="text-danger">*</span></label>
-                                        <textarea class="form-control" id="alasanHapus" rows="3" 
-                                            placeholder="Jelaskan alasan penghapusan pinjaman ini (minimal 10 karakter)"></textarea>
-                                        <small class="text-muted">Alasan ini akan disimpan sebagai audit trail</small>
-                                    </div>
-
-                                    <div class="alert alert-info mb-0">
-                                        <i class="ti ti-info-circle me-2"></i>
-                                        Data akan dipindahkan ke <strong>Riwayat Hapus</strong> dan dapat dipulihkan kembali.
-                                    </div>
-                                </div>
-                            `,
+                                `,
                     width: '600px',
                     showCancelButton: true,
                     confirmButtonText: '<i class="ti ti-trash"></i> Hapus dengan Alasan',
@@ -980,37 +998,37 @@
                 Swal.fire({
                     title: 'Hapus Data Pinjaman?',
                     html: `
-                                <div class="text-start">
-                                    <p>Apakah Anda yakin ingin menghapus pinjaman ini?</p>
+                                    <div class="text-start">
+                                        <p>Apakah Anda yakin ingin menghapus pinjaman ini?</p>
 
-                                    <div class="card border-info mb-3">
-                                        <div class="card-body p-3">
-                                            <table class="table table-sm table-borderless mb-0">
-                                                <tr>
-                                                    <td class="text-muted" width="40%">Kode Pinjaman</td>
-                                                    <td width="5%">:</td>
-                                                    <td><strong>${data.kode_pinjaman}</strong></td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="text-muted">Anggota</td>
-                                                    <td>:</td>
-                                                    <td>${data.anggota_nama}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="text-muted">Jumlah Pinjaman</td>
-                                                    <td>:</td>
-                                                    <td>Rp ${formatRupiah(data.pokok_pinjaman)}</td>
-                                                </tr>
-                                            </table>
+                                        <div class="card border-info mb-3">
+                                            <div class="card-body p-3">
+                                                <table class="table table-sm table-borderless mb-0">
+                                                    <tr>
+                                                        <td class="text-muted" width="40%">Kode Pinjaman</td>
+                                                        <td width="5%">:</td>
+                                                        <td><strong>${data.kode_pinjaman}</strong></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-muted">Anggota</td>
+                                                        <td>:</td>
+                                                        <td>${data.anggota_nama}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-muted">Jumlah Pinjaman</td>
+                                                        <td>:</td>
+                                                        <td>Rp ${formatRupiah(data.pokok_pinjaman)}</td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </div>
+
+                                        <div class="alert alert-info mb-0">
+                                            <i class="ti ti-info-circle me-2"></i>
+                                            Data akan dipindahkan ke <strong>Riwayat Hapus</strong> dan status pengajuan akan dikembalikan.
                                         </div>
                                     </div>
-
-                                    <div class="alert alert-info mb-0">
-                                        <i class="ti ti-info-circle me-2"></i>
-                                        Data akan dipindahkan ke <strong>Riwayat Hapus</strong> dan status pengajuan akan dikembalikan.
-                                    </div>
-                                </div>
-                            `,
+                                `,
                     icon: 'warning',
                     width: '550px',
                     showCancelButton: true,
@@ -1025,7 +1043,7 @@
             }
         }
 
-        // ✅ Proses Hapus Tanpa Alasan
+        // Proses Hapus Tanpa Alasan
         function prosesHapus(id) {
             Swal.fire({
                 title: 'Menghapus Data...',
@@ -1046,13 +1064,13 @@
                         icon: 'success',
                         title: 'Berhasil!',
                         html: `
-                                    ${response.message}
-                                    <div class="mt-3">
-                                        <button class="btn btn-sm btn-secondary" onclick="lihatRiwayatHapus()">
-                                            <i class="ti ti-history"></i> Lihat Riwayat
-                                        </button>
-                                    </div>
-                                `,
+                                        ${response.message}
+                                        <div class="mt-3">
+                                            <button class="btn btn-sm btn-secondary" onclick="lihatRiwayatHapus()">
+                                                <i class="ti ti-history"></i> Lihat Riwayat
+                                            </button>
+                                        </div>
+                                    `,
                         confirmButtonText: 'OK'
                     }).then(() => {
                         location.reload();
@@ -1080,7 +1098,7 @@
             });
         }
 
-        // ✅ Proses Hapus Dengan Alasan
+        // Proses Hapus Dengan Alasan
         function prosesHapusWithReason(id, alasan) {
             Swal.fire({
                 title: 'Menghapus Data...',
@@ -1102,13 +1120,13 @@
                         icon: 'success',
                         title: 'Berhasil!',
                         html: `
-                                    ${response.message}
-                                    <div class="mt-3">
-                                        <button class="btn btn-sm btn-secondary" onclick="lihatRiwayatHapus()">
-                                            <i class="ti ti-history"></i> Lihat Riwayat
-                                        </button>
-                                    </div>
-                                `,
+                                        ${response.message}
+                                        <div class="mt-3">
+                                            <button class="btn btn-sm btn-secondary" onclick="lihatRiwayatHapus()">
+                                                <i class="ti ti-history"></i> Lihat Riwayat
+                                            </button>
+                                        </div>
+                                    `,
                         confirmButtonText: 'OK'
                     }).then(() => {
                         location.reload();
@@ -1124,7 +1142,7 @@
             });
         }
 
-        // ✅ Lihat Riwayat Hapus
+        // Lihat Riwayat Hapus
         function lihatRiwayatHapus() {
             window.location.href = '{{ route("pinjaman.pinjaman.riwayat-hapus") }}';
         }
@@ -1148,12 +1166,12 @@
                     console.error('Error loading lama angsuran:', xhr);
                     const select = $('#editLamaAngsuran');
                     select.html(`
-                                <option value="">-- Pilih Lama Angsuran --</option>
-                                <option value="1">6 Bulan</option>
-                                <option value="2">12 Bulan</option>
-                                <option value="3">18 Bulan</option>
-                                <option value="4">24 Bulan</option>
-                            `);
+                                    <option value="">-- Pilih Lama Angsuran --</option>
+                                    <option value="1">6 Bulan</option>
+                                    <option value="2">12 Bulan</option>
+                                    <option value="3">18 Bulan</option>
+                                    <option value="4">24 Bulan</option>
+                                `);
                 }
             });
         }
@@ -1178,7 +1196,7 @@
                 success: function (response) {
                     const proyeksi = response.data;
 
-                    // ✅ PERBAIKAN: Update persentase bunga di modal edit
+                    // PERBAIKAN: Update persentase bunga di modal edit
                     $('#editProyeksiPersen').text(proyeksi.bunga_persen + '%');
 
                     $('#editProyeksiPokok').text('Rp ' + formatRupiah(proyeksi.angsuran_pokok));
