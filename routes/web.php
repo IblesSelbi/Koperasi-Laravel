@@ -30,6 +30,20 @@ use App\Http\Controllers\Admin\Pinjaman\{
     BayarAngsuranController,
     PinjamanLunasController
 };
+use App\Http\Controllers\Admin\Laporan\{
+    AnggotaController,
+    KasAnggotaController,
+    JatuhTempoController,
+    KreditMacetController,
+    TransaksiKasController,
+    BukuBesarController,
+    NeracaSaldoController,
+    KasSimpananController,
+    KasPinjamanController,
+    SaldoKasController,
+    LabaRugiController,
+    SHUController
+};
 use App\Http\Controllers\Admin\Setting\{
     IdentitasKoperasiController,
     SukuBungaController
@@ -307,133 +321,102 @@ Route::middleware('auth')
     });
 
 
-Route::middleware('auth')->prefix('admin')->name('laporan.')->group(function () {
-    // Route Data Anggota
-    Route::get('/anggota', [Admin\AnggotaController::class, 'index'])
-        ->name('anggota');
+Route::middleware('auth')
+    ->prefix('admin')
+    ->name('laporan.')
+    ->group(function () {
 
-    Route::get('/anggota/cetak', [Admin\AnggotaController::class, 'cetakLaporan'])
-        ->name('anggota.cetak');
+        // Anggota
+        Route::controller(AnggotaController::class)->group(function () {
+            Route::get('/anggota', 'index')->name('anggota');
+            Route::get('/anggota/cetak', 'cetakLaporan')->name('anggota.cetak');
+            Route::get('/anggota/export/excel', 'exportExcel')->name('anggota.export.excel');
+            Route::get('/anggota/export/pdf', 'exportPDF')->name('anggota.export.pdf');
+        });
 
-    Route::get('/anggota/export/excel', [Admin\AnggotaController::class, 'exportExcel'])
-        ->name('anggota.export.excel');
+        // Kas Anggota
+        Route::controller(KasAnggotaController::class)->group(function () {
+            Route::get('/kas-anggota', 'index')->name('kas-anggota');
+            Route::get('/kas-anggota/cetak', 'cetakLaporan')->name('kas-anggota.cetak');
+            Route::get('/kas-anggota/export/excel', 'exportExcel')->name('kas-anggota.export.excel');
+        });
 
-    Route::get('/anggota/export/pdf', [Admin\AnggotaController::class, 'exportPDF'])
-        ->name('anggota.export.pdf');
+        // Jatuh Tempo
+        Route::controller(JatuhTempoController::class)->group(function () {
+            Route::get('/jatuh-tempo', 'index')->name('jatuh-tempo');
+            Route::get('/jatuh-tempo/cetak', 'cetakLaporan')->name('jatuh-tempo.cetak');
+            Route::get('/jatuh-tempo/export/excel', 'exportExcel')->name('jatuh-tempo.export.excel');
+            Route::post('/jatuh-tempo/kirim-notifikasi', 'kirimNotifikasi')
+                ->name('jatuh-tempo.kirim-notifikasi');
+        });
 
-    // Route Kas Anggota
-    Route::get('/kas-anggota', [Admin\KasAnggotaController::class, 'index'])
-        ->name('kas-anggota');
+        // Kredit Macet
+        Route::controller(KreditMacetController::class)->group(function () {
+            Route::get('/kredit-macet', 'index')->name('kredit-macet');
+            Route::get('/kredit-macet/cetak', 'cetakLaporan')->name('kredit-macet.cetak');
+            Route::get('/kredit-macet/export/excel', 'exportExcel')->name('kredit-macet.export.excel');
+            Route::post('/kredit-macet/kirim-pemanggilan', 'kirimPemanggilan')
+                ->name('kredit-macet.kirim-pemanggilan');
+            Route::post('/kredit-macet/get-data', 'getData')
+                ->name('kredit-macet.get-data');
+        });
 
-    Route::get('/kas-anggota/cetak', [Admin\KasAnggotaController::class, 'cetakLaporan'])
-        ->name('kas-anggota.cetak');
+        // Transaksi Kas
+        Route::controller(TransaksiKasController::class)->group(function () {
+            Route::get('/transaksi-kas', 'index')->name('transaksi-kas');
+            Route::get('/transaksi-kas/cetak', 'cetakLaporan')->name('transaksi-kas.cetak');
+            Route::get('/transaksi-kas/export/excel', 'exportExcel')->name('transaksi-kas.export.excel');
+            Route::get('/transaksi-kas/export/pdf', 'exportPDF')->name('transaksi-kas.export.pdf');
+            Route::post('/transaksi-kas/get-data', 'getData')->name('transaksi-kas.get-data');
+        });
 
-    Route::get('/kas-anggota/export/excel', [Admin\KasAnggotaController::class, 'exportExcel'])
-        ->name('kas-anggota.export.excel');
+        // Buku Besar
+        Route::controller(BukuBesarController::class)->group(function () {
+            Route::get('/buku-besar', 'index')->name('buku-besar');
+            Route::get('/buku-besar/cetak', 'cetakLaporan')->name('buku-besar.cetak');
+            Route::get('/buku-besar/export/excel', 'exportExcel')->name('buku-besar.export.excel');
+            Route::post('/buku-besar/get-data', 'getData')->name('buku-besar.get-data');
+        });
 
-    // Route Jatuh Tempo
-    Route::get('/jatuh-tempo', [Admin\JatuhTempoController::class, 'index'])
-        ->name('jatuh-tempo');
+        // Neraca Saldo
+        Route::controller(NeracaSaldoController::class)->group(function () {
+            Route::get('/neraca-saldo', 'index')->name('neraca-saldo');
+            Route::get('/neraca-saldo/cetak', 'cetakLaporan')->name('neraca-saldo.cetak');
+            Route::post('/neraca-saldo/get-data', 'getData')->name('neraca-saldo.get-data');
+        });
 
-    Route::get('/jatuh-tempo/cetak', [Admin\JatuhTempoController::class, 'cetakLaporan'])
-        ->name('jatuh-tempo.cetak');
+        // Kas Simpanan
+        Route::controller(KasSimpananController::class)->group(function () {
+            Route::get('/kas-simpanan', 'index')->name('kas-simpanan');
+            Route::get('/kas-simpanan/cetak', 'cetakLaporan')->name('kas-simpanan.cetak');
+        });
 
-    Route::get('/jatuh-tempo/export/excel', [Admin\JatuhTempoController::class, 'exportExcel'])
-        ->name('jatuh-tempo.export.excel');
+        // Kas Pinjaman
+        Route::controller(KasPinjamanController::class)->group(function () {
+            Route::get('/kas-pinjaman', 'index')->name('kas-pinjaman');
+            Route::get('/kas-pinjaman/cetak', 'cetakLaporan')->name('kas-pinjaman.cetak');
+        });
 
-    Route::post('/jatuh-tempo/kirim-notifikasi', [Admin\JatuhTempoController::class, 'kirimNotifikasi'])
-        ->name('jatuh-tempo.kirim-notifikasi');
+        // Saldo Kas
+        Route::controller(SaldoKasController::class)->group(function () {
+            Route::get('/saldo-kas', 'index')->name('saldo-kas');
+            Route::get('/saldo-kas/cetak', 'cetakLaporan')->name('saldo-kas.cetak');
+        });
 
-    // Route Kredit Macet
-    Route::get('/kredit-macet', [Admin\KreditMacetController::class, 'index'])
-        ->name('kredit-macet');
+        // Laba Rugi
+        Route::controller(LabaRugiController::class)->group(function () {
+            Route::get('/laba-rugi', 'index')->name('laba-rugi');
+            Route::get('/laba-rugi/cetak', 'cetakLaporan')->name('laba-rugi.cetak');
+        });
 
-    Route::get('/kredit-macet/cetak', [Admin\KreditMacetController::class, 'cetakLaporan'])
-        ->name('kredit-macet.cetak');
+        // SHU
+        Route::controller(SHUController::class)->group(function () {
+            Route::get('/shu', 'index')->name('shu');
+            Route::get('/shu/cetak', 'cetakLaporan')->name('shu.cetak');
+        });
 
-    Route::get('/kredit-macet/export/excel', [Admin\KreditMacetController::class, 'exportExcel'])
-        ->name('kredit-macet.export.excel');
+    });
 
-    Route::post('/kredit-macet/kirim-pemanggilan', [Admin\KreditMacetController::class, 'kirimPemanggilan'])
-        ->name('kredit-macet.kirim-pemanggilan');
-
-    Route::post('/kredit-macet/get-data', [Admin\KreditMacetController::class, 'getData'])
-        ->name('kredit-macet.get-data');
-
-    // Route Transaksi Kas
-    Route::get('/transaksi-kas', [Admin\TransaksiKasController::class, 'index'])
-        ->name('transaksi-kas');
-
-    Route::get('/transaksi-kas/cetak', [Admin\TransaksiKasController::class, 'cetakLaporan'])
-        ->name('transaksi-kas.cetak');
-
-    Route::get('/transaksi-kas/export/excel', [Admin\TransaksiKasController::class, 'exportExcel'])
-        ->name('transaksi-kas.export.excel');
-
-    Route::get('/transaksi-kas/export/pdf', [Admin\TransaksiKasController::class, 'exportPDF'])
-        ->name('transaksi-kas.export.pdf');
-
-    Route::post('/transaksi-kas/get-data', [Admin\TransaksiKasController::class, 'getData'])
-        ->name('transaksi-kas.get-data');
-
-    // Route Buku Besar
-    Route::get('/buku-besar', [Admin\BukuBesarController::class, 'index'])
-        ->name('buku-besar');
-
-    Route::get('/buku-besar/cetak', [Admin\BukuBesarController::class, 'cetakLaporan'])
-        ->name('buku-besar.cetak');
-
-    Route::get('/buku-besar/export/excel', [Admin\BukuBesarController::class, 'exportExcel'])
-        ->name('buku-besar.export.excel');
-
-    Route::post('/buku-besar/get-data', [Admin\BukuBesarController::class, 'getData'])
-        ->name('buku-besar.get-data');
-
-    // Route Neraca Saldo
-    Route::get('/neraca-saldo', [Admin\NeracaSaldoController::class, 'index'])
-        ->name('neraca-saldo');
-
-    Route::get('/neraca-saldo/cetak', [Admin\NeracaSaldoController::class, 'cetakLaporan'])
-        ->name('neraca-saldo.cetak');
-
-    Route::post('/neraca-saldo/get-data', [Admin\NeracaSaldoController::class, 'getData'])
-        ->name('neraca-saldo.get-data');
-
-    // Route Kas Simpanan
-    Route::get('/kas-simpanan', [Admin\KasSimpananController::class, 'index'])
-        ->name('kas-simpanan');
-
-    Route::get('/kas-simpanan/cetak', [Admin\KasSimpananController::class, 'cetakLaporan'])
-        ->name('kas-simpanan.cetak');
-
-    // Route Kas Pinjaman
-    Route::get('/kas-pinjaman', [Admin\KasPinjamanController::class, 'index'])
-        ->name('kas-pinjaman');
-
-    Route::get('/kas-pinjaman/cetak', [Admin\KasPinjamanController::class, 'cetakLaporan'])
-        ->name('kas-pinjaman.cetak');
-
-    // Route Saldo Kas
-    Route::get('/saldo-kas', [Admin\SaldoKasController::class, 'index'])
-        ->name('saldo-kas');
-
-    Route::get('/saldo-kas/cetak', [Admin\SaldoKasController::class, 'cetakLaporan'])
-        ->name('saldo-kas.cetak');
-
-    // Route Laba Rugi
-    Route::get('/laba-rugi', [Admin\LabaRugiController::class, 'index'])
-        ->name('laba-rugi');
-
-    Route::get('/laba-rugi/cetak', [Admin\LabaRugiController::class, 'cetakLaporan'])
-        ->name('laba-rugi.cetak');
-
-    // Route SHU
-    Route::get('/shu', [Admin\SHUController::class, 'index'])
-        ->name('shu');
-
-    Route::get('/shu/cetak', [Admin\SHUController::class, 'cetakLaporan'])
-        ->name('shu.cetak');
-});
 
 Route::middleware('auth')
     ->prefix('admin')

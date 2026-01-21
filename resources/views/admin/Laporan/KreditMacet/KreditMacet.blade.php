@@ -6,6 +6,7 @@
     <!-- DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css">
+
 @endpush
 
 @section('content')
@@ -39,6 +40,15 @@
         </div>
     @endif
 
+    <!-- Alert Info -->
+    @if(session('info'))
+        <div class="alert alert-info alert-dismissible fade show" role="alert">
+            <i class="ti ti-info-circle me-2"></i>
+            {{ session('info') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
     <!-- Toolbar Card -->
     <div class="card mb-3 shadow-sm">
         <div class="card-header bg-light border-bottom">
@@ -61,8 +71,8 @@
                         <button class="btn btn-primary w-100" onclick="filterData()">
                             <i class="ti ti-search"></i> Tampilkan
                         </button>
-                        <button class="btn btn-outline-secondary" onclick="resetFilter()"
-                            data-bs-toggle="tooltip" title="Reset Filter">
+                        <button class="btn btn-outline-secondary" onclick="resetFilter()" data-bs-toggle="tooltip"
+                            title="Reset Filter">
                             <i class="ti ti-refresh"></i>
                         </button>
                     </div>
@@ -116,7 +126,8 @@
     <div class="alert alert-danger d-flex align-items-center mb-3" role="alert">
         <i class="ti ti-alert-triangle fs-5 me-2"></i>
         <div>
-            <strong>Periode:</strong> <span id="periodeText">{{ \Carbon\Carbon::now()->locale('id')->translatedFormat('F Y') }}</span> |
+            <strong>Periode:</strong> <span
+                id="periodeText">{{ \Carbon\Carbon::now()->locale('id')->translatedFormat('F Y') }}</span> |
             <strong>Status:</strong> <span class="badge bg-danger ms-2">KREDIT MACET</span>
         </div>
     </div>
@@ -124,9 +135,8 @@
     <!-- Data Table Card -->
     <div class="card">
         <div class="card-body">
-            <div class="table-responsive shadow-sm">
-                <table id="tabelKreditMacet"
-                    class="table table-hover align-middle rounded-2 border-1 overflow-hidden"
+            <div class="table-responsive">
+                <table id="tabelKreditMacet" class="table table-hover align-middle rounded-2 border-1 overflow-hidden"
                     style="width:100%">
                     <thead class="table-primary">
                         <tr>
@@ -148,7 +158,8 @@
                                     <span class="fw-semibold">{{ $index + 1 }}</span>
                                 </td>
                                 <td class="text-center align-middle">
-                                    <span class="badge bg-danger-subtle text-danger fw-semibold px-2 py-1">{{ $item->kode_pinjam }}</span>
+                                    <span
+                                        class="badge bg-primary-subtle text-primary fw-semibold px-2 py-1">{{ $item->kode_pinjam }}</span>
                                 </td>
                                 <td class="align-middle">
                                     <div>
@@ -157,18 +168,22 @@
                                     </div>
                                 </td>
                                 <td class="text-center align-middle">
-                                    <span class="text-muted">{{ \Carbon\Carbon::parse($item->tanggal_pinjam)->locale('id')->translatedFormat('d M Y') }}</span>
+                                    <span
+                                        class="text-muted">{{ \Carbon\Carbon::parse($item->tanggal_pinjam)->locale('id')->translatedFormat('d M Y') }}</span>
                                 </td>
                                 <td class="text-center align-middle">
-                                    <span class="badge bg-danger px-2 py-1">
-                                        <i class="ti ti-alert-triangle"></i> {{ \Carbon\Carbon::parse($item->tanggal_tempo)->locale('id')->translatedFormat('d M Y') }}
+                                    <span class="badge bg-danger-subtle text-danger fw-bold px-2 py-1">
+                                        <i class="ti ti-alert-triangle"></i>
+                                        {{ \Carbon\Carbon::parse($item->tanggal_tempo)->locale('id')->translatedFormat('d M Y') }}
                                     </span>
                                 </td>
                                 <td class="text-center align-middle">
-                                    <span class="badge bg-secondary-subtle text-secondary">{{ $item->lama_pinjam }}</span>
+                                    <span
+                                        class="badge bg-secondary-subtle text-secondary fw-bold">{{ $item->lama_pinjam }}</span>
                                 </td>
                                 <td class="text-end align-middle">
-                                    <strong class="text-danger">Rp {{ number_format($item->jumlah_tagihan, 0, ',', '.') }}</strong>
+                                    <strong class="text-danger">Rp
+                                        {{ number_format($item->jumlah_tagihan, 0, ',', '.') }}</strong>
                                 </td>
                                 <td class="text-end align-middle">
                                     @if($item->dibayar > 0)
@@ -178,24 +193,25 @@
                                     @endif
                                 </td>
                                 <td class="text-end align-middle">
-                                    <strong class="text-danger fs-5">Rp {{ number_format($item->sisa_tagihan, 0, ',', '.') }}</strong>
+                                    <strong class="text-danger fs-4">Rp
+                                        {{ number_format($item->sisa_tagihan, 0, ',', '.') }}</strong>
                                 </td>
                             </tr>
                         @endforeach
                     </tbody>
                     <tfoot>
                         <tr class="table-light">
-                            <td colspan="6" class="text-center align-middle">
+                            <td colspan="6" class="text-center align-middle fs-4">
                                 <strong>Jumlah Total</strong>
                             </td>
                             <td class="text-end align-middle">
-                                <strong class="text-danger">Rp {{ number_format($totalTagihan, 0, ',', '.') }}</strong>
+                                <strong class="text-danger fs-4">Rp {{ number_format($totalTagihan, 0, ',', '.') }}</strong>
                             </td>
                             <td class="text-end align-middle">
-                                <strong class="text-success">Rp {{ number_format($totalDibayar, 0, ',', '.') }}</strong>
+                                <strong class="text-success fs-4">Rp {{ number_format($totalDibayar, 0, ',', '.') }}</strong>
                             </td>
                             <td class="text-end align-middle">
-                                <strong class="text-danger fs-5">Rp {{ number_format($sisaTagihan, 0, ',', '.') }}</strong>
+                                <strong class="text-danger fs-4">Rp {{ number_format($sisaTagihan, 0, ',', '.') }}</strong>
                             </td>
                         </tr>
                     </tfoot>
@@ -222,50 +238,39 @@
                     url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/id.json'
                 },
                 pageLength: 10,
-                order: [[4, 'asc']], // Sort by tanggal tempo
+                order: [[4, 'asc']],
                 columnDefs: [
                     { orderable: false, targets: [0] }
                 ],
                 footerCallback: function (row, data, start, end, display) {
-                    var api = this.api();
+                    const api = this.api();
 
-                    // Helper function to parse currency
-                    var intVal = function (i) {
-                        return typeof i === 'string' ?
-                            i.replace(/[\Rp\.,]/g, '') * 1 :
-                            typeof i === 'number' ?
-                                i : 0;
-                    };
+                    const intVal = i =>
+                        typeof i === 'string'
+                            ? i.replace(/[^\d]/g, '') * 1
+                            : typeof i === 'number'
+                                ? i
+                                : 0;
 
-                    // Total over all pages
-                    var totalTagihan = api.column(6).data().reduce(function (a, b) {
-                        return intVal(a) + intVal(b);
-                    }, 0);
+                    const totalTagihan = api.column(6).data().reduce((a, b) => intVal(a) + intVal(b), 0);
+                    const totalDibayar = api.column(7).data().reduce((a, b) => intVal(a) + intVal(b), 0);
+                    const totalSisa = api.column(8).data().reduce((a, b) => intVal(a) + intVal(b), 0);
 
-                    var totalDibayar = api.column(7).data().reduce(function (a, b) {
-                        return intVal(a) + intVal(b);
-                    }, 0);
+                    $(api.column(6).footer()).html(`<strong class="text-danger">${formatRupiah(totalTagihan)}</strong>`);
+                    $(api.column(7).footer()).html(`<strong class="text-success">${formatRupiah(totalDibayar)}</strong>`);
+                    $(api.column(8).footer()).html(`<strong class="text-danger fs-4">${formatRupiah(totalSisa)}</strong>`);
 
-                    var totalSisa = api.column(8).data().reduce(function (a, b) {
-                        return intVal(a) + intVal(b);
-                    }, 0);
-
-                    // Update footer
-                    $(api.column(6).footer()).html(
-                        '<strong class="text-danger">' + formatRupiah(totalTagihan) + '</strong>'
-                    );
-                    $(api.column(7).footer()).html(
-                        '<strong class="text-success">' + formatRupiah(totalDibayar) + '</strong>'
-                    );
-                    $(api.column(8).footer()).html(
-                        '<strong class="text-danger fs-5">' + formatRupiah(totalSisa) + '</strong>'
-                    );
-
-                    // Update summary badges
                     $('#totalTagihan').text(formatRupiah(totalTagihan));
                     $('#sisaTagihan').text(formatRupiah(totalSisa));
                 }
             });
+
+
+            // Force footer to show after table is fully loaded
+            setTimeout(function () {
+                $('#tabelKreditMacet tfoot').show();
+                console.log('Footer forced to show after timeout');
+            }, 100);
 
             // Update periode text
             updatePeriodeText();
@@ -300,8 +305,8 @@
             if (periodeInput) {
                 const [year, month] = periodeInput.split('-');
                 const date = new Date(year, month - 1);
-                const monthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 
-                                  'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+                const monthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+                    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
                 const monthName = monthNames[date.getMonth()] + ' ' + year;
                 document.getElementById('periodeText').textContent = monthName;
             }
@@ -331,22 +336,46 @@
                 }
             });
 
-            // Simulate processing
-            setTimeout(() => {
-                updatePeriodeText();
+            // AJAX request untuk mendapatkan data berdasarkan periode
+            $.ajax({
+                url: '{{ route("laporan.kredit-macet.get-data") }}',
+                type: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    periode: periode
+                },
+                dataType: 'json',
+                success: function (response) {
+                    if (response.status === 'success') {
+                        updatePeriodeText();
 
-                Swal.close();
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Data Ditampilkan!',
-                    text: 'Data kredit macet berhasil dimuat',
-                    timer: 1500,
-                    showConfirmButton: false
-                });
-
-                // TODO: Reload dengan filter
-                // location.href = `{{ route('laporan.kredit-macet') }}?periode=${periode}`;
-            }, 1000);
+                        Swal.close();
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Data Ditampilkan!',
+                            text: 'Data kredit macet berhasil dimuat',
+                            timer: 1500,
+                            showConfirmButton: false
+                        }).then(() => {
+                            // Reload halaman dengan parameter periode
+                            location.href = `{{ route('laporan.kredit-macet') }}?periode=${periode}`;
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal!',
+                            text: response.message || 'Terjadi kesalahan saat mengambil data'
+                        });
+                    }
+                },
+                error: function (xhr) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error!',
+                        text: 'Terjadi kesalahan pada server'
+                    });
+                }
+            });
         }
 
         // Function: Reset Filter
@@ -363,6 +392,8 @@
                 text: 'Filter dikembalikan ke bulan ini',
                 timer: 1500,
                 showConfirmButton: false
+            }).then(() => {
+                location.href = `{{ route('laporan.kredit-macet') }}`;
             });
         }
 
@@ -435,30 +466,30 @@
             Swal.fire({
                 title: 'Kirim Surat Pemanggilan?',
                 html: `
-                    <div class="text-start">
-                        <p class="mb-3">Surat pemanggilan akan dikirim kepada <strong>${totalData} anggota</strong> yang memiliki kredit macet pada periode <strong>${document.getElementById('periodeText').textContent}</strong></p>
-                        
-                        <div class="alert alert-warning" role="alert">
-                            <i class="ti ti-alert-triangle"></i> 
-                            <strong>Perhatian:</strong> Pastikan data sudah benar sebelum mengirim surat pemanggilan
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Metode Pengiriman <span class="text-danger">*</span></label>
-                            <select id="swal-metode" class="form-select">
-                                <option value="email">Email</option>
-                                <option value="sms">SMS</option>
-                                <option value="whatsapp">WhatsApp</option>
-                                <option value="cetak">Cetak Surat</option>
-                            </select>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Catatan Tambahan</label>
-                            <textarea id="swal-catatan" class="form-control" rows="3" placeholder="Opsional - Tambahkan catatan khusus"></textarea>
-                        </div>
-                    </div>
-                `,
+                                <div class="text-start">
+                                    <p class="mb-3">Surat pemanggilan akan dikirim kepada <strong>${totalData} anggota</strong> yang memiliki kredit macet pada periode <strong>${document.getElementById('periodeText').textContent}</strong></p>
+
+                                    <div class="alert alert-warning" role="alert">
+                                        <i class="ti ti-alert-triangle"></i> 
+                                        <strong>Perhatian:</strong> Pastikan data sudah benar sebelum mengirim surat pemanggilan
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold">Metode Pengiriman <span class="text-danger">*</span></label>
+                                        <select id="swal-metode" class="form-select">
+                                            <option value="email">Email</option>
+                                            <option value="sms">SMS</option>
+                                            <option value="whatsapp">WhatsApp</option>
+                                            <option value="cetak">Cetak Surat</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold">Catatan Tambahan</label>
+                                        <textarea id="swal-catatan" class="form-control" rows="3" placeholder="Opsional - Tambahkan catatan khusus"></textarea>
+                                    </div>
+                                </div>
+                            `,
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonText: '<i class="ti ti-send"></i> Ya, Kirim',
@@ -491,39 +522,42 @@
                         }
                     });
 
-                    // Simulate sending
-                    setTimeout(() => {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Berhasil Dikirim!',
-                            html: `Surat pemanggilan telah dikirim melalui <strong>${result.value.metode}</strong> kepada ${totalData} anggota`,
-                            timer: 3000,
-                            showConfirmButton: false
-                        });
-
-                        // TODO: Implement AJAX
-                        // $.ajax({
-                        //     url: '{{ route("laporan.kredit-macet.kirim-pemanggilan") }}',
-                        //     type: 'POST',
-                        //     data: {
-                        //         _token: '{{ csrf_token() }}',
-                        //         periode: periode,
-                        //         metode: result.value.metode,
-                        //         catatan: result.value.catatan
-                        //     },
-                        //     dataType: 'json',
-                        //     success: function(response) {
-                        //         if(response.status === 'success') {
-                        //             Swal.fire({
-                        //                 icon: 'success',
-                        //                 title: 'Berhasil!',
-                        //                 text: response.message,
-                        //                 timer: 3000
-                        //             });
-                        //         }
-                        //     }
-                        // });
-                    }, 1500);
+                    // AJAX request untuk kirim pemanggilan
+                    $.ajax({
+                        url: '{{ route("laporan.kredit-macet.kirim-pemanggilan") }}',
+                        type: 'POST',
+                        data: {
+                            _token: '{{ csrf_token() }}',
+                            periode: periode,
+                            metode: result.value.metode,
+                            catatan: result.value.catatan
+                        },
+                        dataType: 'json',
+                        success: function (response) {
+                            if (response.status === 'success') {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Berhasil Dikirim!',
+                                    html: response.message,
+                                    timer: 3000,
+                                    showConfirmButton: false
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Gagal!',
+                                    text: response.message || 'Gagal mengirim surat pemanggilan'
+                                });
+                            }
+                        },
+                        error: function (xhr) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error!',
+                                text: 'Terjadi kesalahan pada server'
+                            });
+                        }
+                    });
                 }
             });
         }
@@ -545,43 +579,43 @@
             Swal.fire({
                 title: 'Tindak Lanjut Kredit Macet',
                 html: `
-                    <div class="text-start">
-                        <p class="mb-3">Pilih tindak lanjut untuk kredit macet periode <strong>${document.getElementById('periodeText').textContent}</strong></p>
-                        
-                        <div class="list-group">
-                            <a href="#" class="list-group-item list-group-item-action" onclick="tindakLanjutDetail('penjadwalan')">
-                                <div class="d-flex w-100 justify-content-between">
-                                    <h6 class="mb-1"><i class="ti ti-calendar-event text-info"></i> Penjadwalan Ulang</h6>
+                                <div class="text-start">
+                                    <p class="mb-3">Pilih tindak lanjut untuk kredit macet periode <strong>${document.getElementById('periodeText').textContent}</strong></p>
+
+                                    <div class="list-group">
+                                        <a href="#" class="list-group-item list-group-item-action" onclick="tindakLanjutDetail('penjadwalan')">
+                                            <div class="d-flex w-100 justify-content-between">
+                                                <h6 class="mb-1"><i class="ti ti-calendar-event text-info"></i> Penjadwalan Ulang</h6>
+                                            </div>
+                                            <p class="mb-1 text-muted small">Atur jadwal pembayaran baru dengan anggota</p>
+                                        </a>
+                                        <a href="#" class="list-group-item list-group-item-action" onclick="tindakLanjutDetail('restrukturisasi')">
+                                            <div class="d-flex w-100 justify-content-between">
+                                                <h6 class="mb-1"><i class="ti ti-refresh text-warning"></i> Restrukturisasi Pinjaman</h6>
+                                            </div>
+                                            <p class="mb-1 text-muted small">Ubah skema pembayaran pinjaman</p>
+                                        </a>
+                                        <a href="#" class="list-group-item list-group-item-action" onclick="tindakLanjutDetail('peringatan')">
+                                            <div class="d-flex w-100 justify-content-between">
+                                                <h6 class="mb-1"><i class="ti ti-alert-triangle text-danger"></i> Surat Peringatan</h6>
+                                            </div>
+                                            <p class="mb-1 text-muted small">Kirim surat peringatan resmi</p>
+                                        </a>
+                                        <a href="#" class="list-group-item list-group-item-action" onclick="tindakLanjutDetail('pertemuan')">
+                                            <div class="d-flex w-100 justify-content-between">
+                                                <h6 class="mb-1"><i class="ti ti-users text-primary"></i> Jadwalkan Pertemuan</h6>
+                                            </div>
+                                            <p class="mb-1 text-muted small">Atur pertemuan dengan anggota</p>
+                                        </a>
+                                        <a href="#" class="list-group-item list-group-item-action" onclick="tindakLanjutDetail('penghapusan')">
+                                            <div class="d-flex w-100 justify-content-between">
+                                                <h6 class="mb-1"><i class="ti ti-trash text-danger"></i> Penghapusan Tagihan</h6>
+                                            </div>
+                                            <p class="mb-1 text-muted small">Hapus tagihan yang tidak dapat ditagih (write-off)</p>
+                                        </a>
+                                    </div>
                                 </div>
-                                <p class="mb-1 text-muted small">Atur jadwal pembayaran baru dengan anggota</p>
-                            </a>
-                            <a href="#" class="list-group-item list-group-item-action" onclick="tindakLanjutDetail('restrukturisasi')">
-                                <div class="d-flex w-100 justify-content-between">
-                                    <h6 class="mb-1"><i class="ti ti-refresh text-warning"></i> Restrukturisasi Pinjaman</h6>
-                                </div>
-                                <p class="mb-1 text-muted small">Ubah skema pembayaran pinjaman</p>
-                            </a>
-                            <a href="#" class="list-group-item list-group-item-action" onclick="tindakLanjutDetail('peringatan')">
-                                <div class="d-flex w-100 justify-content-between">
-                                    <h6 class="mb-1"><i class="ti ti-alert-triangle text-danger"></i> Surat Peringatan</h6>
-                                </div>
-                                <p class="mb-1 text-muted small">Kirim surat peringatan resmi</p>
-                            </a>
-                            <a href="#" class="list-group-item list-group-item-action" onclick="tindakLanjutDetail('pertemuan')">
-                                <div class="d-flex w-100 justify-content-between">
-                                    <h6 class="mb-1"><i class="ti ti-users text-primary"></i> Jadwalkan Pertemuan</h6>
-                                </div>
-                                <p class="mb-1 text-muted small">Atur pertemuan dengan anggota</p>
-                            </a>
-                            <a href="#" class="list-group-item list-group-item-action" onclick="tindakLanjutDetail('penghapusan')">
-                                <div class="d-flex w-100 justify-content-between">
-                                    <h6 class="mb-1"><i class="ti ti-trash text-danger"></i> Penghapusan Tagihan</h6>
-                                </div>
-                                <p class="mb-1 text-muted small">Hapus tagihan yang tidak dapat ditagih (write-off)</p>
-                            </a>
-                        </div>
-                    </div>
-                `,
+                            `,
                 showConfirmButton: false,
                 showCancelButton: true,
                 cancelButtonText: '<i class="ti ti-x"></i> Tutup',

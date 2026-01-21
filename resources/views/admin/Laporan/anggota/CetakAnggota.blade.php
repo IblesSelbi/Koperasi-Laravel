@@ -6,12 +6,6 @@
     <!-- DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css">
-    <style>
-        #tabelAnggota th,
-        td {
-            white-space: nowrap;
-        }
-    </style>
 @endpush
 
 @section('content')
@@ -46,61 +40,64 @@
     @endif
 
     <!-- Statistik Cards -->
-    <div class="row g-3">
+    <div class="row mb-3">
         <div class="col-md-3">
-            <div class="card border-0 border-start border-primary border-3 shadow-sm">
-                <div class="card-body p-3 px-4 d-flex align-items-center">
-                    <div class="me-3 text-primary">
-                        <i class="ti ti-users fs-6"></i>
-                    </div>
-                    <div>
-                        <div class="text-muted small">Total Anggota</div>
-                        <div class="fw-semibold fs-5">{{ $totalAnggota }}</div>
+            <div class="card bg-primary-subtle border-0">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="me-3">
+                            <i class="ti ti-users fs-8 text-primary"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0 text-muted">Total Anggota</h6>
+                            <h3 class="mb-0 fw-bold text-primary">{{ $totalAnggota }}</h3>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-
         <div class="col-md-3">
-            <div class="card border-0 border-start border-success border-3 shadow-sm">
-                <div class="card-body p-3 px-4 d-flex align-items-center">
-                    <div class="me-3 text-success">
-                        <i class="ti ti-check fs-6"></i>
-                    </div>
-                    <div>
-                        <div class="text-muted small">Anggota Aktif</div>
-                        <div class="fw-semibold fs-5">{{ $anggotaAktif }}</div>
+            <div class="card bg-success-subtle border-0">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="me-3">
+                            <i class="ti ti-check fs-8 text-success"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0 text-muted">Anggota Aktif</h6>
+                            <h3 class="mb-0 fw-bold text-success">{{ $anggotaAktif }}</h3>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-
         <div class="col-md-3">
-            <div class="card border-0 border-start border-danger border-3 shadow-sm">
-                <div class="card-body p-3 px-4 d-flex align-items-center">
-                    <div class="me-3 text-danger">
-                        <i class="ti ti-x fs-6"></i>
-                    </div>
-                    <div>
-                        <div class="text-muted small">Non Aktif</div>
-                        <div class="fw-semibold fs-5">{{ $anggotaNonAktif }}</div>
+            <div class="card bg-danger-subtle border-0">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="me-3">
+                            <i class="ti ti-x fs-8 text-danger"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0 text-muted">Non Aktif</h6>
+                            <h3 class="mb-0 fw-bold text-danger">{{ $anggotaNonAktif }}</h3>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-
         <div class="col-md-3">
-            <div class="card border-0 border-start border-secondary border-3 shadow-sm">
-                <div class="card-body p-3 px-4 d-flex align-items-center">
-                    <div class="me-3 text-secondary">
-                        <i class="ti ti-gender-bigender fs-6"></i>
-                    </div>
-                    <div>
-                        <div class="text-muted small">L / P</div>
-                        <div class="fw-semibold fs-5">
-                            {{ $anggotaLakiLaki }}
-                            <span class="text-muted">/</span>
-                            {{ $anggotaPerempuan }}
+            <div class="card bg-info-subtle border-0">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="me-3">
+                            <i class="ti ti-gender-bigender fs-8 text-info"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0 text-muted">L / P</h6>
+                            @if(request()->routeIs('laporan.anggota'))
+                                <h3>{{ $anggotaLakiLaki }} / {{ $anggotaPerempuan }}</h3>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -124,8 +121,7 @@
                         <select class="form-select" name="status" id="filterStatus">
                             <option value="">Semua Status</option>
                             <option value="Aktif" {{ request('status') == 'Aktif' ? 'selected' : '' }}>Aktif</option>
-                            <option value="Non Aktif" {{ request('status') == 'Non Aktif' ? 'selected' : '' }}>Non Aktif
-                            </option>
+                            <option value="Non Aktif" {{ request('status') == 'Non Aktif' ? 'selected' : '' }}>Non Aktif</option>
                         </select>
                     </div>
 
@@ -136,10 +132,8 @@
                         </label>
                         <select class="form-select" name="gender" id="filterGender">
                             <option value="">Semua</option>
-                            <option value="Laki-laki" {{ request('gender') == 'Laki-laki' ? 'selected' : '' }}>Laki-laki
-                            </option>
-                            <option value="Perempuan" {{ request('gender') == 'Perempuan' ? 'selected' : '' }}>Perempuan
-                            </option>
+                            <option value="Laki-laki" {{ request('gender') == 'Laki-laki' ? 'selected' : '' }}>Laki-laki</option>
+                            <option value="Perempuan" {{ request('gender') == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
                         </select>
                     </div>
 
@@ -151,8 +145,7 @@
                         <select class="form-select" name="jabatan" id="filterJabatan">
                             <option value="">Semua Jabatan</option>
                             <option value="Anggota" {{ request('jabatan') == 'Anggota' ? 'selected' : '' }}>Anggota</option>
-                            <option value="Pengurus" {{ request('jabatan') == 'Pengurus' ? 'selected' : '' }}>Pengurus
-                            </option>
+                            <option value="Pengurus" {{ request('jabatan') == 'Pengurus' ? 'selected' : '' }}>Pengurus</option>
                         </select>
                     </div>
 
@@ -163,19 +156,15 @@
                         </label>
                         <select class="form-select" name="departemen" id="filterDepartemen">
                             <option value="">Semua Departemen</option>
-                            <option value="Produksi BOPP" {{ request('departemen') == 'Produksi BOPP' ? 'selected' : '' }}>
-                                Produksi BOPP</option>
+                            <option value="Produksi BOPP" {{ request('departemen') == 'Produksi BOPP' ? 'selected' : '' }}>Produksi BOPP</option>
                             <option value="Produksi Slitting" {{ request('departemen') == 'Produksi Slitting' ? 'selected' : '' }}>Produksi Slitting</option>
                             <option value="WH" {{ request('departemen') == 'WH' ? 'selected' : '' }}>WH</option>
                             <option value="QA" {{ request('departemen') == 'QA' ? 'selected' : '' }}>QA</option>
                             <option value="HRD" {{ request('departemen') == 'HRD' ? 'selected' : '' }}>HRD</option>
                             <option value="GA" {{ request('departemen') == 'GA' ? 'selected' : '' }}>GA</option>
-                            <option value="Purchasing" {{ request('departemen') == 'Purchasing' ? 'selected' : '' }}>
-                                Purchasing</option>
-                            <option value="Accounting" {{ request('departemen') == 'Accounting' ? 'selected' : '' }}>
-                                Accounting</option>
-                            <option value="Engineering" {{ request('departemen') == 'Engineering' ? 'selected' : '' }}>
-                                Engineering</option>
+                            <option value="Purchasing" {{ request('departemen') == 'Purchasing' ? 'selected' : '' }}>Purchasing</option>
+                            <option value="Accounting" {{ request('departemen') == 'Accounting' ? 'selected' : '' }}>Accounting</option>
+                            <option value="Engineering" {{ request('departemen') == 'Engineering' ? 'selected' : '' }}>Engineering</option>
                         </select>
                     </div>
 
@@ -184,8 +173,8 @@
                         <label class="form-label fw-semibold mb-2">
                             <i class="ti ti-search text-primary"></i> Cari
                         </label>
-                        <input type="text" class="form-control" name="search" id="filterSearch" placeholder="Nama/ID..."
-                            value="{{ request('search') }}">
+                        <input type="text" class="form-control" name="search" id="filterSearch" 
+                               placeholder="Nama/ID..." value="{{ request('search') }}">
                     </div>
                 </div>
 
@@ -224,7 +213,7 @@
                     style="width:100%">
                     <thead class="table-primary">
                         <tr>
-                            <th width="50px" class="text-center align-middle">No</th>
+                            <th width="50px" class="text-center align-middle">No.</th>
                             <th width="80px" class="text-center align-middle">Photo</th>
                             <th width="100px" class="text-center align-middle">ID Anggota</th>
                             <th width="150px" class="align-middle">Username</th>
@@ -242,16 +231,13 @@
                             <tr>
                                 <td class="text-center">{{ $index + 1 }}</td>
                                 <td class="text-center">
-                                    <img src="{{ $item->photo_url }}" alt="Photo" class="rounded-circle" width="45" height="45"
-                                        style="object-fit: cover;">
+                                    <img src="{{ $item->photo_url }}" alt="Photo" class="rounded-circle" width="45" height="45" style="object-fit: cover;">
                                 </td>
                                 <td class="text-center">
-                                    <span
-                                        class="badge bg-primary-subtle text-primary fw-semibold">{{ $item->id_anggota }}</span>
+                                    <span class="badge bg-primary-subtle text-primary fw-semibold">{{ $item->id_anggota }}</span>
                                 </td>
                                 <td>
                                     <div class="fw-semibold text-dark">{{ $item->username }}</div>
-                                    {{ $item->kota }}, {{ $item->tanggal_lahir?->translatedFormat('d F Y') ?? '-' }}
                                 </td>
                                 <td>
                                     <div>
@@ -262,34 +248,33 @@
                                     </div>
                                 </td>
                                 <td class="text-center">
-                                    <span
-                                        class="badge fw-semibold shadow-sm bg-{{ $item->jenis_kelamin == 'Laki-laki' ? 'info' : 'danger'  }}-subtle text-{{ $item->jenis_kelamin == 'Laki-laki' ? 'info' : 'danger' }}">
+                                    <span class="badge bg-{{ $item->jenis_kelamin == 'Laki-laki' ? 'info' : 'warning' }}-subtle text-{{ $item->jenis_kelamin == 'Laki-laki' ? 'info' : 'warning' }}">
                                         {{ $item->jenis_kelamin == 'Laki-laki' ? 'L' : 'P' }}
                                     </span>
                                 </td>
                                 <td class="text-center">
-                                    <span class="badge fw-semibold shadow-sm bg-light text-dark">{{ $item->jabatan }}</span>
+                                    <span class="badge bg-light text-dark">{{ $item->jabatan }}</span>
                                 </td>
                                 <td class="text-center">
                                     <small class="text-muted">{{ $item->departement ?: '-' }}</small>
                                 </td>
                                 <td>
-                                    {{ $item->alamat }} <br>
+                                    {{ $item->alamat }}, {{ $item->kota }}<br>
                                     <small class="text-muted"><i class="ti ti-phone"></i> {{ $item->no_telp ?: '-' }}</small>
                                 </td>
                                 <td class="text-center">
                                     @if($item->aktif == 'Aktif')
-                                        <span class="badge bg-success-subtle fw-semibold text-success px-3 py-2">
+                                        <span class="badge bg-success-subtle text-success px-3 py-2">
                                             <i class="ti ti-check"></i> Aktif
                                         </span>
                                     @else
-                                        <span class="badge bg-danger-subtle fw-semibold text-danger px-3 py-2">
+                                        <span class="badge bg-danger-subtle text-danger px-3 py-2">
                                             <i class="ti ti-x"></i> Non Aktif
                                         </span>
                                     @endif
                                 </td>
                                 <td class="text-center text-muted">
-                                    {{ $item->tanggal_registrasi->translatedFormat('d F Y') }}
+                                    {{ $item->tanggal_registrasi->format('d M Y') }}
                                 </td>
                             </tr>
                         @empty
@@ -355,7 +340,7 @@
         function exportExcel() {
             const params = new URLSearchParams(window.location.search);
             const url = "{{ route('laporan.anggota.export.excel') }}?" + params.toString();
-
+            
             Swal.fire({
                 icon: 'success',
                 title: 'Export Excel',
@@ -363,7 +348,7 @@
                 timer: 1500,
                 showConfirmButton: false
             });
-
+            
             window.location.href = url;
         }
 
@@ -371,7 +356,7 @@
         function exportPDF() {
             const params = new URLSearchParams(window.location.search);
             const url = "{{ route('laporan.anggota.export.pdf') }}?" + params.toString();
-
+            
             Swal.fire({
                 icon: 'success',
                 title: 'Export PDF',
@@ -379,7 +364,7 @@
                 timer: 1500,
                 showConfirmButton: false
             });
-
+            
             window.open(url, '_blank');
         }
 
@@ -387,7 +372,7 @@
         function cetakLaporan() {
             const params = new URLSearchParams(window.location.search);
             const url = "{{ route('laporan.anggota.cetak') }}?" + params.toString();
-
+            
             window.open(url, '_blank');
         }
     </script>

@@ -6,23 +6,6 @@
     <!-- DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css">
-    
-    <style>
-        #tabelJatuhTempo tbody tr.selected>* {
-            box-shadow: inset 0 0 0 9999px #ffe7e7 !important;
-            color: #721c24 !important;
-        }
-
-        #tabelJatuhTempo tbody tr:hover {
-            cursor: pointer;
-            background-color: #fff3cd;
-        }
-
-        .badge {
-            font-weight: 500;
-            padding: 0.35em 0.65em;
-        }
-    </style>
 @endpush
 
 @section('content')
@@ -62,44 +45,47 @@
             <h6 class="mb-0 fw-semibold"><i class="ti ti-filter me-2"></i>Filter Periode</h6>
         </div>
         <div class="card-body p-4">
-            <div class="row g-3">
-                <!-- Filter Periode -->
-                <div class="col-md-6 col-lg-3">
-                    <label class="form-label fw-semibold mb-2">
-                        <i class="ti ti-calendar text-primary"></i> Pilih Periode
-                    </label>
-                    <input type="month" class="form-control" id="filterPeriode" value="{{ $periode }}">
-                </div>
+            <form action="{{ route('laporan.jatuh-tempo') }}" method="GET" id="filterForm">
+                <div class="row g-3">
+                    <!-- Filter Periode -->
+                    <div class="col-md-6 col-lg-3">
+                        <label class="form-label fw-semibold mb-2">
+                            <i class="ti ti-calendar text-primary"></i> Pilih Periode
+                        </label>
+                        <input type="month" class="form-control" id="filterPeriode" name="periode" 
+                            value="{{ $periode }}" required>
+                    </div>
 
-                <!-- Action Buttons -->
-                <div class="col-md-6 col-lg-3">
-                    <label class="form-label fw-semibold mb-2 d-none d-lg-block">&nbsp;</label>
-                    <div class="d-flex gap-2">
-                        <button class="btn btn-primary w-100" onclick="filterData()">
-                            <i class="ti ti-search"></i> Tampilkan
-                        </button>
-                        <button class="btn btn-outline-secondary" onclick="resetFilter()" data-bs-toggle="tooltip"
-                            title="Reset Filter">
-                            <i class="ti ti-refresh"></i>
-                        </button>
+                    <!-- Action Buttons -->
+                    <div class="col-md-6 col-lg-3">
+                        <label class="form-label fw-semibold mb-2 d-none d-lg-block">&nbsp;</label>
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="ti ti-search"></i> Tampilkan
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary" onclick="resetFilter()" 
+                                data-bs-toggle="tooltip" title="Reset Filter">
+                                <i class="ti ti-refresh"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Info Summary -->
+                    <div class="col-12 col-lg-6">
+                        <label class="form-label fw-semibold mb-2 d-none d-lg-block">&nbsp;</label>
+                        <div class="d-flex gap-2 flex-wrap justify-content-lg-end">
+                            <span class="badge bg-warning-subtle text-warning shadow-sm px-3 py-2">
+                                <i class="ti ti-alert-circle"></i> Total Tagihan:
+                                <strong id="totalTagihan">Rp {{ number_format($totalTagihan, 0, ',', '.') }}</strong>
+                            </span>
+                            <span class="badge bg-danger-subtle text-danger shadow-sm px-3 py-2">
+                                <i class="ti ti-exclamation-circle"></i> Sisa Tagihan:
+                                <strong id="sisaTagihan">Rp {{ number_format($sisaTagihan, 0, ',', '.') }}</strong>
+                            </span>
+                        </div>
                     </div>
                 </div>
-
-                <!-- Info Summary -->
-                <div class="col-12 col-lg-6">
-                    <label class="form-label fw-semibold mb-2 d-none d-lg-block">&nbsp;</label>
-                    <div class="d-flex gap-2 flex-wrap justify-content-lg-end">
-                        <span class="badge bg-warning-subtle text-warning shadow-sm px-3 py-2">
-                            <i class="ti ti-alert-circle"></i> Total Tagihan:
-                            <strong id="totalTagihan">Rp {{ number_format($totalTagihan, 0, ',', '.') }}</strong>
-                        </span>
-                        <span class="badge bg-danger-subtle text-danger shadow-sm px-3 py-2">
-                            <i class="ti ti-exclamation-circle"></i> Sisa Tagihan:
-                            <strong id="sisaTagihan">Rp {{ number_format($sisaTagihan, 0, ',', '.') }}</strong>
-                        </span>
-                    </div>
-                </div>
-            </div>
+            </form>
 
             <!-- Secondary Actions -->
             <div class="row mt-3 pt-3 border-top">
@@ -133,6 +119,9 @@
             <span id="periodeText">
                 {{ \Carbon\Carbon::createFromFormat('Y-m', $periode)->isoFormat('MMMM YYYY') }}
             </span>
+            @if($jatuhTempo->count() == 0)
+                <span class="ms-3 text-muted">| Tidak ada pinjaman jatuh tempo pada periode ini</span>
+            @endif
         </div>
     </div>
 
@@ -140,23 +129,23 @@
     <div class="card">
         <div class="card-body">
             <div class="table-responsive">
-                <table id="tabelJatuhTempo" class="table table-hover align-middle rounded-2 border-1 overflow-hidden"
+                <table id="tabelJatuhTempo" class="table table-hover align-middle rounded-2 border overflow-hidden"
                     style="width:100%">
                     <thead class="table-primary">
                         <tr>
                             <th class="text-center align-middle" style="width: 5%;">No</th>
                             <th class="text-center align-middle" style="width: 10%;">Kode Pinjam</th>
                             <th class="align-middle" style="width: 15%;">Nama Anggota</th>
-                            <th class="text-center align-middle" style="width: 12%;">Tanggal Pinjam</th>
-                            <th class="text-center align-middle" style="width: 12%;">Tanggal Tempo</th>
-                            <th class="text-center align-middle" style="width: 10%;">Lama Pinjam</th>
-                            <th class="text-end align-middle" style="width: 12%;">Jumlah Tagihan</th>
+                            <th class="text-center align-middle" style="width: 10%;">Tgl Pinjam</th>
+                            <th class="text-center align-middle" style="width: 12%;">Tgl Tempo</th>
+                            <th class="text-center align-middle" style="width: 8%;">Lama</th>
+                            <th class="text-end align-middle" style="width: 13%;">Jml Tagihan</th>
                             <th class="text-end align-middle" style="width: 12%;">Dibayar</th>
                             <th class="text-end align-middle" style="width: 15%;">Sisa Tagihan</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($jatuhTempo as $index => $item)
+                        @forelse($jatuhTempo as $index => $item)
                             <tr>
                                 <td class="text-center align-middle">
                                     <span class="fw-semibold">{{ $index + 1 }}</span>
@@ -198,7 +187,7 @@
                                     @endif
                                 </td>
                                 <td class="text-center align-middle">
-                                    <span class="badge bg-info-subtle text-info">
+                                    <span class="badge bg-secondary-subtle text-secondary">
                                         {{ $item->lama_pinjam }} Bulan
                                     </span>
                                 </td>
@@ -214,8 +203,16 @@
                                     <strong class="text-danger">Rp {{ number_format($item->sisa_tagihan, 0, ',', '.') }}</strong>
                                 </td>
                             </tr>
-                        @endforeach
+                        @empty
+                            <tr>
+                                <td colspan="9" class="text-center py-5">
+                                    <i class="ti ti-file-x fs-1 text-muted mb-2"></i>
+                                    <p class="text-muted mb-0">Tidak ada pinjaman yang jatuh tempo pada periode ini</p>
+                                </td>
+                            </tr>
+                        @endforelse
                     </tbody>
+                    @if($jatuhTempo->count() > 0)
                     <tfoot>
                         <tr class="table-light">
                             <td colspan="6" class="text-center align-middle">
@@ -232,6 +229,7 @@
                             </td>
                         </tr>
                     </tfoot>
+                    @endif
                 </table>
             </div>
         </div>
@@ -250,7 +248,6 @@
         // Initialize DataTable
         let table;
         $(document).ready(function () {
-            // Hide table initially
             const tableWrapper = $('#tabelJatuhTempo').closest('.card-body');
             tableWrapper.css({ opacity: 0, transition: 'opacity 0.3s' });
 
@@ -259,7 +256,7 @@
                     url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/id.json'
                 },
                 pageLength: 10,
-                order: [[4, 'asc']],
+                order: [[4, 'asc']], // Sort by tanggal tempo
                 columnDefs: [
                     { orderable: false, targets: [0] }
                 ],
@@ -267,74 +264,21 @@
                     tableWrapper.css('opacity', 1);
                 }
             });
-
-            // Initialize Bootstrap Tooltips
-            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-            tooltipTriggerList.map(function (tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl);
-            });
-
-            // Table row selection
-            $('#tabelJatuhTempo tbody').on('click', 'tr', function () {
-                if ($(this).hasClass('selected')) {
-                    $(this).removeClass('selected');
-                } else {
-                    table.$('tr.selected').removeClass('selected');
-                    $(this).addClass('selected');
-                }
-            });
         });
-
-        // Function: Filter Data
-        function filterData() {
-            const periode = $('#filterPeriode').val();
-
-            if (!periode) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Peringatan!',
-                    text: 'Silakan pilih periode terlebih dahulu',
-                    confirmButtonColor: '#3085d6'
-                });
-                return;
-            }
-
-            Swal.fire({
-                title: 'Memproses...',
-                text: 'Sedang memuat data jatuh tempo',
-                allowOutsideClick: false,
-                showConfirmButton: false,
-                willOpen: () => {
-                    Swal.showLoading();
-                }
-            });
-
-            setTimeout(() => {
-                location.href = `{{ route('laporan.jatuh-tempo') }}?periode=${periode}`;
-            }, 500);
-        }
 
         // Function: Reset Filter
         function resetFilter() {
             const now = new Date();
             const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
             $('#filterPeriode').val(currentMonth);
-
-            Swal.fire({
-                icon: 'info',
-                title: 'Filter Direset',
-                text: 'Periode dikembalikan ke bulan ini',
-                timer: 1500,
-                showConfirmButton: false
-            }).then(() => {
-                location.href = `{{ route('laporan.jatuh-tempo') }}?periode=${currentMonth}`;
-            });
+            $('#filterForm').submit();
         }
 
         // Function: Cetak Laporan
         function cetakLaporan() {
             const periode = $('#filterPeriode').val();
-            const periodeText = $('#periodeText').text();
+            const periodeText = $('#periodeText').text().trim();
+            const totalData = $('#totalData').text();
 
             if (!periode) {
                 Swal.fire({
@@ -359,7 +303,7 @@
                             </tr>
                             <tr>
                                 <td>Total Data</td>
-                                <td><strong>${$('#totalData').text()} pinjaman</strong></td>
+                                <td><strong>${totalData} pinjaman</strong></td>
                             </tr>
                             <tr>
                                 <td>Total Tagihan</td>
@@ -378,11 +322,7 @@
                 showCancelButton: true,
                 confirmButtonText: '<i class="ti ti-printer"></i> Cetak',
                 cancelButtonText: '<i class="ti ti-x"></i> Batal',
-                confirmButtonColor: '#0d6efd',
-                customClass: {
-                    confirmButton: 'btn btn-primary',
-                    cancelButton: 'btn btn-secondary'
-                }
+                confirmButtonColor: '#0d6efd'
             }).then((result) => {
                 if (result.isConfirmed) {
                     const url = `{{ route('laporan.jatuh-tempo.cetak') }}?periode=${periode}`;
@@ -402,7 +342,7 @@
         // Function: Export Excel
         function exportExcel() {
             const periode = $('#filterPeriode').val();
-            const periodeText = $('#periodeText').text();
+            const periodeText = $('#periodeText').text().trim();
 
             if (!periode) {
                 Swal.fire({
@@ -438,11 +378,7 @@
                 showCancelButton: true,
                 confirmButtonText: '<i class="ti ti-file-spreadsheet"></i> Export',
                 cancelButtonText: '<i class="ti ti-x"></i> Batal',
-                confirmButtonColor: '#198754',
-                customClass: {
-                    confirmButton: 'btn btn-success',
-                    cancelButton: 'btn btn-secondary'
-                }
+                confirmButtonColor: '#198754'
             }).then((result) => {
                 if (result.isConfirmed) {
                     Swal.fire({
@@ -475,14 +411,24 @@
         // Function: Kirim Notifikasi
         function kirimNotifikasi() {
             const periode = $('#filterPeriode').val();
-            const periodeText = $('#periodeText').text();
-            const totalData = $('#totalData').text();
+            const periodeText = $('#periodeText').text().trim();
+            const totalData = parseInt($('#totalData').text());
 
             if (!periode) {
                 Swal.fire({
                     icon: 'warning',
                     title: 'Peringatan!',
                     text: 'Silakan pilih periode terlebih dahulu',
+                    confirmButtonColor: '#3085d6'
+                });
+                return;
+            }
+
+            if (totalData === 0) {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Tidak Ada Data',
+                    text: 'Tidak ada pinjaman yang jatuh tempo pada periode ini',
                     confirmButtonColor: '#3085d6'
                 });
                 return;
@@ -518,10 +464,6 @@
                 confirmButtonText: '<i class="ti ti-send"></i> Kirim Notifikasi',
                 cancelButtonText: '<i class="ti ti-x"></i> Batal',
                 confirmButtonColor: '#ffc107',
-                customClass: {
-                    confirmButton: 'btn btn-warning',
-                    cancelButton: 'btn btn-secondary'
-                },
                 width: '600px'
             }).then((result) => {
                 if (result.isConfirmed) {
@@ -578,11 +520,11 @@
                                 confirmButtonColor: '#198754'
                             });
                         },
-                        error: function() {
+                        error: function(xhr) {
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Gagal!',
-                                text: 'Terjadi kesalahan saat mengirim notifikasi'
+                                text: xhr.responseJSON?.message || 'Terjadi kesalahan saat mengirim notifikasi'
                             });
                         }
                     });

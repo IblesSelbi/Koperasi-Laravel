@@ -217,14 +217,14 @@
             Swal.fire({
                 title: 'Pulihkan Validasi Pelunasan?',
                 html: `
-                        <div class="text-start">
-                            <p>Apakah Anda yakin ingin memulihkan validasi pelunasan ini?</p>
-                            <div class="alert alert-info mb-0">
-                                <i class="ti ti-info-circle me-2"></i>
-                                Data akan dikembalikan ke daftar <strong>Pinjaman Lunas</strong> dan status pinjaman akan menjadi <strong>Lunas</strong>.
-                            </div>
+                    <div class="text-start">
+                        <p>Apakah Anda yakin ingin memulihkan validasi pelunasan ini?</p>
+                        <div class="alert alert-info mb-0">
+                            <i class="ti ti-info-circle me-2"></i>
+                            Data akan dikembalikan ke daftar <strong>Pinjaman Lunas</strong> dan status pinjaman akan menjadi <strong>Lunas</strong>.
                         </div>
-                    `,
+                    </div>
+                `,
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonText: '<i class="ti ti-refresh"></i> Ya, Pulihkan',
@@ -239,8 +239,10 @@
                         willOpen: () => { Swal.showLoading(); }
                     });
 
+                    const restoreUrl = '{{ route("pinjaman.lunas.restore", ":id") }}'.replace(':id', id);
+
                     $.ajax({
-                        url: `{{ url('admin/pinjaman/lunas') }}/${id}/restore`,
+                        url: restoreUrl,
                         type: 'POST',
                         data: {
                             _token: '{{ csrf_token() }}'
@@ -249,9 +251,16 @@
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Berhasil!',
-                                text: response.message
+                                text: response.message,
+                                timer: 2000,
+                                timerProgressBar: true
                             }).then(() => {
-                                location.reload();
+                                // Redirect ke halaman pinjaman lunas
+                                if (response.redirect) {
+                                    window.location.href = response.redirect;
+                                } else {
+                                    window.location.href = '{{ route("pinjaman.lunas") }}';
+                                }
                             });
                         },
                         error: function (xhr) {

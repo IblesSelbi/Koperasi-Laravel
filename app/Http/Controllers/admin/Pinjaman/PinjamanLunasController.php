@@ -19,6 +19,9 @@ class PinjamanLunasController extends Controller
     /**
      * Display a listing of paid off loans
      */
+    /**
+     * Display a listing of paid off loans
+     */
     public function index(Request $request)
     {
         try {
@@ -26,7 +29,8 @@ class PinjamanLunasController extends Controller
                 'pinjaman.anggota',
                 'pinjaman.lamaAngsuran',
                 'user'
-            ]);
+            ])
+                ->whereNull('deleted_at'); // ✅ Explicit filter untuk data yang tidak soft deleted
 
             // Filter by Kode
             if ($request->filled('kode')) {
@@ -59,26 +63,53 @@ class PinjamanLunasController extends Controller
 
             $pinjamanLunas = $query->orderBy('tanggal_lunas', 'desc')->get();
 
-            // Format data untuk view
+            // Format data untuk view dengan validasi
             foreach ($pinjamanLunas as $item) {
+                // ✅ VALIDASI: Skip jika pinjaman null
+                if (!$item->pinjaman) {
+                    Log::warning('Pinjaman null ditemukan', [
+                        'pinjaman_lunas_id' => $item->id,
+                        'kode_lunas' => $item->kode_lunas
+                    ]);
+                    continue;
+                }
+
                 $pinjaman = $item->pinjaman;
 
-                // ✅ JANGAN override property asli Carbon, assign ke property baru
+                // ✅ VALIDASI: Skip jika anggota null
+                if (!$pinjaman->anggota) {
+                    Log::warning('Anggota null ditemukan', [
+                        'pinjaman_id' => $pinjaman->id,
+                        'kode_pinjaman' => $pinjaman->kode_pinjaman
+                    ]);
+                    $item->anggota_id = '-';
+                    $item->anggota_nama = 'Unknown';
+                    $item->anggota_departemen = '-';
+                    $item->anggota_foto = 'assets/images/profile/user-1.jpg';
+                } else {
+                    $item->anggota_id = $pinjaman->anggota->id_anggota ?? '-';
+                    $item->anggota_nama = $pinjaman->anggota->nama ?? 'Unknown';
+                    $item->anggota_departemen = $pinjaman->anggota->departement ?? '-';
+                    $item->anggota_foto = $pinjaman->anggota->photo ?? 'assets/images/profile/user-1.jpg';
+                }
+
+                // Set properties lainnya
                 $item->kode = $item->kode_lunas;
-                $item->tanggal_pinjam_display = $pinjaman->tanggal_pinjam; // Tetap Carbon object
+                $item->tanggal_pinjam_display = $pinjaman->tanggal_pinjam;
                 $item->tanggal_tempo = Carbon::parse($pinjaman->tanggal_pinjam)
                     ->addMonths($item->lama_cicilan)
                     ->format('Y-m-d H:i:s');
-                $item->anggota_id = $pinjaman->anggota->id_anggota ?? '-';
-                $item->anggota_nama = $pinjaman->anggota->nama ?? 'Unknown';
-                $item->anggota_departemen = $pinjaman->anggota->departement ?? '-';
-                $item->anggota_foto = $pinjaman->anggota->photo ?? 'assets/images/profile/user-1.jpg';
                 $item->lama_pinjaman = $item->lama_cicilan;
                 $item->total_tagihan = $pinjaman->pokok_pinjaman + ($pinjaman->biaya_bunga * $item->lama_cicilan);
                 $item->sudah_dibayar = $item->total_dibayar;
                 $item->status_lunas = 'Lunas';
                 $item->user_name = $item->user->name ?? 'System';
             }
+
+            // ✅ Filter data yang valid (pinjaman tidak null)
+            $pinjamanLunas = $pinjamanLunas->filter(function ($item) {
+                return $item->pinjaman !== null;
+            });
 
             // Notifikasi angsuran yang akan jatuh tempo (untuk pinjaman aktif)
             $notifications = BayarAngsuran::with(['pinjaman.anggota'])
@@ -101,10 +132,11 @@ class PinjamanLunasController extends Controller
             Log::error('Error di PinjamanLunas index', [
                 'error' => $e->getMessage(),
                 'line' => $e->getLine(),
-                'file' => $e->getFile()
+                'file' => $e->getFile(),
+                'trace' => $e->getTraceAsString()
             ]);
 
-            return back()->with('error', 'Terjadi kesalahan saat memuat data pinjaman lunas. Silakan coba lagi.');
+            return back()->with('error', 'Terjadi kesalahan saat memuat data pinjaman lunas. Silakan coba lagi. Error: ' . $e->getMessage());
         }
     }
 

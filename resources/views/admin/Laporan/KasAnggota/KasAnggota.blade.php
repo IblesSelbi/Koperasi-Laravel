@@ -6,32 +6,9 @@
     <!-- DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css">
-    
-    <style>
-        #tabelKasAnggota tbody tr.selected>* {
-            box-shadow: inset 0 0 0 9999px #e7f1ff !important;
-            color: #004085 !important;
-        }
-
-        #tabelKasAnggota tbody tr.selected>* strong,
-        #tabelKasAnggota tbody tr.selected>* .text-muted,
-        #tabelKasAnggota tbody tr.selected>* .text-info,
-        #tabelKasAnggota tbody tr.selected>* .text-warning,
-        #tabelKasAnggota tbody tr.selected>* .text-success,
-        #tabelKasAnggota tbody tr.selected>* .text-danger {
-            color: inherit !important;
-        }
-
-        #tabelKasAnggota tbody tr:hover {
-            cursor: pointer;
-            background-color: #f8f9fa;
-        }
-
-        .badge {
-            font-weight: 500;
-            padding: 0.35em 0.65em;
-        }
-    </style>
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
 @endpush
 
 @section('content')
@@ -71,61 +48,68 @@
             <h6 class="mb-0 fw-semibold"><i class="ti ti-filter me-2"></i>Filter & Pencarian Data</h6>
         </div>
         <div class="card-body p-4">
-            <div class="row g-3">
-                <!-- Pilih Anggota -->
-                <div class="col-md-6 col-lg-4">
-                    <label class="form-label fw-semibold mb-2">
-                        <i class="ti ti-user text-primary"></i> Pilih ID Anggota
-                    </label>
-                    <select class="form-select" id="filterAnggota">
-                        <option value="">Semua Anggota</option>
-                        <option value="member1">member1 - FAISAL</option>
-                        <option value="member2">member2 - GEO HALOMOAN SIMANJUNTAK</option>
-                        <option value="anggota">anggota - WIDI ALJATSIYAH</option>
-                        <option value="fulan">fulan - FULAN</option>
-                        <option value="pengguna">pengguna - PENGGUNA</option>
-                    </select>
-                </div>
+            <form action="{{ route('laporan.kas-anggota') }}" method="GET" id="filterForm">
+                <div class="row g-3">
+                    <!-- Pilih Anggota -->
+                    <div class="col-md-6 col-lg-4">
+                        <label class="form-label fw-semibold mb-2">
+                            <i class="ti ti-user text-primary"></i> Pilih ID Anggota
+                        </label>
+                        <select class="form-select" id="filterAnggota" name="anggota">
+                            <option value="">Semua Anggota</option>
+                            @php
+                                $allAnggota = \App\Models\Admin\DataMaster\DataAnggota::where('aktif', 'Aktif')
+                                    ->orderBy('nama', 'asc')
+                                    ->get();
+                            @endphp
+                            @foreach($allAnggota as $ang)
+                                <option value="{{ $ang->id_anggota }}" 
+                                    {{ request('anggota') == $ang->id_anggota ? 'selected' : '' }}>
+                                    {{ $ang->id_anggota }} - {{ $ang->nama }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
 
-                <!-- Filter Status Pembayaran -->
-                <div class="col-md-6 col-lg-3">
-                    <label class="form-label fw-semibold mb-2">
-                        <i class="ti ti-list-check text-success"></i> Status Pembayaran
-                    </label>
-                    <select class="form-select" id="filterStatus">
-                        <option value="">Semua Status</option>
-                        <option value="Lancar">Lancar</option>
-                        <option value="Macet">Macet</option>
-                    </select>
-                </div>
+                    <!-- Filter Status Pembayaran -->
+                    <div class="col-md-6 col-lg-3">
+                        <label class="form-label fw-semibold mb-2">
+                            <i class="ti ti-list-check text-success"></i> Status Pembayaran
+                        </label>
+                        <select class="form-select" id="filterStatus" name="status">
+                            <option value="">Semua Status</option>
+                            <option value="Lancar" {{ request('status') == 'Lancar' ? 'selected' : '' }}>Lancar</option>
+                            <option value="Macet" {{ request('status') == 'Macet' ? 'selected' : '' }}>Macet</option>
+                        </select>
+                    </div>
 
-                <!-- Filter Jabatan -->
-                <div class="col-md-6 col-lg-3">
-                    <label class="form-label fw-semibold mb-2">
-                        <i class="ti ti-briefcase text-info"></i> Jabatan
-                    </label>
-                    <select class="form-select" id="filterJabatan">
-                        <option value="">Semua Jabatan</option>
-                        <option value="Produksi BOPP">Anggota - Produksi BOPP</option>
-                        <option value="Engineering">Anggota - Engineering</option>
-                        <option value="Accounting">Anggota - Accounting</option>
-                    </select>
-                </div>
+                    <!-- Filter Jabatan -->
+                    <div class="col-md-6 col-lg-3">
+                        <label class="form-label fw-semibold mb-2">
+                            <i class="ti ti-briefcase text-info"></i> Jabatan
+                        </label>
+                        <select class="form-select" id="filterJabatan" name="jabatan">
+                            <option value="">Semua Jabatan</option>
+                            <option value="Anggota" {{ request('jabatan') == 'Anggota' ? 'selected' : '' }}>Anggota</option>
+                            <option value="Pengurus" {{ request('jabatan') == 'Pengurus' ? 'selected' : '' }}>Pengurus</option>
+                        </select>
+                    </div>
 
-                <!-- Action Buttons -->
-                <div class="col-md-6 col-lg-2">
-                    <label class="form-label fw-semibold mb-2 d-none d-lg-block">&nbsp;</label>
-                    <div class="d-flex gap-2">
-                        <button class="btn btn-primary w-100" onclick="filterData()">
-                            <i class="ti ti-search"></i> Cari
-                        </button>
-                        <button class="btn btn-outline-secondary" onclick="resetFilter()" data-bs-toggle="tooltip"
-                            title="Reset Filter">
-                            <i class="ti ti-refresh"></i>
-                        </button>
+                    <!-- Action Buttons -->
+                    <div class="col-md-6 col-lg-2">
+                        <label class="form-label fw-semibold mb-2 d-none d-lg-block">&nbsp;</label>
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="ti ti-search"></i> Cari
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary" onclick="resetFilter()" 
+                                data-bs-toggle="tooltip" title="Reset Filter">
+                                <i class="ti ti-refresh"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </form>
 
             <!-- Secondary Actions -->
             <div class="row mt-3 pt-3 border-top">
@@ -156,45 +140,73 @@
                     style="width:100%">
                     <thead class="table-primary">
                         <tr>
-                            <th class="text-center align-middle" style="width: 5%;">No.</th>
-                            <th class="text-center align-middle" style="width: 5%;">Photo</th>
+                            <th class="text-center align-middle" style="width: 5%;">No</th>
+                            <th class="text-center align-middle" style="width: 6%;">Photo</th>
                             <th class="align-middle" style="width: 23%;">Identitas</th>
                             <th class="align-middle" style="width: 20%;">Saldo Simpanan</th>
                             <th class="align-middle" style="width: 20%;">Tagihan Kredit</th>
-                            <th class="align-middle" style="width: 23%;">Keterangan</th>
+                            <th class="align-middle" style="width: 20%;">Keterangan</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($kasAnggota as $index => $item)
+                        @forelse($kasAnggota as $index => $item)
                             <tr>
                                 <td class="text-center align-middle">
                                     <span class="fw-semibold">{{ $index + 1 }}</span>
                                 </td>
                                 <td class="text-center align-middle">
-                                    <img src="{{ $item->foto }}" alt="Photo" width="60" height="80" class="rounded border" />
+                                    <img src="{{ $item->foto }}" alt="Photo" width="70" height="85" 
+                                        class="rounded border" 
+                                        onerror="this.src='{{ asset('assets/images/profile/user-1.jpg') }}'" />
                                 </td>
                                 <td class="align-middle">
-                                    <div class="mb-1">
-                                        <small class="text-muted">ID Anggota:</small>
-                                        <span class="badge bg-info-subtle text-info">{{ $item->id_anggota }}</span>
-                                    </div>
-                                    <div class="mb-1">
-                                        <small class="text-muted">Nama:</small>
-                                        <strong class="text-dark">{{ $item->nama }}</strong>
-                                    </div>
-                                    <div class="mb-1">
-                                        <small class="text-muted">Jenis Kelamin:</small>
-                                        <span>{{ $item->jenis_kelamin }}</span>
-                                    </div>
-                                    <div class="mb-1">
-                                        <small class="text-muted">Jabatan:</small>
-                                        <span>{{ $item->jabatan }} - {{ $item->departemen }}</span>
-                                    </div>
-                                    <div>
-                                        <small class="text-muted">Alamat:</small>
-                                        <span>{{ $item->alamat }}</span><br>
-                                        <small class="text-muted">Telp:</small>
-                                        <span>{{ $item->no_telepon }}</span>
+                                    <div class="small">
+                                        <div class="d-flex justify-content-between border-bottom pb-1 mb-1">
+                                            <span class="text-muted">ID Anggota</span>
+                                            <span class="badge bg-primary-subtle fw-semibold text-primary">{{ $item->id_anggota }}</span>
+                                        </div>
+
+                                        <div class="d-flex justify-content-between border-bottom pb-1 mb-1">
+                                            <span class="text-muted">Nama</span>
+                                           <strong class="text-dark">{{ $item->nama }}</strong>
+                                        </div>
+
+                                        <div class="d-flex justify-content-between border-bottom pb-1 mb-1">
+                                            <span class="text-muted">Jenis Kelamin</span>
+                                            <span class="{{ $item->jenis_kelamin == 'Laki-laki' }}
+                                                text-{{ $item->jenis_kelamin == 'Laki-laki' ? 'info' : 'danger' }} 
+                                                fw-semibold">
+                                                {{ $item->jenis_kelamin }}
+                                            </span>
+                                        </div>
+
+                                        <div class="d-flex justify-content-between border-bottom pb-1 mb-1">
+                                            <span class="text-muted">Jabatan</span>
+                                            <span class="text-end">{{ $item->jabatan }}</span>
+                                        </div>
+
+                                        <div class="d-flex justify-content-between border-bottom pb-1 mb-1">
+                                            <span class="text-muted">Departemen</span>
+                                            <span class="text-end">{{ $item->departemen ?? '-' }}</span>
+                                        </div>
+
+                                        <div class="d-flex justify-content-between border-bottom pb-1 mb-1">
+                                            <span class="text-muted">Alamat</span>
+                                            <div>
+                                                <i class="ti ti-map-pin text-danger"></i>
+                                                <span class="text-end text-wrap text-break" style="max-width: 220px">
+                                                    {{ $item->alamat }}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div class="d-flex justify-content-between pt-1">
+                                            <span class="text-muted">Telepon</span>
+                                            <div>
+                                                <i class="ti ti-phone text-success"></i>
+                                                <span class="text-end">{{ $item->no_telepon ?? '-' }}</span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </td>
                                 <td class="align-middle">
@@ -273,13 +285,20 @@
                                             @if($item->keterangan['tanggal_tempo'] == '-')
                                                 <span class="badge bg-secondary-subtle text-secondary">-</span>
                                             @else
-                                                <span class="badge bg-warning-subtle text-warning">{{ $item->keterangan['tanggal_tempo'] }}</span>
+                                                <span class="badge bg-secondary-subtle text-secondary">{{ $item->keterangan['tanggal_tempo'] }}</span>
                                             @endif
                                         </div>
                                     </div>
                                 </td>
                             </tr>
-                        @endforeach
+                        @empty
+                            <tr>
+                                <td colspan="6" class="text-center py-5">
+                                    <i class="ti ti-file-x fs-1 text-muted mb-2"></i>
+                                    <p class="text-muted mb-0">Tidak ada data untuk ditampilkan</p>
+                                </td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
@@ -292,14 +311,34 @@
     <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
 
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
+        // Initialize Select2 for Anggota Dropdown
+        $(document).ready(function() {
+            $('#filterAnggota').select2({
+                theme: 'bootstrap-5',
+                placeholder: 'Ketik nama atau ID anggota...',
+                allowClear: true,
+                width: '100%',
+                language: {
+                    noResults: function() {
+                        return "Anggota tidak ditemukan";
+                    },
+                    searching: function() {
+                        return "Mencari...";
+                    }
+                }
+            });
+        });
+
         // Initialize DataTable
         let table;
         $(document).ready(function () {
-            // Hide table initially
             const tableWrapper = $('#tabelKasAnggota').closest('.card-body');
             tableWrapper.css({ opacity: 0, transition: 'opacity 0.3s' });
 
@@ -308,7 +347,7 @@
                     url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/id.json'
                 },
                 pageLength: 10,
-                order: [[0, 'asc']],
+                order: [[2, 'asc']], // Sort by nama
                 columnDefs: [
                     { orderable: false, targets: [1] }
                 ],
@@ -316,82 +355,36 @@
                     tableWrapper.css('opacity', 1);
                 }
             });
-
-            // Initialize Bootstrap Tooltips
-            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-            tooltipTriggerList.map(function (tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl);
-            });
-
-            // Table row selection
-            $('#tabelKasAnggota tbody').on('click', 'tr', function () {
-                if ($(this).hasClass('selected')) {
-                    $(this).removeClass('selected');
-                } else {
-                    table.$('tr.selected').removeClass('selected');
-                    $(this).addClass('selected');
-                }
-            });
         });
-
-        // Function: Filter Data
-        function filterData() {
-            const anggota = $('#filterAnggota').val();
-            const status = $('#filterStatus').val();
-            const jabatan = $('#filterJabatan').val();
-
-            Swal.fire({
-                title: 'Memproses...',
-                text: 'Sedang menerapkan filter',
-                allowOutsideClick: false,
-                showConfirmButton: false,
-                willOpen: () => {
-                    Swal.showLoading();
-                }
-            });
-
-            setTimeout(() => {
-                Swal.close();
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Filter Diterapkan!',
-                    text: 'Data berhasil difilter',
-                    timer: 1500,
-                    showConfirmButton: false
-                });
-
-                // TODO: Reload dengan filter
-                // location.href = `{{ route('laporan.kas-anggota') }}?anggota=${anggota}&status=${status}&jabatan=${jabatan}`;
-            }, 800);
-        }
 
         // Function: Reset Filter
         function resetFilter() {
-            $('#filterAnggota').val('');
+            // Clear Select2
+            $('#filterAnggota').val(null).trigger('change');
             $('#filterStatus').val('');
             $('#filterJabatan').val('');
-
-            if (table) {
-                table.search('').draw();
-            }
-
-            Swal.fire({
-                icon: 'info',
-                title: 'Filter Direset',
-                text: 'Semua filter telah dikembalikan',
-                timer: 1500,
-                showConfirmButton: false
-            });
+            
+            // Redirect to clean URL
+            window.location.href = '{{ route("laporan.kas-anggota") }}';
         }
 
         // Function: Cetak Laporan
         function cetakLaporan() {
-            const anggota = $('#filterAnggota').val() || '';
-            const status = $('#filterStatus').val() || '';
-            const jabatan = $('#filterJabatan').val() || '';
+            const params = new URLSearchParams();
+            
+            const anggota = $('#filterAnggota').val();
+            const status = $('#filterStatus').val();
+            const jabatan = $('#filterJabatan').val();
+
+            if (anggota) params.append('anggota', anggota);
+            if (status) params.append('status', status);
+            if (jabatan) params.append('jabatan', jabatan);
 
             let filterInfo = 'Semua Data';
-            if (anggota) filterInfo = `Anggota: ${anggota}`;
+            if (anggota) {
+                const selectedText = $('#filterAnggota option:selected').text();
+                filterInfo = `Anggota: ${selectedText}`;
+            }
             if (status) filterInfo += ` | Status: ${status}`;
             if (jabatan) filterInfo += ` | Jabatan: ${jabatan}`;
 
@@ -416,7 +409,7 @@
                 }
             }).then((result) => {
                 if (result.isConfirmed) {
-                    const url = `{{ route('laporan.kas-anggota.cetak') }}?anggota=${anggota}&status=${status}&jabatan=${jabatan}`;
+                    const url = `{{ route('laporan.kas-anggota.cetak') }}?${params.toString()}`;
                     window.open(url, '_blank');
 
                     Swal.fire({
