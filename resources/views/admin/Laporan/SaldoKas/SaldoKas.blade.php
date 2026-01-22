@@ -5,8 +5,22 @@
 @push('styles')
     <!-- DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
-    <!-- Bootstrap DateTimePicker -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css">
+    <!-- Daterangepicker CSS -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    
+    <style>
+        .h_tengah {
+            text-align: center;
+        }
+
+        .h_kanan {
+            text-align: right;
+        }
+
+        .header_kolom {
+            font-weight: 600;
+        }
+    </style>
 @endpush
 
 @section('content')
@@ -50,16 +64,15 @@
                 <input type="hidden" name="periode" id="periode" value="{{ $periode }}" />
 
                 <div class="row g-3">
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <label class="form-label fw-semibold mb-2">
                             <i class="ti ti-calendar text-primary"></i> Pilih Bulan & Tahun
                         </label>
-                        <div class="input-group">
-                            <span class="input-group-text">
-                                <i class="ti ti-calendar"></i>
-                            </span>
-                            <input id="txt_periode" class="form-control" type="text" value="{{ $periodeDisplay }}" readonly />
-                        </div>
+                        <button class="form-control text-start" type="button" id="daterange-btn">
+                            <i class="ti ti-calendar me-2"></i>
+                            <span id="reportrange">{{ $periodeDisplay }}</span>
+                            <i class="ti ti-chevron-down float-end"></i>
+                        </button>
                     </div>
 
                     <div class="col-md-6">
@@ -96,25 +109,51 @@
                     <tbody>
                         <tr class="table-light">
                             <td class="h_kanan header_kolom" colspan="2"><strong>SALDO PERIODE SEBELUMNYA</strong></td>
-                            <td class="h_kanan header_kolom"><strong>{{ number_format($saldoPeriodeSebelumnya, 0, ',', ',') }}</strong></td>
+                            <td class="h_kanan header_kolom"><strong>{{ number_format($saldoPeriodeSebelumnya, 0, ',', '.') }}</strong></td>
                         </tr>
-                        @foreach($saldoKas as $item)
+                        @forelse($saldoKas as $item)
                             <tr>
                                 <td class="h_tengah">{{ $item->no }}</td>
                                 <td>{{ $item->nama_kas }}</td>
-                                <td class="h_kanan">{{ number_format($item->saldo, 0, ',', ',') }}</td>
+                                <td class="h_kanan">{{ number_format($item->saldo, 0, ',', '.') }}</td>
                             </tr>
-                        @endforeach
-                        <tr class="table-light">
-                            <td colspan="2" class="h_kanan header_kolom"><strong>Jumlah</strong></td>
-                            <td class="h_kanan header_kolom"><strong>{{ number_format($jumlahSaldo, 0, ',', ',') }}</strong></td>
-                        </tr>
-                        <tr>
-                            <td colspan="2" class="h_kanan"><strong>Saldo</strong></td>
-                            <td class="h_kanan"><strong>{{ number_format($totalSaldo, 0, ',', ',') }}</strong></td>
-                        </tr>
+                        @empty
+                            <tr>
+                                <td colspan="3" class="text-center py-4 text-muted">
+                                    <i class="ti ti-database-off fs-2"></i>
+                                    <p class="mb-0 mt-2">Tidak ada data kas yang aktif</p>
+                                </td>
+                            </tr>
+                        @endforelse
+                        @if($saldoKas->isNotEmpty())
+                            <tr class="table-light">
+                                <td colspan="2" class="h_kanan header_kolom"><strong>Jumlah</strong></td>
+                                <td class="h_kanan header_kolom"><strong>{{ number_format($jumlahSaldo, 0, ',', '.') }}</strong></td>
+                            </tr>
+                            <tr style="background-color: #d1f2dd;">
+                                <td colspan="2" class="h_kanan"><strong>Saldo</strong></td>
+                                <td class="h_kanan"><strong>{{ number_format($totalSaldo, 0, ',', '.') }}</strong></td>
+                            </tr>
+                        @endif
                     </tbody>
                 </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Info Box -->
+    <div class="card mt-3 shadow-sm border-info">
+        <div class="card-body">
+            <div class="d-flex align-items-start">
+                <i class="ti ti-info-circle text-info fs-4 me-2"></i>
+                <div>
+                    <h6 class="mb-2">Penjelasan Perhitungan:</h6>
+                    <ul class="mb-0 small text-muted">
+                        <li><strong>Saldo Periode Sebelumnya:</strong> Total saldo semua kas sampai akhir bulan sebelumnya</li>
+                        <li><strong>Mutasi Periode Ini:</strong> Pemasukan - Pengeluaran + Transfer Masuk - Transfer Keluar + Setoran - Penarikan - Pinjaman + Angsuran</li>
+                        <li><strong>Saldo Akhir:</strong> Saldo Periode Sebelumnya + Jumlah Mutasi Periode Ini</li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
@@ -125,26 +164,50 @@
     <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
     <!-- Moment Locale ID -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/locale/id.min.js"></script>
-    <!-- Bootstrap DateTimePicker -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
+    <!-- Daterangepicker -->
+    <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        // Initialize DateTimePicker
+        // Initialize Daterangepicker
         $(document).ready(function () {
             moment.locale('id');
             
-            $('#txt_periode').datetimepicker({
-                format: 'MMMM YYYY',
-                viewMode: 'months',
-                locale: 'id',
-                defaultDate: moment('{{ $periode }}', 'YYYY-MM')
-            }).on('dp.change', function (e) {
-                var selectedDate = e.date;
-                var formattedPeriode = selectedDate.format('YYYY-MM');
-                $('#periode').val(formattedPeriode);
+            // Parse periode dari format YYYY-MM
+            var currentPeriode = moment('{{ $periode }}', 'YYYY-MM');
+            
+            $('#daterange-btn').daterangepicker({
+                singleDatePicker: true,
+                showDropdowns: true,
+                minYear: 2020,
+                maxYear: parseInt(moment().format('YYYY'), 10) + 5,
+                locale: {
+                    format: 'MMMM YYYY',
+                    applyLabel: 'Terapkan',
+                    cancelLabel: 'Batal',
+                    monthNames: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'],
+                    firstDay: 1
+                },
+                startDate: currentPeriode,
+                autoUpdateInput: false
+            }, function (start) {
+                // Update display
+                $('#reportrange').html(start.format('MMMM YYYY'));
+                
+                // Update hidden input dengan format YYYY-MM
+                $('#periode').val(start.format('YYYY-MM'));
+                
+                // Auto submit
                 doSearch();
+            });
+
+            // Set initial display
+            $('#reportrange').html(currentPeriode.format('MMMM YYYY'));
+
+            // Handle button click to open picker
+            $('#daterange-btn').on('click', function() {
+                $(this).data('daterangepicker').show();
             });
         });
 
@@ -152,7 +215,7 @@
         function doSearch() {
             Swal.fire({
                 title: 'Memproses...',
-                text: 'Sedang mengambil data',
+                text: 'Sedang menghitung saldo kas',
                 allowOutsideClick: false,
                 showConfirmButton: false,
                 willOpen: () => {
@@ -189,17 +252,4 @@
         }
     </script>
 
-    <style>
-        .h_tengah {
-            text-align: center;
-        }
-
-        .h_kanan {
-            text-align: right;
-        }
-
-        .header_kolom {
-            font-weight: 600;
-        }
-    </style>
 @endpush

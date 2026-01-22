@@ -6,7 +6,6 @@
     <!-- DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css">
-    <link rel="stylesheet" href="{{ asset('assets/css/styles.min.css') }}" />
     <!-- Daterangepicker -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 @endpush
@@ -54,7 +53,7 @@
                     <label class="form-label fw-semibold mb-2">
                         <i class="ti ti-calendar text-primary"></i> Pilih Periode
                     </label>
-                    <input type="month" class="form-control" id="filterPeriode" value="{{ date('Y-m') }}">
+                    <input type="month" class="form-control" id="filterPeriode" value="{{ $periode }}">
                 </div>
 
                 <!-- Action Buttons -->
@@ -64,8 +63,8 @@
                         <button class="btn btn-primary w-100" onclick="filterData()">
                             <i class="ti ti-search"></i> Tampilkan
                         </button>
-                        <button class="btn btn-outline-secondary" onclick="resetFilter()"
-                            data-bs-toggle="tooltip" title="Reset Filter">
+                        <button class="btn btn-outline-secondary" onclick="resetFilter()" data-bs-toggle="tooltip"
+                            title="Reset Filter">
                             <i class="ti ti-refresh"></i>
                         </button>
                     </div>
@@ -107,214 +106,144 @@
     <div class="alert alert-primary d-flex align-items-center mb-3" role="alert">
         <i class="ti ti-info-circle fs-5 me-2"></i>
         <div>
-            <strong>Periode:</strong> <span id="periodeText">{{ \Carbon\Carbon::now()->locale('id')->translatedFormat('F Y') }}</span>
+            <strong>Periode:</strong> <span
+                id="periodeText">{{ \Carbon\Carbon::parse($startDate)->locale('id')->translatedFormat('F Y') }}</span>
         </div>
     </div>
 
-    <!-- Kas Tunai Section -->
-    <div class="card mb-3 shadow-sm">
-        <div class="card-header bg-success-subtle text-white">
-            <h5 class="mb-0"><i class="ti ti-cash"></i> Kas Tunai</h5>
-        </div>
-        <div class="card-body">
-           <div class="table-responsive shadow-sm rounded-2 border">
-                <table class="table table-hover align-middle mb-0" style="width:100%">
-                    <thead class="table-primary">
-                        <tr>
-                            <th class="text-center align-middle" style="width: 5%;">No</th>
-                            <th class="text-center align-middle" style="width: 10%;">Tanggal</th>
-                            <th class="align-middle" style="width: 20%;">Jenis Transaksi</th>
-                            <th class="align-middle" style="width: 35%;">Keterangan</th>
-                            <th class="text-end align-middle" style="width: 10%;">Debet</th>
-                            <th class="text-end align-middle" style="width: 10%;">Kredit</th>
-                            <th class="text-end align-middle" style="width: 10%;">Saldo</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($kasTunai as $index => $item)
-                            <tr>
-                                <td class="text-center">{{ $index + 1 }}</td>
-                                <td class="text-center">{{ \Carbon\Carbon::parse($item->tanggal)->locale('id')->translatedFormat('d M Y') }}</td>
-                                <td>{{ $item->jenis_transaksi }}</td>
-                                <td>{{ $item->keterangan }}</td>
-                                <td class="text-end">
-                                    @if($item->debet > 0)
-                                        <strong class="text-success">Rp {{ number_format($item->debet, 0, ',', '.') }}</strong>
-                                    @else
-                                        Rp 0
-                                    @endif
-                                </td>
-                                <td class="text-end">
-                                    @if($item->kredit > 0)
-                                        <strong class="text-danger">Rp {{ number_format($item->kredit, 0, ',', '.') }}</strong>
-                                    @else
-                                        Rp 0
-                                    @endif
-                                </td>
-                                <td class="text-end">
-                                    <strong class="{{ $item->saldo < 0 ? 'text-danger' : 'text-primary' }}">
-                                        Rp {{ number_format($item->saldo, 0, ',', '.') }}
-                                    </strong>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="7" class="text-center text-muted py-4">
-                                    <i class="ti ti-inbox fs-4"></i><br>
-                                    Tidak ada transaksi pada periode ini
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+    @forelse($bukuBesarData as $index => $data)
+        <!-- Kas Account Section -->
+        <div class="card mb-3 shadow-sm">
+            <div
+                class="card-header {{ $index % 3 == 0 ? 'bg-success-subtle' : ($index % 3 == 1 ? 'bg-warning-subtle' : 'bg-info-subtle') }}">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="ti ti-{{ $index % 3 == 0 ? 'cash' : ($index % 3 == 1 ? 'building-bank' : 'transfer') }}"></i>
+                        {{ $data['kas']->nama_kas }}
+                    </h5>
+                    <div class="d-flex gap-3">
+                        <span class="badge bg-white text-dark">
+                            Saldo Awal: <strong>Rp {{ number_format($data['saldo_awal'], 0, ',', '.') }}</strong>
+                        </span>
+                        <span class="badge bg-white {{ $data['saldo_akhir'] < 0 ? 'text-danger' : 'text-primary' }}">
+                            Saldo Akhir: <strong>Rp {{ number_format($data['saldo_akhir'], 0, ',', '.') }}</strong>
+                        </span>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
+            <div class="card-body">
+                <div class="table-responsive shadow-sm rounded-2 border">
+                    <table class="table table-hover align-middle mb-0" style="width:100%">
+                        <thead class="table-primary">
+                            <tr>
+                                <th class="text-center align-middle" style="width: 5%;">No</th>
+                                <th class="text-center align-middle" style="width: 10%;">Tanggal</th>
+                                <th class="align-middle" style="width: 20%;">Jenis Transaksi</th>
+                                <th class="align-middle" style="width: 35%;">Keterangan</th>
+                                <th class="text-end align-middle" style="width: 10%;">Debet</th>
+                                <th class="text-end align-middle" style="width: 10%;">Kredit</th>
+                                <th class="text-end align-middle" style="width: 10%;">Saldo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Saldo Awal Row -->
+                            <tr class="table-light">
+                                <td class="text-center">-</td>
+                                <td class="text-center">-</td>
+                                <td colspan="2"><strong class="text-primary">SALDO AWAL PERIODE</strong></td>
+                                <td class="text-end">Rp 0</td>
+                                <td class="text-end">Rp 0</td>
+                                <td class="text-end">
+                                    <strong class="text-primary">Rp
+                                        {{ number_format($data['saldo_awal'], 0, ',', '.') }}</strong>
+                                </td>
+                            </tr>
 
-    <!-- Kas Besar Section -->
-    <div class="card mb-3 shadow-sm">
-        <div class="card-header bg-warning-subtle text-dark">
-            <h5 class="mb-0"><i class="ti ti-building-bank"></i> Kas Besar</h5>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive shadow-sm rounded-2 border">
-                <table class="table table-hover align-middle mb-0" style="width:100%">
-                    <thead class="table-primary">
-                        <tr>
-                            <th class="text-center align-middle" style="width: 5%;">No</th>
-                            <th class="text-center align-middle" style="width: 10%;">Tanggal</th>
-                            <th class="align-middle" style="width: 20%;">Jenis Transaksi</th>
-                            <th class="align-middle" style="width: 35%;">Keterangan</th>
-                            <th class="text-end align-middle" style="width: 10%;">Debet</th>
-                            <th class="text-end align-middle" style="width: 10%;">Kredit</th>
-                            <th class="text-end align-middle" style="width: 10%;">Saldo</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($kasBesar as $index => $item)
-                            <tr>
-                                <td class="text-center">{{ $index + 1 }}</td>
-                                <td class="text-center">{{ \Carbon\Carbon::parse($item->tanggal)->locale('id')->translatedFormat('d M Y') }}</td>
-                                <td>{{ $item->jenis_transaksi }}</td>
-                                <td>{{ $item->keterangan }}</td>
-                                <td class="text-end">
-                                    @if($item->debet > 0)
-                                        <strong class="text-success">Rp {{ number_format($item->debet, 0, ',', '.') }}</strong>
-                                    @else
-                                        Rp 0
-                                    @endif
-                                </td>
-                                <td class="text-end">
-                                    @if($item->kredit > 0)
-                                        <strong class="text-danger">Rp {{ number_format($item->kredit, 0, ',', '.') }}</strong>
-                                    @else
-                                        Rp 0
-                                    @endif
-                                </td>
-                                <td class="text-end">
-                                    <strong class="{{ $item->saldo < 0 ? 'text-danger' : 'text-primary' }}">
-                                        Rp {{ number_format($item->saldo, 0, ',', '.') }}
-                                    </strong>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="7" class="text-center text-muted py-4">
-                                    <i class="ti ti-inbox fs-4"></i><br>
-                                    Tidak ada transaksi pada periode ini
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+                            @foreach($data['transaksi'] as $idx => $item)
+                                <tr>
+                                    <td class="text-center">{{ $idx + 1 }}</td>
+                                    <td class="text-center">
+                                        {{ \Carbon\Carbon::parse($item->tanggal)->locale('id')->translatedFormat('d M Y') }}</td>
+                                    <td>{{ $item->jenis_transaksi }}</td>
+                                    <td>{{ $item->keterangan }}</td>
+                                    <td class="text-end">
+                                        @if($item->debet > 0)
+                                            <strong class="text-success">Rp {{ number_format($item->debet, 0, ',', '.') }}</strong>
+                                        @else
+                                            <span class="text-muted">Rp 0</span>
+                                        @endif
+                                    </td>
+                                    <td class="text-end">
+                                        @if($item->kredit > 0)
+                                            <strong class="text-danger">Rp {{ number_format($item->kredit, 0, ',', '.') }}</strong>
+                                        @else
+                                            <span class="text-muted">Rp 0</span>
+                                        @endif
+                                    </td>
+                                    <td class="text-end">
+                                        <strong class="{{ $item->saldo < 0 ? 'text-danger' : 'text-primary' }}">
+                                            Rp {{ number_format($item->saldo, 0, ',', '.') }}
+                                        </strong>
+                                    </td>
+                                </tr>
+                            @endforeach
 
-    <!-- Transfer Section -->
-    <div class="card mb-3 shadow-sm">
-        <div class="card-header bg-info-subtle text-white">
-            <h5 class="mb-0"><i class="ti ti-transfer"></i> Transfer</h5>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive shadow-sm rounded-2 border">
-                <table class="table table-hover align-middle mb-0" style="width:100%">
-                    <thead class="table-primary">
-                        <tr>
-                            <th class="text-center align-middle" style="width: 5%;">No</th>
-                            <th class="text-center align-middle" style="width: 10%;">Tanggal</th>
-                            <th class="align-middle" style="width: 20%;">Jenis Transaksi</th>
-                            <th class="align-middle" style="width: 35%;">Keterangan</th>
-                            <th class="text-end align-middle" style="width: 10%;">Debet</th>
-                            <th class="text-end align-middle" style="width: 10%;">Kredit</th>
-                            <th class="text-end align-middle" style="width: 10%;">Saldo</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($transfer as $index => $item)
-                            <tr>
-                                <td class="text-center">{{ $index + 1 }}</td>
-                                <td class="text-center">{{ \Carbon\Carbon::parse($item->tanggal)->locale('id')->translatedFormat('d M Y') }}</td>
-                                <td>{{ $item->jenis_transaksi }}</td>
-                                <td>{{ $item->keterangan }}</td>
-                                <td class="text-end">
-                                    @if($item->debet > 0)
-                                        <strong class="text-success">Rp {{ number_format($item->debet, 0, ',', '.') }}</strong>
-                                    @else
-                                        Rp 0
-                                    @endif
+                            <!-- Total Row -->
+                            <tr class="table-light">
+                                <td colspan="4" class="text-center">
+                                    <strong class="text-primary">TOTAL MUTASI PERIODE</strong>
                                 </td>
                                 <td class="text-end">
-                                    @if($item->kredit > 0)
-                                        <strong class="text-danger">Rp {{ number_format($item->kredit, 0, ',', '.') }}</strong>
-                                    @else
-                                        Rp 0
-                                    @endif
+                                    <strong class="text-success">Rp
+                                        {{ number_format($data['total_debet'], 0, ',', '.') }}</strong>
                                 </td>
                                 <td class="text-end">
-                                    <strong class="{{ $item->saldo < 0 ? 'text-danger' : 'text-primary' }}">
-                                        Rp {{ number_format($item->saldo, 0, ',', '.') }}
+                                    <strong class="text-danger">Rp
+                                        {{ number_format($data['total_kredit'], 0, ',', '.') }}</strong>
+                                </td>
+                                <td class="text-end">
+                                    <strong class="{{ $data['saldo_akhir'] < 0 ? 'text-danger' : 'text-primary' }}">
+                                        Rp {{ number_format($data['saldo_akhir'], 0, ',', '.') }}
                                     </strong>
                                 </td>
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="7" class="text-center text-muted py-4">
-                                    <i class="ti ti-inbox fs-4"></i><br>
-                                    Tidak ada transaksi pada periode ini
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
-    </div>
+    @empty
+        <div class="card">
+            <div class="card-body py-5 text-center">
+                <i class="ti ti-inbox fs-1 text-muted"></i>
+                <h5 class="mt-3 text-muted">Tidak Ada Data</h5>
+                <p class="text-muted">Tidak ada transaksi pada periode yang dipilih</p>
+            </div>
+        </div>
+    @endforelse
 
     <!-- Total Saldo Section -->
-    <div class="card mb-3 shadow-sm">
-        <div class="card-body py-2">
-            <div class="table-responsive">
-                <table class="table table-borderless mb-0">
-                    <tr>
-                        <td class="text-end align-middle py-2">
-                            <strong class="text-primary fs-4">TOTAL SALDO KAS BANK</strong>
-                        </td>
-                        <td class="text-end align-middle py-2" style="width: 15%;">
-                            <strong class="{{ $totalSaldo < 0 ? 'text-danger' : 'text-primary' }} fs-4" id="totalSaldoKasBank">
-                                Rp {{ number_format($totalSaldo, 0, ',', '.') }}
-                            </strong>
-                        </td>
-                    </tr>
-                </table>
+    @if(count($bukuBesarData) > 0)
+        <div class="card mb-3 shadow-sm border-primary">
+            <div class="card-body py-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0 text-primary fw-semibold">
+                        <i class="ti ti-wallet"></i> TOTAL SALDO KAS BANK
+                    </h6>
+                    <h5 class="mb-0 fw-semibold {{ $totalSaldo < 0 ? 'text-danger' : 'text-primary' }}" id="totalSaldoKasBank">
+                        Rp {{ number_format($totalSaldo, 0, ',', '.') }}
+                    </h5>
+                </div>
             </div>
         </div>
-    </div>
+    @endif
 @endsection
 
 @push('scripts')
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Moment.js -->
+    <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 
     <script>
         // Initialize
@@ -372,22 +301,8 @@
                 }
             });
 
-            // Simulasi load data
-            setTimeout(() => {
-                updatePeriodeText();
-
-                Swal.close();
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Berhasil!',
-                    text: 'Data buku besar berhasil dimuat',
-                    timer: 1500,
-                    showConfirmButton: false
-                });
-
-                // TODO: Reload dengan filter
-                // location.href = `{{ route('laporan.buku-besar') }}?periode=${periode}`;
-            }, 800);
+            // Redirect dengan parameter filter
+            window.location.href = `{{ route('laporan.buku-besar') }}?periode=${periode}`;
         }
 
         // Function: Reset Filter
@@ -406,6 +321,11 @@
                 timer: 1500,
                 showConfirmButton: false
             });
+
+            // Reload halaman tanpa parameter
+            setTimeout(() => {
+                window.location.href = `{{ route('laporan.buku-besar') }}`;
+            }, 1500);
         }
 
         // Function: Cetak Laporan
@@ -426,27 +346,27 @@
             Swal.fire({
                 title: 'Cetak Laporan',
                 html: `
-                    <div class="text-start">
-                        <p><strong>Laporan Buku Besar</strong></p>
-                        <hr>
-                        <table class="table table-sm">
-                            <tr>
-                                <td width="40%">Periode</td>
-                                <td><strong>${periodeText}</strong></td>
-                            </tr>
-                            <tr>
-                                <td>Total Akun</td>
-                                <td><strong>${$('#totalAkun').text()} akun</strong></td>
-                            </tr>
-                            <tr>
-                                <td>Total Saldo Kas Bank</td>
-                                <td><strong class="text-primary">${$('#totalSaldo').text()}</strong></td>
-                            </tr>
-                        </table>
-                        <hr>
-                        <p class="text-muted">Laporan akan dibuka di tab baru</p>
-                    </div>
-                `,
+                        <div class="text-start">
+                            <p><strong>Laporan Buku Besar</strong></p>
+                            <hr>
+                            <table class="table table-sm">
+                                <tr>
+                                    <td width="40%">Periode</td>
+                                    <td><strong>${periodeText}</strong></td>
+                                </tr>
+                                <tr>
+                                    <td>Total Akun</td>
+                                    <td><strong>${$('#totalAkun').text()} akun</strong></td>
+                                </tr>
+                                <tr>
+                                    <td>Total Saldo</td>
+                                    <td><strong class="text-primary">${$('#totalSaldo').text()}</strong></td>
+                                </tr>
+                            </table>
+                            <hr>
+                            <p class="text-muted">Laporan akan dibuka di tab baru</p>
+                        </div>
+                    `,
                 icon: 'info',
                 showCancelButton: true,
                 confirmButtonText: '<i class="ti ti-printer"></i> Cetak',
@@ -490,29 +410,31 @@
             Swal.fire({
                 title: 'Export ke Excel',
                 html: `
-                    <div class="text-start">
-                        <p>Data buku besar periode <strong>${periodeText}</strong> akan diekspor ke format Excel (.xlsx)</p>
-                        <hr>
-                        <div class="form-check mb-2">
-                            <input class="form-check-input" type="checkbox" id="includeSummary" checked>
-                            <label class="form-check-label" for="includeSummary">
-                                Sertakan ringkasan total saldo
-                            </label>
-                        </div>
-                        <div class="form-check mb-2">
-                            <input class="form-check-input" type="checkbox" id="separateSheets" checked>
-                            <label class="form-check-label" for="separateSheets">
-                                Pisahkan setiap akun ke sheet berbeda
-                            </label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="includeChart">
-                            <label class="form-check-label" for="includeChart">
-                                Sertakan grafik mutasi kas
-                            </label>
-                        </div>
+                <div class="text-start">
+                    <p>Data buku besar periode <strong>${periodeText}</strong> akan diekspor ke format Excel (.xlsx)</p>
+                    <hr>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="includeSummary" checked>
+                        <label class="form-check-label" for="includeSummary">
+                            Sertakan ringkasan total
+                        </label>
                     </div>
-                `,
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="separateSheet" checked>
+                        <label class="form-check-label" for="separateSheet">
+                            Pisahkan per akun kas (sheet terpisah)
+                        </label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="includeChart">
+                        <label class="form-check-label" for="includeChart">
+                            Sertakan grafik mutasi
+                        </label>
+                    </div>
+                    <hr>
+                    <p class="text-muted small"><i class="ti ti-info-circle"></i> File akan otomatis terunduh</p>
+                </div>
+            `,
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonText: '<i class="ti ti-file-spreadsheet"></i> Export',
@@ -521,11 +443,20 @@
                 customClass: {
                     confirmButton: 'btn btn-success',
                     cancelButton: 'btn btn-secondary'
+                },
+                preConfirm: () => {
+                    return {
+                        summary: document.getElementById('includeSummary').checked,
+                        separate: document.getElementById('separateSheet').checked,
+                        chart: document.getElementById('includeChart').checked
+                    };
                 }
             }).then((result) => {
                 if (result.isConfirmed) {
+                    const options = result.value;
+
                     Swal.fire({
-                        title: 'Mengekspor Data...',
+                        title: 'Mengekspor...',
                         text: 'Mohon tunggu sebentar',
                         allowOutsideClick: false,
                         showConfirmButton: false,
@@ -534,11 +465,19 @@
                         }
                     });
 
-                    setTimeout(() => {
-                        const includeSummary = document.getElementById('includeSummary').checked;
-                        const separateSheets = document.getElementById('separateSheets').checked;
-                        const includeChart = document.getElementById('includeChart').checked;
+                    // Build URL with parameters - sesuai route buku-besar.export.excel
+                    const url = `{{ route('laporan.buku-besar.export.excel') }}?periode=${periode}&summary=${options.summary ? 1 : 0}&separate=${options.separate ? 1 : 0}&chart=${options.chart ? 1 : 0}`;
 
+                    // Create temporary link and trigger download
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = `Laporan_Buku_Besar_${periode}.xlsx`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+
+                    // Show success message after short delay
+                    setTimeout(() => {
                         Swal.fire({
                             icon: 'success',
                             title: 'Berhasil!',
@@ -546,17 +485,13 @@
                             timer: 2000,
                             showConfirmButton: false
                         });
-
-                        // TODO: Implement download
-                        // const url = `{{ route('laporan.buku-besar.export.excel') }}?periode=${periode}&summary=${includeSummary}&separate=${separateSheets}&chart=${includeChart}`;
-                        // window.location.href = url;
-                    }, 1500);
+                    }, 500);
                 }
             });
         }
 
-        // Update periode text on change
-        document.getElementById('filterPeriode').addEventListener('change', function () {
+        // Event listener for periode change
+        $('#filterPeriode').on('change', function () {
             updatePeriodeText();
         });
     </script>

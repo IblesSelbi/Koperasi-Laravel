@@ -3,7 +3,13 @@
 namespace App\Http\Controllers\Admin\Laporan;
 
 use App\Http\Controllers\Controller;
+use App\Models\Admin\DataMaster\JenisAkun;
+use App\Models\Admin\DataMaster\DataKas;
+use App\Models\Admin\TransaksiKas\Pemasukan;
+use App\Models\Admin\TransaksiKas\Pengeluaran;
+use App\Models\Admin\TransaksiKas\Transfer;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class NeracaSaldoController extends Controller
 {
@@ -12,62 +18,66 @@ class NeracaSaldoController extends Controller
      */
     public function index(Request $request)
     {
-        $neracaSaldo = collect([
+        // Get date range from request or default to current year
+        $tglDari = $request->get('tgl_dari', Carbon::now()->startOfYear()->format('Y-m-d'));
+        $tglSamp = $request->get('tgl_samp', Carbon::now()->endOfYear()->format('Y-m-d'));
 
-            // A. Aktiva Lancar
-            (object) ['kategori' => 'A. Aktiva Lancar', 'is_header' => true, 'debet' => 0, 'kredit' => 0],
-            (object) ['kategori' => 'A. Aktiva Lancar', 'kode_akun' => 'A1', 'nama_akun' => 'Kas Tunai', 'is_header' => false, 'debet' => 0, 'kredit' => 0],
-            (object) ['kategori' => 'A. Aktiva Lancar', 'kode_akun' => 'A2', 'nama_akun' => 'Kas Besar', 'is_header' => false, 'debet' => 0, 'kredit' => 0],
-            (object) ['kategori' => 'A. Aktiva Lancar', 'kode_akun' => 'A3', 'nama_akun' => 'Transfer', 'is_header' => false, 'debet' => 0, 'kredit' => 0],
-            (object) ['kategori' => 'A. Aktiva Lancar', 'kode_akun' => '001', 'nama_akun' => 'transaksi', 'is_header' => false, 'debet' => 0, 'kredit' => 0],
-            (object) ['kategori' => 'A. Aktiva Lancar', 'kode_akun' => 'A4', 'nama_akun' => 'Piutang Usaha', 'is_header' => false, 'debet' => 0, 'kredit' => 0],
-            (object) ['kategori' => 'A. Aktiva Lancar', 'kode_akun' => 'A6', 'nama_akun' => 'Pinjaman Anggota', 'is_header' => false, 'debet' => 0, 'kredit' => 0],
-            (object) ['kategori' => 'A. Aktiva Lancar', 'kode_akun' => 'A8', 'nama_akun' => 'Persediaan Barang', 'is_header' => false, 'debet' => 0, 'kredit' => 0],
-            (object) ['kategori' => 'A. Aktiva Lancar', 'kode_akun' => 'A9', 'nama_akun' => 'Biaya Dibayar Dimuka', 'is_header' => false, 'debet' => 0, 'kredit' => 0],
-            (object) ['kategori' => 'A. Aktiva Lancar', 'kode_akun' => 'A10', 'nama_akun' => 'Perlengkapan Usaha', 'is_header' => false, 'debet' => 0, 'kredit' => 0],
-            (object) ['kategori' => 'A. Aktiva Lancar', 'kode_akun' => 'A11', 'nama_akun' => 'Permisalan', 'is_header' => false, 'debet' => 0, 'kredit' => 0],
+        // Get all active jenis akun grouped by kategori
+        $jenisAkunList = JenisAkun::where('aktif', 'Y')
+            ->orderBy('kd_aktiva', 'asc')
+            ->get();
 
-            // C. Aktiva Tetap Berwujud
-            (object) ['kategori' => 'C. Aktiva Tetap Berwujud', 'is_header' => true, 'debet' => 0, 'kredit' => 0],
-            (object) ['kategori' => 'C. Aktiva Tetap Berwujud', 'kode_akun' => 'C1', 'nama_akun' => 'Peralatan Kantor', 'is_header' => false, 'debet' => 0, 'kredit' => 0],
-            (object) ['kategori' => 'C. Aktiva Tetap Berwujud', 'kode_akun' => 'C2', 'nama_akun' => 'Inventaris Kendaraan', 'is_header' => false, 'debet' => 0, 'kredit' => 0],
-            (object) ['kategori' => 'C. Aktiva Tetap Berwujud', 'kode_akun' => 'C3', 'nama_akun' => 'Mesin', 'is_header' => false, 'debet' => 0, 'kredit' => 0],
-            (object) ['kategori' => 'C. Aktiva Tetap Berwujud', 'kode_akun' => 'C4', 'nama_akun' => 'Aktiva Tetap Lainnya', 'is_header' => false, 'debet' => 0, 'kredit' => 0],
+        // Build neraca saldo data
+        $neracaSaldo = collect();
+        $kategoriMap = [
+            'A' => 'A. Aktiva Lancar',
+            'C' => 'C. Aktiva Tetap Berwujud',
+            'F' => 'F. Utang',
+            'H' => 'H. Utang Jangka Panjang',
+            'I' => 'I. Modal',
+            'J' => 'J. Pendapatan',
+            'K' => 'K. Beban',
+        ];
 
-            // F. Utang
-            (object) ['kategori' => 'F. Utang', 'is_header' => true, 'debet' => 0, 'kredit' => 0],
-            (object) ['kategori' => 'F. Utang', 'kode_akun' => 'F1', 'nama_akun' => 'Utang Usaha', 'is_header' => false, 'debet' => 0, 'kredit' => 0],
-            (object) ['kategori' => 'F. Utang', 'kode_akun' => 'F4', 'nama_akun' => 'Simpanan Sukarela', 'is_header' => false, 'debet' => 0, 'kredit' => 0],
-            (object) ['kategori' => 'F. Utang', 'kode_akun' => 'F5', 'nama_akun' => 'Utang Pajak', 'is_header' => false, 'debet' => 0, 'kredit' => 0],
+        $currentKategori = '';
+        
+        foreach ($jenisAkunList as $akun) {
+            // Get first letter of kode akun for kategori
+            $kodePrefix = substr($akun->kd_aktiva, 0, 1);
+            $kategori = $kategoriMap[$kodePrefix] ?? 'Lainnya';
 
-            // H. Utang Jangka Panjang
-            (object) ['kategori' => 'H. Utang Jangka Panjang', 'is_header' => true, 'debet' => 0, 'kredit' => 0],
-            (object) ['kategori' => 'H. Utang Jangka Panjang', 'kode_akun' => 'H1', 'nama_akun' => 'Utang Bank', 'is_header' => false, 'debet' => 0, 'kredit' => 0],
+            // Add kategori header if new kategori
+            if ($kategori !== $currentKategori) {
+                $currentKategori = $kategori;
+                $neracaSaldo->push((object)[
+                    'kategori' => $kategori,
+                    'is_header' => true,
+                    'debet' => 0,
+                    'kredit' => 0,
+                ]);
+            }
 
-            // I. Modal
-            (object) ['kategori' => 'I. Modal', 'is_header' => true, 'debet' => 0, 'kredit' => 0],
-            (object) ['kategori' => 'I. Modal', 'kode_akun' => 'I1', 'nama_akun' => 'Simpanan Pokok', 'is_header' => false, 'debet' => 0, 'kredit' => 0],
-            (object) ['kategori' => 'I. Modal', 'kode_akun' => 'I2', 'nama_akun' => 'Simpanan Wajib', 'is_header' => false, 'debet' => 0, 'kredit' => 0],
-            (object) ['kategori' => 'I. Modal', 'kode_akun' => 'I3', 'nama_akun' => 'Modal Awal', 'is_header' => false, 'debet' => 0, 'kredit' => 0],
-            (object) ['kategori' => 'I. Modal', 'kode_akun' => 'I5', 'nama_akun' => 'Modal Sumbangan', 'is_header' => false, 'debet' => 0, 'kredit' => 0],
-            (object) ['kategori' => 'I. Modal', 'kode_akun' => 'I6', 'nama_akun' => 'Modal Cadangan', 'is_header' => false, 'debet' => 0, 'kredit' => 0],
+            // Calculate debet and kredit for this akun
+            $saldo = $this->calculateSaldoAkun($akun->id, $tglDari, $tglSamp);
 
-            // J. Pendapatan
-            (object) ['kategori' => 'J. Pendapatan', 'is_header' => true, 'debet' => 0, 'kredit' => 0],
-            (object) ['kategori' => 'J. Pendapatan', 'kode_akun' => 'J1', 'nama_akun' => 'Pembayaran Angsuran', 'is_header' => false, 'debet' => 0, 'kredit' => 0],
-            (object) ['kategori' => 'J. Pendapatan', 'kode_akun' => 'J2', 'nama_akun' => 'Pendapatan Lainnya', 'is_header' => false, 'debet' => 0, 'kredit' => 0],
+            // Add akun detail
+            $neracaSaldo->push((object)[
+                'kategori' => $kategori,
+                'kode_akun' => $akun->kd_aktiva,
+                'nama_akun' => $akun->jns_transaksi,
+                'is_header' => false,
+                'debet' => $saldo['debet'],
+                'kredit' => $saldo['kredit'],
+                'akun_type' => $akun->akun,
+                'laba_rugi' => $akun->laba_rugi,
+            ]);
+        }
 
-            // K. Beban
-            (object) ['kategori' => 'K. Beban', 'is_header' => true, 'debet' => 0, 'kredit' => 0],
-            (object) ['kategori' => 'K. Beban', 'kode_akun' => 'K2', 'nama_akun' => 'Beban Gaji Karyawan', 'is_header' => false, 'debet' => 0, 'kredit' => 0],
-            (object) ['kategori' => 'K. Beban', 'kode_akun' => 'K3', 'nama_akun' => 'Biaya Listrik dan Air', 'is_header' => false, 'debet' => 0, 'kredit' => 0],
-            (object) ['kategori' => 'K. Beban', 'kode_akun' => 'K4', 'nama_akun' => 'Biaya Transportasi', 'is_header' => false, 'debet' => 0, 'kredit' => 0],
-            (object) ['kategori' => 'K. Beban', 'kode_akun' => 'K10', 'nama_akun' => 'Biaya Lainnya', 'is_header' => false, 'debet' => 0, 'kredit' => 0],
-        ]);
-
+        // Add kas accounts to Aktiva Lancar
+        $this->addKasToNeracaSaldo($neracaSaldo, $tglDari, $tglSamp);
 
         $notifications = collect([
-            (object) [
+            (object)[
                 'nama' => 'Hartati',
                 'tanggal_jatuh_tempo' => '2025-06-16',
                 'sisa_tagihan' => 1575000,
@@ -82,8 +92,108 @@ class NeracaSaldoController extends Controller
             'neracaSaldo',
             'notifications',
             'totalDebet',
-            'totalKredit'
+            'totalKredit',
+            'tglDari',
+            'tglSamp'
         ));
+    }
+
+    /**
+     * Calculate saldo for specific akun
+     */
+    private function calculateSaldoAkun($akunId, $tglDari, $tglSamp)
+    {
+        $totalDebet = 0;
+        $totalKredit = 0;
+
+        // Get pemasukan (where dari_akun_id matches) - DIPERBAIKI
+        $pemasukan = Pemasukan::where('dari_akun_id', $akunId)
+            ->whereBetween('tanggal_transaksi', [$tglDari, $tglSamp])
+            ->sum('jumlah');
+
+        // Get pengeluaran (where untuk_akun_id matches) - DIPERBAIKI
+        $pengeluaran = Pengeluaran::where('untuk_akun_id', $akunId)
+            ->whereBetween('tanggal_transaksi', [$tglDari, $tglSamp])
+            ->sum('jumlah');
+
+        // Determine debet or kredit based on akun type
+        $jenisAkun = JenisAkun::find($akunId);
+        
+        if ($jenisAkun) {
+            if ($jenisAkun->akun === 'Aktiva') {
+                // Aktiva: Debet (+), Kredit (-)
+                $totalDebet = $pemasukan;
+                $totalKredit = $pengeluaran;
+            } else {
+                // Pasiva: Kredit (+), Debet (-)
+                $totalKredit = $pemasukan;
+                $totalDebet = $pengeluaran;
+            }
+        }
+
+        return [
+            'debet' => $totalDebet,
+            'kredit' => $totalKredit,
+        ];
+    }
+
+    /**
+     * Add kas accounts to neraca saldo
+     */
+    private function addKasToNeracaSaldo(&$neracaSaldo, $tglDari, $tglSamp)
+    {
+        $kasAccounts = DataKas::where('aktif', 'Y')->get();
+
+        foreach ($kasAccounts as $kas) {
+            $saldo = $this->calculateSaldoKas($kas->id, $tglDari, $tglSamp);
+
+            // Find Aktiva Lancar section and insert after header
+            $aktivaIndex = $neracaSaldo->search(function ($item) {
+                return $item->is_header && $item->kategori === 'A. Aktiva Lancar';
+            });
+
+            if ($aktivaIndex !== false) {
+                $neracaSaldo->splice($aktivaIndex + 1, 0, [
+                    (object)[
+                        'kategori' => 'A. Aktiva Lancar',
+                        'kode_akun' => 'KAS-' . $kas->id,
+                        'nama_akun' => $kas->nama_kas,
+                        'is_header' => false,
+                        'debet' => $saldo > 0 ? $saldo : 0,
+                        'kredit' => $saldo < 0 ? abs($saldo) : 0,
+                        'akun_type' => 'Aktiva',
+                    ]
+                ]);
+            }
+        }
+    }
+
+    /**
+     * Calculate saldo for kas account
+     */
+    private function calculateSaldoKas($kasId, $tglDari, $tglSamp)
+    {
+        // Pemasukan to this kas
+        $pemasukan = Pemasukan::where('untuk_kas_id', $kasId)
+            ->whereBetween('tanggal_transaksi', [$tglDari, $tglSamp])
+            ->sum('jumlah');
+
+        // Pengeluaran from this kas
+        $pengeluaran = Pengeluaran::where('dari_kas_id', $kasId)
+            ->whereBetween('tanggal_transaksi', [$tglDari, $tglSamp])
+            ->sum('jumlah');
+
+        // Transfer in
+        $transferIn = Transfer::where('untuk_kas_id', $kasId)
+            ->whereBetween('tanggal_transaksi', [$tglDari, $tglSamp])
+            ->sum('jumlah');
+
+        // Transfer out
+        $transferOut = Transfer::where('dari_kas_id', $kasId)
+            ->whereBetween('tanggal_transaksi', [$tglDari, $tglSamp])
+            ->sum('jumlah');
+
+        return $pemasukan - $pengeluaran + $transferIn - $transferOut;
     }
 
     /**
@@ -91,31 +201,80 @@ class NeracaSaldoController extends Controller
      */
     public function cetakLaporan(Request $request)
     {
-        $tglDari = $request->get('tgl_dari', '');
-        $tglSamp = $request->get('tgl_samp', '');
+        $tglDari = $request->get('tgl_dari', Carbon::now()->startOfYear()->format('Y-m-d'));
+        $tglSamp = $request->get('tgl_samp', Carbon::now()->endOfYear()->format('Y-m-d'));
 
-        // TODO: Get filtered data and generate print view
-        // $neracaSaldo = NeracaSaldo::whereBetween('tanggal', [$tglDari, $tglSamp])
-        //     ->orderBy('kode_akun', 'asc')
-        //     ->get();
+        // Get data using same logic as index
+        $jenisAkunList = JenisAkun::where('aktif', 'Y')
+            ->orderBy('kd_aktiva', 'asc')
+            ->get();
 
-        // return view('admin.laporan.cetak_neraca_saldo', compact('neracaSaldo', 'tglDari', 'tglSamp'));
+        $neracaSaldo = collect();
+        $kategoriMap = [
+            'A' => 'A. Aktiva Lancar',
+            'C' => 'C. Aktiva Tetap Berwujud',
+            'F' => 'F. Utang',
+            'H' => 'H. Utang Jangka Panjang',
+            'I' => 'I. Modal',
+            'J' => 'J. Pendapatan',
+            'K' => 'K. Beban',
+        ];
 
-        return response('Cetak laporan neraca saldo dari ' . $tglDari . ' sampai ' . $tglSamp);
+        $currentKategori = '';
+        
+        foreach ($jenisAkunList as $akun) {
+            $kodePrefix = substr($akun->kd_aktiva, 0, 1);
+            $kategori = $kategoriMap[$kodePrefix] ?? 'Lainnya';
+
+            if ($kategori !== $currentKategori) {
+                $currentKategori = $kategori;
+                $neracaSaldo->push((object)[
+                    'kategori' => $kategori,
+                    'is_header' => true,
+                    'debet' => 0,
+                    'kredit' => 0,
+                ]);
+            }
+
+            $saldo = $this->calculateSaldoAkun($akun->id, $tglDari, $tglSamp);
+
+            $neracaSaldo->push((object)[
+                'kategori' => $kategori,
+                'kode_akun' => $akun->kd_aktiva,
+                'nama_akun' => $akun->jns_transaksi,
+                'is_header' => false,
+                'debet' => $saldo['debet'],
+                'kredit' => $saldo['kredit'],
+            ]);
+        }
+
+        $this->addKasToNeracaSaldo($neracaSaldo, $tglDari, $tglSamp);
+
+        $totalDebet = $neracaSaldo->where('is_header', false)->sum('debet');
+        $totalKredit = $neracaSaldo->where('is_header', false)->sum('kredit');
+
+        return view('admin.Laporan.neracaSaldo.CetakNeracaSaldo', compact(
+            'neracaSaldo',
+            'totalDebet',
+            'totalKredit',
+            'tglDari',
+            'tglSamp'
+        ));
     }
 
     /**
-     * Get data for filtering
+     * Get data for filtering (AJAX)
      */
     public function getData(Request $request)
     {
-        // TODO: Implement filtering logic
-        // $tglDari = $request->get('tgl_dari');
-        // $tglSamp = $request->get('tgl_samp');
+        $tglDari = $request->get('tgl_dari');
+        $tglSamp = $request->get('tgl_samp');
 
+        // Return filtered data if needed
         return response()->json([
             'status' => 'success',
-            'data' => []
+            'data' => [],
+            'message' => 'Data berhasil diambil'
         ]);
     }
 }

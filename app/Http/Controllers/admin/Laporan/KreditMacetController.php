@@ -21,16 +21,16 @@ class KreditMacetController extends Controller
         
         // Parse periode
         [$year, $month] = explode('-', $periode);
+        $endDate = Carbon::createFromFormat('Y-m', $periode)->endOfMonth();
         
         // Query untuk mendapatkan kredit macet
-        // Kredit macet = pinjaman yang memiliki angsuran jatuh tempo lewat dari bulan ini
+        // Kredit macet = pinjaman yang memiliki angsuran jatuh tempo lewat sampai akhir bulan yang dipilih
         $query = BayarAngsuran::with([
             'pinjaman.anggota',
             'pinjaman.lamaAngsuran'
         ])
         ->where('status_bayar', 'Belum')
-        ->whereYear('tanggal_jatuh_tempo', '<=', $year)
-        ->whereMonth('tanggal_jatuh_tempo', '<=', $month)
+        ->where('tanggal_jatuh_tempo', '<=', $endDate)
         ->where('tanggal_jatuh_tempo', '<', Carbon::now());
 
         $angsuranMacet = $query->orderBy('tanggal_jatuh_tempo', 'asc')->get();
@@ -112,6 +112,7 @@ class KreditMacetController extends Controller
             
             // Parse periode
             [$year, $month] = explode('-', $periode);
+            $endDate = Carbon::createFromFormat('Y-m', $periode)->endOfMonth();
             
             // Query untuk mendapatkan kredit macet
             $query = BayarAngsuran::with([
@@ -119,8 +120,7 @@ class KreditMacetController extends Controller
                 'pinjaman.lamaAngsuran'
             ])
             ->where('status_bayar', 'Belum')
-            ->whereYear('tanggal_jatuh_tempo', '<=', $year)
-            ->whereMonth('tanggal_jatuh_tempo', '<=', $month)
+            ->where('tanggal_jatuh_tempo', '<=', $endDate)
             ->where('tanggal_jatuh_tempo', '<', Carbon::now());
 
             $angsuranMacet = $query->orderBy('tanggal_jatuh_tempo', 'asc')->get();
@@ -190,6 +190,7 @@ class KreditMacetController extends Controller
         
         // Parse periode
         [$year, $month] = explode('-', $periode);
+        $endDate = Carbon::createFromFormat('Y-m', $periode)->endOfMonth();
         
         // Query untuk mendapatkan kredit macet
         $query = BayarAngsuran::with([
@@ -197,8 +198,7 @@ class KreditMacetController extends Controller
             'pinjaman.lamaAngsuran'
         ])
         ->where('status_bayar', 'Belum')
-        ->whereYear('tanggal_jatuh_tempo', '<=', $year)
-        ->whereMonth('tanggal_jatuh_tempo', '<=', $month)
+        ->where('tanggal_jatuh_tempo', '<=', $endDate)
         ->where('tanggal_jatuh_tempo', '<', Carbon::now());
 
         $angsuranMacet = $query->orderBy('tanggal_jatuh_tempo', 'asc')->get();
@@ -260,10 +260,6 @@ class KreditMacetController extends Controller
         $periode = $request->get('periode', date('Y-m'));
         
         // TODO: Implement Excel export using Laravel Excel
-        // Example:
-        // return Excel::download(new KreditMacetExport($periode), 'laporan-kredit-macet-' . $periode . '.xlsx');
-        
-        // Temporary: Return dummy file or redirect
         return redirect()->back()->with('info', 'Fitur export Excel akan segera tersedia');
     }
 
@@ -282,6 +278,7 @@ class KreditMacetController extends Controller
         try {
             $periode = $validated['periode'];
             [$year, $month] = explode('-', $periode);
+            $endDate = Carbon::createFromFormat('Y-m', $periode)->endOfMonth();
             
             // Get kredit macet data
             $query = BayarAngsuran::with([
@@ -289,8 +286,7 @@ class KreditMacetController extends Controller
                 'pinjaman.lamaAngsuran'
             ])
             ->where('status_bayar', 'Belum')
-            ->whereYear('tanggal_jatuh_tempo', '<=', $year)
-            ->whereMonth('tanggal_jatuh_tempo', '<=', $month)
+            ->where('tanggal_jatuh_tempo', '<=', $endDate)
             ->where('tanggal_jatuh_tempo', '<', Carbon::now());
 
             $angsuranMacet = $query->get();
@@ -305,28 +301,18 @@ class KreditMacetController extends Controller
             switch ($validated['metode']) {
                 case 'email':
                     // Send email to each anggota
-                    // foreach ($pinjaman as $p) {
-                    //     Mail::to($p->anggota->email)->send(new SuratPemanggilanMail($p));
-                    // }
                     break;
                     
                 case 'sms':
                     // Send SMS
-                    // foreach ($pinjaman as $p) {
-                    //     SMS::send($p->anggota->phone, $message);
-                    // }
                     break;
                     
                 case 'whatsapp':
                     // Send WhatsApp
-                    // foreach ($pinjaman as $p) {
-                    //     WhatsApp::send($p->anggota->phone, $message);
-                    // }
                     break;
                     
                 case 'cetak':
                     // Generate printable document
-                    // return view('admin.laporan.surat-pemanggilan', compact('pinjaman'));
                     break;
             }
 
@@ -415,33 +401,30 @@ class KreditMacetController extends Controller
         try {
             $periode = $request->get('periode', date('Y-m'));
             [$year, $month] = explode('-', $periode);
+            $endDate = Carbon::createFromFormat('Y-m', $periode)->endOfMonth();
             
             // Total kredit macet
             $totalMacet = BayarAngsuran::where('status_bayar', 'Belum')
-                ->whereYear('tanggal_jatuh_tempo', '<=', $year)
-                ->whereMonth('tanggal_jatuh_tempo', '<=', $month)
+                ->where('tanggal_jatuh_tempo', '<=', $endDate)
                 ->where('tanggal_jatuh_tempo', '<', Carbon::now())
                 ->count();
             
             // Total anggota bermasalah
             $anggotaBermasalah = BayarAngsuran::where('status_bayar', 'Belum')
-                ->whereYear('tanggal_jatuh_tempo', '<=', $year)
-                ->whereMonth('tanggal_jatuh_tempo', '<=', $month)
+                ->where('tanggal_jatuh_tempo', '<=', $endDate)
                 ->where('tanggal_jatuh_tempo', '<', Carbon::now())
                 ->distinct('pinjaman_id')
                 ->count();
             
             // Total tagihan macet
             $totalTagihan = BayarAngsuran::where('status_bayar', 'Belum')
-                ->whereYear('tanggal_jatuh_tempo', '<=', $year)
-                ->whereMonth('tanggal_jatuh_tempo', '<=', $month)
+                ->where('tanggal_jatuh_tempo', '<=', $endDate)
                 ->where('tanggal_jatuh_tempo', '<', Carbon::now())
                 ->sum('jumlah_angsuran');
             
             // Total denda
             $totalDenda = BayarAngsuran::where('status_bayar', 'Belum')
-                ->whereYear('tanggal_jatuh_tempo', '<=', $year)
-                ->whereMonth('tanggal_jatuh_tempo', '<=', $month)
+                ->where('tanggal_jatuh_tempo', '<=', $endDate)
                 ->where('tanggal_jatuh_tempo', '<', Carbon::now())
                 ->sum('denda');
 

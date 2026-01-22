@@ -361,7 +361,6 @@ Route::middleware('auth')
                 ->name('kredit-macet.get-data');
         });
 
-        // Transaksi Kas
         Route::controller(TransaksiKasController::class)->group(function () {
             Route::get('/transaksi-kas', 'index')->name('transaksi-kas');
             Route::get('/transaksi-kas/cetak', 'cetakLaporan')->name('transaksi-kas.cetak');

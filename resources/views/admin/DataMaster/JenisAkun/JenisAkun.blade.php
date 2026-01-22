@@ -101,7 +101,7 @@
                                     <div class="fw-semibold text-dark">{{ $item->jns_transaksi }}</div>
                                 </td>
                                 <td>
-                                    <span class="badge bg-info-subtle text-info">{{ $item->akun }}</span>
+                                    <span class="fw-semibold text-muted">{{ $item->akun }}</span>
                                 </td>
                                 <td class="text-center">
                                     <span

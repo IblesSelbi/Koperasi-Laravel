@@ -17,7 +17,9 @@
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <h4 class="fw-semibold mb-1">Laporan Neraca Saldo</h4>
-                    <p class="text-muted fs-3 mb-0" id="periodeTeks">Periode 01 Jan {{ date('Y') }} - 31 Des {{ date('Y') }}</p>
+                    <p class="text-muted fs-3 mb-0" id="periodeTeks">
+                        Periode {{ \Carbon\Carbon::parse($tglDari)->locale('id')->translatedFormat('d M Y') }} - {{ \Carbon\Carbon::parse($tglSamp)->locale('id')->translatedFormat('d M Y') }}
+                    </p>
                 </div>
             </div>
         </div>
@@ -48,8 +50,8 @@
         </div>
         <div class="card-body p-4">
             <form id="fmCari" method="GET" action="{{ route('laporan.neraca-saldo') }}">
-                <input type="hidden" name="tgl_dari" id="tgl_dari">
-                <input type="hidden" name="tgl_samp" id="tgl_samp">
+                <input type="hidden" name="tgl_dari" id="tgl_dari" value="{{ $tglDari }}">
+                <input type="hidden" name="tgl_samp" id="tgl_samp" value="{{ $tglSamp }}">
 
                 <div class="row g-3">
                     <div class="col-md-6">
@@ -58,7 +60,9 @@
                         </label>
                         <button class="form-control text-start" type="button" id="daterange-btn">
                             <i class="ti ti-calendar me-2"></i>
-                            <span id="reportrange">01 Jan {{ date('Y') }} - 31 Des {{ date('Y') }}</span>
+                            <span id="reportrange">
+                                {{ \Carbon\Carbon::parse($tglDari)->locale('id')->translatedFormat('d M Y') }} - {{ \Carbon\Carbon::parse($tglSamp)->locale('id')->translatedFormat('d M Y') }}
+                            </span>
                             <i class="ti ti-chevron-down float-end"></i>
                         </button>
                     </div>
@@ -142,6 +146,10 @@
     <script>
         // Initialize Daterangepicker
         $(document).ready(function () {
+            // Get dates from server
+            const startDate = moment('{{ $tglDari }}');
+            const endDate = moment('{{ $tglSamp }}');
+
             $('#daterange-btn').daterangepicker({
                 ranges: {
                     'Hari ini': [moment(), moment()],
@@ -168,19 +176,13 @@
                     firstDay: 1
                 },
                 showDropdowns: true,
-                startDate: moment().startOf('year'),
-                endDate: moment().endOf('year')
+                startDate: startDate,
+                endDate: endDate
             },
             function (start, end) {
                 $('#reportrange').html(start.format('DD MMM YYYY') + ' - ' + end.format('DD MMM YYYY'));
                 $('#periodeTeks').html('Periode ' + start.format('DD MMM YYYY') + ' - ' + end.format('DD MMM YYYY'));
             });
-
-            // Set initial display
-            const start = moment().startOf('year');
-            const end = moment().endOf('year');
-            $('#reportrange').html(start.format('DD MMM YYYY') + ' - ' + end.format('DD MMM YYYY'));
-            $('#periodeTeks').html('Periode ' + start.format('DD MMM YYYY') + ' - ' + end.format('DD MMM YYYY'));
         });
 
         function clearSearch() {

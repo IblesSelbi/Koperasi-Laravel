@@ -7,6 +7,20 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
     <!-- Daterangepicker CSS -->
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    
+    <style>
+        .h_tengah {
+            text-align: center;
+        }
+
+        .h_kanan {
+            text-align: right;
+        }
+
+        .header_kolom {
+            font-weight: 600;
+        }
+    </style>
 @endpush
 
 @section('content')
@@ -96,22 +110,29 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($kasSimpanan as $item)
+                        @forelse($kasSimpanan as $item)
                             <tr>
                                 <td class="h_tengah">{{ $item->no }}</td>
                                 <td>{{ $item->jenis_akun }}</td>
-                                <td class="h_kanan">{{ number_format($item->simpanan, 0, ',', ',') }}</td>
-                                <td class="h_kanan">{{ number_format($item->penarikan, 0, ',', ',') }}</td>
-                                <td class="h_kanan">{{ number_format($item->jumlah, 0, ',', ',') }}</td>
+                                <td class="h_kanan">{{ number_format($item->simpanan, 0, ',', '.') }}</td>
+                                <td class="h_kanan">{{ number_format($item->penarikan, 0, ',', '.') }}</td>
+                                <td class="h_kanan">{{ number_format($item->jumlah, 0, ',', '.') }}</td>
                             </tr>
-                        @endforeach
+                        @empty
+                            <tr>
+                                <td colspan="5" class="text-center py-4 text-muted">
+                                    <i class="ti ti-database-off fs-2"></i>
+                                    <p class="mb-0 mt-2">Tidak ada data untuk periode yang dipilih</p>
+                                </td>
+                            </tr>
+                        @endforelse
                     </tbody>
                     <tfoot class="table-light border-bottom">
                         <tr class="header_kolom">
                             <td colspan="2" class="h_tengah"><strong>Jumlah Total</strong></td>
-                            <td class="h_kanan"><strong>{{ number_format($totalSimpanan, 0, ',', ',') }}</strong></td>
-                            <td class="h_kanan"><strong>{{ number_format($totalPenarikan, 0, ',', ',') }}</strong></td>
-                            <td class="h_kanan"><strong>{{ number_format($totalJumlah, 0, ',', ',') }}</strong></td>
+                            <td class="h_kanan"><strong>{{ number_format($totalSimpanan, 0, ',', '.') }}</strong></td>
+                            <td class="h_kanan"><strong>{{ number_format($totalPenarikan, 0, ',', '.') }}</strong></td>
+                            <td class="h_kanan"><strong>{{ number_format($totalJumlah, 0, ',', '.') }}</strong></td>
                         </tr>
                     </tfoot>
                 </table>
@@ -205,17 +226,4 @@
         }
     </script>
 
-    <style>
-        .h_tengah {
-            text-align: center;
-        }
-
-        .h_kanan {
-            text-align: right;
-        }
-
-        .header_kolom {
-            font-weight: 600;
-        }
-    </style>
 @endpush

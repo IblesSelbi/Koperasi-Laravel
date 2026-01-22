@@ -61,7 +61,8 @@
                     <label class="form-label fw-semibold mb-2">
                         <i class="ti ti-calendar text-primary"></i> Pilih Periode
                     </label>
-                    <input type="month" class="form-control" id="filterPeriode" value="{{ date('Y-m') }}">
+                    <input type="month" class="form-control" id="filterPeriode"
+                        value="{{ request('periode', date('Y-m')) }}">
                 </div>
 
                 <!-- Action Buttons -->
@@ -208,7 +209,8 @@
                                 <strong class="text-danger fs-4">Rp {{ number_format($totalTagihan, 0, ',', '.') }}</strong>
                             </td>
                             <td class="text-end align-middle">
-                                <strong class="text-success fs-4">Rp {{ number_format($totalDibayar, 0, ',', '.') }}</strong>
+                                <strong class="text-success fs-4">Rp
+                                    {{ number_format($totalDibayar, 0, ',', '.') }}</strong>
                             </td>
                             <td class="text-end align-middle">
                                 <strong class="text-danger fs-4">Rp {{ number_format($sisaTagihan, 0, ',', '.') }}</strong>
@@ -466,30 +468,30 @@
             Swal.fire({
                 title: 'Kirim Surat Pemanggilan?',
                 html: `
-                                <div class="text-start">
-                                    <p class="mb-3">Surat pemanggilan akan dikirim kepada <strong>${totalData} anggota</strong> yang memiliki kredit macet pada periode <strong>${document.getElementById('periodeText').textContent}</strong></p>
+                                    <div class="text-start">
+                                        <p class="mb-3">Surat pemanggilan akan dikirim kepada <strong>${totalData} anggota</strong> yang memiliki kredit macet pada periode <strong>${document.getElementById('periodeText').textContent}</strong></p>
 
-                                    <div class="alert alert-warning" role="alert">
-                                        <i class="ti ti-alert-triangle"></i> 
-                                        <strong>Perhatian:</strong> Pastikan data sudah benar sebelum mengirim surat pemanggilan
-                                    </div>
+                                        <div class="alert alert-warning" role="alert">
+                                            <i class="ti ti-alert-triangle"></i> 
+                                            <strong>Perhatian:</strong> Pastikan data sudah benar sebelum mengirim surat pemanggilan
+                                        </div>
 
-                                    <div class="mb-3">
-                                        <label class="form-label fw-semibold">Metode Pengiriman <span class="text-danger">*</span></label>
-                                        <select id="swal-metode" class="form-select">
-                                            <option value="email">Email</option>
-                                            <option value="sms">SMS</option>
-                                            <option value="whatsapp">WhatsApp</option>
-                                            <option value="cetak">Cetak Surat</option>
-                                        </select>
-                                    </div>
+                                        <div class="mb-3">
+                                            <label class="form-label fw-semibold">Metode Pengiriman <span class="text-danger">*</span></label>
+                                            <select id="swal-metode" class="form-select">
+                                                <option value="email">Email</option>
+                                                <option value="sms">SMS</option>
+                                                <option value="whatsapp">WhatsApp</option>
+                                                <option value="cetak">Cetak Surat</option>
+                                            </select>
+                                        </div>
 
-                                    <div class="mb-3">
-                                        <label class="form-label fw-semibold">Catatan Tambahan</label>
-                                        <textarea id="swal-catatan" class="form-control" rows="3" placeholder="Opsional - Tambahkan catatan khusus"></textarea>
+                                        <div class="mb-3">
+                                            <label class="form-label fw-semibold">Catatan Tambahan</label>
+                                            <textarea id="swal-catatan" class="form-control" rows="3" placeholder="Opsional - Tambahkan catatan khusus"></textarea>
+                                        </div>
                                     </div>
-                                </div>
-                            `,
+                                `,
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonText: '<i class="ti ti-send"></i> Ya, Kirim',
@@ -579,43 +581,43 @@
             Swal.fire({
                 title: 'Tindak Lanjut Kredit Macet',
                 html: `
-                                <div class="text-start">
-                                    <p class="mb-3">Pilih tindak lanjut untuk kredit macet periode <strong>${document.getElementById('periodeText').textContent}</strong></p>
+                                    <div class="text-start">
+                                        <p class="mb-3">Pilih tindak lanjut untuk kredit macet periode <strong>${document.getElementById('periodeText').textContent}</strong></p>
 
-                                    <div class="list-group">
-                                        <a href="#" class="list-group-item list-group-item-action" onclick="tindakLanjutDetail('penjadwalan')">
-                                            <div class="d-flex w-100 justify-content-between">
-                                                <h6 class="mb-1"><i class="ti ti-calendar-event text-info"></i> Penjadwalan Ulang</h6>
-                                            </div>
-                                            <p class="mb-1 text-muted small">Atur jadwal pembayaran baru dengan anggota</p>
-                                        </a>
-                                        <a href="#" class="list-group-item list-group-item-action" onclick="tindakLanjutDetail('restrukturisasi')">
-                                            <div class="d-flex w-100 justify-content-between">
-                                                <h6 class="mb-1"><i class="ti ti-refresh text-warning"></i> Restrukturisasi Pinjaman</h6>
-                                            </div>
-                                            <p class="mb-1 text-muted small">Ubah skema pembayaran pinjaman</p>
-                                        </a>
-                                        <a href="#" class="list-group-item list-group-item-action" onclick="tindakLanjutDetail('peringatan')">
-                                            <div class="d-flex w-100 justify-content-between">
-                                                <h6 class="mb-1"><i class="ti ti-alert-triangle text-danger"></i> Surat Peringatan</h6>
-                                            </div>
-                                            <p class="mb-1 text-muted small">Kirim surat peringatan resmi</p>
-                                        </a>
-                                        <a href="#" class="list-group-item list-group-item-action" onclick="tindakLanjutDetail('pertemuan')">
-                                            <div class="d-flex w-100 justify-content-between">
-                                                <h6 class="mb-1"><i class="ti ti-users text-primary"></i> Jadwalkan Pertemuan</h6>
-                                            </div>
-                                            <p class="mb-1 text-muted small">Atur pertemuan dengan anggota</p>
-                                        </a>
-                                        <a href="#" class="list-group-item list-group-item-action" onclick="tindakLanjutDetail('penghapusan')">
-                                            <div class="d-flex w-100 justify-content-between">
-                                                <h6 class="mb-1"><i class="ti ti-trash text-danger"></i> Penghapusan Tagihan</h6>
-                                            </div>
-                                            <p class="mb-1 text-muted small">Hapus tagihan yang tidak dapat ditagih (write-off)</p>
-                                        </a>
+                                        <div class="list-group">
+                                            <a href="#" class="list-group-item list-group-item-action" onclick="tindakLanjutDetail('penjadwalan')">
+                                                <div class="d-flex w-100 justify-content-between">
+                                                    <h6 class="mb-1"><i class="ti ti-calendar-event text-info"></i> Penjadwalan Ulang</h6>
+                                                </div>
+                                                <p class="mb-1 text-muted small">Atur jadwal pembayaran baru dengan anggota</p>
+                                            </a>
+                                            <a href="#" class="list-group-item list-group-item-action" onclick="tindakLanjutDetail('restrukturisasi')">
+                                                <div class="d-flex w-100 justify-content-between">
+                                                    <h6 class="mb-1"><i class="ti ti-refresh text-warning"></i> Restrukturisasi Pinjaman</h6>
+                                                </div>
+                                                <p class="mb-1 text-muted small">Ubah skema pembayaran pinjaman</p>
+                                            </a>
+                                            <a href="#" class="list-group-item list-group-item-action" onclick="tindakLanjutDetail('peringatan')">
+                                                <div class="d-flex w-100 justify-content-between">
+                                                    <h6 class="mb-1"><i class="ti ti-alert-triangle text-danger"></i> Surat Peringatan</h6>
+                                                </div>
+                                                <p class="mb-1 text-muted small">Kirim surat peringatan resmi</p>
+                                            </a>
+                                            <a href="#" class="list-group-item list-group-item-action" onclick="tindakLanjutDetail('pertemuan')">
+                                                <div class="d-flex w-100 justify-content-between">
+                                                    <h6 class="mb-1"><i class="ti ti-users text-primary"></i> Jadwalkan Pertemuan</h6>
+                                                </div>
+                                                <p class="mb-1 text-muted small">Atur pertemuan dengan anggota</p>
+                                            </a>
+                                            <a href="#" class="list-group-item list-group-item-action" onclick="tindakLanjutDetail('penghapusan')">
+                                                <div class="d-flex w-100 justify-content-between">
+                                                    <h6 class="mb-1"><i class="ti ti-trash text-danger"></i> Penghapusan Tagihan</h6>
+                                                </div>
+                                                <p class="mb-1 text-muted small">Hapus tagihan yang tidak dapat ditagih (write-off)</p>
+                                            </a>
+                                        </div>
                                     </div>
-                                </div>
-                            `,
+                                `,
                 showConfirmButton: false,
                 showCancelButton: true,
                 cancelButtonText: '<i class="ti ti-x"></i> Tutup',

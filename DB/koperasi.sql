@@ -48,7 +48,7 @@ CREATE TABLE `bayar_angsuran` (
   CONSTRAINT `bayar_angsuran_ke_kas_id_foreign` FOREIGN KEY (`ke_kas_id`) REFERENCES `data_kas` (`id`),
   CONSTRAINT `bayar_angsuran_pinjaman_id_foreign` FOREIGN KEY (`pinjaman_id`) REFERENCES `pinjaman` (`id`) ON DELETE CASCADE,
   CONSTRAINT `bayar_angsuran_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1001 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `bayar_angsuran` */
 
@@ -56,7 +56,7 @@ insert  into `bayar_angsuran`(`id`,`kode_bayar`,`pinjaman_id`,`angsuran_ke`,`tan
 (1,'BYR00001',2,1,'2026-02-14','2026-01-15 02:51:00',787500.00,787500.00,0.00,1,'Lunas',NULL,1,'2026-01-14 09:55:38','2026-01-15 02:51:50',NULL),
 (2,'BYR00002',2,2,'2026-03-14','2026-01-15 03:06:00',787500.00,787500.00,0.00,1,'Lunas','sad',1,'2026-01-14 09:55:38','2026-01-15 03:06:51',NULL),
 (3,'BYR00003',2,3,'2026-04-14','2026-01-15 08:09:00',787500.00,787500.00,0.00,1,'Lunas',NULL,1,'2026-01-14 09:55:38','2026-01-15 08:09:51',NULL),
-(4,'BYR00004',2,4,'2026-05-14',NULL,787500.00,0.00,0.00,NULL,'Belum',NULL,NULL,'2026-01-14 09:55:38','2026-01-14 09:55:38',NULL),
+(4,'BYR00004',2,4,'2026-05-14','2026-01-19 03:04:00',787500.00,787500.00,0.00,1,'Lunas',NULL,1,'2026-01-14 09:55:38','2026-01-20 09:16:15',NULL),
 (5,'BYR00005',1,1,'2026-02-14',NULL,87500.00,0.00,0.00,NULL,'Belum',NULL,NULL,'2026-01-15 06:58:06','2026-01-15 06:58:48','2026-01-15 06:58:48'),
 (6,'BYR00006',1,2,'2026-03-14',NULL,87500.00,0.00,0.00,NULL,'Belum',NULL,NULL,'2026-01-15 06:58:06','2026-01-15 06:58:48','2026-01-15 06:58:48'),
 (7,'BYR00007',1,3,'2026-04-14',NULL,87500.00,0.00,0.00,NULL,'Belum',NULL,NULL,'2026-01-15 06:58:06','2026-01-15 06:58:48','2026-01-15 06:58:48'),
@@ -69,10 +69,27 @@ insert  into `bayar_angsuran`(`id`,`kode_bayar`,`pinjaman_id`,`angsuran_ke`,`tan
 (14,'BYR00014',1,10,'2026-11-14',NULL,87500.00,0.00,0.00,NULL,'Belum',NULL,NULL,'2026-01-15 06:58:06','2026-01-15 06:58:48','2026-01-15 06:58:48'),
 (15,'BYR00015',1,11,'2026-12-14',NULL,87500.00,0.00,0.00,NULL,'Belum',NULL,NULL,'2026-01-15 06:58:06','2026-01-15 06:58:48','2026-01-15 06:58:48'),
 (16,'BYR00016',1,12,'2027-01-14',NULL,87500.00,0.00,0.00,NULL,'Belum',NULL,NULL,'2026-01-15 06:58:06','2026-01-15 06:58:48','2026-01-15 06:58:48'),
-(17,'BYR00017',1,1,'2026-02-14',NULL,262500.00,0.00,0.00,NULL,'Belum',NULL,NULL,'2026-01-15 06:58:48','2026-01-15 06:58:48',NULL),
-(18,'BYR00018',1,2,'2026-03-14',NULL,262500.00,0.00,0.00,NULL,'Belum',NULL,NULL,'2026-01-15 06:58:48','2026-01-15 06:58:48',NULL),
-(19,'BYR00019',1,3,'2026-04-14',NULL,262500.00,0.00,0.00,NULL,'Belum',NULL,NULL,'2026-01-15 06:58:48','2026-01-15 06:58:48',NULL),
-(20,'BYR00020',1,4,'2026-05-14',NULL,262500.00,0.00,0.00,NULL,'Belum',NULL,NULL,'2026-01-15 06:58:48','2026-01-15 06:58:48',NULL);
+(17,'BYR00017',1,1,'2026-02-14','2026-01-15 08:30:00',262500.00,262500.00,0.00,1,'Lunas',NULL,1,'2026-01-15 06:58:48','2026-01-20 07:56:30','2026-01-20 07:56:30'),
+(18,'BYR00018',1,2,'2026-03-14','2026-01-19 03:02:00',262500.00,262500.00,0.00,1,'Lunas',NULL,1,'2026-01-15 06:58:48','2026-01-20 07:56:30','2026-01-20 07:56:30'),
+(19,'BYR00019',1,3,'2026-04-14','2026-01-19 03:02:00',262500.00,262500.00,0.00,1,'Lunas',NULL,1,'2026-01-15 06:58:48','2026-01-20 07:56:30','2026-01-20 07:56:30'),
+(20,'BYR00020',1,4,'2026-05-14','2026-01-19 03:03:00',262500.00,262500.00,0.00,1,'Lunas',NULL,1,'2026-01-15 06:58:48','2026-01-20 07:56:30','2026-01-20 07:56:30'),
+(21,'BYR00021',3,1,'2026-02-19','2026-01-19 03:20:00',1312500.00,1312500.00,0.00,1,'Lunas',NULL,1,'2026-01-19 03:17:37','2026-01-19 03:20:17',NULL),
+(22,'BYR00022',3,2,'2026-03-19','2026-01-19 07:33:00',1312500.00,1312500.00,0.00,1,'Lunas',NULL,1,'2026-01-19 03:17:37','2026-01-19 07:33:48',NULL),
+(23,'BYR00023',3,3,'2026-04-19','2026-01-19 07:34:00',1312500.00,1312500.00,0.00,1,'Lunas',NULL,1,'2026-01-19 03:17:37','2026-01-19 07:34:38',NULL),
+(24,'BYR00024',3,4,'2026-05-19','2026-01-19 07:34:00',1312500.00,1312500.00,0.00,1,'Lunas',NULL,1,'2026-01-19 03:17:37','2026-01-19 07:34:45',NULL),
+(41,'BYR00041',5,1,'2026-02-20',NULL,267500.00,0.00,0.00,NULL,'Belum',NULL,NULL,'2026-01-20 02:55:46','2026-01-20 03:19:18','2026-01-20 03:19:18'),
+(42,'BYR00042',5,2,'2026-03-20',NULL,267500.00,0.00,0.00,NULL,'Belum',NULL,NULL,'2026-01-20 02:55:46','2026-01-20 03:19:18','2026-01-20 03:19:18'),
+(43,'BYR00043',5,3,'2026-04-20',NULL,267500.00,0.00,0.00,NULL,'Belum',NULL,NULL,'2026-01-20 02:55:46','2026-01-20 03:19:18','2026-01-20 03:19:18'),
+(44,'BYR00044',5,4,'2026-05-20',NULL,267500.00,0.00,0.00,NULL,'Belum',NULL,NULL,'2026-01-20 02:55:46','2026-01-20 03:19:18','2026-01-20 03:19:18'),
+(45,'BYR00045',6,1,'2026-02-20','2026-01-20 03:36:00',267500.00,267500.00,10000.00,1,'Lunas',NULL,1,'2026-01-20 03:19:27','2026-01-20 10:08:44','2026-01-20 10:08:44'),
+(46,'BYR00046',6,2,'2026-03-20','2026-01-20 10:00:00',267500.00,267500.00,0.00,3,'Lunas',NULL,1,'2026-01-20 03:19:27','2026-01-20 10:08:44','2026-01-20 10:08:44'),
+(47,'BYR00047',6,3,'2026-04-20','2026-01-20 10:00:00',267500.00,267500.00,0.00,1,'Lunas',NULL,1,'2026-01-20 03:19:27','2026-01-20 10:08:44','2026-01-20 10:08:44'),
+(48,'BYR00048',6,4,'2026-05-20','2026-01-20 10:00:00',267500.00,267500.00,0.00,1,'Lunas',NULL,1,'2026-01-20 03:19:27','2026-01-20 10:08:44','2026-01-20 10:08:44'),
+(49,'BYR00049',7,1,'2026-02-21',NULL,262500.00,0.00,0.00,NULL,'Belum',NULL,NULL,'2026-01-21 02:07:16','2026-01-22 02:47:50','2026-01-22 02:47:50'),
+(50,'BYR00050',7,2,'2026-03-21',NULL,262500.00,0.00,0.00,NULL,'Belum',NULL,NULL,'2026-01-21 02:07:16','2026-01-22 02:47:50','2026-01-22 02:47:50'),
+(51,'BYR00051',7,3,'2026-04-21',NULL,262500.00,0.00,0.00,NULL,'Belum',NULL,NULL,'2026-01-21 02:07:16','2026-01-22 02:47:50','2026-01-22 02:47:50'),
+(52,'BYR00052',7,4,'2026-05-21',NULL,262500.00,0.00,0.00,NULL,'Belum',NULL,NULL,'2026-01-21 02:07:16','2026-01-22 02:47:50','2026-01-22 02:47:50'),
+(1000,'BYRT1000',100,1,'2026-01-06',NULL,525000.00,0.00,0.00,NULL,'Belum','Sudah lewat jatuh tempo 15 hari',NULL,'2026-01-21 14:54:32','2026-01-22 02:49:21',NULL);
 
 /*Table structure for table `cache` */
 
@@ -90,6 +107,8 @@ CREATE TABLE `cache` (
 insert  into `cache`(`key`,`value`,`expiration`) values 
 ('laravel-cache-adsa@gmail.com|127.0.0.1','i:1;',1767846410),
 ('laravel-cache-adsa@gmail.com|127.0.0.1:timer','i:1767846410;',1767846410),
+('laravel-cache-ibless@gmail.com|127.0.0.1','i:1;',1768876883),
+('laravel-cache-ibless@gmail.com|127.0.0.1:timer','i:1768876883;',1768876883),
 ('laravel-cache-test@gmail.com1|127.0.0.1','i:1;',1767856701),
 ('laravel-cache-test@gmail.com1|127.0.0.1:timer','i:1767856701;',1767856701);
 
@@ -145,8 +164,8 @@ CREATE TABLE `data_anggota` (
 insert  into `data_anggota`(`id`,`photo`,`id_anggota`,`username`,`password`,`nama`,`jenis_kelamin`,`tempat_lahir`,`tanggal_lahir`,`status`,`departement`,`pekerjaan`,`agama`,`alamat`,`kota`,`no_telp`,`tanggal_registrasi`,`jabatan`,`aktif`,`created_at`,`updated_at`) values 
 (1,'assets/images/profile/user-1.jpg','AG0001','good_joob123','$2y$12$5c/TkYViOrPKeJIH7I5FX.LuBpQCDocyKYGOz2DBonVUHn35M29S6','iam ibless','Laki-laki','sad','2025-12-29','Belum Kawin','Produksi Slitting','Lainnya','Islam','fasfaafafdaf','sad','04578987654','2026-01-09','Anggota','Aktif','2026-01-09 07:24:46','2026-01-09 07:24:46'),
 (5,'anggota/anggota_1768203624.png','AG0002','adssss','$2y$12$gsdGrN0v7Khqpl2xO1nd/ONVwgtpIcq8Ou2NMQx8/I/VhBGoB.WtO','sadsss','Perempuan','sad','2026-01-09','Belum Kawin','Produksi Slitting','PNS','Islam','asda','sad','04578987654','2026-01-12','Pengurus','Aktif','2026-01-12 07:40:26','2026-01-12 07:40:26'),
-(6,'assets/images/profile/user-1.jpg','AG0003','adssssadsad','$2y$12$ISMo72y3qQtebmJm/JFV5eqGRcQeVEDpDP9QPgH0Rqszqik4m/vLC','sadsssasda','Laki-laki','sad','2026-01-09','Kawin','WH','Buruh','Islam','sasda','sad','04578987654','2026-01-12','Anggota','Aktif','2026-01-12 07:40:50','2026-01-13 10:01:53'),
-(7,'assets/images/profile/user-1.jpg','AG0004','user@gmail.com','$2y$12$hSWSS0QO7.1JrCfd3dmlfOnvOQtMN4rriHmPneKzMvKAzKr1SX/O2','User Koperasi','Laki-laki','Jakarta','1990-01-01','Belum Kawin','Produksi Slitting','Karyawan Swasta','Islam','Jakarta','Jakarta','081234567890','2026-01-13','Anggota','Aktif','2026-01-13 16:49:08','2026-01-15 08:20:38');
+(6,'assets/images/profile/user-1.jpg','AG0003','adssssadsad','$2y$12$ISMo72y3qQtebmJm/JFV5eqGRcQeVEDpDP9QPgH0Rqszqik4m/vLC','sadsssasda','Laki-laki','sad','2026-01-09','Kawin','WH','Buruh','Islam','Villa Pajajaran Permai Blok F-16','sad','04578987654','2026-01-12','Anggota','Aktif','2026-01-12 07:40:50','2026-01-21 07:31:17'),
+(7,'assets/images/profile/user-1.jpg','AG0004','user@gmail.com','$2y$12$hSWSS0QO7.1JrCfd3dmlfOnvOQtMN4rriHmPneKzMvKAzKr1SX/O2','User Koperasi','Laki-laki','Jakartaaaaa','1990-01-01','Belum Kawin','Produksi Slitting','Karyawan Swasta','Islam','Jakarta','Jakarta','081234567890','2026-01-13','Pengurus','Aktif','2026-01-13 16:49:08','2026-01-21 03:47:27');
 
 /*Table structure for table `data_barang` */
 
@@ -250,14 +269,58 @@ CREATE TABLE `detail_bayar_angsuran` (
   CONSTRAINT `detail_bayar_angsuran_ke_kas_id_foreign` FOREIGN KEY (`ke_kas_id`) REFERENCES `data_kas` (`id`) ON DELETE SET NULL,
   CONSTRAINT `detail_bayar_angsuran_pinjaman_id_foreign` FOREIGN KEY (`pinjaman_id`) REFERENCES `pinjaman` (`id`) ON DELETE CASCADE,
   CONSTRAINT `detail_bayar_angsuran_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `detail_bayar_angsuran` */
 
 insert  into `detail_bayar_angsuran`(`id`,`kode_bayar`,`bayar_angsuran_id`,`pinjaman_id`,`angsuran_ke`,`tanggal_bayar`,`jumlah_bayar`,`denda`,`total_bayar`,`ke_kas_id`,`keterangan`,`user_id`,`created_at`,`updated_at`,`deleted_at`) values 
 (1,'TBY00001',1,2,1,'2026-01-15 02:51:00',787500.00,0.00,787500.00,1,NULL,1,'2026-01-15 02:51:50','2026-01-15 02:51:50',NULL),
 (2,'TBY00002',2,2,2,'2026-01-15 03:06:00',787500.00,0.00,787500.00,1,'sad',1,'2026-01-15 03:06:51','2026-01-15 03:06:51',NULL),
-(3,'TBY00003',3,2,3,'2026-01-15 08:09:00',787500.00,0.00,787500.00,1,NULL,1,'2026-01-15 08:09:51','2026-01-15 08:09:51',NULL);
+(3,'TBY00003',3,2,3,'2026-01-15 08:09:00',787500.00,0.00,787500.00,1,NULL,1,'2026-01-15 08:09:51','2026-01-15 08:09:51',NULL),
+(4,'TBY00004',17,1,1,'2026-01-15 08:30:00',262500.00,0.00,262500.00,1,NULL,1,'2026-01-15 08:30:08','2026-01-15 08:30:08',NULL),
+(5,'TBY00005',18,1,2,'2026-01-19 03:02:00',262500.00,0.00,262500.00,1,NULL,1,'2026-01-19 03:02:53','2026-01-19 03:02:53',NULL),
+(6,'TBY00006',19,1,3,'2026-01-19 03:02:00',262500.00,0.00,262500.00,1,NULL,1,'2026-01-19 03:03:02','2026-01-19 03:03:02',NULL),
+(7,'TBY00007',20,1,4,'2026-01-19 03:03:00',262500.00,0.00,262500.00,1,NULL,1,'2026-01-19 03:03:08','2026-01-19 03:03:08',NULL),
+(8,'TBY00008',4,2,4,'2026-01-19 03:04:00',787500.00,0.00,787500.00,1,NULL,1,'2026-01-19 03:04:14','2026-01-20 09:16:15',NULL),
+(9,'TBY00009',21,3,1,'2026-01-19 03:20:00',1312500.00,0.00,1312500.00,1,NULL,1,'2026-01-19 03:20:17','2026-01-19 03:20:17',NULL),
+(10,'TBY00010',22,3,2,'2026-01-19 07:33:00',1312500.00,0.00,1312500.00,1,NULL,1,'2026-01-19 07:33:48','2026-01-19 07:33:48',NULL),
+(11,'TBY00011',23,3,3,'2026-01-19 07:34:00',1312500.00,0.00,1312500.00,1,NULL,1,'2026-01-19 07:34:38','2026-01-19 07:34:38',NULL),
+(12,'TBY00012',24,3,4,'2026-01-19 07:34:00',1312500.00,0.00,1312500.00,1,NULL,1,'2026-01-19 07:34:45','2026-01-19 07:34:45',NULL),
+(13,'TBY00013',45,6,1,'2026-01-20 03:36:00',267500.00,10000.00,277500.00,1,NULL,1,'2026-01-20 03:36:40','2026-01-20 04:17:34',NULL),
+(14,'TBY00014',46,6,2,'2026-01-20 10:00:00',267500.00,0.00,267500.00,3,NULL,1,'2026-01-20 10:00:03','2026-01-20 10:00:03',NULL),
+(15,'TBY00015',47,6,3,'2026-01-20 10:00:00',267500.00,0.00,267500.00,1,NULL,1,'2026-01-20 10:00:11','2026-01-20 10:00:11',NULL),
+(16,'TBY00016',48,6,4,'2026-01-20 10:00:00',267500.00,0.00,267500.00,1,NULL,1,'2026-01-20 10:00:17','2026-01-20 10:00:17',NULL);
+
+/*Table structure for table `detail_pinjaman_lunas` */
+
+DROP TABLE IF EXISTS `detail_pinjaman_lunas`;
+
+CREATE TABLE `detail_pinjaman_lunas` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `kode_bayar` varchar(20) NOT NULL COMMENT 'TBY00001, TBY00002 - Auto Generate',
+  `pinjaman_lunas_id` bigint(20) unsigned NOT NULL COMMENT 'FK ke pinjaman_lunas',
+  `angsuran_ke` int(11) NOT NULL COMMENT 'Angsuran ke berapa (1,2,3...)',
+  `tanggal_bayar` datetime NOT NULL COMMENT 'Tanggal pembayaran',
+  `angsuran_pokok` decimal(15,2) NOT NULL DEFAULT 0.00 COMMENT 'Angsuran pokok per bulan',
+  `biaya_bunga` decimal(15,2) NOT NULL DEFAULT 0.00 COMMENT 'Biaya bunga per bulan',
+  `biaya_admin` decimal(15,2) NOT NULL DEFAULT 0.00 COMMENT 'Biaya admin (jika ada)',
+  `jumlah_angsuran` decimal(15,2) NOT NULL DEFAULT 0.00 COMMENT 'Total angsuran (pokok+bunga+admin)',
+  `denda` decimal(15,2) NOT NULL DEFAULT 0.00 COMMENT 'Denda keterlambatan',
+  `total_bayar` decimal(15,2) NOT NULL DEFAULT 0.00 COMMENT 'Total yang dibayar (angsuran+denda)',
+  `status_bayar` enum('Lunas','Belum') NOT NULL DEFAULT 'Lunas' COMMENT 'Status pembayaran',
+  `user_nama` varchar(100) DEFAULT NULL COMMENT 'Nama user yang input',
+  `keterangan` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `detail_pinjaman_lunas_kode_bayar_unique` (`kode_bayar`),
+  KEY `detail_pinjaman_lunas_pinjaman_lunas_id_foreign` (`pinjaman_lunas_id`),
+  KEY `detail_pinjaman_lunas_angsuran_ke_index` (`angsuran_ke`),
+  KEY `detail_pinjaman_lunas_kode_bayar_index` (`kode_bayar`),
+  CONSTRAINT `detail_pinjaman_lunas_pinjaman_lunas_id_foreign` FOREIGN KEY (`pinjaman_lunas_id`) REFERENCES `pinjaman_lunas` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+/*Data for the table `detail_pinjaman_lunas` */
 
 /*Table structure for table `failed_jobs` */
 
@@ -293,14 +356,51 @@ CREATE TABLE `jenis_akun` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=42 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `jenis_akun` */
 
 insert  into `jenis_akun`(`id`,`kd_aktiva`,`jns_transaksi`,`akun`,`pemasukan`,`pengeluaran`,`aktif`,`laba_rugi`,`created_at`,`updated_at`) values 
-(2,'s','s','Aktiva','Y','Y','Y','PENDAPATAN','2026-01-09 06:48:49','2026-01-12 06:23:10'),
-(3,'ssssssss','sssssssssssssssssss','Pasiva','T','Y','Y','PENDAPATAN','2026-01-12 08:16:43','2026-01-12 08:16:43'),
-(4,'zzzzz','zzzzzzzzz','Aktiva','Y','T','Y',NULL,'2026-01-12 08:16:58','2026-01-12 08:16:58');
+(1,'001','transaksi','Aktiva','Y','Y','Y','BIAYA','2026-01-22 15:40:30','2026-01-22 15:40:30'),
+(3,'A4','Piutang Usaha','Aktiva','Y','Y','Y',NULL,'2026-01-22 15:40:30','2026-01-22 15:40:30'),
+(4,'A5','Piutang Karyawan','Aktiva','T','Y','T',NULL,'2026-01-22 15:40:30','2026-01-22 15:40:30'),
+(5,'A6','Pinjaman Anggota','Aktiva','Y','Y','Y',NULL,'2026-01-22 15:40:30','2026-01-22 15:40:30'),
+(6,'A7','Piutang Anggota','Aktiva','Y','Y','T',NULL,'2026-01-22 15:40:30','2026-01-22 15:40:30'),
+(7,'A8','Persediaan Barang','Aktiva','T','Y','Y',NULL,'2026-01-22 15:40:30','2026-01-22 15:40:30'),
+(8,'A9','Biaya Dibayar Dimuka','Aktiva','T','Y','Y',NULL,'2026-01-22 15:40:30','2026-01-22 15:40:30'),
+(9,'A10','Perlengkapan Usaha','Aktiva','T','Y','Y',NULL,'2026-01-22 15:40:30','2026-01-22 15:40:30'),
+(10,'A11','Permisalan','Aktiva','Y','Y','Y',NULL,'2026-01-22 15:40:30','2026-01-22 15:40:30'),
+(11,'C','Aktiva Tetap Berwujud','Aktiva','Y','Y','Y',NULL,'2026-01-22 15:40:30','2026-01-22 15:40:30'),
+(12,'C1','Peralatan Kantor','Aktiva','T','Y','Y',NULL,'2026-01-22 15:40:30','2026-01-22 15:40:30'),
+(13,'C2','Inventaris Kendaraan','Aktiva','T','Y','Y',NULL,'2026-01-22 15:40:30','2026-01-22 15:40:30'),
+(14,'C3','Mesin','Aktiva','T','Y','Y',NULL,'2026-01-22 15:40:30','2026-01-22 15:40:30'),
+(15,'C4','Aktiva Tetap Lainnya','Aktiva','Y','T','Y',NULL,'2026-01-22 15:40:30','2026-01-22 15:40:30'),
+(16,'E','Modal Pribadi','Aktiva','Y','Y','T',NULL,'2026-01-22 15:40:30','2026-01-22 15:40:30'),
+(17,'E1','Prive','Aktiva','Y','Y','T',NULL,'2026-01-22 15:40:30','2026-01-22 15:40:30'),
+(18,'F','Utang','Pasiva','Y','Y','Y',NULL,'2026-01-22 15:40:30','2026-01-22 15:40:30'),
+(19,'F1','Utang Usaha','Pasiva','Y','Y','Y',NULL,'2026-01-22 15:40:30','2026-01-22 15:40:30'),
+(20,'F4','Simpanan Sukarela','Pasiva','Y','Y','Y',NULL,'2026-01-22 15:40:30','2026-01-22 15:40:30'),
+(21,'F5','Utang Pajak','Pasiva','Y','Y','Y',NULL,'2026-01-22 15:40:30','2026-01-22 15:40:30'),
+(22,'H','Utang Jangka Panjang','Pasiva','Y','Y','Y',NULL,'2026-01-22 15:40:30','2026-01-22 15:40:30'),
+(23,'H1','Utang Bank','Pasiva','Y','Y','Y',NULL,'2026-01-22 15:40:30','2026-01-22 15:40:30'),
+(24,'H2','Obligasi','Pasiva','Y','Y','T',NULL,'2026-01-22 15:40:30','2026-01-22 15:40:30'),
+(25,'I','Modal','Pasiva','Y','Y','Y',NULL,'2026-01-22 15:40:30','2026-01-22 15:40:30'),
+(26,'I1','Simpanan Pokok','Pasiva','Y','Y','Y',NULL,'2026-01-22 15:40:30','2026-01-22 15:40:30'),
+(27,'I2','Simpanan Wajib','Pasiva','Y','Y','Y',NULL,'2026-01-22 15:40:30','2026-01-22 15:40:30'),
+(28,'I3','Modal Awal','Pasiva','Y','Y','Y',NULL,'2026-01-22 15:40:30','2026-01-22 15:40:30'),
+(29,'I4','Modal Penyertaan','Pasiva','Y','Y','T',NULL,'2026-01-22 15:40:30','2026-01-22 15:40:30'),
+(30,'I5','Modal Sumbangan','Pasiva','Y','Y','Y',NULL,'2026-01-22 15:40:30','2026-01-22 15:40:30'),
+(31,'I6','Modal Cadangan','Pasiva','Y','Y','Y',NULL,'2026-01-22 15:40:30','2026-01-22 15:40:30'),
+(32,'J','Pendapatan','Pasiva','Y','Y','Y','PENDAPATAN','2026-01-22 15:40:30','2026-01-22 15:40:30'),
+(33,'J1','Pembayaran Angsuran','Pasiva','Y','Y','Y',NULL,'2026-01-22 15:40:30','2026-01-22 15:40:30'),
+(34,'J2','Pendapatan Lainnya','Pasiva','Y','T','Y','PENDAPATAN','2026-01-22 15:40:30','2026-01-22 15:40:30'),
+(35,'K','Beban','Aktiva','Y','Y','Y',NULL,'2026-01-22 15:40:30','2026-01-22 15:40:30'),
+(36,'K2','Beban Gaji Karyawan','Aktiva','T','Y','Y','BIAYA','2026-01-22 15:40:30','2026-01-22 15:40:30'),
+(37,'K3','Pengeluaran Lainnya','Aktiva','T','Y','T',NULL,'2026-01-22 15:40:30','2026-01-22 15:40:30'),
+(38,'K3','Biaya Listrik dan Air','Aktiva','T','Y','Y','BIAYA','2026-01-22 15:40:30','2026-01-22 15:40:30'),
+(39,'K4','Biaya Transportasi','Aktiva','T','Y','Y','BIAYA','2026-01-22 15:40:30','2026-01-22 15:40:30'),
+(40,'K10','Biaya Lainnya','Aktiva','T','Y','Y','BIAYA','2026-01-22 15:40:30','2026-01-22 15:40:30'),
+(41,'TRF','Transfer Antar Kas',NULL,'Y','Y','T',NULL,'2026-01-22 15:40:30','2026-01-22 15:40:30');
 
 /*Table structure for table `jenis_simpanan` */
 
@@ -437,15 +537,12 @@ CREATE TABLE `pemasukan` (
   CONSTRAINT `pemasukan_dari_akun_id_foreign` FOREIGN KEY (`dari_akun_id`) REFERENCES `jenis_akun` (`id`),
   CONSTRAINT `pemasukan_untuk_kas_id_foreign` FOREIGN KEY (`untuk_kas_id`) REFERENCES `data_kas` (`id`),
   CONSTRAINT `pemasukan_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `pemasukan` */
 
 insert  into `pemasukan`(`id`,`kode_transaksi`,`tanggal_transaksi`,`uraian`,`untuk_kas_id`,`dari_akun_id`,`jumlah`,`user_id`,`created_at`,`updated_at`,`deleted_at`) values 
-(8,'TKD00004','2026-01-12 07:16:00','dad',1,2,221.00,1,'2026-01-12 07:16:37','2026-01-12 07:16:37',NULL),
-(11,'TKD00005','2026-01-12 07:17:00','1',1,2,100000.00,1,'2026-01-12 07:17:43','2026-01-12 07:25:13','2026-01-12 07:25:13'),
-(12,'TKD00006','2026-01-12 07:25:00','sa',1,2,1234567.00,1,'2026-01-12 07:25:23','2026-01-12 07:25:23',NULL),
-(13,'TKD00007','2026-01-13 03:49:00','test',1,4,1111111.00,1,'2026-01-13 03:49:17','2026-01-13 03:49:17',NULL);
+(1,'TKD00001','2026-01-22 08:41:00','sssss',1,1,2600000.00,1,'2026-01-22 08:41:25','2026-01-22 08:41:25',NULL);
 
 /*Table structure for table `penarikan_tunai` */
 
@@ -479,15 +576,16 @@ CREATE TABLE `penarikan_tunai` (
   CONSTRAINT `penarikan_tunai_dari_kas_id_foreign` FOREIGN KEY (`dari_kas_id`) REFERENCES `data_kas` (`id`),
   CONSTRAINT `penarikan_tunai_jenis_simpanan_id_foreign` FOREIGN KEY (`jenis_simpanan_id`) REFERENCES `jenis_simpanan` (`id`),
   CONSTRAINT `penarikan_tunai_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `penarikan_tunai` */
 
 insert  into `penarikan_tunai`(`id`,`kode_transaksi`,`tanggal_transaksi`,`anggota_id`,`jenis_simpanan_id`,`jumlah`,`dari_kas_id`,`nama_penarik`,`no_identitas`,`alamat`,`keterangan`,`user_id`,`created_at`,`updated_at`,`deleted_at`) values 
-(1,'PNR00001','2026-01-13 02:45:00',1,14,100000.00,1,'sda','da','dsadsa','adads',1,'2026-01-13 02:45:57','2026-01-13 02:45:57',NULL),
-(2,'PNR00002','2026-01-13 02:46:00',1,14,100000.00,1,'ads','das','da','sdad',1,'2026-01-13 02:46:45','2026-01-13 02:46:45',NULL),
-(3,'TRK00003','2026-01-13 02:47:00',1,13,323232.00,1,'dsada','dsada','dsada','sda',1,'2026-01-13 02:47:54','2026-01-13 02:47:54',NULL),
-(4,'TRK00004','2026-01-13 02:48:00',6,14,1000002.00,1,'dasda','dsadas','sdada','sda',1,'2026-01-13 02:48:18','2026-01-13 04:11:20','2026-01-13 04:11:20');
+(1,'PNR00001','2026-01-13 02:45:00',1,14,100000.00,1,'sda','da','dsadsa','adads',1,'2026-01-13 02:45:57','2026-01-22 08:34:00','2026-01-22 08:34:00'),
+(2,'PNR00002','2026-01-13 02:46:00',1,14,100000.00,1,'ads','das','da','sdad',1,'2026-01-13 02:46:45','2026-01-22 08:33:59','2026-01-22 08:33:59'),
+(3,'TRK00003','2026-01-13 02:47:00',1,13,323232.00,1,'dsada','dsada','dsada','sda',1,'2026-01-13 02:47:54','2026-01-22 08:34:00','2026-01-22 08:34:00'),
+(4,'TRK00004','2026-01-13 02:48:00',6,14,1000002.00,1,'dasda','dsadas','sdada','sda',1,'2026-01-13 02:48:18','2026-01-13 04:11:20','2026-01-13 04:11:20'),
+(5,'TRK00005','2026-01-22 08:43:00',5,14,100000.00,1,'dasda','sada','ssssssssssss','ssssssssssss',1,'2026-01-22 08:43:32','2026-01-22 08:43:32',NULL);
 
 /*Table structure for table `pengajuan_pinjaman` */
 
@@ -522,13 +620,16 @@ CREATE TABLE `pengajuan_pinjaman` (
   CONSTRAINT `pengajuan_pinjaman_approved_by_foreign` FOREIGN KEY (`approved_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
   CONSTRAINT `pengajuan_pinjaman_lama_angsuran_id_foreign` FOREIGN KEY (`lama_angsuran_id`) REFERENCES `lama_angsuran` (`id`),
   CONSTRAINT `pengajuan_pinjaman_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=101 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `pengajuan_pinjaman` */
 
 insert  into `pengajuan_pinjaman`(`id`,`id_ajuan`,`tanggal_pengajuan`,`anggota_id`,`jenis_pinjaman`,`jumlah`,`lama_angsuran_id`,`keterangan`,`status`,`tanggal_cair`,`alasan`,`approved_by`,`user_id`,`created_at`,`updated_at`,`deleted_at`) values 
-(1,'B.26.01.001','2026-01-13 09:55:28',7,'Biasa',1000000.00,2,'1adads',1,'2026-01-14',NULL,1,2,'2026-01-13 09:55:28','2026-01-14 06:52:37',NULL),
-(2,'G.26.01.001','2026-01-14 06:53:55',7,'Barang',3000000.00,2,'beli hp',3,'2026-01-14','gas',1,2,'2026-01-14 06:53:55','2026-01-14 06:55:54',NULL);
+(1,'B.26.01.001','2026-01-13 09:55:28',7,'Biasa',1000000.00,2,'1adads',2,NULL,'sad',1,2,'2026-01-13 09:55:28','2026-01-19 07:49:12','2026-01-19 07:49:12'),
+(2,'G.26.01.001','2026-01-14 06:53:55',7,'Barang',3000000.00,2,'beli hp',3,'2026-01-14','gas',1,2,'2026-01-14 06:53:55','2026-01-20 09:45:02',NULL),
+(3,'G.26.01.002','2026-01-19 03:16:32',7,'Barang',5000000.00,2,'sdad',3,'2026-01-19',NULL,1,2,'2026-01-19 03:16:32','2026-01-19 03:17:37',NULL),
+(4,'G.26.01.003','2026-01-20 02:40:49',7,'Barang',1000000.00,2,'asd',1,'2026-01-20',NULL,1,2,'2026-01-20 02:40:49','2026-01-22 02:47:50',NULL),
+(100,'T.26.01.100','2025-11-01 10:00:00',1,'Biasa',2000000.00,2,'Testing jatuh tempo - sudah lewat',3,'2025-11-01',NULL,1,1,'2026-01-21 14:54:31','2026-01-22 02:49:21',NULL);
 
 /*Table structure for table `pengeluaran` */
 
@@ -556,13 +657,12 @@ CREATE TABLE `pengeluaran` (
   CONSTRAINT `pengeluaran_dari_kas_id_foreign` FOREIGN KEY (`dari_kas_id`) REFERENCES `data_kas` (`id`),
   CONSTRAINT `pengeluaran_untuk_akun_id_foreign` FOREIGN KEY (`untuk_akun_id`) REFERENCES `jenis_akun` (`id`),
   CONSTRAINT `pengeluaran_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `pengeluaran` */
 
 insert  into `pengeluaran`(`id`,`kode_transaksi`,`tanggal_transaksi`,`uraian`,`dari_kas_id`,`untuk_akun_id`,`jumlah`,`user_id`,`created_at`,`updated_at`,`deleted_at`) values 
-(1,'TKK00001','2026-01-12 08:14:00','ppp',1,2,111.00,1,'2026-01-12 08:14:35','2026-01-12 08:14:35',NULL),
-(2,'TKK00002','2026-01-12 08:17:00','ad',1,3,1.00,1,'2026-01-12 08:17:30','2026-01-12 08:17:30',NULL);
+(1,'TKK00001','2026-01-22 08:41:00','ssssssssssss',1,26,1000000.00,1,'2026-01-22 08:41:47','2026-01-22 08:42:45',NULL);
 
 /*Table structure for table `pinjaman` */
 
@@ -578,7 +678,7 @@ CREATE TABLE `pinjaman` (
   `jenis_pinjaman` enum('Biasa','Darurat','Barang') NOT NULL,
   `pokok_pinjaman` decimal(15,2) NOT NULL DEFAULT 0.00,
   `lama_angsuran_id` bigint(20) NOT NULL,
-  `angsuran_pokok` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `angsuran_pokok` decimal(15,2) NOT NULL,
   `bunga_persen` decimal(5,2) NOT NULL DEFAULT 5.00 COMMENT 'Persen bunga per angsuran',
   `biaya_bunga` decimal(15,2) NOT NULL DEFAULT 0.00,
   `biaya_admin` decimal(15,2) NOT NULL DEFAULT 0.00,
@@ -590,6 +690,8 @@ CREATE TABLE `pinjaman` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
+  `deleted_by` bigint(20) unsigned DEFAULT NULL,
+  `alasan_hapus` text DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `pinjaman_kode_pinjaman_unique` (`kode_pinjaman`),
   KEY `pinjaman_pengajuan_id_foreign` (`pengajuan_id`),
@@ -601,19 +703,71 @@ CREATE TABLE `pinjaman` (
   KEY `pinjaman_kode_pinjaman_index` (`kode_pinjaman`),
   KEY `pinjaman_tanggal_pinjam_index` (`tanggal_pinjam`),
   KEY `pinjaman_status_lunas_index` (`status_lunas`),
+  KEY `pinjaman_deleted_at_index` (`deleted_at`),
+  KEY `pinjaman_deleted_by_foreign` (`deleted_by`),
   CONSTRAINT `pinjaman_anggota_id_foreign` FOREIGN KEY (`anggota_id`) REFERENCES `data_anggota` (`id`),
   CONSTRAINT `pinjaman_barang_id_foreign` FOREIGN KEY (`barang_id`) REFERENCES `data_barang` (`id`) ON DELETE SET NULL,
   CONSTRAINT `pinjaman_dari_kas_id_foreign` FOREIGN KEY (`dari_kas_id`) REFERENCES `data_kas` (`id`),
+  CONSTRAINT `pinjaman_deleted_by_foreign` FOREIGN KEY (`deleted_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
   CONSTRAINT `pinjaman_lama_angsuran_id_foreign` FOREIGN KEY (`lama_angsuran_id`) REFERENCES `lama_angsuran` (`id`),
   CONSTRAINT `pinjaman_pengajuan_id_foreign` FOREIGN KEY (`pengajuan_id`) REFERENCES `pengajuan_pinjaman` (`id`),
   CONSTRAINT `pinjaman_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=105 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `pinjaman` */
 
-insert  into `pinjaman`(`id`,`kode_pinjaman`,`pengajuan_id`,`tanggal_pinjam`,`anggota_id`,`barang_id`,`jenis_pinjaman`,`pokok_pinjaman`,`lama_angsuran_id`,`angsuran_pokok`,`bunga_persen`,`biaya_bunga`,`biaya_admin`,`jumlah_angsuran`,`dari_kas_id`,`keterangan`,`status_lunas`,`user_id`,`created_at`,`updated_at`,`deleted_at`) values 
-(1,'PJ00001',1,'2026-01-14 13:51:00',7,NULL,'Biasa',1000000.00,2,250000.00,5.00,12500.00,0.00,1050000.00,1,'kaa','Belum',1,'2026-01-14 06:51:47','2026-01-15 06:58:48',NULL),
-(2,'PJ00002',2,'2026-01-14 13:55:00',7,NULL,'Barang',3000000.00,2,750000.00,5.00,37500.00,0.00,3150000.00,1,NULL,'Belum',1,'2026-01-14 06:55:54','2026-01-14 09:55:38',NULL);
+insert  into `pinjaman`(`id`,`kode_pinjaman`,`pengajuan_id`,`tanggal_pinjam`,`anggota_id`,`barang_id`,`jenis_pinjaman`,`pokok_pinjaman`,`lama_angsuran_id`,`angsuran_pokok`,`bunga_persen`,`biaya_bunga`,`biaya_admin`,`jumlah_angsuran`,`dari_kas_id`,`keterangan`,`status_lunas`,`user_id`,`created_at`,`updated_at`,`deleted_at`,`deleted_by`,`alasan_hapus`) values 
+(1,'PJ00001',1,'2026-01-14 13:51:00',7,NULL,'Biasa',1000000.00,2,250000.00,5.00,12500.00,0.00,1050000.00,1,'kaa','Lunas',1,'2026-01-14 06:51:47','2026-01-20 07:56:30','2026-01-20 07:56:30',1,'asasasaasaasa'),
+(2,'PJ00002',2,'2026-01-14 13:55:00',7,NULL,'Barang',3000000.00,2,750000.00,5.00,37500.00,0.00,3150000.00,1,NULL,'Belum',1,'2026-01-14 06:55:54','2026-01-21 02:04:28',NULL,NULL,NULL),
+(3,'PJ00003',3,'2026-01-19 10:17:00',7,NULL,'Barang',5000000.00,2,1250000.00,5.00,62500.00,0.00,5250000.00,1,NULL,'Lunas',1,'2026-01-19 03:17:37','2026-01-20 08:57:24',NULL,NULL,NULL),
+(5,'PJ00005',4,'2026-01-20 09:55:00',7,NULL,'Barang',1000000.00,2,250000.00,7.00,17500.00,0.00,1070000.00,1,NULL,'Belum',1,'2026-01-20 02:55:46','2026-01-20 03:19:18','2026-01-20 03:19:18',NULL,NULL),
+(6,'PJ00006',4,'2026-01-20 10:19:00',7,NULL,'Barang',1000000.00,2,250000.00,7.00,17500.00,10000.00,1080000.00,1,NULL,'Belum',1,'2026-01-20 03:19:27','2026-01-20 10:08:44','2026-01-20 10:08:44',1,'zzzzzzzzzzzzzzzzzz'),
+(7,'PJ00007',4,'2026-01-21 09:07:00',7,NULL,'Barang',1000000.00,2,250000.00,5.00,12500.00,0.00,1050000.00,1,NULL,'Belum',1,'2026-01-21 02:07:16','2026-01-22 02:47:50','2026-01-22 02:47:50',1,NULL),
+(100,'PJT00100',100,'2025-11-01 10:00:00',1,NULL,'Biasa',2000000.00,2,500000.00,5.00,25000.00,0.00,2100000.00,1,'Testing - Sudah Jatuh Tempo','Belum',1,'2026-01-21 14:54:32','2026-01-22 02:49:21',NULL,NULL,NULL);
+
+/*Table structure for table `pinjaman_lunas` */
+
+DROP TABLE IF EXISTS `pinjaman_lunas`;
+
+CREATE TABLE `pinjaman_lunas` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `kode_lunas` varchar(20) NOT NULL COMMENT 'TPJ00001, TPJ00002, dst - Auto Generate',
+  `pinjaman_id` bigint(20) unsigned NOT NULL COMMENT 'Referensi ke tabel pinjaman',
+  `tanggal_lunas` datetime NOT NULL COMMENT 'Tanggal pelunasan terakhir',
+  `total_pokok` decimal(15,2) NOT NULL DEFAULT 0.00 COMMENT 'Total pokok pinjaman',
+  `total_bunga` decimal(15,2) NOT NULL DEFAULT 0.00 COMMENT 'Total bunga yang dibayar',
+  `total_denda` decimal(15,2) NOT NULL DEFAULT 0.00 COMMENT 'Total denda yang dibayar',
+  `total_dibayar` decimal(15,2) NOT NULL DEFAULT 0.00 COMMENT 'Total yang sudah dibayarkan',
+  `lama_cicilan` int(11) NOT NULL COMMENT 'Jumlah bulan cicilan',
+  `total_angsuran` int(11) NOT NULL COMMENT 'Total angsuran yang dibayar',
+  `keterangan` text DEFAULT NULL,
+  `user_id` bigint(20) unsigned DEFAULT NULL COMMENT 'User yang validasi lunas',
+  `deleted_by` bigint(20) unsigned DEFAULT NULL COMMENT 'User yang membatalkan pelunasan',
+  `alasan_batal` text DEFAULT NULL COMMENT 'Alasan pembatalan pelunasan',
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `pinjaman_lunas_kode_lunas_unique` (`kode_lunas`),
+  KEY `pinjaman_lunas_kode_lunas_index` (`kode_lunas`),
+  KEY `pinjaman_lunas_tanggal_lunas_index` (`tanggal_lunas`),
+  KEY `pinjaman_lunas_pinjaman_id_index` (`pinjaman_id`),
+  KEY `pinjaman_lunas_user_id_foreign` (`user_id`),
+  KEY `pinjaman_lunas_deleted_at_index` (`deleted_at`),
+  KEY `pinjaman_lunas_deleted_by_index` (`deleted_by`),
+  CONSTRAINT `pinjaman_lunas_deleted_by_foreign` FOREIGN KEY (`deleted_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `pinjaman_lunas_pinjaman_id_foreign` FOREIGN KEY (`pinjaman_id`) REFERENCES `pinjaman` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `pinjaman_lunas_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+/*Data for the table `pinjaman_lunas` */
+
+insert  into `pinjaman_lunas`(`id`,`kode_lunas`,`pinjaman_id`,`tanggal_lunas`,`total_pokok`,`total_bunga`,`total_denda`,`total_dibayar`,`lama_cicilan`,`total_angsuran`,`keterangan`,`user_id`,`deleted_by`,`alasan_batal`,`deleted_at`,`created_at`,`updated_at`) values 
+(1,'TPJ00001',2,'2026-01-15 00:00:00',3000000.00,112500.00,0.00,2362500.00,4,3,'Validasi pelunasan pinjaman PJ00002',1,1,'zzzzzzzzzzzzzzzzzzzzz','2026-01-21 02:08:28','2026-01-19 09:46:27','2026-01-21 02:08:28'),
+(2,'TPJ00002',3,'2026-01-19 00:00:00',5000000.00,250000.00,0.00,5250000.00,4,4,'Validasi pelunasan pinjaman PJ00003',1,NULL,NULL,NULL,'2026-01-19 07:34:50','2026-01-21 01:56:59'),
+(4,'TPJ00004',2,'2026-01-19 03:04:00',3000000.00,150000.00,0.00,3150000.00,4,4,'Validasi pelunasan pinjaman PJ00002',1,1,'salahhhhhhhhhhhhhhhhhhhhh','2026-01-21 02:04:28','2026-01-20 09:16:31','2026-01-21 02:04:28'),
+(5,'TPJ00005',6,'2026-01-20 10:00:00',1000000.00,70000.00,10000.00,1080000.00,4,4,'Validasi pelunasan pinjaman PJ00006',1,NULL,NULL,NULL,'2026-01-20 10:00:21','2026-01-21 02:03:29'),
+(6,'TPJ00006',6,'2026-01-20 10:00:00',1000000.00,70000.00,10000.00,1080000.00,4,4,'Validasi pelunasan pinjaman PJ00006',1,NULL,NULL,NULL,'2026-01-20 10:08:06','2026-01-21 01:56:53');
 
 /*Table structure for table `roles` */
 
@@ -653,7 +807,8 @@ CREATE TABLE `sessions` (
 /*Data for the table `sessions` */
 
 insert  into `sessions`(`id`,`user_id`,`ip_address`,`user_agent`,`payload`,`last_activity`) values 
-('Lh1Hrb4doqgBjoEveotKc7tFPRmy5yBEgTsAgN5x',1,'127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0','YTo1OntzOjY6Il90b2tlbiI7czo0MDoiQWxjZXhQSnEwOWtXSk1scGZmWmdaRkhWNzRoWUtSTFBNMjA5S3ZPSCI7czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjM4OiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYWRtaW4vcGluamFtYW4vMSI7czo1OiJyb3V0ZSI7czoyNDoicGluamFtYW4ucGluamFtYW4uZGV0YWlsIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTt9',1768465464);
+('l5aoTvyEP9gKDb9sxa6GUOHOpqgpYC5kL27pdlU5',1,'127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0','YTo1OntzOjY6Il90b2tlbiI7czo0MDoiZXdYR0JpQ2JnTExPeUJDdUJGZnI2Z2kzNWlGMkw0S2FYVDZDM0YwVCI7czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjM3OiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYWRtaW4vbGFiYS1ydWdpIjtzOjU6InJvdXRlIjtzOjE3OiJsYXBvcmFuLmxhYmEtcnVnaSI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjE7fQ==',1769071545),
+('lbFEDY6w5cRYvYAP3JXfgPxPt6iwZmfcX1lpVeRI',NULL,'127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiUHNnU0NObVFjSDZaUjVTblRHOFZ4S3htdjJvNmJMTXBxUTlSNkFRWSI7czozOiJ1cmwiO2E6MTp7czo4OiJpbnRlbmRlZCI7czo0MDoiaHR0cDovLzEyNy4wLjAuMTo4MDAwL2FkbWluL2thcy1waW5qYW1hbiI7fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjQwOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYWRtaW4va2FzLXBpbmphbWFuIjtzOjU6InJvdXRlIjtzOjIwOiJsYXBvcmFuLmthcy1waW5qYW1hbiI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=',1769066886);
 
 /*Table structure for table `setoran_tunai` */
 
@@ -687,13 +842,14 @@ CREATE TABLE `setoran_tunai` (
   CONSTRAINT `setoran_tunai_jenis_simpanan_id_foreign` FOREIGN KEY (`jenis_simpanan_id`) REFERENCES `jenis_simpanan` (`id`),
   CONSTRAINT `setoran_tunai_untuk_kas_id_foreign` FOREIGN KEY (`untuk_kas_id`) REFERENCES `data_kas` (`id`),
   CONSTRAINT `setoran_tunai_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `setoran_tunai` */
 
 insert  into `setoran_tunai`(`id`,`kode_transaksi`,`tanggal_transaksi`,`anggota_id`,`jenis_simpanan_id`,`jumlah`,`untuk_kas_id`,`nama_penyetor`,`no_identitas`,`alamat`,`keterangan`,`user_id`,`created_at`,`updated_at`,`deleted_at`) values 
-(1,'TRD00001','2026-01-13 01:50:00',1,13,100000.00,1,'sada','sada','asda','sad',1,'2026-01-13 01:52:19','2026-01-13 01:52:19',NULL),
-(2,'TRD00002','2026-01-13 02:25:00',5,14,100000.00,1,'sad',NULL,'dasda','daasd',1,'2026-01-13 02:26:10','2026-01-13 02:27:22','2026-01-13 02:27:22');
+(1,'TRD00001','2026-01-13 01:50:00',1,13,100000.00,1,'sada','sada','asda','sad',1,'2026-01-13 01:52:19','2026-01-22 08:33:52','2026-01-22 08:33:52'),
+(2,'TRD00002','2026-01-13 02:25:00',5,14,100000.00,1,'sad',NULL,'dasda','daasd',1,'2026-01-13 02:26:10','2026-01-13 02:27:22','2026-01-13 02:27:22'),
+(3,'TRD00003','2026-01-22 08:43:00',1,14,100000.00,1,'sad','sada','sssssssss','sssss',1,'2026-01-22 08:43:15','2026-01-22 08:43:15',NULL);
 
 /*Table structure for table `suku_bunga` */
 
@@ -723,7 +879,7 @@ CREATE TABLE `suku_bunga` (
 /*Data for the table `suku_bunga` */
 
 insert  into `suku_bunga`(`id`,`pinjaman_bunga_tipe`,`bg_pinjam`,`biaya_adm`,`denda`,`denda_hari`,`dana_cadangan`,`jasa_usaha`,`jasa_anggota`,`jasa_modal`,`dana_pengurus`,`dana_karyawan`,`dana_pend`,`dana_sosial`,`pjk_pph`,`created_at`,`updated_at`) values 
-(1,'B',5.00,0.00,0.00,15,40.00,70.00,40.00,30.00,5.00,5.00,5.00,5.00,5.00,'2026-01-14 10:50:28','2026-01-14 04:03:37');
+(1,'B',5.00,0.00,0.00,15,40.00,70.00,40.00,30.00,5.00,5.00,5.00,5.00,5.00,'2026-01-14 10:50:28','2026-01-20 09:06:50');
 
 /*Table structure for table `transfer` */
 
@@ -751,13 +907,12 @@ CREATE TABLE `transfer` (
   CONSTRAINT `transfer_dari_kas_id_foreign` FOREIGN KEY (`dari_kas_id`) REFERENCES `data_kas` (`id`),
   CONSTRAINT `transfer_untuk_kas_id_foreign` FOREIGN KEY (`untuk_kas_id`) REFERENCES `data_kas` (`id`),
   CONSTRAINT `transfer_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `transfer` */
 
 insert  into `transfer`(`id`,`kode_transaksi`,`tanggal_transaksi`,`uraian`,`dari_kas_id`,`untuk_kas_id`,`jumlah`,`user_id`,`created_at`,`updated_at`,`deleted_at`) values 
-(1,'TRF00001','2026-01-12 08:33:00','sada',3,3,1.00,1,'2026-01-12 08:33:07','2026-01-12 08:39:48','2026-01-12 08:39:48'),
-(2,'TRF00002','2026-01-12 08:39:00','fasfaf',3,3,1.00,1,'2026-01-12 08:39:43','2026-01-12 08:39:43',NULL);
+(1,'TRF00001','2026-01-22 08:41:00','sssssssss',3,3,2000000.00,1,'2026-01-22 08:42:04','2026-01-22 08:42:57',NULL);
 
 /*Table structure for table `users` */
 

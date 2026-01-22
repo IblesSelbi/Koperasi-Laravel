@@ -49,14 +49,9 @@
             <h6 class="mb-0 fw-semibold"><i class="ti ti-filter me-2"></i>Filter Laporan</h6>
         </div>
         <div class="card-body p-4">
-            <form id="fmCari" method="POST" action="{{ route('laporan.shu') }}">
-                @csrf
+            <form id="fmCari" method="GET" action="{{ route('laporan.shu') }}">
                 <input type="hidden" name="tgl_dari" id="tgl_dari" value="{{ $tglDari }}">
                 <input type="hidden" name="tgl_samp" id="tgl_samp" value="{{ $tglSamp }}">
-                <input type="hidden" id="js_usaha" name="js_usaha" value="{{ $jasaUsaha }}">
-                <input type="hidden" id="js_modal" name="js_modal" value="{{ $jasaModal }}">
-                <input type="hidden" id="tot_pendpatan" name="tot_pendpatan" value="{{ $totalPendapatanAnggota }}">
-                <input type="hidden" id="tot_simpanan" name="tot_simpanan" value="{{ $totalSimpananAnggota }}">
 
                 <div class="row g-3">
                     <div class="col-md-4">
@@ -72,10 +67,10 @@
 
                     <div class="col-md-4">
                         <label class="form-label fw-semibold mb-2">
-                            <i class="ti ti-user text-info"></i> Pilih ID Anggota
+                            <i class="ti ti-user text-info"></i> Pilih ID Anggota (Opsional)
                         </label>
                         <select id="anggota_id" name="anggota_id" class="form-select">
-                            <option value="">-- Pilih Anggota --</option>
+                            <option value="">-- Semua Anggota --</option>
                             @foreach($anggotaList as $anggota)
                                 <option value="{{ $anggota->id }}" {{ $anggotaId == $anggota->id ? 'selected' : '' }}>
                                     {{ $anggota->id_anggota }} - {{ $anggota->nama }}
@@ -103,77 +98,138 @@
         </div>
     </div>
 
+    <!-- Summary Cards -->
+    <div class="row g-3 mb-2">
+
+    <!-- TOTAL PENDAPATAN -->
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body py-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-muted small">Total Pendapatan</span>
+                        <h4 class="fw-semibold mb-1">
+                            Rp {{ number_format($pendapatan['total'], 0, ',', '.') }}
+                        </h4>
+                        <small class="text-muted">
+                            Bunga {{ number_format($pendapatan['bunga'], 0, ',', '.') }} ·
+                            Denda {{ number_format($pendapatan['denda'], 0, ',', '.') }}
+                        </small>
+                    </div>
+                    <div class="text-success fs-8">
+                        <i class="ti ti-arrow-up-right"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-success bg-opacity-10 py-1"></div>
+        </div>
+    </div>
+
+    <!-- TOTAL BEBAN -->
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body py-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-muted small">Total Beban</span>
+                        <h4 class="fw-semibold mb-1">
+                            Rp {{ number_format($beban['total'], 0, ',', '.') }}
+                        </h4>
+                        <small class="text-muted">
+                            Operasional {{ number_format($beban['operasional'], 0, ',', '.') }} ·
+                            Administrasi {{ number_format($beban['administrasi'], 0, ',', '.') }}
+                        </small>
+                    </div>
+                    <div class="text-danger fs-8">
+                        <i class="ti ti-arrow-down-right"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-danger bg-opacity-10 py-1"></div>
+        </div>
+    </div>
+
+</div>
+
+
     <!-- Data Table Card -->
-    <div class="card shadow-sm mt-3">
+    <div class="card shadow-sm">
         <div class="card-body">
             <div class="table-responsive shadow-sm rounded-2 border">
                 <table id="tabelSHU" class="table table-hover align-middle mb-0" style="width:100%">
                     <tbody>
+                        <!-- SHU Sebelum & Setelah Pajak -->
                         <tr class="table-light">
                             <td class="h_kiri header_kolom" colspan="2"><strong>SHU Sebelum Pajak</strong></td>
-                            <td class="h_kanan header_kolom"><strong>{{ number_format($shuSebelumPajak, 0, ',', ',') }}</strong></td>
+                            <td class="h_kanan header_kolom"><strong>{{ number_format($shuSebelumPajak, 0, ',', '.') }}</strong></td>
                         </tr>
                         <tr class="table-light">
                             <td class="h_kiri header_kolom" colspan="2"><strong>Pajak PPh (5%)</strong></td>
-                            <td class="h_kanan header_kolom"><strong>{{ number_format($pajakPPh, 0, ',', ',') }}</strong></td>
+                            <td class="h_kanan header_kolom"><strong>{{ number_format($pajakPPh, 0, ',', '.') }}</strong></td>
                         </tr>
                         <tr class="table-light">
                             <td class="h_kiri header_kolom" colspan="2"><strong>SHU Setelah Pajak</strong></td>
-                            <td class="h_kanan header_kolom"><strong>{{ number_format($shuSetelahPajak, 0, ',', ',') }}</strong></td>
+                            <td class="h_kanan header_kolom"><strong>{{ number_format($shuSetelahPajak, 0, ',', '.') }}</strong></td>
                         </tr>
+
+                        <!-- Pembagian SHU untuk Dana-dana -->
                         <tr>
                             <td colspan="3" class="pt-4"><strong>PEMBAGIAN SHU UNTUK DANA-DANA</strong></td>
                         </tr>
                         <tr>
                             <td>Dana Cadangan</td>
                             <td class="h_kanan">40 %</td>
-                            <td class="h_kanan">{{ number_format($danaCadangan, 0, ',', ',') }}</td>
+                            <td class="h_kanan">{{ number_format($danaCadangan, 0, ',', '.') }}</td>
                         </tr>
                         <tr>
                             <td>Jasa Anggota</td>
                             <td class="h_kanan">40 %</td>
-                            <td class="h_kanan">{{ number_format($jasaAnggota, 0, ',', ',') }}</td>
+                            <td class="h_kanan">{{ number_format($jasaAnggota, 0, ',', '.') }}</td>
                         </tr>
                         <tr>
                             <td>Dana Pengurus</td>
                             <td class="h_kanan">5 %</td>
-                            <td class="h_kanan">{{ number_format($danaPengurus, 0, ',', ',') }}</td>
+                            <td class="h_kanan">{{ number_format($danaPengurus, 0, ',', '.') }}</td>
                         </tr>
                         <tr>
                             <td>Dana Karyawan</td>
                             <td class="h_kanan">5 %</td>
-                            <td class="h_kanan">{{ number_format($danaKaryawan, 0, ',', ',') }}</td>
+                            <td class="h_kanan">{{ number_format($danaKaryawan, 0, ',', '.') }}</td>
                         </tr>
                         <tr>
                             <td>Dana Pendidikan</td>
                             <td class="h_kanan">5 %</td>
-                            <td class="h_kanan">{{ number_format($danaPendidikan, 0, ',', ',') }}</td>
+                            <td class="h_kanan">{{ number_format($danaPendidikan, 0, ',', '.') }}</td>
                         </tr>
                         <tr>
                             <td>Dana Sosial</td>
                             <td class="h_kanan">5 %</td>
-                            <td class="h_kanan">{{ number_format($danaSosial, 0, ',', ',') }}</td>
+                            <td class="h_kanan">{{ number_format($danaSosial, 0, ',', '.') }}</td>
                         </tr>
+
+                        <!-- Pembagian SHU Anggota -->
                         <tr>
                             <td colspan="3" class="pt-3"><strong>PEMBAGIAN SHU ANGGOTA</strong></td>
                         </tr>
                         <tr>
                             <td>Jasa Usaha</td>
                             <td class="h_kanan">70 %</td>
-                            <td class="h_kanan">{{ number_format($jasaUsaha, 0, ',', ',') }}</td>
+                            <td class="h_kanan">{{ number_format($jasaUsaha, 0, ',', '.') }}</td>
                         </tr>
                         <tr>
                             <td>Jasa Modal</td>
                             <td class="h_kanan">30 %</td>
-                            <td class="h_kanan">{{ number_format($jasaModal, 0, ',', ',') }}</td>
+                            <td class="h_kanan">{{ number_format($jasaModal, 0, ',', '.') }}</td>
                         </tr>
+
+                        <!-- Total -->
                         <tr class="table-light">
                             <td class="header_kolom"><strong>Total Pendapatan Anggota</strong></td>
-                            <td colspan="2" class="h_kanan header_kolom"><strong>{{ number_format($totalPendapatanAnggota, 0, ',', ',') }}</strong></td>
+                            <td colspan="2" class="h_kanan header_kolom"><strong>{{ number_format($totalPendapatanAnggota, 0, ',', '.') }}</strong></td>
                         </tr>
                         <tr class="table-light">
                             <td class="header_kolom"><strong>Total Simpanan Anggota</strong></td>
-                            <td colspan="2" class="h_kanan header_kolom"><strong>{{ number_format($totalSimpananAnggota, 0, ',', ',') }}</strong></td>
+                            <td colspan="2" class="h_kanan header_kolom"><strong>{{ number_format($totalSimpananAnggota, 0, ',', '.') }}</strong></td>
                         </tr>
                     </tbody>
                 </table>
@@ -198,15 +254,18 @@
             // Initialize Select2
             $('#anggota_id').select2({
                 theme: 'bootstrap-5',
-                placeholder: '-- Pilih Anggota --',
+                placeholder: '-- Semua Anggota --',
                 allowClear: true
             });
 
             // Initialize Daterangepicker
             $('#daterange-btn').daterangepicker({
                 ranges: {
-                    'Tahun ini': [moment().startOf('year').startOf('month'), moment().endOf('year').endOf('month')],
-                    'Tahun kemarin': [moment().subtract('year', 1).startOf('year').startOf('month'), moment().subtract('year', 1).endOf('year').endOf('month')]
+                    'Tahun ini': [moment().startOf('year'), moment().endOf('year')],
+                    'Tahun kemarin': [moment().subtract(1, 'year').startOf('year'), moment().subtract(1, 'year').endOf('year')],
+                    '6 Bulan Terakhir': [moment().subtract(6, 'months'), moment()],
+                    '3 Bulan Terakhir': [moment().subtract(3, 'months'), moment()],
+                    'Bulan Ini': [moment().startOf('month'), moment().endOf('month')],
                 },
                 locale: {
                     format: 'DD MMM YYYY',
@@ -253,15 +312,11 @@
 
         // Function: Cetak Laporan
         function cetak() {
-            const anggotaId = $('#anggota_id').val();
+            const anggotaId = $('#anggota_id').val() || '';
             const tglDari = $('#tgl_dari').val();
             const tglSamp = $('#tgl_samp').val();
-            const jsModal = $('#js_modal').val();
-            const jsUsaha = $('#js_usaha').val();
-            const totPendapatan = $('#tot_pendpatan').val();
-            const totSimpanan = $('#tot_simpanan').val();
 
-            const url = `{{ route('laporan.shu.cetak') }}?anggota_id=${anggotaId}&tgl_dari=${tglDari}&tgl_samp=${tglSamp}&js_modal=${jsModal}&js_usaha=${jsUsaha}&tot_pendpatan=${totPendapatan}&tot_simpanan=${totSimpanan}`;
+            const url = `{{ route('laporan.shu.cetak') }}?anggota_id=${anggotaId}&tgl_dari=${tglDari}&tgl_samp=${tglSamp}`;
             const win = window.open(url, '_blank');
             
             if (win) {
@@ -291,6 +346,19 @@
 
         .header_kolom {
             font-weight: 600;
+            background-color: #f8f9fa;
+        }
+
+        .bg-soft {
+            opacity: 0.1;
+        }
+
+        .avatar-sm {
+            width: 3rem;
+            height: 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
     </style>
 @endpush

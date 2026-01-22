@@ -6,9 +6,22 @@
      <!-- DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css">
-    <link rel="stylesheet" href="{{ asset('assets/css/styles.min.css') }}" />
     <!-- Daterangepicker -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
+    <style>
+        .h_tengah {
+            text-align: center;
+        }
+
+        .h_kanan {
+            text-align: right;
+        }
+
+        .header_kolom {
+            font-weight: 600;
+        }
+    </style>
 @endpush
 
 @section('content')
@@ -85,7 +98,7 @@
 
     <!-- Estimasi Data Pinjaman -->
     <div class="card mb-3 shadow-sm">
-        <div class="card-header bg-primary-subtle text-white">
+        <div class="card-header bg-primary-subtle">
             <h5 class="mb-0 fw-semibold">
                 <i class="ti ti-chart-line me-2"></i>Estimasi Data Pinjaman
             </h5>
@@ -101,21 +114,27 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($estimasiPinjaman as $item)
+                        @forelse($estimasiPinjaman as $item)
                             <tr>
                                 <td class="h_tengah">{{ $item->no }}</td>
                                 <td>{{ $item->keterangan }}</td>
-                                <td class="h_kanan">{{ number_format($item->jumlah, 0, ',', ',') }}</td>
+                                <td class="h_kanan">{{ number_format($item->jumlah, 0, ',', '.') }}</td>
                             </tr>
-                        @endforeach
-                        <tr class="table-light">
-                            <td colspan="2" class="h_kanan header_kolom">Jumlah Tagihan</td>
-                            <td class="h_kanan header_kolom">{{ number_format($jumlahTagihan, 0, ',', ',') }}</td>
-                        </tr>
-                        <tr>
-                            <td colspan="2" class="h_kanan"><strong>Estimasi Pendapatan Pinjaman</strong></td>
-                            <td class="h_kanan"><strong>{{ number_format($estimasiPendapatanPinjaman, 0, ',', ',') }}</strong></td>
-                        </tr>
+                        @empty
+                            <tr>
+                                <td colspan="3" class="text-center py-3 text-muted">Tidak ada data pinjaman</td>
+                            </tr>
+                        @endforelse
+                        @if($estimasiPinjaman->isNotEmpty())
+                            <tr class="table-light">
+                                <td colspan="2" class="h_kanan header_kolom">Jumlah Tagihan</td>
+                                <td class="h_kanan header_kolom">{{ number_format($jumlahTagihan, 0, ',', '.') }}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="h_kanan"><strong>Estimasi Pendapatan Pinjaman</strong></td>
+                                <td class="h_kanan"><strong>{{ number_format($estimasiPendapatanPinjaman, 0, ',', '.') }}</strong></td>
+                            </tr>
+                        @endif
                     </tbody>
                 </table>
             </div>
@@ -124,7 +143,7 @@
 
     <!-- Pendapatan -->
     <div class="card mb-3 shadow-sm">
-        <div class="card-header bg-success-subtle text-white">
+        <div class="card-header bg-success-subtle">
             <h5 class="mb-0 fw-semibold">
                 <i class="ti ti-trending-up me-2"></i>Pendapatan
             </h5>
@@ -140,17 +159,23 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($pendapatan as $item)
+                        @forelse($pendapatanList as $item)
                             <tr>
                                 <td class="h_tengah">{{ $item->no }}</td>
                                 <td>{{ $item->keterangan }}</td>
-                                <td class="h_kanan">{{ number_format($item->jumlah, 0, ',', ',') }}</td>
+                                <td class="h_kanan">{{ number_format($item->jumlah, 0, ',', '.') }}</td>
                             </tr>
-                        @endforeach
-                        <tr class="table-light">
-                            <td colspan="2" class="h_kanan header_kolom">Jumlah Pendapatan</td>
-                            <td class="h_kanan header_kolom">{{ number_format($jumlahPendapatan, 0, ',', ',') }}</td>
-                        </tr>
+                        @empty
+                            <tr>
+                                <td colspan="3" class="text-center py-3 text-muted">Tidak ada pendapatan</td>
+                            </tr>
+                        @endforelse
+                        @if($pendapatanList->isNotEmpty())
+                            <tr class="table-light">
+                                <td colspan="2" class="h_kanan header_kolom">Jumlah Pendapatan</td>
+                                <td class="h_kanan header_kolom">{{ number_format($jumlahPendapatan, 0, ',', '.') }}</td>
+                            </tr>
+                        @endif
                     </tbody>
                 </table>
             </div>
@@ -159,7 +184,7 @@
 
     <!-- Biaya-biaya -->
     <div class="card mb-3 shadow-sm">
-        <div class="card-header bg-danger-subtle text-white">
+        <div class="card-header bg-danger-subtle">
             <h5 class="mb-0 fw-semibold">
                 <i class="ti ti-trending-down me-2"></i>Biaya-biaya
             </h5>
@@ -175,17 +200,23 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($biaya as $item)
+                        @forelse($biayaList as $item)
                             <tr>
                                 <td class="h_tengah">{{ $item->no }}</td>
                                 <td>{{ $item->keterangan }}</td>
-                                <td class="h_kanan">{{ number_format($item->jumlah, 0, ',', ',') }}</td>
+                                <td class="h_kanan">{{ number_format($item->jumlah, 0, ',', '.') }}</td>
                             </tr>
-                        @endforeach
-                        <tr class="table-light">
-                            <td colspan="2" class="h_kanan header_kolom">Jumlah Biaya</td>
-                            <td class="h_kanan header_kolom">{{ number_format($jumlahBiaya, 0, ',', ',') }}</td>
-                        </tr>
+                        @empty
+                            <tr>
+                                <td colspan="3" class="text-center py-3 text-muted">Tidak ada biaya</td>
+                            </tr>
+                        @endforelse
+                        @if($biayaList->isNotEmpty())
+                            <tr class="table-light">
+                                <td colspan="2" class="h_kanan header_kolom">Jumlah Biaya</td>
+                                <td class="h_kanan header_kolom">{{ number_format($jumlahBiaya, 0, ',', '.') }}</td>
+                            </tr>
+                        @endif
                     </tbody>
                 </table>
             </div>
@@ -196,13 +227,13 @@
     <div class="card shadow-sm">
         <div class="card-body py-3">
             <div class="d-flex align-items-center justify-content-between">
-                <div class="d-flex align-items-center text-muted">
-                    <i class="ti ti-calculator me-2"></i>
-                    <span class="fw-semibold">Laba Rugi</span>
+                <div class="d-flex align-items-center">
+                    <i class="ti ti-calculator me-3 fs-4"></i>
+                    <span class="fw-semibold fs-4">LABA RUGI</span>
                 </div>
 
-                <span class="fw-bold {{ $labaRugi < 0 ? 'text-danger' : 'text-success' }} fs-5">
-                    {{ number_format($labaRugi, 0, ',', ',') }}
+                <span class="fw-semibold {{ $labaRugi < 0 ? 'text-danger' : 'text-success' }} fs-5">
+                    {{ $labaRugi < 0 ? '(' : '' }}{{ number_format(abs($labaRugi), 0, ',', '.') }}{{ $labaRugi < 0 ? ')' : '' }}
                 </span>
             </div>
         </div>

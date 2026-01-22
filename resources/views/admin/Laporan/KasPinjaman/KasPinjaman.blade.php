@@ -161,7 +161,7 @@
                                 <tr>
                                     <td class="h_tengah">{{ $item->no }}</td>
                                     <td>{{ $item->keterangan }}</td>
-                                    <td class="h_kanan">{{ number_format($item->jumlah, 0, ',', ',') }}</td>
+                                    <td class="h_kanan">{{ number_format($item->jumlah, 0, ',', '.') }}</td>
                                 </tr>
                             @endif
                         @endforeach
@@ -169,7 +169,7 @@
                         <tr class="table-light">
                             <td class="h_tengah header_kolom"></td>
                             <td class="header_kolom">Jumlah Tagihan + Denda</td>
-                            <td class="h_kanan header_kolom">{{ number_format($jumlahTagihanDenda, 0, ',', ',') }}</td>
+                            <td class="h_kanan header_kolom">{{ number_format($jumlahTagihanDenda, 0, ',', '.') }}</td>
                         </tr>
                         
                         @foreach($kasPinjaman as $index => $item)
@@ -177,7 +177,7 @@
                                 <tr>
                                     <td class="h_tengah">{{ $item->no }}</td>
                                     <td>{{ $item->keterangan }}</td>
-                                    <td class="h_kanan">{{ number_format($item->jumlah, 0, ',', ',') }}</td>
+                                    <td class="h_kanan">{{ number_format($item->jumlah, 0, ',', '.') }}</td>
                                 </tr>
                             @endif
                         @endforeach
@@ -187,7 +187,7 @@
                                 <tr style="background-color: #d1f2dd;">
                                     <td class="h_tengah">{{ $item->no }}</td>
                                     <td><strong>{{ $item->keterangan }}</strong></td>
-                                    <td class="h_kanan"><strong>{{ number_format($item->jumlah, 0, ',', ',') }}</strong></td>
+                                    <td class="h_kanan"><strong>{{ number_format($item->jumlah, 0, ',', '.') }}</strong></td>
                                 </tr>
                             @endif
                         @endforeach
