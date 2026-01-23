@@ -367,7 +367,7 @@
                                     @endif
                                 </td>
                                 <td class="text-center">
-                                    <div>{{ $item->tanggal_jatuh_tempo->format('d M Y') }}</div>
+                                    <div>{{ $item->tanggal_jatuh_tempo->translatedFormat('d F Y') }}</div>
                                     @if($item->status_bayar == 'Belum' && $item->is_terlambat)
                                         <small class="text-danger">
                                             <i class="ti ti-alert-circle"></i> {{ $item->hari_terlambat }} hari

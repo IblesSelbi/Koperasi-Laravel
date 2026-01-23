@@ -193,7 +193,6 @@
 @endsection
 
 @push('scripts')
-
     <script>
         let table;
 
@@ -236,7 +235,7 @@
             document.getElementById('formPengguna').reset();
             document.getElementById('editId').value = '';
             document.getElementById('password').required = true;
-            document.getElementById('passLabel').innerHTML = '<span class="text-danger">*</span>';
+            document.getElementById('passLabel').innerHTML = 'Password <span class="text-danger">*</span>';
             document.getElementById('passHint').style.display = 'none';
             document.getElementById('status').value = 'Y';
 
@@ -256,7 +255,7 @@
             document.getElementById('level').value = row.dataset.level;
             document.getElementById('password').value = '';
             document.getElementById('password').required = false;
-            document.getElementById('passLabel').textContent = 'Password';
+            document.getElementById('passLabel').innerHTML = 'Password';
             document.getElementById('passHint').style.display = 'block';
             document.getElementById('status').value = row.dataset.status;
 
@@ -299,15 +298,23 @@
             })
                 .then(res => res.json())
                 .then(res => {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Berhasil',
-                        text: res.message,
-                        timer: 1500,
-                        showConfirmButton: false
-                    }).then(() => location.reload());
+                    if (res.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil',
+                            text: res.message,
+                            timer: 1500,
+                            showConfirmButton: false
+                        }).then(() => location.reload());
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal',
+                            text: res.message || 'Terjadi kesalahan'
+                        });
+                    }
                 })
-                .catch(() => {
+                .catch((error) => {
                     Swal.fire('Error', 'Gagal menyimpan data', 'error');
                 });
         }
@@ -367,5 +374,4 @@
             window.location.href = "{{ route('master.data-pengguna.export') }}";
         }
     </script>
-
 @endpush

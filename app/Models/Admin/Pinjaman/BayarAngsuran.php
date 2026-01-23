@@ -153,15 +153,15 @@ class BayarAngsuran extends Model
             return 0;
         }
 
-        $jatuhTempo = Carbon::parse($this->tanggal_jatuh_tempo);
+        $jatuhTempo = Carbon::parse($this->tanggal_jatuh_tempo)->startOfDay();
 
         if ($this->status_bayar === 'Lunas' && $this->tanggal_bayar) {
-            return $jatuhTempo->diffInDays(
-                Carbon::parse($this->tanggal_bayar)
-            );
+            $tanggalBayar = Carbon::parse($this->tanggal_bayar)->startOfDay();
+            return (int) $jatuhTempo->diffInDays($tanggalBayar);
         }
 
-        return $jatuhTempo->diffInDays(now());
+        $today = now()->startOfDay();
+        return (int) $jatuhTempo->diffInDays($today);
     }
 
     /**

@@ -4,6 +4,7 @@ namespace App\Models\Admin\DataMaster;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 
 class DataPengguna extends Model
 {
@@ -32,11 +33,23 @@ class DataPengguna extends Model
         'status' => 'Y'
     ];
 
-    // Auto hash password saat create/update
+    /**
+     * Auto hash password saat create/update
+     */
     public function setPasswordAttribute($value)
     {
         if (!empty($value)) {
             $this->attributes['password'] = Hash::make($value);
         }
+    }
+
+    /**
+     * Relasi ke User (1-to-1)
+     * Berdasarkan email yang digenerate dari username
+     */
+    public function user()
+    {
+        return $this->hasOne(User::class, 'email', 'username')
+                    ->where('email', 'like', '%@gmail.com');
     }
 }

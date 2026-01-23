@@ -11,32 +11,43 @@ use App\Models\Admin\Pinjaman\DetailBayarAngsuran;
 use App\Models\Admin\Pinjaman\PengajuanPinjaman;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        // Ambil user yang login
+        // Ambil user yang login dengan relasi anggota
         $user = Auth::user();
-        
-        // Ambil anggota_id dari accessor di User model
-        $anggotaId = $user->anggota_id;
-        
-        if (!$anggotaId) {
-            return redirect()->route('login')->with('error', 'Akun Anda belum terhubung dengan data anggota. Silakan hubungi administrator.');
+        $user->load('anggota');
+
+        Log::info('User Dashboard Access', [
+            'user_id' => $user->id,
+            'has_anggota' => $user->anggota ? true : false,
+            'anggota_id' => $user->anggota ? $user->anggota->id : null
+        ]);
+
+        // GANTI REDIRECT DENGAN ABORT
+        // Ini mencegah redirect loop
+        if (!$user->anggota) {
+            Log::warning('User tidak memiliki data anggota', ['user_id' => $user->id]);
+            abort(403, 'Akun Anda belum terhubung dengan data anggota. Silakan hubungi administrator.');
         }
 
-        // Ambil data anggota sebagai objek Eloquent
-        $anggotaData = DataAnggota::where('id', $anggotaId)
-            ->where('aktif', 'Aktif')
-            ->first();
+        $anggotaData = $user->anggota;
 
-        if (!$anggotaData) {
-            return redirect()->route('login')->with('error', 'Data anggota tidak ditemukan atau tidak aktif.');
+        // GANTI REDIRECT DENGAN ABORT
+        if ($anggotaData->aktif !== 'Aktif') {
+            Log::warning('Anggota tidak aktif', [
+                'user_id' => $user->id,
+                'anggota_id' => $anggotaData->id,
+                'status' => $anggotaData->aktif
+            ]);
+            abort(403, 'Akun anggota Anda tidak aktif. Silakan hubungi administrator.');
         }
 
-        // === DATA IDENTITAS ANGGOTA (Ubah jadi array untuk view) ===
+        // === DATA IDENTITAS ANGGOTA ===
         $anggota = [
             'id_anggota' => $anggotaData->id_anggota,
             'nama' => $anggotaData->nama,
@@ -44,9 +55,7 @@ class DashboardController extends Controller
             'jabatan' => $anggotaData->jabatan ?? 'Anggota',
             'alamat' => $anggotaData->alamat,
             'no_telp' => $anggotaData->no_telp ?? '-',
-            'foto' => $anggotaData->photo 
-                ? asset($anggotaData->photo)
-                : asset('assets/images/profile/user-2.jpg'),
+            'foto' => $anggotaData->photo_url,
         ];
 
         // === PENGAJUAN PINJAMAN TERAKHIR ===
@@ -154,7 +163,6 @@ class DashboardController extends Controller
 
         $statusPembayaran = $angsuranTerlambat > 0 ? 'Macet' : 'Lancar';
         
-        // Tentukan warna badge status
         $statusColor = match($statusPembayaran) {
             'Lancar' => 'success',
             'Macet' => 'danger',
@@ -177,6 +185,12 @@ class DashboardController extends Controller
                 ? Carbon::parse($tanggalTempoData->tanggal_jatuh_tempo)->translatedFormat('d M Y')
                 : '-',
         ];
+
+        Log::info('Dashboard data loaded successfully', [
+            'anggota_id' => $anggotaData->id,
+            'total_simpanan' => $totalSimpanan,
+            'total_pinjaman' => $jumlahPinjaman
+        ]);
 
         return view('user.dashboard', compact(
             'anggota',

@@ -105,6 +105,14 @@ Route::middleware(['auth', 'role:admin'])
     ->group(function () {
         Route::get('/dashboard', [Admin\DashboardController::class, 'index'])
             ->name('dashboard');
+            
+        Route::prefix('notifications')->name('notifications.')->group(function () {
+            Route::get('/pengajuan', [App\Http\Controllers\Admin\NotificationController::class, 'getPengajuanBaru'])
+                ->name('pengajuan');
+
+            Route::get('/jatuh-tempo', [App\Http\Controllers\Admin\NotificationController::class, 'getJatuhTempo'])
+                ->name('jatuh-tempo');
+        });
     });
 
 Route::middleware(['auth', 'role:user'])

@@ -64,18 +64,35 @@ class BayarAngsuranController extends Controller
             $item->anggota_foto = $item->anggota->photo;
         }
 
-        // Notifikasi angsuran yang akan jatuh tempo (7 hari ke depan)
+        // ✅ Notifikasi angsuran yang akan jatuh tempo (7 hari ke depan) - FIXED
+        $today = Carbon::now()->startOfDay();
+        $sevenDaysLater = $today->copy()->addDays(7);
+
         $notifications = BayarAngsuran::with(['pinjaman.anggota'])
             ->where('status_bayar', 'Belum')
-            ->whereBetween('tanggal_jatuh_tempo', [now(), now()->addDays(7)])
+            ->whereBetween('tanggal_jatuh_tempo', [$today, $sevenDaysLater])
             ->orderBy('tanggal_jatuh_tempo', 'asc')
             ->limit(5)
             ->get()
-            ->map(function ($item) {
+            ->map(function ($item) use ($today) {
+                $jatuhTempo = Carbon::parse($item->tanggal_jatuh_tempo)->startOfDay();
+                $selisihHari = (int) $today->diffInDays($jatuhTempo, false);
+
+                // Tentukan keterangan status
+                if ($selisihHari < 0) {
+                    $keterangan = 'Terlambat ' . abs($selisihHari) . ' hari';
+                } elseif ($selisihHari == 0) {
+                    $keterangan = 'Jatuh tempo hari ini';
+                } else {
+                    $keterangan = $selisihHari . ' hari lagi';
+                }
+
                 return (object) [
                     'nama' => $item->pinjaman->anggota->nama,
-                    'tanggal_jatuh_tempo' => $item->tanggal_jatuh_tempo->translatedFormat('d F Y'),
+                    'tanggal_jatuh_tempo' => $jatuhTempo->format('d F Y'),
                     'sisa_tagihan' => $item->jumlah_angsuran,
+                    'selisih_hari' => $selisihHari,
+                    'keterangan' => $keterangan,
                 ];
             });
 
@@ -98,7 +115,26 @@ class BayarAngsuranController extends Controller
         // Data jadwal angsuran dari tabel bayar_angsuran
         $jadwalAngsuran = $pinjaman->angsuran()
             ->orderBy('angsuran_ke', 'asc')
-            ->get();
+            ->get()
+            ->map(function ($item) {
+                // ✅ Pastikan tanggal_jatuh_tempo adalah Carbon instance
+                if (!($item->tanggal_jatuh_tempo instanceof \Carbon\Carbon)) {
+                    $item->tanggal_jatuh_tempo = \Carbon\Carbon::parse($item->tanggal_jatuh_tempo);
+                }
+
+                // Hitung status keterlambatan
+                $today = now()->startOfDay();
+                $jatuhTempo = $item->tanggal_jatuh_tempo->copy()->startOfDay();
+                $selisihHari = (int) $today->diffInDays($jatuhTempo, false);
+
+                $item->is_terlambat = $selisihHari < 0 && $item->status_bayar === 'Belum';
+                $item->hari_terlambat = $item->is_terlambat ? abs($selisihHari) : 0;
+
+                // Hitung denda otomatis jika terlambat
+                $item->denda_otomatis = $item->is_terlambat ? ($item->hari_terlambat * 5000) : 0;
+
+                return $item;
+            });
 
         // Data pembayaran aktual dari tabel detail_bayar_angsuran
         $pembayaran = DetailBayarAngsuran::with(['angsuran', 'kas', 'user'])
@@ -117,8 +153,14 @@ class BayarAngsuranController extends Controller
         $pinjaman->anggota_id = $pinjaman->anggota->id_anggota;
         $pinjaman->anggota_nama = $pinjaman->anggota->nama;
         $pinjaman->anggota_departement = $pinjaman->anggota->departement ?? '-';
-        $pinjaman->anggota_ttl = $pinjaman->anggota->tempat_lahir . ', ' .
-            Carbon::parse($pinjaman->anggota->tanggal_lahir)->translatedFormat('d F Y');
+
+        // ✅ Parse tanggal_lahir dengan benar
+        $tanggalLahir = $pinjaman->anggota->tanggal_lahir;
+        if (!($tanggalLahir instanceof \Carbon\Carbon)) {
+            $tanggalLahir = \Carbon\Carbon::parse($tanggalLahir);
+        }
+
+        $pinjaman->anggota_ttl = $pinjaman->anggota->tempat_lahir . ', ' . $tanggalLahir->translatedFormat('d F Y');
         $pinjaman->anggota_kota = $pinjaman->anggota->kota;
         $pinjaman->anggota_foto = $pinjaman->anggota->photo;
 
@@ -490,15 +532,17 @@ class BayarAngsuranController extends Controller
             $angsuran = BayarAngsuran::with(['pinjaman.anggota'])
                 ->findOrFail($id);
 
-            // Hitung denda jika terlambat
             $denda = 0;
             $hariTerlambat = 0;
 
             if ($angsuran->status_bayar == 'Belum') {
-                $hariTerlambat = max(0, now()->diffInDays($angsuran->tanggal_jatuh_tempo, false) * -1);
-                if ($hariTerlambat > 0) {
-                    // Ambil dari setting suku bunga
-                    $dendaPerHari = 5000; // TODO: Ambil dari tabel suku_bunga
+                // ✅ PERBAIKAN
+                $today = now()->startOfDay();
+                $jatuhTempo = Carbon::parse($angsuran->tanggal_jatuh_tempo)->startOfDay();
+
+                if ($today->gt($jatuhTempo)) {
+                    $hariTerlambat = $jatuhTempo->diffInDays($today);
+                    $dendaPerHari = 5000;
                     $denda = $hariTerlambat * $dendaPerHari;
                 }
             }
@@ -512,14 +556,13 @@ class BayarAngsuranController extends Controller
                     'tanggal_jatuh_tempo_formatted' => $angsuran->tanggal_jatuh_tempo->translatedFormat('d F Y'),
                     'jumlah_angsuran' => $angsuran->jumlah_angsuran,
                     'status' => $angsuran->status_bayar,
-                    'is_terlambat' => now()->gt($angsuran->tanggal_jatuh_tempo),
+                    'is_terlambat' => $today->gt($jatuhTempo),
                     'hari_terlambat' => $hariTerlambat,
                     'denda_otomatis' => $denda,
                 ]
             ]);
         } catch (\Exception $e) {
             Log::error('Error get detail: ' . $e->getMessage());
-
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal mengambil data angsuran'

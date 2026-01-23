@@ -15,12 +15,16 @@ class PengajuanUserController extends Controller
 {
     /**
      * Get anggota by authenticated user
+     * GUNAKAN RELASI user_id, BUKAN username
      */
     private function getAnggota()
     {
         $user = Auth::user();
-        // HANYA pakai username, JANGAN pakai user_id
-        return DataAnggota::where('username', $user->email)->first();
+        
+        // Load relasi anggota dari User model
+        $user->load('anggota');
+        
+        return $user->anggota;
     }
 
     /**
@@ -28,8 +32,16 @@ class PengajuanUserController extends Controller
      */
     public function index()
     {
+        $anggota = $this->getAnggota();
+        
+        if (!$anggota) {
+            return redirect()->route('user.dashboard')
+                ->with('error', 'Data anggota tidak ditemukan! Silakan hubungi administrator.');
+        }
+
         $pengajuan = PengajuanPinjaman::with(['anggota', 'lamaAngsuran'])
-            ->byUser(Auth::id())
+            ->where('anggota_id', $anggota->id)
+            ->whereNull('deleted_at')
             ->orderBy('tanggal_pengajuan', 'desc')
             ->get();
 
@@ -47,14 +59,21 @@ class PengajuanUserController extends Controller
     {
         $anggota = $this->getAnggota();
 
+        Log::info('Create Pengajuan - Get Anggota', [
+            'user_id' => Auth::id(),
+            'anggota_found' => $anggota ? true : false,
+            'anggota_id' => $anggota ? $anggota->id : null
+        ]);
+
         if (!$anggota) {
-            return redirect()->back()
+            return redirect()->route('user.dashboard')
                 ->with('error', 'Data anggota tidak ditemukan! Silakan hubungi administrator.');
         }
 
         // Cek apakah ada pengajuan pending
         $hasPending = PengajuanPinjaman::where('anggota_id', $anggota->id)
             ->where('status', 0)
+            ->whereNull('deleted_at')
             ->exists();
 
         if ($hasPending) {
@@ -70,6 +89,11 @@ class PengajuanUserController extends Controller
             return redirect()->back()
                 ->with('error', 'Data lama angsuran tidak tersedia! Silakan hubungi administrator.');
         }
+
+        Log::info('Create Pengajuan - Success', [
+            'anggota_id' => $anggota->id,
+            'anggota_nama' => $anggota->nama
+        ]);
 
         return view('user.PengajuanPinjaman.Pengajuan.FormPengajuanUser', compact('anggota', 'lama_angsuran'));
     }
@@ -103,7 +127,7 @@ class PengajuanUserController extends Controller
         $anggota = $this->getAnggota();
 
         if (!$anggota) {
-            return redirect()->back()
+            return redirect()->route('user.dashboard')
                 ->withInput()
                 ->with('error', 'Data anggota tidak ditemukan!');
         }
@@ -111,6 +135,7 @@ class PengajuanUserController extends Controller
         // Cek duplikasi pengajuan pending
         $hasPending = PengajuanPinjaman::where('anggota_id', $anggota->id)
             ->where('status', 0)
+            ->whereNull('deleted_at')
             ->exists();
 
         if ($hasPending) {
@@ -161,8 +186,18 @@ class PengajuanUserController extends Controller
             'value' => 'required',
         ]);
 
-        $pengajuan = PengajuanPinjaman::byUser(Auth::id())
+        $anggota = $this->getAnggota();
+        
+        if (!$anggota) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data anggota tidak ditemukan'
+            ], 404);
+        }
+
+        $pengajuan = PengajuanPinjaman::where('anggota_id', $anggota->id)
             ->where('id', $validated['id'])
+            ->whereNull('deleted_at')
             ->first();
 
         if (!$pengajuan) {
@@ -246,8 +281,18 @@ class PengajuanUserController extends Controller
             'id' => 'required|integer',
         ]);
 
-        $pengajuan = PengajuanPinjaman::byUser(Auth::id())
+        $anggota = $this->getAnggota();
+        
+        if (!$anggota) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data anggota tidak ditemukan'
+            ], 404);
+        }
+
+        $pengajuan = PengajuanPinjaman::where('anggota_id', $anggota->id)
             ->where('id', $validated['id'])
+            ->whereNull('deleted_at')
             ->first();
 
         if (!$pengajuan) {
@@ -292,8 +337,15 @@ class PengajuanUserController extends Controller
      */
     public function cetak($id)
     {
+        $anggota = $this->getAnggota();
+        
+        if (!$anggota) {
+            abort(404, 'Data anggota tidak ditemukan');
+        }
+
         $pengajuan = PengajuanPinjaman::with(['anggota', 'lamaAngsuran', 'user'])
-            ->byUser(Auth::id())
+            ->where('anggota_id', $anggota->id)
+            ->whereNull('deleted_at')
             ->findOrFail($id);
 
         return view('user.PengajuanPinjaman.Pengajuan.cetak', compact('pengajuan'));

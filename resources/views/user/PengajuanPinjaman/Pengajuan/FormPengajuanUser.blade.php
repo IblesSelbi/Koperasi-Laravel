@@ -4,7 +4,7 @@
 
 @section('content')
     <!-- Page Header -->
-    <div class="row mb-3">
+    <div class="row mb-5">
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
@@ -47,7 +47,6 @@
         <i class="ti ti-info-circle me-2"></i>
         <strong>Informasi Penting:</strong>
         <ul class="mb-0 mt-2">
-            <li>Minimal pinjaman adalah <strong>Rp 500.000</strong></li>
             <li>Pengajuan akan diproses oleh admin dalam 1-2 hari kerja</li>
             <li>Pastikan semua data yang diisi sudah benar sebelum submit</li>
         </ul>
@@ -55,7 +54,7 @@
     </div>
 
     <!-- Form Card -->
-    <div class="card">
+    <div class="card shadow-sm">
         <div class="card-header bg-light text-white">
             <h5 class="mb-0"><i class="ti ti-file-text me-2"></i>Form Pengajuan Pinjaman</h5>
         </div>

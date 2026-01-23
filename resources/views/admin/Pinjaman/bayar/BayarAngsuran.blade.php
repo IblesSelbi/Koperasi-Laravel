@@ -220,7 +220,7 @@
                             @foreach($notifications as $notif)
                                 <tr>
                                     <td><strong>{{ $notif->nama }}</strong></td>
-                                    <td>{{ \Carbon\Carbon::parse($notif->tanggal_jatuh_tempo)->format('d M Y') }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($notif->tanggal_jatuh_tempo)->translatedFormat('d F Y') }}</td>
                                     <td class="text-end"><strong>Rp {{ number_format($notif->sisa_tagihan, 0, ',', '.') }}</strong>
                                     </td>
                                 </tr>
