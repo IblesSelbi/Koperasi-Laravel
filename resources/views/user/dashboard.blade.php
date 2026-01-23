@@ -23,7 +23,7 @@
         <div class="row g-4 align-items-start">
             <!-- Foto -->
             <div class="col-md-3 text-center">
-                <img src="{{ asset('assets/images/profile/user-2.jpg') }}" class="rounded-3 shadow-sm mb-2"
+                <img src="{{ $anggota['foto'] }}" class="rounded-3 shadow-sm mb-2"
                     width="100" height="120" alt="Foto Anggota">
                 <div class="fw-semibold text-dark small">{{ $anggota['nama'] }}</div>
             </div>
@@ -88,10 +88,22 @@
         <div class="d-flex flex-wrap align-items-center gap-2">
             <span>{{ $pengajuan_terakhir['tanggal'] }}</span>
             <span class="text-dark">Nominal: <strong>Rp {{ number_format($pengajuan_terakhir['nominal'], 0, ',', '.') }}</strong></span>
-            <span class="badge rounded-pill bg-success-subtle text-success px-2 py-1 d-inline-flex shadow-sm align-items-center gap-1">
+            
+            @php
+                $badgeClass = match($pengajuan_terakhir['status']) {
+                    'Disetujui' => 'bg-success-subtle text-success',
+                    'Ditolak' => 'bg-danger-subtle text-danger',
+                    'Menunggu' => 'bg-warning-subtle text-warning',
+                    default => 'bg-info-subtle text-info'
+                };
+            @endphp
+            
+            <span class="badge rounded-pill {{ $badgeClass }} px-2 py-1 d-inline-flex shadow-sm align-items-center gap-1">
                 <i class="ti ti-circle-check fs-5"></i>
-                <span class="fw-bold">{{ $pengajuan_terakhir['status'] }}</span>
-                <span class="text-muted fw-semibold">• {{ $pengajuan_terakhir['keterangan'] }}</span>
+                <span class="fw-semibold">{{ $pengajuan_terakhir['status'] }}</span>
+                @if($pengajuan_terakhir['keterangan'])
+                    <span class="text-muted fw-semibold">• {{ $pengajuan_terakhir['keterangan'] }}</span>
+                @endif
             </span>
         </div>
     </div>
@@ -102,7 +114,7 @@
     <!-- Saldo Simpanan -->
     <div class="col-lg-4">
         <div class="card shadow-sm h-100 border-0 rounded-3">
-            <div class="card- bg-white border-0 px-3 pt-3 pb-2">
+            <div class="card-header bg-white border-0 px-3 pt-3 pb-2">
                 <div class="d-flex align-items-center">
                     <div class="rounded-2 d-flex align-items-center justify-content-center bg-success-subtle"
                         style="width:38px;height:38px;">
@@ -163,7 +175,7 @@
                 </div>
                 <div class="d-flex justify-content-between align-items-center py-2">
                     <span class="text-muted small">Dibayar</span>
-                    <span class="fw-semibold small text-success">Rp {{ number_format($pinjaman['dibayar'], 0, ',', '.') }}</span>
+                    <span class="fw-semibold small text-success fs-3">Rp {{ number_format($pinjaman['dibayar'], 0, ',', '.') }}</span>
                 </div>
                 <div class="pt-2 mt-2 border-top border-2">
                     <div class="d-flex justify-content-between align-items-center">
@@ -191,21 +203,21 @@
             <div class="card-body px-3 pt-2 pb-3">
                 <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
                     <span class="text-muted small">Jumlah Pinjaman</span>
-                    <span class="badge rounded-pill bg-primary-subtle text-primary px-3">{{ $keterangan['jumlah_pinjaman'] }}</span>
+                    <span class="badge fw-semibold rounded-pill bg-primary-subtle text-primary px-3">{{ $keterangan['jumlah_pinjaman'] }}</span>
                 </div>
                 <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
                     <span class="text-muted small">Pinjaman Lunas</span>
-                    <span class="badge rounded-pill bg-success-subtle text-success px-3">{{ $keterangan['pinjaman_lunas'] }}</span>
+                    <span class="badge fw-semibold rounded-pill bg-success-subtle text-success px-3">{{ $keterangan['pinjaman_lunas'] }}</span>
                 </div>
                 <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
                     <span class="text-muted small">Status Pembayaran</span>
-                    <span class="badge rounded-pill bg-{{ $keterangan['status_color'] }}-subtle text-{{ $keterangan['status_color'] }} px-3">
+                    <span class="badge fw-semibold rounded-pill bg-{{ $keterangan['status_color'] }}-subtle text-{{ $keterangan['status_color'] }} px-3">
                         {{ $keterangan['status_pembayaran'] }}
                     </span>
                 </div>
                 <div class="d-flex justify-content-between align-items-center text-muted fw-semibold py-2">
                     <span class="text-dark fw-semibold small">Tanggal Tempo</span>
-                    {{ $keterangan['tanggal_tempo'] }}
+                    <span class="small">{{ $keterangan['tanggal_tempo'] }}</span>
                 </div>
             </div>
         </div>

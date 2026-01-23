@@ -2,7 +2,14 @@
     <nav class="navbar navbar-expand-lg navbar-light">
         <ul class="navbar-nav">
             <li class="nav-item">
-                <a class="nav-link fw-semibold" href="#"> Sistem Koperasi</a>
+               <a class="nav-link fw-semibold {{ 
+                            $isAdmin 
+                                ? request()->routeIs('admin.dashboard') 
+                                : request()->routeIs('user.dashboard') 
+                        }}"
+                    href="{{ $isAdmin ? route('admin.dashboard') : route('user.dashboard') }}">
+                         Sistem Koperasi
+                    </a>
             </li>
         </ul>
         <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="collapse"

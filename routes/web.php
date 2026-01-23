@@ -53,6 +53,9 @@ use App\Http\Controllers\Admin\Setting\{
 use App\Http\Controllers\User\PengajuanPinjaman\{
     PengajuanUserController,
 };
+use App\Http\Controllers\User\Laporan\{
+    LaporanUserController,
+};
 
 /*
 |--------------------------------------------------------------------------
@@ -143,17 +146,21 @@ Route::middleware('auth')
             Route::get('/pengajuan/cetak/{id}', 'cetak')->name('cetak');
         });
 
-        // LAPORAN
-        Route::controller(User\LaporanUserController::class)
+        // LAPORAN USER
+        Route::controller(LaporanUserController::class)
             ->name('user.laporan.')
             ->group(function () {
 
+            // SIMPANAN
             Route::get('/laporan/simpanan', 'simpanan')->name('simpanan');
+
+            // PINJAMAN
             Route::get('/laporan/pinjaman', 'pinjaman')->name('pinjaman');
             Route::get('/laporan/pinjaman/{id}', 'detailPinjaman')->name('pinjaman.detail');
+
+            // PEMBAYARAN
             Route::get('/laporan/pembayaran', 'pembayaran')->name('pembayaran');
         });
-
     });
 
 

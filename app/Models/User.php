@@ -47,8 +47,26 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    /**
+     * Relasi ke Role
+     */
     public function role()
     {
         return $this->belongsTo(Role::class, 'role_id');
+    }
+
+    /**
+     * Accessor untuk mendapatkan anggota_id berdasarkan mapping
+     */
+    public function getAnggotaIdAttribute()
+    {
+        // MAPPING USER ID → ANGGOTA ID
+        $mapping = [
+            1 => 1, // user id 1 = anggota id 1
+            2 => 7, // user id 2 = anggota id 7
+        ];
+
+        return $mapping[$this->id] ?? null;
     }
 }

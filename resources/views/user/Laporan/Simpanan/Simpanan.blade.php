@@ -31,57 +31,73 @@
             </h5>
 
             <div class="row g-3">
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="border shadow-sm rounded-3 p-3 h-100 bg-white">
                         <div class="d-flex align-items-center">
                             <div class="me-3">
                                 <span class="bg-info-subtle rounded-circle d-inline-flex align-items-center justify-content-center"
                                     style="width:44px;height:44px;">
-                                    <i class="ti ti-users text-info-emphasis fs-5"></i>
+                                    <i class="ti ti-list text-info-emphasis fs-5"></i>
                                 </span>
                             </div>
                             <div>
-                                <small class="text-muted">Jumlah Peminjam</small>
-                                <h4 class="fw-bold mb-0">{{ $summary['jumlah_peminjam'] ?? 0 }}</h4>
+                                <small class="text-muted">Jumlah Transaksi</small>
+                                <h4 class="fw-bold mb-0">{{ $summary['jumlah_transaksi'] ?? 0 }}</h4>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="border shadow-sm rounded-3 p-3 h-100 bg-white">
                         <div class="d-flex align-items-center">
                             <div class="me-3">
                                 <span class="bg-success-subtle rounded-circle d-inline-flex align-items-center justify-content-center"
                                     style="width:44px;height:44px;">
-                                    <i class="ti ti-circle-check text-success-emphasis fs-5"></i>
+                                    <i class="ti ti-arrow-up text-success-emphasis fs-5"></i>
                                 </span>
                             </div>
                             <div>
-                                <small class="text-muted">Peminjam Lunas</small>
-                                <h4 class="fw-bold mb-0">{{ $summary['peminjam_lunas'] ?? 0 }}</h4>
+                                <small class="text-muted">Total Setoran</small>
+                                <h5 class="fw-bold mb-0 text-success">Rp {{ number_format($summary['total_setoran'] ?? 0, 0, ',', '.') }}</h5>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="border shadow-sm rounded-3 p-3 h-100 bg-white">
                         <div class="d-flex align-items-center">
                             <div class="me-3">
-                                <span class="bg-warning-subtle rounded-circle d-inline-flex align-items-center justify-content-center"
+                                <span class="bg-danger-subtle rounded-circle d-inline-flex align-items-center justify-content-center"
                                     style="width:44px;height:44px;">
-                                    <i class="ti ti-clock-hour-3 text-warning-emphasis fs-5"></i>
+                                    <i class="ti ti-arrow-down text-danger-emphasis fs-5"></i>
                                 </span>
                             </div>
                             <div>
-                                <small class="text-muted">Belum Lunas</small>
-                                <h4 class="fw-bold mb-0">{{ $summary['belum_lunas'] ?? 0 }}</h4>
+                                <small class="text-muted">Total Penarikan</small>
+                                <h5 class="fw-bold mb-0 text-danger">Rp {{ number_format($summary['total_penarikan'] ?? 0, 0, ',', '.') }}</h5>
                             </div>
                         </div>
                     </div>
                 </div>
 
+                <div class="col-md-3">
+                    <div class="border shadow-sm rounded-3 p-3 h-100 bg-white">
+                        <div class="d-flex align-items-center">
+                            <div class="me-3">
+                                <span class="bg-primary-subtle rounded-circle d-inline-flex align-items-center justify-content-center"
+                                    style="width:44px;height:44px;">
+                                    <i class="ti ti-wallet text-primary-emphasis fs-5"></i>
+                                </span>
+                            </div>
+                            <div>
+                                <small class="text-muted">Saldo Akhir</small>
+                                <h5 class="fw-bold mb-0 text-primary">Rp {{ number_format($summary['saldo_akhir'] ?? 0, 0, ',', '.') }}</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -104,16 +120,18 @@
                         <tr>
                             <td class="text-center text-muted">{{ \Carbon\Carbon::parse($item->tanggal)->format('d M Y') }}</td>
                             <td class="text-center">
-                                @if($item->jenis == 'Simpanan Wajib')
-                                    <span class="badge bg-success-subtle text-success">Simpanan Wajib</span>
-                                @elseif($item->jenis == 'Simpanan Sukarela')
-                                    <span class="badge bg-info-subtle text-info">Simpanan Sukarela</span>
+                                @if($item->tipe == 'penarikan')
+                                    <span class="badge bg-danger-subtle text-danger">{{ $item->jenis }}</span>
                                 @else
-                                    <span class="badge bg-danger-subtle text-danger">Penarikan</span>
+                                    @if(str_contains(strtolower($item->jenis), 'wajib'))
+                                        <span class="badge bg-success-subtle text-success">{{ $item->jenis }}</span>
+                                    @else
+                                        <span class="badge bg-info-subtle text-info">{{ $item->jenis }}</span>
+                                    @endif
                                 @endif
                             </td>
                             <td class="text-end">
-                                @if($item->jenis == 'Penarikan')
+                                @if($item->tipe == 'penarikan')
                                     <span class="fw-bold text-danger">- Rp {{ number_format($item->jumlah, 0, ',', '.') }}</span>
                                 @else
                                     <span class="fw-bold text-success">+ Rp {{ number_format($item->jumlah, 0, ',', '.') }}</span>

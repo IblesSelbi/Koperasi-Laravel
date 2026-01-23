@@ -9,7 +9,7 @@
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <h4 class="fw-semibold mb-1">Identitas Koperasi</h4>
-                    <p class="text-muted fs-3 mb-0">Kelola informasi dan profil koperasi</p>
+                    <p class="text-muted fs-6 mb-0">Kelola informasi dan profil koperasi</p>
                 </div>
             </div>
         </div>
@@ -33,6 +33,20 @@
         </div>
     @endif
 
+    <!-- Validation Errors -->
+    @if($errors->any())
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="ti ti-alert-circle me-2"></i>
+            <strong>Terjadi Kesalahan!</strong>
+            <ul class="mb-0 mt-2">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
     <!-- Form Card -->
     <div class="card shadow-sm">
         <div class="card-header bg-light text-white">
@@ -52,9 +66,17 @@
                         <i class="ti ti-building-community text-primary"></i> Nama Koperasi
                         <span class="text-danger">*</span>
                     </label>
-                    <input type="text" class="form-control form-control-lg" id="nama_lembaga" name="nama_lembaga"
-                        value="{{ $identitas->nama_lembaga }}" maxlength="255" required
+                    <input type="text" 
+                        class="form-control form-control-lg @error('nama_lembaga') is-invalid @enderror" 
+                        id="nama_lembaga" 
+                        name="nama_lembaga"
+                        value="{{ old('nama_lembaga', $identitas->nama_lembaga) }}" 
+                        maxlength="255" 
+                        required
                         placeholder="Masukkan nama koperasi">
+                    @error('nama_lembaga')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                     <div class="form-text">Nama lengkap koperasi yang akan ditampilkan pada dokumen</div>
                 </div>
 
@@ -64,8 +86,17 @@
                         <i class="ti ti-user-star text-success"></i> Nama Pimpinan
                         <span class="text-danger">*</span>
                     </label>
-                    <input type="text" class="form-control" id="nama_ketua" name="nama_ketua"
-                        value="{{ $identitas->nama_ketua }}" maxlength="255" required placeholder="Masukkan nama pimpinan">
+                    <input type="text" 
+                        class="form-control @error('nama_ketua') is-invalid @enderror" 
+                        id="nama_ketua" 
+                        name="nama_ketua"
+                        value="{{ old('nama_ketua', $identitas->nama_ketua) }}" 
+                        maxlength="255" 
+                        required 
+                        placeholder="Masukkan nama pimpinan">
+                    @error('nama_ketua')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <!-- No HP -->
@@ -74,8 +105,17 @@
                         <i class="ti ti-phone text-info"></i> No HP Pimpinan
                         <span class="text-danger">*</span>
                     </label>
-                    <input type="text" class="form-control" id="hp_ketua" name="hp_ketua"
-                        value="{{ $identitas->hp_ketua }}" maxlength="255" required placeholder="Contoh: 081234567890">
+                    <input type="text" 
+                        class="form-control @error('hp_ketua') is-invalid @enderror" 
+                        id="hp_ketua" 
+                        name="hp_ketua"
+                        value="{{ old('hp_ketua', $identitas->hp_ketua) }}" 
+                        maxlength="255" 
+                        required 
+                        placeholder="Contoh: 081234567890">
+                    @error('hp_ketua')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                     <div class="form-text">Nomor HP aktif yang dapat dihubungi</div>
                 </div>
 
@@ -85,8 +125,16 @@
                         <i class="ti ti-map-pin text-danger"></i> Alamat Lengkap
                         <span class="text-danger">*</span>
                     </label>
-                    <textarea class="form-control" id="alamat" name="alamat" rows="3" maxlength="500" required
-                        placeholder="Masukkan alamat lengkap koperasi">{{ $identitas->alamat }}</textarea>
+                    <textarea class="form-control @error('alamat') is-invalid @enderror" 
+                        id="alamat" 
+                        name="alamat" 
+                        rows="3" 
+                        maxlength="500" 
+                        required
+                        placeholder="Masukkan alamat lengkap koperasi">{{ old('alamat', $identitas->alamat) }}</textarea>
+                    @error('alamat')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <!-- Telepon -->
@@ -94,8 +142,16 @@
                     <label for="telepon" class="form-label fw-semibold">
                         <i class="ti ti-phone-call text-warning"></i> Telepon Kantor
                     </label>
-                    <input type="text" class="form-control" id="telepon" name="telepon"
-                        value="{{ $identitas->telepon }}" maxlength="255" placeholder="Contoh: 021-1234567">
+                    <input type="text" 
+                        class="form-control @error('telepon') is-invalid @enderror" 
+                        id="telepon" 
+                        name="telepon"
+                        value="{{ old('telepon', $identitas->telepon) }}" 
+                        maxlength="255" 
+                        placeholder="Contoh: 021-1234567">
+                    @error('telepon')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <!-- Kota/Kabupaten -->
@@ -104,8 +160,17 @@
                         <i class="ti ti-location text-primary"></i> Kota/Kabupaten
                         <span class="text-danger">*</span>
                     </label>
-                    <input type="text" class="form-control" id="kota" name="kota" value="{{ $identitas->kota }}"
-                        maxlength="255" required placeholder="Masukkan nama kota/kabupaten">
+                    <input type="text" 
+                        class="form-control @error('kota') is-invalid @enderror" 
+                        id="kota" 
+                        name="kota" 
+                        value="{{ old('kota', $identitas->kota) }}"
+                        maxlength="255" 
+                        required 
+                        placeholder="Masukkan nama kota/kabupaten">
+                    @error('kota')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <!-- Email -->
@@ -114,8 +179,17 @@
                         <i class="ti ti-mail text-info"></i> Email
                         <span class="text-danger">*</span>
                     </label>
-                    <input type="email" class="form-control" id="email" name="email" value="{{ $identitas->email }}"
-                        maxlength="255" required placeholder="contoh@email.com">
+                    <input type="email" 
+                        class="form-control @error('email') is-invalid @enderror" 
+                        id="email" 
+                        name="email" 
+                        value="{{ old('email', $identitas->email) }}"
+                        maxlength="255" 
+                        required 
+                        placeholder="contoh@email.com">
+                    @error('email')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                     <div class="form-text">Email resmi koperasi untuk korespondensi</div>
                 </div>
 
@@ -124,8 +198,16 @@
                     <label for="web" class="form-label fw-semibold">
                         <i class="ti ti-world text-success"></i> Website
                     </label>
-                    <input type="text" class="form-control" id="web" name="web" value="{{ $identitas->web }}"
-                        maxlength="255" placeholder="www.contoh.com">
+                    <input type="text" 
+                        class="form-control @error('web') is-invalid @enderror" 
+                        id="web" 
+                        name="web" 
+                        value="{{ old('web', $identitas->web) }}"
+                        maxlength="255" 
+                        placeholder="www.contoh.com">
+                    @error('web')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                     <div class="form-text">Alamat website koperasi (opsional)</div>
                 </div>
 
@@ -134,19 +216,32 @@
                     <label for="logo" class="form-label fw-semibold">
                         <i class="ti ti-photo text-warning"></i> Logo Koperasi
                     </label>
-                    <input type="file" class="form-control" id="logo" name="logo" accept="image/*">
+                    <input type="file" 
+                        class="form-control @error('logo') is-invalid @enderror" 
+                        id="logo" 
+                        name="logo" 
+                        accept="image/*">
+                    @error('logo')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                     <div class="form-text">
                         Format: JPG, PNG, atau GIF. Ukuran maksimal: 2MB
                     </div>
 
                     <!-- Preview Logo Saat Ini -->
-                    <div class="mt-3">
-                        <div class="border rounded p-3 bg-light d-inline-block">
-                            <p class="text-muted mb-2 small">Logo Saat Ini:</p>
-                            <img src="{{ asset($identitas->logo) }}" alt="Logo Koperasi" class="img-thumbnail"
-                                style="max-height: 150px;" id="previewLogo">
+                    @if($identitas->logo)
+                        <div class="mt-3">
+                            <div class="border rounded p-3 bg-light d-inline-block">
+                                <p class="text-muted mb-2 small">Logo Saat Ini:</p>
+                                <img src="{{ asset($identitas->logo) }}" 
+                                    alt="Logo Koperasi" 
+                                    class="img-thumbnail"
+                                    style="max-height: 120px;" 
+                                    id="previewLogo"
+                                    onerror="this.src='{{ asset('assets/images/logos/logo-placeholder.png') }}'">
+                            </div>
                         </div>
-                    </div>
+                    @endif
                 </div>
 
                 <!-- Divider -->
@@ -154,7 +249,7 @@
 
                 <!-- Action Buttons -->
                 <div class="d-flex gap-2 justify-content-end">
-                    <button type="reset" class="btn btn-outline-secondary">
+                    <button type="button" class="btn btn-outline-secondary" id="btnReset">
                         <i class="ti ti-refresh"></i> Reset
                     </button>
                     <button type="submit" class="btn btn-primary" id="btnSubmit">
@@ -167,15 +262,15 @@
     </div>
 
     <!-- Info Card -->
-    <div class="row mt-2">
+    <div class="row mt-3">
         <div class="col-md-12">
             <div class="card bg-light shadow-sm border-0">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
-                        <i class="ti ti-info-circle fs-6 text-primary me-3"></i>
+                        <i class="ti ti-info-circle fs-4 text-primary me-3"></i>
                         <div>
                             <h6 class="mb-1 fw-semibold">Informasi Penting</h6>
-                            <p class="mb-0 text-muted fs-3">
+                            <p class="mb-0 text-muted small">
                                 Data yang diisi di form ini akan digunakan pada laporan, kwitansi, dan dokumen resmi
                                 koperasi lainnya.
                                 Pastikan semua informasi yang dimasukkan sudah benar dan sesuai.
@@ -229,94 +324,18 @@
             }
         });
 
-        // Form Submit Handler
+        // Form Submit Handler dengan loading
         document.getElementById('formIdentitas').addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            // Validasi form
-            if (!this.checkValidity()) {
-                e.stopPropagation();
-                this.classList.add('was-validated');
-                return;
-            }
-
-            // Disable button & show loading
             const btnSubmit = document.getElementById('btnSubmit');
             const btnText = btnSubmit.innerHTML;
+            
+            // Disable button & show loading
             btnSubmit.disabled = true;
             btnSubmit.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Menyimpan...';
-
-            // Get form data
-            const formData = new FormData(this);
-
-            // Show loading
-            Swal.fire({
-                title: 'Menyimpan Data...',
-                text: 'Mohon tunggu sebentar',
-                allowOutsideClick: false,
-                showConfirmButton: false,
-                willOpen: () => {
-                    Swal.showLoading();
-                }
-            });
-
-            // Simulate AJAX request
-            setTimeout(() => {
-                // Success response
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Berhasil!',
-                    text: 'Data koperasi berhasil diupdate',
-                    timer: 2000,
-                    showConfirmButton: false
-                }).then(() => {
-                    // Reset button
-                    btnSubmit.disabled = false;
-                    btnSubmit.innerHTML = btnText;
-                });
-
-                /* Production AJAX:
-                fetch('{{ route('setting.identitas.update') }}', {
-                  method: 'POST',
-                  body: formData,
-                  headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                  }
-                })
-                .then(response => response.json())
-                .then(data => {
-                  if(data.success) {
-                    Swal.fire({
-                      icon: 'success',
-                      title: 'Berhasil!',
-                      text: data.message,
-                      timer: 2000
-                    });
-                  } else {
-                    Swal.fire({
-                      icon: 'error',
-                      title: 'Gagal!',
-                      text: data.message
-                    });
-                  }
-                })
-                .catch(error => {
-                  Swal.fire({
-                    icon: 'error',
-                    title: 'Error!',
-                    text: 'Tidak dapat terhubung ke server'
-                  });
-                })
-                .finally(() => {
-                  btnSubmit.disabled = false;
-                  btnSubmit.innerHTML = btnText;
-                });
-                */
-            }, 1500);
         });
 
         // Form Reset Handler
-        document.querySelector('button[type="reset"]').addEventListener('click', function(e) {
+        document.getElementById('btnReset').addEventListener('click', function(e) {
             e.preventDefault();
 
             Swal.fire({
@@ -326,13 +345,17 @@
                 showCancelButton: true,
                 confirmButtonText: 'Ya, Reset',
                 cancelButtonText: 'Batal',
-                confirmButtonColor: '#dc3545'
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d'
             }).then((result) => {
                 if (result.isConfirmed) {
                     document.getElementById('formIdentitas').reset();
                     document.getElementById('formIdentitas').classList.remove('was-validated');
+                    
                     // Reset preview logo
-                    document.getElementById('previewLogo').src = '{{ asset($identitas->logo) }}';
+                    @if($identitas->logo)
+                        document.getElementById('previewLogo').src = '{{ asset($identitas->logo) }}';
+                    @endif
 
                     Swal.fire({
                         icon: 'success',
@@ -356,12 +379,13 @@
             this.value = this.value.replace(/[^0-9+\-\s()]/g, '');
         });
 
-        // Initialize Bootstrap Tooltips
-        document.addEventListener('DOMContentLoaded', function() {
-            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-            tooltipTriggerList.map(function(tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl);
+        // Auto dismiss alerts after 5 seconds
+        setTimeout(function() {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(function(alert) {
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
             });
-        });
+        }, 5000);
     </script>
 @endpush

@@ -110,14 +110,14 @@
                     <thead class="table-primary">
                         <tr>
                             <th class="text-center align-middle">Tanggal</th>
-                            <th class="text-center align-middle">Lama<br>Angsuran</th>
-                            <th class="text-end align-middle">Jumlah<br>Pinjaman</th>
+                            <th class="text-center align-middle">Lama Angsuran</th>
+                            <th class="text-end align-middle">Jumlah Pinjaman</th>
                             <th class="text-end align-middle">Bunga</th>
-                            <th class="text-end align-middle">Biaya<br>Admin</th>
-                            <th class="text-end align-middle">Angsuran<br>Per Bulan</th>
-                            <th class="text-end align-middle">Total<br>Tagihan</th>
-                            <th class="text-center align-middle">Jatuh<br>Tempo</th>
-                            <th class="text-center align-middle">Status<br>Lunas</th>
+                            <th class="text-end align-middle">Biaya Admin</th>
+                            <th class="text-end align-middle">Angsuran Per Bulan</th>
+                            <th class="text-end align-middle">Total Tagihan</th>
+                            <th class="text-center align-middle">Jatuh Tempo</th>
+                            <th class="text-center align-middle">Status Lunas</th>
                             <th class="align-middle">Keterangan</th>
                             <th class="text-center align-middle">Aksi</th>
                         </tr>
