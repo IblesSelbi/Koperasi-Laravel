@@ -48,7 +48,7 @@ CREATE TABLE `bayar_angsuran` (
   CONSTRAINT `bayar_angsuran_ke_kas_id_foreign` FOREIGN KEY (`ke_kas_id`) REFERENCES `data_kas` (`id`),
   CONSTRAINT `bayar_angsuran_pinjaman_id_foreign` FOREIGN KEY (`pinjaman_id`) REFERENCES `pinjaman` (`id`) ON DELETE CASCADE,
   CONSTRAINT `bayar_angsuran_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2005 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2018 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `bayar_angsuran` */
 
@@ -57,14 +57,15 @@ insert  into `bayar_angsuran`(`id`,`kode_bayar`,`pinjaman_id`,`angsuran_ke`,`tan
 (1002,'BYR00002',108,2,'2026-03-22','2026-01-22 09:05:00',787500.00,787500.00,0.00,1,'Lunas',NULL,1,'2026-01-22 09:02:59','2026-01-22 09:05:55',NULL),
 (1003,'BYR00003',108,3,'2026-04-22','2026-01-22 09:05:00',787500.00,787500.00,0.00,1,'Lunas',NULL,1,'2026-01-22 09:02:59','2026-01-22 09:06:01',NULL),
 (1004,'BYR00004',108,4,'2026-05-22','2026-01-22 09:06:00',787500.00,787500.00,0.00,3,'Lunas',NULL,1,'2026-01-22 09:02:59','2026-01-22 09:06:07',NULL),
-(1005,'BYR00005',109,1,'2026-02-22',NULL,262500.00,0.00,0.00,NULL,'Belum',NULL,NULL,'2026-01-22 09:03:25','2026-01-22 09:03:25',NULL),
-(1006,'BYR00006',109,2,'2026-03-22',NULL,262500.00,0.00,0.00,NULL,'Belum',NULL,NULL,'2026-01-22 09:03:25','2026-01-22 09:03:25',NULL),
-(1007,'BYR00007',109,3,'2026-04-22',NULL,262500.00,0.00,0.00,NULL,'Belum',NULL,NULL,'2026-01-22 09:03:25','2026-01-22 09:03:25',NULL),
-(1008,'BYR00008',109,4,'2026-05-22',NULL,262500.00,0.00,0.00,NULL,'Belum',NULL,NULL,'2026-01-22 09:03:25','2026-01-22 09:03:25',NULL),
-(2001,'BYR02001',109,5,'2026-02-15',NULL,262500.00,0.00,0.00,NULL,'Belum','Angsuran ke-5',NULL,'2026-01-22 09:03:25','2026-01-22 09:03:25',NULL),
-(2002,'BYR02002',109,6,'2026-02-28',NULL,262500.00,0.00,0.00,NULL,'Belum','Angsuran ke-6',NULL,'2026-01-22 09:03:25','2026-01-22 09:03:25',NULL),
-(2003,'BYR02003',109,7,'2026-01-10',NULL,262500.00,0.00,0.00,NULL,'Belum','Angsuran ke-7',NULL,'2026-01-22 09:03:25','2026-01-22 09:03:25',NULL),
-(2004,'BYR02004',109,8,'2026-01-25',NULL,262500.00,0.00,0.00,NULL,'Belum','Angsuran ke-8',NULL,'2026-01-22 09:03:25','2026-01-22 09:03:25',NULL);
+(2009,'BYR02009',114,1,'2025-10-15',NULL,787500.00,0.00,0.00,NULL,'Belum',NULL,NULL,'2026-01-23 08:24:27','2026-01-23 08:24:27',NULL),
+(2010,'BYR02010',114,2,'2025-11-15',NULL,787500.00,0.00,0.00,NULL,'Belum',NULL,NULL,'2026-01-23 08:24:27','2026-01-23 08:24:27',NULL),
+(2011,'BYR02011',114,3,'2025-12-15',NULL,787500.00,0.00,0.00,NULL,'Belum',NULL,NULL,'2026-01-23 08:24:27','2026-01-23 08:24:27',NULL),
+(2012,'BYR02012',114,4,'2026-01-15',NULL,787500.00,0.00,0.00,NULL,'Belum',NULL,NULL,'2026-01-23 08:24:27','2026-01-23 08:24:27',NULL),
+(2013,'BYR02013',115,1,'2026-02-23',NULL,787500.00,0.00,0.00,NULL,'Belum',NULL,NULL,'2026-01-23 08:39:57','2026-01-23 08:45:16','2026-01-23 08:45:16'),
+(2014,'BYR02014',115,2,'2026-03-23',NULL,787500.00,0.00,0.00,NULL,'Belum',NULL,NULL,'2026-01-23 08:39:57','2026-01-23 08:45:16','2026-01-23 08:45:16'),
+(2015,'BYR02015',115,3,'2026-04-23',NULL,787500.00,0.00,0.00,NULL,'Belum',NULL,NULL,'2026-01-23 08:39:57','2026-01-23 08:45:16','2026-01-23 08:45:16'),
+(2016,'BYR02016',115,4,'2026-05-23',NULL,787500.00,0.00,0.00,NULL,'Belum',NULL,NULL,'2026-01-23 08:39:57','2026-01-23 08:45:16','2026-01-23 08:45:16'),
+(2017,'BYR02017',115,1,'2026-02-23',NULL,3150000.00,0.00,0.00,NULL,'Belum',NULL,NULL,'2026-01-23 08:45:16','2026-01-23 08:45:16',NULL);
 
 /*Table structure for table `cache` */
 
@@ -78,16 +79,6 @@ CREATE TABLE `cache` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `cache` */
-
-insert  into `cache`(`key`,`value`,`expiration`) values 
-('laravel-cache-adsa@gmail.com|127.0.0.1','i:1;',1767846410),
-('laravel-cache-adsa@gmail.com|127.0.0.1:timer','i:1767846410;',1767846410),
-('laravel-cache-ibles@gmail.com|127.0.0.1','i:1;',1769131600),
-('laravel-cache-ibles@gmail.com|127.0.0.1:timer','i:1769131600;',1769131600),
-('laravel-cache-ibless@gmail.com|127.0.0.1','i:2;',1769131586),
-('laravel-cache-ibless@gmail.com|127.0.0.1:timer','i:1769131586;',1769131586),
-('laravel-cache-test@gmail.com1|127.0.0.1','i:1;',1767856701),
-('laravel-cache-test@gmail.com1|127.0.0.1:timer','i:1767856701;',1767856701);
 
 /*Table structure for table `cache_locks` */
 
@@ -108,6 +99,7 @@ DROP TABLE IF EXISTS `data_anggota`;
 
 CREATE TABLE `data_anggota` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint(20) unsigned DEFAULT NULL,
   `photo` varchar(255) DEFAULT 'assets/images/profile/user-1.jpg',
   `id_anggota` varchar(20) NOT NULL,
   `username` varchar(255) NOT NULL,
@@ -133,16 +125,19 @@ CREATE TABLE `data_anggota` (
   UNIQUE KEY `username` (`username`),
   KEY `idx_id_anggota` (`id_anggota`),
   KEY `idx_username` (`username`),
-  KEY `idx_aktif` (`aktif`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  KEY `idx_aktif` (`aktif`),
+  KEY `data_anggota_user_id_foreign` (`user_id`),
+  CONSTRAINT `data_anggota_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `data_anggota` */
 
-insert  into `data_anggota`(`id`,`photo`,`id_anggota`,`username`,`password`,`nama`,`jenis_kelamin`,`tempat_lahir`,`tanggal_lahir`,`status`,`departement`,`pekerjaan`,`agama`,`alamat`,`kota`,`no_telp`,`tanggal_registrasi`,`jabatan`,`aktif`,`created_at`,`updated_at`) values 
-(1,'assets/images/profile/user-1.jpg','AG0001','good_joob123','$2y$12$5c/TkYViOrPKeJIH7I5FX.LuBpQCDocyKYGOz2DBonVUHn35M29S6','iam ibless','Laki-laki','sad','2025-12-29','Belum Kawin','Produksi Slitting','Lainnya','Islam','fasfaafafdaf','sad','04578987654','2026-01-09','Anggota','Aktif','2026-01-09 07:24:46','2026-01-09 07:24:46'),
-(5,'anggota/anggota_1768203624.png','AG0002','adssss','$2y$12$gsdGrN0v7Khqpl2xO1nd/ONVwgtpIcq8Ou2NMQx8/I/VhBGoB.WtO','sadsss','Perempuan','sad','2026-01-09','Belum Kawin','Produksi Slitting','PNS','Islam','asda','sad','04578987654','2026-01-12','Pengurus','Aktif','2026-01-12 07:40:26','2026-01-12 07:40:26'),
-(6,'assets/images/profile/user-1.jpg','AG0003','adssssadsad','$2y$12$ISMo72y3qQtebmJm/JFV5eqGRcQeVEDpDP9QPgH0Rqszqik4m/vLC','sadsssasda','Laki-laki','sad','2026-01-09','Kawin','WH','Buruh','Islam','Villa Pajajaran Permai Blok F-16','sad','04578987654','2026-01-12','Anggota','Aktif','2026-01-12 07:40:50','2026-01-21 07:31:17'),
-(7,'assets/images/profile/user-1.jpg','AG0004','user@gmail.com','$2y$12$hSWSS0QO7.1JrCfd3dmlfOnvOQtMN4rriHmPneKzMvKAzKr1SX/O2','User Koperasi','Laki-laki','Jakartaaaaa','1990-01-01','Belum Kawin','Produksi Slitting','Karyawan Swasta','Islam','Jakarta','Jakarta','081234567890','2026-01-13','Pengurus','Aktif','2026-01-13 16:49:08','2026-01-21 03:47:27');
+insert  into `data_anggota`(`id`,`user_id`,`photo`,`id_anggota`,`username`,`password`,`nama`,`jenis_kelamin`,`tempat_lahir`,`tanggal_lahir`,`status`,`departement`,`pekerjaan`,`agama`,`alamat`,`kota`,`no_telp`,`tanggal_registrasi`,`jabatan`,`aktif`,`created_at`,`updated_at`) values 
+(1,NULL,'assets/images/profile/user-1.jpg','AG0001','ibless@gmail.com','$2y$12$lEflbG8vLPc9Ag4Uhk2OWuJP08WjEC5LisyH01sskVmXJB4EG7n52','iam ibless','Laki-laki','sad','2025-12-29','Belum Kawin','Produksi Slitting','Lainnya','Islam','fasfaafafdaf','sad','04578987654','2026-01-09','Anggota','Aktif','2026-01-09 07:24:46','2026-01-23 06:30:38'),
+(5,NULL,'anggota/anggota_1768203624.png','AG0002','adssss','$2y$12$gsdGrN0v7Khqpl2xO1nd/ONVwgtpIcq8Ou2NMQx8/I/VhBGoB.WtO','sadsss','Perempuan','sad','2026-01-09','Belum Kawin','Produksi Slitting','PNS','Islam','asda','sad','04578987654','2026-01-12','Pengurus','Aktif','2026-01-12 07:40:26','2026-01-12 07:40:26'),
+(6,NULL,'assets/images/profile/user-1.jpg','AG0003','adssssadsad','$2y$12$ISMo72y3qQtebmJm/JFV5eqGRcQeVEDpDP9QPgH0Rqszqik4m/vLC','sadsssasda','Laki-laki','sad','2026-01-09','Kawin','WH','Buruh','Islam','Villa Pajajaran Permai Blok F-16','sad','04578987654','2026-01-12','Anggota','Aktif','2026-01-12 07:40:50','2026-01-21 07:31:17'),
+(7,2,'assets/images/profile/user-1.jpg','AG0004','user','$2y$12$XtJ2Y7VMLl8Colq4hcb.henOJ123E3G3JpqqGhrJ9GJrOyqXPrzDK','User Koperasi','Laki-laki','Jakartaaaaa','1990-01-01','Belum Kawin','Produksi Slitting','Karyawan Swasta','Islam','Jakartuy','Jakarta','081234567890','2026-01-13','Pengurus','Aktif','2026-01-13 16:49:08','2026-01-23 07:23:04'),
+(11,8,'assets/images/profile/user-1.jpg','AG0005','oi','$2y$12$zl4s/MvZATwP643UtJCSlOrGtyt9CHdjWxCpRPUmReZPjxtE/jf8S','iam ibless','Laki-laki','sad','2025-12-29','Kawin','Produksi Slitting','TNI','Islam','VIlla Pajajaran Permai Blok F-111','sad','04578987654','2026-01-23','Anggota','Aktif','2026-01-23 06:51:21','2026-01-23 06:54:42');
 
 /*Table structure for table `data_barang` */
 
@@ -206,12 +201,12 @@ CREATE TABLE `data_pengguna` (
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `data_pengguna_username_unique` (`username`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `data_pengguna` */
 
 insert  into `data_pengguna`(`id`,`username`,`password`,`level`,`status`,`created_at`,`updated_at`) values 
-(1,'f','$2y$12$Kg7zWlt8H6xFkcbVwUj/SeBgY70vkd13JcKgW43nzU9tTMDvfKA1e','operator','Y','2026-01-09 08:32:30','2026-01-09 08:33:29');
+(3,'admin3','$2y$12$suEUZulObJU9YyfY8pGBEuc6qEdKDsMlQi0ucDqn3BvzszfgcfPMW','admin','Y','2026-01-23 08:59:28','2026-01-23 09:02:47');
 
 /*Table structure for table `detail_bayar_angsuran` */
 
@@ -328,7 +323,7 @@ CREATE TABLE `identitas_koperasi` (
 /*Data for the table `identitas_koperasi` */
 
 insert  into `identitas_koperasi`(`id`,`nama_lembaga`,`nama_ketua`,`hp_ketua`,`alamat`,`telepon`,`kota`,`email`,`web`,`logo`,`created_at`,`updated_at`) values 
-(1,'Koperasi Akeno','Riski Juanda','085212345678','AKENO MULTIMEDIA SOLUTION, Vila Bandung Indah 40393 Jawa West Java','0821-2135-5234','Bandung','master@akeno-ms.com','www.koperasi.akeno.id','assets/images/logos/logo-koperasi-1769137392.png','2026-01-23 02:52:33','2026-01-23 03:03:12');
+(1,'Koperasi Akeno','Riski Juanda','080000000000','AKENO MULTIMEDIA SOLUTION, Vila Bandung Indah 40393 Jawa West Java','0821-2135-5234','Bandung','master@akeno-ms.com','www.koperasi.akeno.id','assets/images/logos/logo-koperasi-1769137392.png','2026-01-23 02:52:33','2026-01-23 03:05:49');
 
 /*Table structure for table `jenis_akun` */
 
@@ -462,13 +457,16 @@ CREATE TABLE `lama_angsuran` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `lama_angsuran` */
 
 insert  into `lama_angsuran`(`id`,`lama_angsuran`,`aktif`,`created_at`,`updated_at`) values 
 (1,12,'Y','2026-01-09 07:01:31','2026-01-09 07:01:31'),
-(2,4,'Y','2026-01-09 07:01:39','2026-01-09 07:01:39');
+(2,4,'Y','2026-01-09 07:01:39','2026-01-09 07:01:39'),
+(3,1,'Y','2026-01-23 08:43:41','2026-01-23 08:43:41'),
+(4,2,'Y','2026-01-23 08:43:47','2026-01-23 08:43:47'),
+(5,3,'Y','2026-01-23 08:43:51','2026-01-23 08:43:51');
 
 /*Table structure for table `migrations` */
 
@@ -566,7 +564,7 @@ CREATE TABLE `penarikan_tunai` (
   CONSTRAINT `penarikan_tunai_dari_kas_id_foreign` FOREIGN KEY (`dari_kas_id`) REFERENCES `data_kas` (`id`),
   CONSTRAINT `penarikan_tunai_jenis_simpanan_id_foreign` FOREIGN KEY (`jenis_simpanan_id`) REFERENCES `jenis_simpanan` (`id`),
   CONSTRAINT `penarikan_tunai_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `penarikan_tunai` */
 
@@ -575,7 +573,8 @@ insert  into `penarikan_tunai`(`id`,`kode_transaksi`,`tanggal_transaksi`,`anggot
 (2,'PNR00002','2026-01-13 02:46:00',1,14,100000.00,1,'ads','das','da','sdad',1,'2026-01-13 02:46:45','2026-01-22 08:33:59','2026-01-22 08:33:59'),
 (3,'TRK00003','2026-01-13 02:47:00',1,13,323232.00,1,'dsada','dsada','dsada','sda',1,'2026-01-13 02:47:54','2026-01-22 08:34:00','2026-01-22 08:34:00'),
 (4,'TRK00004','2026-01-13 02:48:00',6,14,1000002.00,1,'dasda','dsadas','sdada','sda',1,'2026-01-13 02:48:18','2026-01-13 04:11:20','2026-01-13 04:11:20'),
-(5,'TRK00005','2026-01-22 08:43:00',5,14,100000.00,1,'dasda','sada','ssssssssssss','ssssssssssss',1,'2026-01-22 08:43:32','2026-01-22 08:43:32',NULL);
+(5,'TRK00005','2026-01-22 08:43:00',5,14,100000.00,1,'dasda','sada','ssssssssssss','ssssssssssss',1,'2026-01-22 08:43:32','2026-01-23 06:43:28','2026-01-23 06:43:28'),
+(6,'TRK00006','2026-01-23 06:43:00',7,14,100000.00,1,'dasda','Sada','zzzzzzz',NULL,1,'2026-01-23 06:43:46','2026-01-23 06:43:46',NULL);
 
 /*Table structure for table `pengajuan_pinjaman` */
 
@@ -610,7 +609,7 @@ CREATE TABLE `pengajuan_pinjaman` (
   CONSTRAINT `pengajuan_pinjaman_approved_by_foreign` FOREIGN KEY (`approved_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
   CONSTRAINT `pengajuan_pinjaman_lama_angsuran_id_foreign` FOREIGN KEY (`lama_angsuran_id`) REFERENCES `lama_angsuran` (`id`),
   CONSTRAINT `pengajuan_pinjaman_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=102 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=105 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `pengajuan_pinjaman` */
 
@@ -618,9 +617,12 @@ insert  into `pengajuan_pinjaman`(`id`,`id_ajuan`,`tanggal_pengajuan`,`anggota_i
 (1,'B.26.01.001','2026-01-13 09:55:28',7,'Biasa',1000000.00,2,'1adads',2,NULL,'sad',1,2,'2026-01-13 09:55:28','2026-01-19 07:49:12','2026-01-19 07:49:12'),
 (2,'G.26.01.001','2026-01-14 06:53:55',7,'Barang',3000000.00,2,'beli hp',3,'2026-01-14','gas',1,2,'2026-01-14 06:53:55','2026-01-22 09:03:09','2026-01-22 09:03:09'),
 (3,'G.26.01.002','2026-01-19 03:16:32',7,'Barang',5000000.00,2,'sdad',3,'2026-01-19',NULL,1,2,'2026-01-19 03:16:32','2026-01-22 09:03:16','2026-01-22 09:03:16'),
-(4,'G.26.01.003','2026-01-20 02:40:49',7,'Barang',1000000.00,2,'asd',3,'2026-01-20',NULL,1,2,'2026-01-20 02:40:49','2026-01-22 09:03:25',NULL),
+(4,'G.26.01.003','2026-01-20 02:40:49',7,'Barang',1000000.00,2,'asd',1,'2026-01-20',NULL,1,2,'2026-01-20 02:40:49','2026-01-23 08:23:18','2026-01-23 08:23:18'),
 (100,'T.26.01.100','2025-11-01 10:00:00',1,'Biasa',2000000.00,2,'Testing jatuh tempo - sudah lewat',3,'2025-11-01',NULL,1,1,'2026-01-21 14:54:31','2026-01-22 09:03:04','2026-01-22 09:03:04'),
-(101,'G.26.01.004','2026-01-22 09:00:06',7,'Barang',3000000.00,2,'beli hp',3,'2026-01-22','oke',1,2,'2026-01-22 09:00:06','2026-01-22 09:02:59',NULL);
+(101,'G.26.01.004','2026-01-22 09:00:06',7,'Barang',3000000.00,2,'beli hp',3,'2026-01-22','oke',1,2,'2026-01-22 09:00:06','2026-01-22 09:02:59',NULL),
+(102,'B.26.01.002','2026-01-23 07:34:41',7,'Biasa',3000000.00,2,'sssss',1,'2026-01-23',NULL,1,2,'2026-01-23 07:34:41','2026-01-23 08:36:51',NULL),
+(103,'B.26.01.003','2026-01-23 07:50:21',11,'Biasa',3000000.00,2,'1',3,NULL,'mmmmmmmmmmmmmm',1,8,'2026-01-23 07:50:21','2026-01-23 08:39:57',NULL),
+(104,'G.26.01.005','2026-01-23 08:43:19',11,'Barang',3000000.00,1,'asasa',0,NULL,NULL,NULL,8,'2026-01-23 08:43:19','2026-01-23 08:43:19',NULL);
 
 /*Table structure for table `pengeluaran` */
 
@@ -703,14 +705,14 @@ CREATE TABLE `pinjaman` (
   CONSTRAINT `pinjaman_lama_angsuran_id_foreign` FOREIGN KEY (`lama_angsuran_id`) REFERENCES `lama_angsuran` (`id`),
   CONSTRAINT `pinjaman_pengajuan_id_foreign` FOREIGN KEY (`pengajuan_id`) REFERENCES `pengajuan_pinjaman` (`id`),
   CONSTRAINT `pinjaman_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=111 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=116 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `pinjaman` */
 
 insert  into `pinjaman`(`id`,`kode_pinjaman`,`pengajuan_id`,`tanggal_pinjam`,`anggota_id`,`barang_id`,`jenis_pinjaman`,`pokok_pinjaman`,`lama_angsuran_id`,`angsuran_pokok`,`bunga_persen`,`biaya_bunga`,`biaya_admin`,`jumlah_angsuran`,`dari_kas_id`,`keterangan`,`status_lunas`,`user_id`,`created_at`,`updated_at`,`deleted_at`,`deleted_by`,`alasan_hapus`) values 
 (108,'PJ00001',101,'2025-12-24 16:02:00',7,NULL,'Barang',3000000.00,2,750000.00,5.00,37500.00,0.00,3150000.00,1,'ssss','Lunas',1,'2026-01-22 09:02:58','2026-01-22 09:06:07',NULL,NULL,NULL),
-(109,'PJ00002',4,'2026-01-22 16:03:00',7,NULL,'Barang',1000000.00,2,250000.00,5.00,12500.00,0.00,1050000.00,1,NULL,'Belum',1,'2026-01-22 09:03:25','2026-01-22 09:03:25',NULL,NULL,NULL),
-(110,'PJ0001',1,'2025-01-10 00:00:00',1,NULL,'Biasa',5000000.00,1,500000.00,5.00,250000.00,50000.00,575000.00,1,NULL,'Belum',1,'2026-01-22 16:54:49','2026-01-23 01:19:50','2026-01-23 01:19:50',1,NULL);
+(114,'PJ00004',102,'2026-01-23 15:38:00',7,NULL,'Biasa',3000000.00,2,750000.00,5.00,37500.00,0.00,3150000.00,1,NULL,'Belum',1,'2026-01-23 08:24:27','2026-01-23 08:24:27',NULL,NULL,NULL),
+(115,'PJ00005',103,'2026-01-23 15:39:00',11,NULL,'Biasa',3000000.00,3,3000000.00,5.00,150000.00,0.00,3150000.00,1,NULL,'Belum',1,'2026-01-23 08:39:57','2026-01-23 08:45:16',NULL,NULL,NULL);
 
 /*Table structure for table `pinjaman_lunas` */
 
@@ -790,7 +792,9 @@ CREATE TABLE `sessions` (
 /*Data for the table `sessions` */
 
 insert  into `sessions`(`id`,`user_id`,`ip_address`,`user_agent`,`payload`,`last_activity`) values 
-('aY1Gf9uSbRDNpKfM8dD8jtUV4kivrroi83rCd2TW',1,'127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiMlFZMTJHZ3VUZ3hubGtnSDZhdkZZV29CZlR6Q1dHbDBONDU4NjhEOCI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hZG1pbi9pZGVudGl0YXMiO3M6NToicm91dGUiO3M6MTc6InNldHRpbmcuaWRlbnRpdGFzIjt9czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTt9',1769137458);
+('brjl3MWfPVw2DbtpJ6Ji4wzuvjtqsAHM5YmjwEeT',1,'127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiTEJaTUk1dUtwQ1VreVU4aUNYQkFDcVljMldBRWFPTVFWT0dBTXp1aSI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hZG1pbi9iYXlhci8xMDkiO3M6NToicm91dGUiO3M6MTk6InBpbmphbWFuLmJheWFyLnNob3ciO31zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aToxO30=',1769159177),
+('ocFKQFoErI1U2fCfi4kAKcqEOOUgf6M5Kcu8xMa3',2,'127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiSUVSZDNpVmp4MGp3SEhXWjVVRHB5SnZpd1Y5bTVJTVozWGl1Nnd4byI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mjc6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9sb2dpbiI7czo1OiJyb3V0ZSI7czo1OiJsb2dpbiI7fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjI7fQ==',1769152635),
+('sBsQzNz78CeN5a54ZQtIboLko7SJGpaxLWNWiHNn',1,'127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0','YTo0OntzOjY6Il90b2tlbiI7czo0MDoialVZSnlmQzg2TWQzWFNCb1AzWVVPSVJtT3JOVmpUc2pieTE5d1MzWCI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDI6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hZG1pbi9qZW5pcy1zaW1wYW5hbiI7czo1OiJyb3V0ZSI7czoyMToibWFzdGVyLmplbmlzLXNpbXBhbmFuIjt9czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTt9',1769159063);
 
 /*Table structure for table `setoran_tunai` */
 
@@ -915,13 +919,15 @@ CREATE TABLE `users` (
   UNIQUE KEY `users_email_unique` (`email`),
   KEY `role_id` (`role_id`),
   CONSTRAINT `users_ibfk_2` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `users` */
 
 insert  into `users`(`id`,`name`,`role_id`,`email`,`email_verified_at`,`password`,`remember_token`,`created_at`,`updated_at`) values 
-(1,'Admin Koperasi',1,'admin@gmail.com',NULL,'$2y$12$rK0GcJJ6xgqWxbVLCIIcwOLi0sLJ5qEdn.fJKXlicKjoWN5tDIC6q',NULL,'2026-01-08 03:05:11','2026-01-08 03:05:11'),
-(2,'User Koperasi',2,'user@gmail.com',NULL,'$2y$12$hSWSS0QO7.1JrCfd3dmlfOnvOQtMN4rriHmPneKzMvKAzKr1SX/O2',NULL,'2026-01-08 03:19:57','2026-01-08 03:19:57');
+(1,'Admin Koperasi',1,'admin@gmail.com',NULL,'$2y$12$rK0GcJJ6xgqWxbVLCIIcwOLi0sLJ5qEdn.fJKXlicKjoWN5tDIC6q','Uee9AZ0r3V4rhjqEb6iwjhc5nANdaRvitS6MdUewRTXv7FVZUlrSBR9NOqK9','2026-01-08 03:05:11','2026-01-08 03:05:11'),
+(2,'User Koperasi',2,'user@gmail.com',NULL,'$2y$12$hSWSS0QO7.1JrCfd3dmlfOnvOQtMN4rriHmPneKzMvKAzKr1SX/O2',NULL,'2026-01-08 03:19:57','2026-01-08 03:19:57'),
+(8,'iam ibless',2,'oi@gmail.com',NULL,'$2y$12$zl4s/MvZATwP643UtJCSlOrGtyt9CHdjWxCpRPUmReZPjxtE/jf8S',NULL,'2026-01-23 06:51:21','2026-01-23 06:54:42'),
+(10,'admin3',1,'admin3@gmail.com',NULL,'$2y$12$YH5ZPkoux2SQ2swjM7DBKuwBdOEPVC5i5BmZrwDshR/AHNXYQEDZq',NULL,'2026-01-23 08:59:28','2026-01-23 09:02:47');
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
