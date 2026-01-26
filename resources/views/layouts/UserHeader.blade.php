@@ -2,18 +2,16 @@
     <nav class="navbar navbar-expand-lg navbar-light">
         <ul class="navbar-nav">
             <li class="nav-item">
-               <a class="nav-link fw-semibold {{ 
-                            $isAdmin 
-                                ? request()->routeIs('admin.dashboard') 
-                                : request()->routeIs('user.dashboard') 
-                        }}"
-                    href="{{ $isAdmin ? route('admin.dashboard') : route('user.dashboard') }}">
-                         Sistem Koperasi
-                    </a>
+                <a class="nav-link fw-semibold {{ 
+                            $isAdmin
+    ? request()->routeIs('admin.dashboard')
+    : request()->routeIs('user.dashboard') 
+                        }}" href="{{ $isAdmin ? route('admin.dashboard') : route('user.dashboard') }}">
+                    Sistem Koperasi
+                </a>
             </li>
         </ul>
-        <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="collapse"
-            data-bs-target="#navbarNav">
+        <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
 
@@ -21,57 +19,60 @@
             <ul class="navbar-nav ms-3">
                 <li class="nav-item">
                     <a class="nav-link {{ 
-                            $isAdmin 
-                                ? request()->routeIs('admin.dashboard') 
-                                : request()->routeIs('user.dashboard') 
-                        }}"
-                    href="{{ $isAdmin ? route('admin.dashboard') : route('user.dashboard') }}">
+                            $isAdmin
+    ? request()->routeIs('admin.dashboard')
+    : request()->routeIs('user.dashboard') 
+                        }}" href="{{ $isAdmin ? route('admin.dashboard') : route('user.dashboard') }}">
                         <i class="ti ti-home me-1"></i> Beranda
                     </a>
                 </li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle {{ request()->routeIs('user.pengajuan.*') ? 'active' : '' }}" 
-                       href="#" data-bs-toggle="dropdown">
+                    <a class="nav-link dropdown-toggle {{ request()->routeIs('user.pengajuan.*') ? 'active' : '' }}"
+                        href="#" data-bs-toggle="dropdown">
                         <i class="ti ti-file-text me-1"></i> Pengajuan Pinjaman
                     </a>
                     <ul class="dropdown-menu">
                         <li>
-                            <a class="dropdown-item {{ request()->routeIs('user.pengajuan.index') ? 'active' : '' }}" 
-                               href="{{ route('user.pengajuan.index') }}">
+                            <a class="dropdown-item {{ request()->routeIs('user.pengajuan.index') ? 'active' : '' }}"
+                                href="{{ route('user.pengajuan.index') }}">
                                 Data Pengajuan
                             </a>
                         </li>
-                        <li><hr class="dropdown-divider"></li>
                         <li>
-                            <a class="dropdown-item {{ request()->routeIs('user.pengajuan.create') ? 'active' : '' }}" 
-                               href="{{ route('user.pengajuan.create') }}">
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li>
+                            <a class="dropdown-item {{ request()->routeIs('user.pengajuan.create') ? 'active' : '' }}"
+                                href="{{ route('user.pengajuan.create') }}">
                                 Tambah Pengajuan Baru
                             </a>
                         </li>
                     </ul>
                 </li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle {{ request()->routeIs('user.laporan.*') ? 'active' : '' }}" 
-                       href="#" data-bs-toggle="dropdown">
+                    <a class="nav-link dropdown-toggle {{ request()->routeIs('user.laporan.*') ? 'active' : '' }}"
+                        href="#" data-bs-toggle="dropdown">
                         <i class="ti ti-report me-1"></i> Laporan
                     </a>
                     <ul class="dropdown-menu">
                         <li>
-                            <a class="dropdown-item {{ request()->routeIs('user.laporan.simpanan') ? 'active' : '' }}" 
-                               href="{{ route('user.laporan.simpanan') }}">
+                            <a class="dropdown-item {{ request()->routeIs('user.laporan.simpanan') ? 'active' : '' }}"
+                                href="{{ route('user.laporan.simpanan') }}">
                                 Simpanan
                             </a>
                         </li>
-                        <li><hr class="dropdown-divider"></li>
                         <li>
-                            <a class="dropdown-item {{ request()->routeIs('user.laporan.pinjaman') ? 'active' : '' }}" 
-                               href="{{ route('user.laporan.pinjaman') }}">
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li>
+                            <a class="dropdown-item {{ request()->routeIs('user.laporan.pinjaman') ? 'active' : '' }}"
+                                href="{{ route('user.laporan.pinjaman') }}">
                                 Pinjaman
                             </a>
                         </li>
                         <li>
-                            <a class="dropdown-item {{ request()->routeIs('user.laporan.pembayaran') ? 'active' : '' }}" 
-                               href="{{ route('user.laporan.pembayaran') }}">
+                            <a class="dropdown-item {{ request()->routeIs('user.laporan.pembayaran') ? 'active' : '' }}"
+                                href="{{ route('user.laporan.pembayaran') }}">
                                 Pembayaran
                             </a>
                         </li>
@@ -89,20 +90,50 @@
                     </span>
                 </li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link" href="javascript:void(0)" data-bs-toggle="dropdown">
-                        <img src="{{ asset('assets/images/profile/user-1.jpg') }}" width="35" height="35"
-                            class="rounded-circle">
+                    <a class="nav-link" href="javascript:void(0)" id="dropUser" data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        <img src="{{ Auth::user()->avatar ?? asset('assets/images/profile/user-1.jpg') }}" alt="Profile"
+                            width="35" height="35" class="rounded-circle">
                     </a>
-                    <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up">
-                        <a href="#" class="dropdown-item"><i class="ti ti-user"></i> Profil Saya</a>
-                        <a href="#" class="dropdown-item"><i class="ti ti-camera"></i> Ubah Foto</a>
-                        <a href="#" class="dropdown-item"><i class="ti ti-key"></i> Ubah Password</a>
-                        <form method="POST" action="{{ route('logout') }}" class="px-2">
-                            @csrf
-                            <button type="submit" class="btn btn-outline-primary mt-1 d-block w-100">
-                                Logout
-                            </button>
-                        </form>
+
+                    <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="dropUser">
+                        <div class="message-body">
+                            {{-- Profile Info --}}
+                            <div class="px-3 py-2 border-bottom">
+                                <p class="mb-1 fw-semibold">{{ Auth::user()->name }}</p>
+                                <p class="mb-0 text-muted small">{{ Auth::user()->email }}</p>
+                            </div>
+
+                            {{-- Menu Items --}}
+                            <a href="{{ route('user.profile.edit') }}"
+                                class="d-flex align-items-center gap-2 dropdown-item">
+                                <i class="ti ti-user fs-6"></i>
+                                <p class="mb-0 fs-3">Profil Saya</p>
+                            </a>
+
+                            <a href="{{ route('user.profile.edit') }}"
+                                class="d-flex align-items-center gap-2 dropdown-item">
+                                <i class="ti ti-camera fs-6"></i>
+                                <p class="mb-0 fs-3">Ubah Foto</p>
+                            </a>
+
+                            <a href="{{ route('user.profile.edit') }}#password"
+                                class="d-flex align-items-center gap-2 dropdown-item">
+                                <i class="ti ti-key fs-6"></i>
+                                <p class="mb-0 fs-3">Ubah Password</p>
+                            </a>
+
+                            {{-- Divider --}}
+                            <div class="dropdown-divider"></div>
+
+                            {{-- Logout Button --}}
+                            <form method="POST" action="{{ route('logout') }}" class="px-2 py-2">
+                                @csrf
+                                <button type="submit" class="btn btn-outline-primary w-100">
+                                    <i class="ti ti-logout me-1"></i> Logout
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </li>
             </ul>
@@ -111,16 +142,16 @@
 </header>
 
 @push('scripts')
-<script>
-    // Update Jam Real-time
-    function updateJam() {
-        const now = new Date();
-        const jam = now.getHours().toString().padStart(2, '0');
-        const menit = now.getMinutes().toString().padStart(2, '0');
-        const detik = now.getSeconds().toString().padStart(2, '0');
-        document.getElementById('jam').textContent = `${jam}:${menit}:${detik}`;
-    }
-    setInterval(updateJam, 1000);
-    updateJam();
-</script>
+    <script>
+        // Update Jam Real-time
+        function updateJam() {
+            const now = new Date();
+            const jam = now.getHours().toString().padStart(2, '0');
+            const menit = now.getMinutes().toString().padStart(2, '0');
+            const detik = now.getSeconds().toString().padStart(2, '0');
+            document.getElementById('jam').textContent = `${jam}:${menit}:${detik}`;
+        }
+        setInterval(updateJam, 1000);
+        updateJam();
+    </script>
 @endpush

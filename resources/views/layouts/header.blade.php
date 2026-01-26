@@ -64,42 +64,63 @@
 
         <div class="navbar-collapse justify-content-end px-0" id="navbarNav">
             <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-end">
-                <!-- Tanggal dan Jam -->
-                <li class="nav-item me-3">
-                    <span class="text-dark">
-                        <i class="ti ti-calendar"></i>
-                        <span id="tanggal">{{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}</span> &nbsp;
-                        <i class="ti ti-clock"></i>
-                        <span id="jam">00:00:00</span>
+
+                <!-- Tanggal | Jam -->
+                <li class="nav-item me-1 d-flex align-items-center text-dark">
+                    <i class="ti ti-calendar me-1"></i>
+                    <span id="tanggal">
+                        {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}
                     </span>
+
+                    <span class="mx-2"></span>
+
+                    <i class="ti ti-clock me-1"></i>
+                    <span id="jam">00:00:00</span>
+
                 </li>
 
-                <li class="nav-item dropdown">
-                    <a class="nav-link" href="javascript:void(0)" id="drop2" data-bs-toggle="dropdown"
+                <!-- Nama + Avatar -->
+                <li class="nav-item d-flex align-items-center mx-3">
+                    <div style="width:2px; height:35px; background:#adb5bd;"></div>
+                </li>
+
+                <li class="nav-item dropdown d-flex align-items-center me-3">
+                    <a class="nav-link fs-4 p-0 mx-1" href="javascript:void(0)" id="drop2" data-bs-toggle="dropdown"
                         aria-expanded="false">
-                        <img src="{{ Auth::user()->avatar ?? asset('assets/images/profile/user-1.jpg') }}" alt=""
-                            width="35" height="35" class="rounded-circle">
+                        <span class="fw-semibold me-2 text-dark">
+                            {{ Auth::user()->name }}
+                        </span>
                     </a>
+
+                    <a class="nav-link p-0" href="javascript:void(0)" id="drop2" data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        <img src="{{ Auth::user()->profile_image ? asset('storage/' . Auth::user()->profile_image) : asset('assets/images/profile/user-1.jpg') }}"
+                            alt="{{ Auth::user()->name }}" width="35" height="35"
+                            class="rounded-circle object-fit-cover">
+                    </a>
+
                     <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
                         <div class="message-body">
-                            <a href="{{ route('profile.edit') }}" class="d-flex align-items-center gap-2 dropdown-item">
+
+                            <a href="{{ route('admin.profile.edit') }}"
+                                class="d-flex align-items-center gap-2 dropdown-item">
                                 <i class="ti ti-user fs-6"></i>
                                 <p class="mb-0 fs-3">Profil Saya</p>
                             </a>
-                            <a href="{{ route('profile.edit') }}" class="d-flex align-items-center gap-2 dropdown-item">
+
+                            <a href="{{ route('admin.profile.edit') }}#password"
+                                class="d-flex align-items-center gap-2 dropdown-item">
                                 <i class="ti ti-key fs-6"></i>
                                 <p class="mb-0 fs-3">Ubah Password</p>
                             </a>
-                            <a href="{{ route('register') }}" class="d-flex align-items-center gap-2 dropdown-item">
-                                <i class="ti ti-user-plus fs-6"></i>
-                                <p class="mb-0 fs-3">Register Akun</p>
-                            </a>
+
                             <form method="POST" action="{{ route('logout') }}" class="px-2">
                                 @csrf
                                 <button type="submit" class="btn btn-outline-primary mt-1 w-100">
                                     Logout
                                 </button>
                             </form>
+
                         </div>
                     </div>
                 </li>
@@ -266,10 +287,10 @@
 
                 if (data.length === 0) {
                     container.html(`
-                        <div class="px-3 py-3 text-center text-muted">
-                            <small>Tidak ada pengajuan baru</small>
-                        </div>
-                    `);
+                                                                    <div class="px-3 py-3 text-center text-muted">
+                                                                        <small>Tidak ada pengajuan baru</small>
+                                                                    </div>
+                                                                `);
                     return;
                 }
 
@@ -279,34 +300,34 @@
                         item.jenis === 'Barang' ? 'info' : 'primary';
 
                     html += `
-                        <a href="javascript:void(0)" 
-                           class="dropdown-item border-bottom py-3 notif-pengajuan-item"
-                           data-id="${item.id}"
-                           data-id-ajuan="${item.id_ajuan}"
-                           data-nama="${item.nama}"
-                           data-jenis="${item.jenis}"
-                           data-jumlah="${item.jumlah}"
-                           data-tanggal="${item.tanggal_full}">
-                            <div class="d-flex align-items-start">
-                                <div class="flex-shrink-0">
-                                    <div class="round-40 d-flex align-items-center justify-content-center bg-${badgeClass}-subtle">
-                                        <i class="ti ti-file-text fs-6 text-${badgeClass}"></i>
-                                    </div>
-                                </div>
-                                <div class="flex-grow-1 ms-3">
-                                    <h6 class="mb-1 fw-semibold">${item.nama}</h6>
-                                    <p class="mb-1 fs-2 text-muted">${item.id_ajuan}</p>
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <span class="badge bg-${badgeClass}-subtle text-${badgeClass} fw-semibold">
-                                            ${item.jenis}
-                                        </span>
-                                        <span class="text-success fw-semibold">Rp ${formatRupiah(item.jumlah)}</span>
-                                    </div>
-                                    <small class="text-muted">${item.tanggal}</small>
-                                </div>
-                            </div>
-                        </a>
-                    `;
+                                                                    <a href="javascript:void(0)" 
+                                                                       class="dropdown-item border-bottom py-3 notif-pengajuan-item"
+                                                                       data-id="${item.id}"
+                                                                       data-id-ajuan="${item.id_ajuan}"
+                                                                       data-nama="${item.nama}"
+                                                                       data-jenis="${item.jenis}"
+                                                                       data-jumlah="${item.jumlah}"
+                                                                       data-tanggal="${item.tanggal_full}">
+                                                                        <div class="d-flex align-items-start">
+                                                                            <div class="flex-shrink-0">
+                                                                                <div class="round-40 d-flex align-items-center justify-content-center bg-${badgeClass}-subtle">
+                                                                                    <i class="ti ti-file-text fs-6 text-${badgeClass}"></i>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="flex-grow-1 ms-3">
+                                                                                <h6 class="mb-1 fw-semibold">${item.nama}</h6>
+                                                                                <p class="mb-1 fs-2 text-muted">${item.id_ajuan}</p>
+                                                                                <div class="d-flex justify-content-between align-items-center">
+                                                                                    <span class="badge bg-${badgeClass}-subtle text-${badgeClass} fw-semibold">
+                                                                                        ${item.jenis}
+                                                                                    </span>
+                                                                                    <span class="text-success fw-semibold">Rp ${formatRupiah(item.jumlah)}</span>
+                                                                                </div>
+                                                                                <small class="text-muted">${item.tanggal}</small>
+                                                                            </div>
+                                                                        </div>
+                                                                    </a>
+                                                                `;
                 });
 
                 container.html(html);
@@ -346,48 +367,48 @@
 
                 if (data.length === 0) {
                     container.html(`
-                <div class="px-3 py-3 text-center text-muted">
-                    <small>Tidak ada notifikasi</small>
-                </div>
-            `);
+                                                            <div class="px-3 py-3 text-center text-muted">
+                                                                <small>Tidak ada notifikasi</small>
+                                                            </div>
+                                                        `);
                     return;
                 }
 
                 let html = '';
                 data.forEach(item => {
                     html += `
-                <a href="javascript:void(0)" 
-                   class="dropdown-item border-bottom py-3 notif-tempo-item"
-                   data-id="${item.id}"
-                   data-pinjaman-id="${item.pinjaman_id}"
-                   data-kode="${item.kode_pinjaman}"
-                   data-nama="${item.nama}"
-                   data-angsuran-ke="${item.angsuran_ke}"
-                   data-tanggal="${item.tanggal_jatuh_tempo_full}"
-                   data-jumlah="${item.jumlah_angsuran}"
-                   data-status="${item.status}"
-                   data-badge="${item.badge}"
-                   data-keterangan="${item.keterangan}">
-                    <div class="d-flex align-items-start">
-                        <div class="flex-shrink-0">
-                            <div class="round-40 d-flex align-items-center justify-content-center bg-${item.badge}-subtle">
-                                <i class="ti ${item.icon} fs-6 text-${item.badge}"></i>
-                            </div>
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <h6 class="mb-1 fw-semibold">${item.nama}</h6>
-                            <p class="mb-1 fs-2 text-muted">${item.kode_pinjaman} - Angsuran ke-${item.angsuran_ke}</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="badge bg-${item.badge}-subtle text-${item.badge} fw-semibold">
-                                    ${item.keterangan}
-                                </span>
-                                <span class="text-success fw-semibold">Rp ${formatRupiah(item.jumlah_angsuran)}</span>
-                            </div>
-                            <small class="text-muted">${item.tanggal_jatuh_tempo_full}</small>
-                        </div>
-                    </div>
-                </a>
-            `;
+                                                            <a href="javascript:void(0)" 
+                                                               class="dropdown-item border-bottom py-3 notif-tempo-item"
+                                                               data-id="${item.id}"
+                                                               data-pinjaman-id="${item.pinjaman_id}"
+                                                               data-kode="${item.kode_pinjaman}"
+                                                               data-nama="${item.nama}"
+                                                               data-angsuran-ke="${item.angsuran_ke}"
+                                                               data-tanggal="${item.tanggal_jatuh_tempo_full}"
+                                                               data-jumlah="${item.jumlah_angsuran}"
+                                                               data-status="${item.status}"
+                                                               data-badge="${item.badge}"
+                                                               data-keterangan="${item.keterangan}">
+                                                                <div class="d-flex align-items-start">
+                                                                    <div class="flex-shrink-0">
+                                                                        <div class="round-40 d-flex align-items-center justify-content-center bg-${item.badge}-subtle">
+                                                                            <i class="ti ${item.icon} fs-6 text-${item.badge}"></i>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="flex-grow-1 ms-3">
+                                                                        <h6 class="mb-1 fw-semibold">${item.nama}</h6>
+                                                                        <p class="mb-1 fs-2 text-muted">${item.kode_pinjaman} - Angsuran ke-${item.angsuran_ke}</p>
+                                                                        <div class="d-flex justify-content-between align-items-center">
+                                                                            <span class="badge bg-${item.badge}-subtle text-${item.badge} fw-semibold">
+                                                                                ${item.keterangan}
+                                                                            </span>
+                                                                            <span class="text-success fw-semibold">Rp ${formatRupiah(item.jumlah_angsuran)}</span>
+                                                                        </div>
+                                                                        <small class="text-muted">${item.tanggal_jatuh_tempo_full}</small>
+                                                                    </div>
+                                                                </div>
+                                                            </a>
+                                                        `;
                 });
 
                 container.html(html);

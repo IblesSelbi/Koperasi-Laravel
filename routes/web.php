@@ -105,28 +105,54 @@ Route::middleware(['auth', 'role:admin'])
     ->group(function () {
         Route::get('/dashboard', [Admin\DashboardController::class, 'index'])
             ->name('dashboard');
-            
+
+        Route::get('/profile', [Admin\AdminProfileController::class, 'edit'])
+            ->name('profile.edit');
+
+        Route::patch('/profile', [Admin\AdminProfileController::class, 'update'])
+            ->name('profile.update');
+
+        Route::put('/profile/password', [Admin\AdminProfileController::class, 'updatePassword'])
+            ->name('profile.password.update');
+
+        Route::delete('/profile', [Admin\AdminProfileController::class, 'destroy'])
+            ->name('profile.destroy');
+
+        Route::patch('/profile/image', [Admin\AdminProfileController::class, 'updateImage'])
+            ->name('profile.updateImage');
+
         Route::prefix('notifications')->name('notifications.')->group(function () {
-            Route::get('/pengajuan', [App\Http\Controllers\Admin\NotificationController::class, 'getPengajuanBaru'])
+            Route::get('/pengajuan', [Admin\NotificationController::class, 'getPengajuanBaru'])
                 ->name('pengajuan');
 
-            Route::get('/jatuh-tempo', [App\Http\Controllers\Admin\NotificationController::class, 'getJatuhTempo'])
+            Route::get('/jatuh-tempo', [Admin\NotificationController::class, 'getJatuhTempo'])
                 ->name('jatuh-tempo');
         });
     });
 
+/*
+|--------------------------------------------------------------------------
+| USER ROUTES - PROFILE
+|--------------------------------------------------------------------------
+*/
 Route::middleware(['auth', 'role:user'])
     ->name('user.')
     ->group(function () {
         Route::get('/dashboard', [User\DashboardController::class, 'index'])
             ->name('dashboard');
-    });
 
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
+        Route::get('/profile', [User\UserProfileController::class, 'edit'])
+            ->name('profile.edit');
+
+        Route::patch('/profile', [User\UserProfileController::class, 'update'])
+            ->name('profile.update');
+
+        Route::put('/profile/password', [User\UserProfileController::class, 'updatePassword'])
+            ->name('profile.password.update');
+
+        Route::delete('/profile', [User\UserProfileController::class, 'destroy'])
+            ->name('profile.destroy');
+    });
 
 
 /*

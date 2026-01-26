@@ -87,7 +87,6 @@ class DataAnggotaController extends Controller
                 'photo.max' => 'Ukuran foto maksimal 2MB'
             ]);
 
-            // Gunakan transaction untuk memastikan data konsisten
             DB::beginTransaction();
 
             try {
@@ -95,30 +94,41 @@ class DataAnggotaController extends Controller
                 $data['id_anggota'] = DataAnggota::generateIdAnggota();
 
                 // Handle photo upload
+                $photoPath = null;
                 if ($request->hasFile('photo')) {
                     $file = $request->file('photo');
                     $fileName = 'anggota_' . time() . '.' . $file->extension();
-                    $path = $file->storeAs('anggota', $fileName, 'public');
-                    $data['photo'] = $path;
+                    $photoPath = $file->storeAs('anggota', $fileName, 'public');
+                    $data['photo'] = $photoPath;
 
                     Log::info('Photo uploaded:', [
-                        'path' => $path,
-                        'full_path' => storage_path('app/public/' . $path),
-                        'file_exists' => file_exists(storage_path('app/public/' . $path))
+                        'path' => $photoPath,
+                        'full_path' => storage_path('app/public/' . $photoPath),
+                        'file_exists' => file_exists(storage_path('app/public/' . $photoPath))
                     ]);
                 }
 
-                // Simpan password plain untuk user (akan di-hash di model)
-                $plainPassword = $data['password'];
-
                 // Buat data anggota (akan otomatis membuat user account via model event)
                 $anggota = DataAnggota::create($data);
+
+                // ✅ SINKRONISASI: Update foto di user jika foto di-upload
+                if ($photoPath && $anggota->user) {
+                    $anggota->user->update([
+                        'profile_image' => $photoPath
+                    ]);
+
+                    Log::info('Photo synced to User on create', [
+                        'anggota_id' => $anggota->id,
+                        'user_id' => $anggota->user_id,
+                        'photo_path' => $photoPath
+                    ]);
+                }
 
                 DB::commit();
 
                 return response()->json([
                     'success' => true,
-                    'message' => 'Data anggota dan akun user berhasil dibuat. Username: ' . $anggota->username . ', Password: (sesuai yang diinput)'
+                    'message' => 'Data anggota dan akun user berhasil dibuat. Username: ' . $anggota->username
                 ], 200);
 
             } catch (\Exception $e) {
@@ -134,7 +144,7 @@ class DataAnggotaController extends Controller
             ], 422);
         } catch (\Exception $e) {
             Log::error('Error storing data anggota: ' . $e->getMessage());
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Terjadi kesalahan: ' . $e->getMessage()
@@ -142,212 +152,39 @@ class DataAnggotaController extends Controller
         }
     }
 
-    public function update(Request $request, $id)
-    {
-        try {
-            $anggota = DataAnggota::findOrFail($id);
-
-            $data = $request->validate([
-                'nama' => 'required|string|max:255',
-                'username' => 'required|string|max:255|unique:Data_Anggota,username,' . $id,
-                'password' => 'nullable|string|min:8|max:255',
-                'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
-                'tempat_lahir' => 'required|string|max:225',
-                'tanggal_lahir' => 'required|date',
-                'status' => 'nullable|in:Belum Kawin,Kawin,Cerai Hidup,Cerai Mati,Lainnya',
-                'departement' => 'nullable|string|max:100',
-                'pekerjaan' => 'nullable|string|max:100',
-                'agama' => 'nullable|string|max:50',
-                'alamat' => 'required|string',
-                'kota' => 'required|string|max:255',
-                'no_telp' => 'nullable|string|max:12',
-                'tanggal_registrasi' => 'required|date',
-                'jabatan' => 'required|in:Anggota,Pengurus',
-                'aktif' => 'required|in:Aktif,Non Aktif',
-                'photo' => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
-            ], [
-                'nama.required' => 'Nama lengkap wajib diisi',
-                'username.required' => 'Username wajib diisi',
-                'username.unique' => 'Username sudah digunakan',
-                'password.min' => 'Password minimal 8 karakter',
-                'jenis_kelamin.required' => 'Jenis kelamin wajib dipilih',
-                'tempat_lahir.required' => 'Tempat lahir wajib diisi',
-                'tanggal_lahir.required' => 'Tanggal lahir wajib diisi',
-                'alamat.required' => 'Alamat wajib diisi',
-                'kota.required' => 'Kota wajib diisi',
-                'tanggal_registrasi.required' => 'Tanggal registrasi wajib diisi',
-                'jabatan.required' => 'Jabatan wajib dipilih',
-                'aktif.required' => 'Status aktif wajib dipilih',
-                'photo.image' => 'File harus berupa gambar',
-                'photo.mimes' => 'Format foto harus JPG, JPEG, atau PNG',
-                'photo.max' => 'Ukuran foto maksimal 2MB'
-            ]);
-
-            DB::beginTransaction();
-
-            try {
-                // Hapus password dari data jika kosong
-                if (empty($data['password'])) {
-                    unset($data['password']);
-                }
-
-                // Handle photo upload
-                if ($request->hasFile('photo')) {
-                    // Hapus foto lama jika bukan default
-                    if ($anggota->photo && 
-                        $anggota->photo !== 'assets/images/profile/user-1.jpg' && 
-                        Storage::disk('public')->exists($anggota->photo)) {
-                        
-                        Storage::disk('public')->delete($anggota->photo);
-                        
-                        Log::info('Old photo deleted:', [
-                            'path' => $anggota->photo
-                        ]);
-                    }
-
-                    // Upload foto baru
-                    $file = $request->file('photo');
-                    $fileName = 'anggota_' . time() . '.' . $file->extension();
-                    $path = $file->storeAs('anggota', $fileName, 'public');
-                    $data['photo'] = $path;
-
-                    Log::info('New photo uploaded:', [
-                        'path' => $path,
-                        'full_path' => storage_path('app/public/' . $path),
-                        'file_exists' => file_exists(storage_path('app/public/' . $path))
-                    ]);
-                }
-
-                // Update data anggota (akan otomatis update user account via model event)
-                $anggota->update($data);
-
-                DB::commit();
-
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Data anggota dan akun user berhasil diperbarui'
-                ], 200);
-
-            } catch (\Exception $e) {
-                DB::rollBack();
-                throw $e;
-            }
-
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validasi gagal',
-                'errors' => $e->errors()
-            ], 422);
-        } catch (\Exception $e) {
-            Log::error('Error updating data anggota: ' . $e->getMessage());
-            
-            return response()->json([
-                'success' => false,
-                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
-            ], 500);
-        }
-    }
-
-    public function destroy($id)
-    {
-        try {
-            $anggota = DataAnggota::findOrFail($id);
-
-            // Cek apakah anggota bisa dihapus
-            if (!$anggota->canBeDeleted()) {
-                $blockingTransactions = $anggota->getBlockingTransactions();
-                
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Data anggota tidak dapat dihapus karena masih memiliki transaksi aktif',
-                    'blocking_transactions' => $blockingTransactions,
-                    'suggestion' => 'Silakan ubah status menjadi "Non Aktif" jika ingin menonaktifkan anggota ini'
-                ], 400);
-            }
-
-            DB::beginTransaction();
-
-            try {
-                // Hapus foto jika bukan default
-                if ($anggota->photo && 
-                    $anggota->photo !== 'assets/images/profile/user-1.jpg' && 
-                    Storage::disk('public')->exists($anggota->photo)) {
-                    
-                    Storage::disk('public')->delete($anggota->photo);
-                    
-                    Log::info('Photo deleted on destroy:', [
-                        'path' => $anggota->photo
-                    ]);
-                }
-
-                // Hapus data anggota (akan otomatis hapus user account via model event)
-                $anggota->delete();
-
-                DB::commit();
-
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Data anggota dan akun user berhasil dihapus'
-                ]);
-
-            } catch (\Exception $e) {
-                DB::rollBack();
-                throw $e;
-            }
-
-        } catch (\Exception $e) {
-            Log::error('Error deleting data anggota: ' . $e->getMessage());
-            
-            // Cek apakah error karena foreign key constraint
-            if (strpos($e->getMessage(), 'foreign key constraint') !== false) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Data anggota tidak dapat dihapus karena masih memiliki transaksi terkait. Silakan ubah status menjadi "Non Aktif" sebagai gantinya.',
-                    'error_detail' => $e->getMessage()
-                ], 400);
-            }
-            
-            return response()->json([
-                'success' => false,
-                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
-            ], 500);
-        }
-    }
-    
     // Method baru untuk menonaktifkan anggota (soft disable)
     public function deactivate($id)
     {
         try {
             $anggota = DataAnggota::findOrFail($id);
-            
+
             DB::beginTransaction();
-            
+
             try {
                 // Update status menjadi Non Aktif
                 $anggota->update(['aktif' => 'Non Aktif']);
-                
+
                 // Update juga status user jika ada
                 if ($anggota->user) {
                     // Anda bisa tambahkan kolom status di tabel users jika diperlukan
                     // atau biarkan user tetap bisa login tapi dengan akses terbatas
                 }
-                
+
                 DB::commit();
-                
+
                 return response()->json([
                     'success' => true,
                     'message' => 'Anggota berhasil dinonaktifkan'
                 ]);
-                
+
             } catch (\Exception $e) {
                 DB::rollBack();
                 throw $e;
             }
-            
+
         } catch (\Exception $e) {
             Log::error('Error deactivating anggota: ' . $e->getMessage());
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Terjadi kesalahan: ' . $e->getMessage()
@@ -400,7 +237,7 @@ class DataAnggotaController extends Controller
 
         foreach ($request->data as $index => $row) {
             DB::beginTransaction();
-            
+
             try {
                 // Generate ID Anggota
                 $row['id_anggota'] = DataAnggota::generateIdAnggota();
@@ -431,7 +268,7 @@ class DataAnggotaController extends Controller
                 $successCount++;
             } catch (\Exception $e) {
                 DB::rollBack();
-                
+
                 $results[] = [
                     'status' => 'failed',
                     'id_anggota' => '-',
