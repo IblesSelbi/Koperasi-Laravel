@@ -81,7 +81,7 @@
 
                 <!-- Nama + Avatar -->
                 <li class="nav-item d-flex align-items-center mx-3">
-                    <div style="width:2px; height:35px; background:#adb5bd;"></div>
+                    <div style="width:2px; height:40px; background:#adb5bd;"></div>
                 </li>
 
                 <li class="nav-item dropdown d-flex align-items-center me-3">
@@ -101,6 +101,12 @@
 
                     <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
                         <div class="message-body">
+
+                            <!-- Info user -->
+                            <div class="px-3 py-2 border-bottom">
+                                <p class="mb-1 fw-semibold">{{ Auth::user()->name }}</p>
+                                <p class="mb-0 text-muted small">{{ Auth::user()->email }}</p>
+                            </div>
 
                             <a href="{{ route('admin.profile.edit') }}"
                                 class="d-flex align-items-center gap-2 dropdown-item">
@@ -287,10 +293,10 @@
 
                 if (data.length === 0) {
                     container.html(`
-                                                                    <div class="px-3 py-3 text-center text-muted">
-                                                                        <small>Tidak ada pengajuan baru</small>
-                                                                    </div>
-                                                                `);
+                                                                        <div class="px-3 py-3 text-center text-muted">
+                                                                            <small>Tidak ada pengajuan baru</small>
+                                                                        </div>
+                                                                    `);
                     return;
                 }
 
@@ -300,34 +306,34 @@
                         item.jenis === 'Barang' ? 'info' : 'primary';
 
                     html += `
-                                                                    <a href="javascript:void(0)" 
-                                                                       class="dropdown-item border-bottom py-3 notif-pengajuan-item"
-                                                                       data-id="${item.id}"
-                                                                       data-id-ajuan="${item.id_ajuan}"
-                                                                       data-nama="${item.nama}"
-                                                                       data-jenis="${item.jenis}"
-                                                                       data-jumlah="${item.jumlah}"
-                                                                       data-tanggal="${item.tanggal_full}">
-                                                                        <div class="d-flex align-items-start">
-                                                                            <div class="flex-shrink-0">
-                                                                                <div class="round-40 d-flex align-items-center justify-content-center bg-${badgeClass}-subtle">
-                                                                                    <i class="ti ti-file-text fs-6 text-${badgeClass}"></i>
+                                                                        <a href="javascript:void(0)" 
+                                                                           class="dropdown-item border-bottom py-3 notif-pengajuan-item"
+                                                                           data-id="${item.id}"
+                                                                           data-id-ajuan="${item.id_ajuan}"
+                                                                           data-nama="${item.nama}"
+                                                                           data-jenis="${item.jenis}"
+                                                                           data-jumlah="${item.jumlah}"
+                                                                           data-tanggal="${item.tanggal_full}">
+                                                                            <div class="d-flex align-items-start">
+                                                                                <div class="flex-shrink-0">
+                                                                                    <div class="round-40 d-flex align-items-center justify-content-center bg-${badgeClass}-subtle">
+                                                                                        <i class="ti ti-file-text fs-6 text-${badgeClass}"></i>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="flex-grow-1 ms-3">
+                                                                                    <h6 class="mb-1 fw-semibold">${item.nama}</h6>
+                                                                                    <p class="mb-1 fs-2 text-muted">${item.id_ajuan}</p>
+                                                                                    <div class="d-flex justify-content-between align-items-center">
+                                                                                        <span class="badge bg-${badgeClass}-subtle text-${badgeClass} fw-semibold">
+                                                                                            ${item.jenis}
+                                                                                        </span>
+                                                                                        <span class="text-success fw-semibold">Rp ${formatRupiah(item.jumlah)}</span>
+                                                                                    </div>
+                                                                                    <small class="text-muted">${item.tanggal}</small>
                                                                                 </div>
                                                                             </div>
-                                                                            <div class="flex-grow-1 ms-3">
-                                                                                <h6 class="mb-1 fw-semibold">${item.nama}</h6>
-                                                                                <p class="mb-1 fs-2 text-muted">${item.id_ajuan}</p>
-                                                                                <div class="d-flex justify-content-between align-items-center">
-                                                                                    <span class="badge bg-${badgeClass}-subtle text-${badgeClass} fw-semibold">
-                                                                                        ${item.jenis}
-                                                                                    </span>
-                                                                                    <span class="text-success fw-semibold">Rp ${formatRupiah(item.jumlah)}</span>
-                                                                                </div>
-                                                                                <small class="text-muted">${item.tanggal}</small>
-                                                                            </div>
-                                                                        </div>
-                                                                    </a>
-                                                                `;
+                                                                        </a>
+                                                                    `;
                 });
 
                 container.html(html);
@@ -367,48 +373,48 @@
 
                 if (data.length === 0) {
                     container.html(`
-                                                            <div class="px-3 py-3 text-center text-muted">
-                                                                <small>Tidak ada notifikasi</small>
-                                                            </div>
-                                                        `);
+                                                                <div class="px-3 py-3 text-center text-muted">
+                                                                    <small>Tidak ada notifikasi</small>
+                                                                </div>
+                                                            `);
                     return;
                 }
 
                 let html = '';
                 data.forEach(item => {
                     html += `
-                                                            <a href="javascript:void(0)" 
-                                                               class="dropdown-item border-bottom py-3 notif-tempo-item"
-                                                               data-id="${item.id}"
-                                                               data-pinjaman-id="${item.pinjaman_id}"
-                                                               data-kode="${item.kode_pinjaman}"
-                                                               data-nama="${item.nama}"
-                                                               data-angsuran-ke="${item.angsuran_ke}"
-                                                               data-tanggal="${item.tanggal_jatuh_tempo_full}"
-                                                               data-jumlah="${item.jumlah_angsuran}"
-                                                               data-status="${item.status}"
-                                                               data-badge="${item.badge}"
-                                                               data-keterangan="${item.keterangan}">
-                                                                <div class="d-flex align-items-start">
-                                                                    <div class="flex-shrink-0">
-                                                                        <div class="round-40 d-flex align-items-center justify-content-center bg-${item.badge}-subtle">
-                                                                            <i class="ti ${item.icon} fs-6 text-${item.badge}"></i>
+                                                                <a href="javascript:void(0)" 
+                                                                   class="dropdown-item border-bottom py-3 notif-tempo-item"
+                                                                   data-id="${item.id}"
+                                                                   data-pinjaman-id="${item.pinjaman_id}"
+                                                                   data-kode="${item.kode_pinjaman}"
+                                                                   data-nama="${item.nama}"
+                                                                   data-angsuran-ke="${item.angsuran_ke}"
+                                                                   data-tanggal="${item.tanggal_jatuh_tempo_full}"
+                                                                   data-jumlah="${item.jumlah_angsuran}"
+                                                                   data-status="${item.status}"
+                                                                   data-badge="${item.badge}"
+                                                                   data-keterangan="${item.keterangan}">
+                                                                    <div class="d-flex align-items-start">
+                                                                        <div class="flex-shrink-0">
+                                                                            <div class="round-40 d-flex align-items-center justify-content-center bg-${item.badge}-subtle">
+                                                                                <i class="ti ${item.icon} fs-6 text-${item.badge}"></i>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="flex-grow-1 ms-3">
+                                                                            <h6 class="mb-1 fw-semibold">${item.nama}</h6>
+                                                                            <p class="mb-1 fs-2 text-muted">${item.kode_pinjaman} - Angsuran ke-${item.angsuran_ke}</p>
+                                                                            <div class="d-flex justify-content-between align-items-center">
+                                                                                <span class="badge bg-${item.badge}-subtle text-${item.badge} fw-semibold">
+                                                                                    ${item.keterangan}
+                                                                                </span>
+                                                                                <span class="text-success fw-semibold">Rp ${formatRupiah(item.jumlah_angsuran)}</span>
+                                                                            </div>
+                                                                            <small class="text-muted">${item.tanggal_jatuh_tempo_full}</small>
                                                                         </div>
                                                                     </div>
-                                                                    <div class="flex-grow-1 ms-3">
-                                                                        <h6 class="mb-1 fw-semibold">${item.nama}</h6>
-                                                                        <p class="mb-1 fs-2 text-muted">${item.kode_pinjaman} - Angsuran ke-${item.angsuran_ke}</p>
-                                                                        <div class="d-flex justify-content-between align-items-center">
-                                                                            <span class="badge bg-${item.badge}-subtle text-${item.badge} fw-semibold">
-                                                                                ${item.keterangan}
-                                                                            </span>
-                                                                            <span class="text-success fw-semibold">Rp ${formatRupiah(item.jumlah_angsuran)}</span>
-                                                                        </div>
-                                                                        <small class="text-muted">${item.tanggal_jatuh_tempo_full}</small>
-                                                                    </div>
-                                                                </div>
-                                                            </a>
-                                                        `;
+                                                                </a>
+                                                            `;
                 });
 
                 container.html(html);

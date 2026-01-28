@@ -138,8 +138,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {{-- ✅ GANTI @forelse JADI @foreach --}}
-                        @foreach($pinjaman as $item)
+                        @forelse($pinjaman as $item)
                             <tr class="{{ $item->ada_terlambat ? 'table-danger' : '' }}">
                                 <td class="text-center">
                                     <span class="badge bg-primary-subtle text-primary fw-semibold px-2 py-1">
@@ -150,7 +149,8 @@
                                     {{ $item->tanggal_pinjam->format('d M Y') }}
                                 </td>
                                 <td class="text-center">
-                                    <span class="badge fw-semibold bg-secondary-subtle text-secondary">{{ $item->anggota_id }}</span>
+                                    <span
+                                        class="badge fw-semibold bg-secondary-subtle text-secondary">{{ $item->anggota_id }}</span>
                                 </td>
                                 <td>
                                     <div class="d-flex align-items-center">
@@ -167,7 +167,8 @@
                                     <span class="fw-bold">Rp {{ number_format($item->pokok_pinjaman, 0, ',', '.') }}</span>
                                 </td>
                                 <td class="text-center">
-                                    <span class="badge fw-semibold bg-info-subtle text-info">{{ $item->lama_angsuran }} Bulan</span>
+                                    <span class="badge fw-semibold bg-info-subtle text-info">{{ $item->lama_angsuran }}
+                                        Bulan</span>
                                 </td>
                                 <td class="text-end fw-bold">Rp {{ number_format($item->angsuran_pokok, 0, ',', '.') }}</td>
                                 <td class="text-end text-info fw-bold">Rp
@@ -179,9 +180,17 @@
                                         {{ number_format($item->angsuran_per_bulan, 0, ',', '.') }}</span>
                                 </td>
                                 <td class="text-center">
-                                    <span class="badge {{ $item->sisa_angsuran > 0 ? 'bg-warning' : 'bg-success' }}">
-                                        {{ $item->sisa_angsuran }} / {{ $item->lama_angsuran }}
-                                    </span>
+                                    {{-- ✅ TAMBAHAN: Badge "Siap Validasi" jika semua angsuran lunas --}}
+                                    @if($item->sisa_angsuran == 0)
+                                        <span class="badge bg-success shadow-sm">
+                                            <i class="ti ti-check-circle"></i> Siap Validasi
+                                        </span>
+                                    @else
+                                        <span class="badge bg-warning">
+                                            {{ $item->sisa_angsuran }} / {{ $item->lama_angsuran }}
+                                        </span>
+                                    @endif
+
                                     @if($item->ada_terlambat)
                                         <br><small class="text-danger"><i class="ti ti-alert-circle"></i> Terlambat</small>
                                     @endif
@@ -193,7 +202,14 @@
                                     </a>
                                 </td>
                             </tr>
-                        @endforeach
+                        @empty
+                            <tr>
+                                <td colspan="12" class="text-center py-5">
+                                    <i class="ti ti-inbox display-1 text-muted"></i>
+                                    <p class="text-muted mt-3 mb-0">Tidak ada pinjaman aktif</p>
+                                </td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
@@ -251,22 +267,22 @@
                     url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/id.json',
                     // ✅ TAMBAHKAN INI - Custom message untuk empty table
                     emptyTable: `
-                        <div class="py-5">
-                            <div class="text-center">
-                                <i class="ti ti-inbox" style="font-size: 4rem; color: #adb5bd;"></i>
-                                <p class="text-muted mt-3 mb-0">Tidak ada data pinjaman yang belum lunas</p>
+                            <div class="py-5">
+                                <div class="text-center">
+                                    <i class="ti ti-inbox" style="font-size: 4rem; color: #adb5bd;"></i>
+                                    <p class="text-muted mt-3 mb-0">Tidak ada data pinjaman yang belum lunas</p>
+                                </div>
                             </div>
-                        </div>
-                    `,
+                        `,
                     // ✅ Custom message untuk search result empty
                     zeroRecords: `
-                        <div class="py-5">
-                            <div class="text-center">
-                                <i class="ti ti-search-off" style="font-size: 4rem; color: #adb5bd;"></i>
-                                <p class="text-muted mt-3 mb-0">Tidak ada data yang cocok dengan pencarian</p>
+                            <div class="py-5">
+                                <div class="text-center">
+                                    <i class="ti ti-search-off" style="font-size: 4rem; color: #adb5bd;"></i>
+                                    <p class="text-muted mt-3 mb-0">Tidak ada data yang cocok dengan pencarian</p>
+                                </div>
                             </div>
-                        </div>
-                    `
+                        `
                 },
                 pageLength: 10,
                 order: [[1, 'desc']],

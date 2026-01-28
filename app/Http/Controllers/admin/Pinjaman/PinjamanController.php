@@ -204,12 +204,16 @@ class PinjamanController extends Controller
         $angsuranPerBulan = $pinjaman->angsuran_pokok + $pinjaman->biaya_bunga;
         $tanggalMulai = Carbon::parse($pinjaman->tanggal_pinjam);
 
+        // ✅ GENERATE SEMUA KODE DULU
+        $lastBayar = BayarAngsuran::withTrashed()->orderBy('id', 'desc')->first();
+        $startNumber = $lastBayar ? ((int) substr($lastBayar->kode_bayar, 3)) + 1 : 1;
+
         for ($i = 1; $i <= $lamaAngsuran; $i++) {
-            // Tanggal jatuh tempo: tanggal pinjam + ($i bulan)
             $tanggalJatuhTempo = $tanggalMulai->copy()->addMonths($i);
+            $kodeBayar = 'BYR' . str_pad($startNumber + ($i - 1), 5, '0', STR_PAD_LEFT);
 
             BayarAngsuran::create([
-                'kode_bayar' => BayarAngsuran::generateKodeBayar(),
+                'kode_bayar' => $kodeBayar, // ✅ Pakai kode yang sudah digenerate
                 'pinjaman_id' => $pinjaman->id,
                 'angsuran_ke' => $i,
                 'tanggal_jatuh_tempo' => $tanggalJatuhTempo,
@@ -317,7 +321,7 @@ class PinjamanController extends Controller
     public function show($id)
     {
         $pinjaman = Pinjaman::with([
-            'anggota',
+            'anggota.user',
             'lamaAngsuran',
             'detailPembayaran.user',
             'detailPembayaran.kas',
@@ -333,6 +337,15 @@ class PinjamanController extends Controller
             Carbon::parse($pinjaman->anggota->tanggal_lahir)->translatedFormat('d F Y');
         $pinjaman->anggota_kota = $pinjaman->anggota->kota;
         $pinjaman->anggota_foto = $pinjaman->anggota->photo;
+
+        // Foto
+        $photoPath = 'assets/images/profile/user-1.jpg';
+        if ($pinjaman->anggota->photo && $pinjaman->anggota->photo !== 'assets/images/profile/user-1.jpg') {
+            $photoPath = 'storage/' . $pinjaman->anggota->photo;
+        } elseif ($pinjaman->anggota->user && $pinjaman->anggota->user->profile_image) {
+            $photoPath = 'storage/' . $pinjaman->anggota->user->profile_image;
+        }
+        $pinjaman->anggota_foto = $photoPath;
 
         // Data pinjaman
         $pinjaman->kode = $pinjaman->kode_pinjaman;
@@ -879,4 +892,35 @@ class PinjamanController extends Controller
         // TODO: Implement PDF export
         return response()->download(public_path('dummy.pdf'));
     }
+
+    public function getAnggotaDetail($id)
+    {
+        $anggota = DataAnggota::with('user')->findOrFail($id);
+
+        // ✅ Prioritaskan foto terbaru (sync dengan user)
+        $photoPath = null;
+
+        // Cek foto di data_anggota dulu
+        if ($anggota->photo && $anggota->photo !== 'assets/images/profile/user-1.jpg') {
+            $photoPath = $anggota->photo;
+        }
+        // Fallback ke foto user jika ada
+        elseif ($anggota->user && $anggota->user->profile_image) {
+            $photoPath = $anggota->user->profile_image;
+        }
+
+        // Generate full URL
+        $photoUrl = $photoPath
+            ? asset('storage/' . $photoPath)
+            : asset('assets/images/profile/user-1.jpg');
+
+        return response()->json([
+            'id_anggota' => $anggota->id_anggota,
+            'nama' => $anggota->nama,
+            'departement' => $anggota->departement ?? '-',
+            'photo' => $photoPath ?? 'assets/images/profile/user-1.jpg',
+            'photo_url' => $photoUrl
+        ]);
+    }
+
 }

@@ -4,7 +4,7 @@
             <i class="ti ti-lock text-warning"></i> Ubah Password
         </h5>
         <p class="text-muted small mb-0">
-            Pastikan akun Anda menggunakan password yang panjang dan acak agar tetap aman.
+            Gunakan password yang kuat dan tidak mudah ditebak untuk keamanan akun Anda.
         </p>
     </header>
 
@@ -31,7 +31,7 @@
                     placeholder="Masukkan password lama"
                     required
                 >
-                <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('current_password')">
+                <button class="btn btn-outline-primary" type="button" onclick="togglePassword('current_password')">
                     <i class="ti ti-eye" id="icon-current_password"></i>
                 </button>
                 @error('current_password', 'updatePassword')
@@ -62,7 +62,7 @@
                     required
                     minlength="8"
                 >
-                <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('password')">
+                <button class="btn btn-outline-primary" type="button" onclick="togglePassword('password')">
                     <i class="ti ti-eye" id="icon-password"></i>
                 </button>
                 @error('password', 'updatePassword')
@@ -104,7 +104,7 @@
                     placeholder="Ulangi password baru"
                     required
                 >
-                <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('password_confirmation')">
+                <button class="btn btn-outline-primary" type="button" onclick="togglePassword('password_confirmation')">
                     <i class="ti ti-eye" id="icon-password_confirmation"></i>
                 </button>
                 @error('password_confirmation', 'updatePassword')

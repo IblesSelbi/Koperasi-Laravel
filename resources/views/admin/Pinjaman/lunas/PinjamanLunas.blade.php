@@ -9,23 +9,6 @@
     <link rel="stylesheet" href="{{ asset('assets/css/styles.min.css') }}" />
     <!-- Daterangepicker -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
-
-    <style>
-        #tabelPinjamanLunas tbody tr.selected>* {
-            box-shadow: inset 0 0 0 9999px #dfe2e5 !important;
-            color: #777e89 !important;
-        }
-
-        #tabelPinjamanLunas tbody tr.selected>* strong,
-        #tabelPinjamanLunas tbody tr.selected>* .text-muted,
-        #tabelPinjamanLunas tbody tr.selected>* .text-success {
-            color: inherit !important;
-        }
-
-        #tabelPinjamanLunas tbody tr:hover {
-            cursor: pointer;
-        }
-    </style>
 @endpush
 
 @section('content')
@@ -179,7 +162,7 @@
                                 <td>
                                     <div class="d-flex align-items-center">
                                         <img src="{{ asset($item->anggota_foto) }}" width="40" height="40"
-                                            class="rounded-circle me-2"
+                                            class="rounded-circle me-2" alt="Foto {{ $item->anggota_nama }}"
                                             onerror="this.src='{{ asset('assets/images/profile/user-1.jpg') }}'">
                                         <div>
                                             <strong>{{ $item->anggota_nama }}</strong><br>
@@ -198,7 +181,8 @@
                                     {{ \Carbon\Carbon::parse($item->tanggal_tempo)->format('d M Y') }}
                                 </td>
                                 <td class="text-center">
-                                    <span class="badge bg-info-subtle text-info fw-semibold">{{ $item->lama_pinjaman }} Bulan</span>
+                                    <span class="badge bg-info-subtle text-info fw-semibold">{{ $item->lama_pinjaman }}
+                                        Bulan</span>
                                 </td>
                                 <td class="text-end">
                                     <span class="fw-bold">Rp {{ number_format($item->total_tagihan, 0, ',', '.') }}</span>
@@ -317,16 +301,6 @@
             const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
             tooltipTriggerList.map(function (tooltipTriggerEl) {
                 return new bootstrap.Tooltip(tooltipTriggerEl);
-            });
-
-            // Table row selection
-            $('#tabelPinjamanLunas tbody').on('click', 'tr', function () {
-                if ($(this).hasClass('selected')) {
-                    $(this).removeClass('selected');
-                } else {
-                    table.$('tr.selected').removeClass('selected');
-                    $(this).addClass('selected');
-                }
             });
 
             // Auto uppercase untuk kode

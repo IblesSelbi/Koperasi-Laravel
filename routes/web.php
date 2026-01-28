@@ -56,6 +56,9 @@ use App\Http\Controllers\User\PengajuanPinjaman\{
 use App\Http\Controllers\User\Laporan\{
     LaporanUserController,
 };
+use App\Http\Controllers\User\BayarAngsuran\{
+    BayarAngsuranUSerController,
+};
 
 /*
 |--------------------------------------------------------------------------
@@ -152,6 +155,9 @@ Route::middleware(['auth', 'role:user'])
 
         Route::delete('/profile', [User\UserProfileController::class, 'destroy'])
             ->name('profile.destroy');
+
+        Route::patch('/profile/image', [User\UserProfileController::class, 'updateImage'])
+            ->name('profile.updateImage');
     });
 
 
@@ -178,6 +184,17 @@ Route::middleware('auth')
 
             Route::post('/pengajuan/batal/{id}', 'batal')->name('batal');
             Route::get('/pengajuan/cetak/{id}', 'cetak')->name('cetak');
+        });
+
+        // BAYAR ANGSURAN
+        Route::controller(BayarAngsuranUserController::class)
+            ->name('user.bayar.')
+            ->group(function () {
+
+            Route::get('/bayar-angsuran', 'index')->name('index');
+            Route::get('/bayar-angsuran/{id}', 'show')->name('show');
+            Route::post('/bayar-angsuran/bayar', 'bayar')->name('bayar');
+            Route::get('/riwayat-bayar', 'riwayat')->name('riwayat');
         });
 
         // LAPORAN USER
@@ -246,6 +263,7 @@ Route::middleware('auth')
         // SETORAN TUNAI
         Route::controller(SetoranTunaiController::class)->group(function () {
             Route::get('/setoran', 'index')->name('setoran');
+            Route::get('/setoran/anggota-detail/{id}', 'getAnggotaDetail')->name('setoran.anggota.detail');
             Route::get('/setoran/{id}', 'show')->name('setoran.show');
             Route::post('/setoran', 'store')->name('setoran.store');
             Route::put('/setoran/{id}', 'update')->name('setoran.update');
@@ -255,6 +273,7 @@ Route::middleware('auth')
         // PENARIKAN TUNAI
         Route::controller(PenarikanTunaiController::class)->group(function () {
             Route::get('/penarikan', 'index')->name('penarikan');
+            Route::get('/penarikan/anggota-detail/{id}', 'getAnggotaDetail')->name('penarikan.anggota.detail');
             Route::get('/penarikan/{id}', 'show')->name('penarikan.show');
             Route::post('/penarikan', 'store')->name('penarikan.store');
             Route::put('/penarikan/{id}', 'update')->name('penarikan.update');
@@ -283,6 +302,8 @@ Route::middleware('auth')
 
         Route::controller(PinjamanController::class)->group(function () {
             Route::get('/pinjaman', 'index')->name('pinjaman');
+
+            Route::get('/pinjaman/anggota-detail/{id}', 'getAnggotaDetail')->name('anggota.detail');
 
             // NEW: Soft Delete Routes
             Route::get('/pinjaman/{id}/delete-info', 'getDeleteInfo')->name('pinjaman.delete-info');
@@ -313,24 +334,36 @@ Route::middleware('auth')
 
         // BAYAR ANGSURAN
         Route::controller(BayarAngsuranController::class)->group(function () {
+            // List & Detail
             Route::get('/bayar', 'index')->name('bayar');
             Route::get('/bayar/detail/{id}', 'show')->name('bayar.detail');
-            Route::get('/bayar/{id}', 'show')->name('bayar.show');
+
+            // ✅ CRITICAL: Route spesifik HARUS di atas route dinamis
+            Route::get('/bayar/get-bukti-transfer/{id}', 'getBuktiTransfer')->name('bayar.getBuktiTransfer');
             Route::get('/bayar/get-detail/{id}', 'getDetail')->name('bayar.getDetail');
-            Route::post('/bayar/proses', 'bayar')->name('bayar.store');
             Route::get('/bayar/get-pembayaran/{id}', 'getPembayaran')->name('bayar.getPembayaran');
+            Route::get('/bayar/pending-detail/{id}', 'pendingDetail')->name('bayar.pendingDetail');
+            Route::get('/bayar/cetak-nota/{id}', 'cetakNota')->name('bayar.cetak');
+            Route::get('/bayar/riwayat-hapus/{pinjamanId}', 'riwayatHapus')->name('bayar.riwayatHapus');
+
+            // Route dinamis (HARUS di bawah semua route spesifik)
+            Route::get('/bayar/{id}', 'show')->name('bayar.show');
+
+            // Pembayaran Tunai (Admin)
+            Route::post('/bayar/proses', 'bayar')->name('bayar.store');
             Route::put('/bayar/update/{id}', 'update')->name('bayar.update');
 
             // Soft Delete & Restore
             Route::delete('/bayar/soft-delete/{id}', 'softDelete')->name('bayar.softDelete');
             Route::post('/bayar/restore/{id}', 'restore')->name('bayar.restore');
-            Route::get('/bayar/riwayat-hapus/{pinjamanId}', 'riwayatHapus')->name('bayar.riwayatHapus');
             Route::delete('/bayar/force-delete/{id}', 'forceDelete')->name('bayar.forceDelete');
 
-            Route::get('/bayar/cetak-nota/{id}', 'cetakNota')->name('bayar.cetak');
-
-            // Route untuk Validasi Lunas
+            // Validasi Lunas
             Route::post('/bayar/validasi-lunas/{id}', 'validasiLunas')->name('bayar.validasi');
+
+            // Verifikasi Pembayaran Transfer
+            Route::post('/bayar/approve-transfer/{id}', 'approveTransfer')->name('bayar.approveTransfer');
+            Route::post('/bayar/reject-transfer/{id}', 'rejectTransfer')->name('bayar.rejectTransfer');
         });
 
         // routes/web.php - di dalam group Pinjaman Lunas

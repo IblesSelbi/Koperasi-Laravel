@@ -24,15 +24,20 @@ class DetailBayarAngsuran extends Model
         'denda',
         'total_bayar',
         'ke_kas_id',
+        'bukti_transfer',
+        'status_verifikasi',
+        'catatan_verifikasi',
+        'verified_at',
+        'verified_by',
         'keterangan',
         'user_id',
     ];
 
+    // ✅ PERBAIKAN: Jangan cast jumlah_bayar sebagai decimal di sini
+    // Biarkan Laravel handle sesuai database schema
     protected $casts = [
         'tanggal_bayar' => 'datetime',
-        'jumlah_bayar' => 'decimal:2',
-        'denda' => 'decimal:2',
-        'total_bayar' => 'decimal:2',
+        'verified_at' => 'datetime',
     ];
 
     /**
@@ -46,13 +51,17 @@ class DetailBayarAngsuran extends Model
             if (empty($model->kode_bayar)) {
                 $model->kode_bayar = self::generateKodeBayar();
             }
-            
-            // Auto hitung total bayar
+
+            // ✅ PERBAIKAN: Pastikan nilai numerik
+            $model->jumlah_bayar = (float) $model->jumlah_bayar;
+            $model->denda = (float) ($model->denda ?? 0);
             $model->total_bayar = $model->jumlah_bayar + $model->denda;
         });
 
         static::updating(function ($model) {
-            // Auto hitung total bayar saat update
+            // ✅ Auto hitung total bayar saat update
+            $model->jumlah_bayar = (float) $model->jumlah_bayar;
+            $model->denda = (float) ($model->denda ?? 0);
             $model->total_bayar = $model->jumlah_bayar + $model->denda;
         });
     }
@@ -76,6 +85,10 @@ class DetailBayarAngsuran extends Model
         return 'TBY' . str_pad($newNumber, 5, '0', STR_PAD_LEFT);
     }
 
+    // =============================================
+    // RELASI
+    // =============================================
+
     /**
      * Relasi ke BayarAngsuran (jadwal angsuran)
      */
@@ -97,7 +110,7 @@ class DetailBayarAngsuran extends Model
      */
     public function kas()
     {
-        return $this->belongsTo(DataKas::class, 'ke_kas_id');
+        return $this->belongsTo(DataKas::class, 'ke_kas_id', 'id');
     }
 
     /**
@@ -107,6 +120,152 @@ class DetailBayarAngsuran extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    /**
+     * Relasi ke User yang verifikasi
+     */
+    public function verifiedBy()
+    {
+        return $this->belongsTo(User::class, 'verified_by');
+    }
+
+    // =============================================
+    // SCOPES
+    // =============================================
+
+    /**
+     * Scope: Pembayaran yang pending verifikasi
+     */
+    public function scopePendingVerification($query)
+    {
+        return $query->where('status_verifikasi', 'pending');
+    }
+
+    /**
+     * Scope: Pembayaran yang sudah approved
+     */
+    public function scopeApproved($query)
+    {
+        return $query->where('status_verifikasi', 'approved');
+    }
+
+    /**
+     * Scope: Pembayaran yang ditolak
+     */
+    public function scopeRejected($query)
+    {
+        return $query->where('status_verifikasi', 'rejected');
+    }
+
+    /**
+     * Scope: Filter by pinjaman
+     */
+    public function scopeByPinjaman($query, $pinjamanId)
+    {
+        return $query->where('pinjaman_id', $pinjamanId);
+    }
+
+    /**
+     * Scope: Filter by tanggal range
+     */
+    public function scopeByTanggalRange($query, $startDate, $endDate)
+    {
+        return $query->whereBetween('tanggal_bayar', [$startDate, $endDate]);
+    }
+
+    /**
+     * Scope: Filter by kode bayar
+     */
+    public function scopeByKodeBayar($query, $kode)
+    {
+        return $query->where('kode_bayar', 'like', '%' . $kode . '%');
+    }
+
+    // =============================================
+    // HELPER METHODS - PEMBAYARAN ONLINE
+    // =============================================
+
+    /**
+     * Cek apakah pembayaran pending
+     */
+    public function isPending()
+    {
+        return $this->status_verifikasi === 'pending';
+    }
+
+    /**
+     * Cek apakah pembayaran sudah approved
+     */
+    public function isApproved()
+    {
+        return $this->status_verifikasi === 'approved';
+    }
+
+    /**
+     * Cek apakah pembayaran ditolak
+     */
+    public function isRejected()
+    {
+        return $this->status_verifikasi === 'rejected';
+    }
+
+    /**
+     * Cek apakah pembayaran via transfer (dari DataKas)
+     * ⭐ INI YANG PENTING! Deteksi dari kas_id
+     */
+    public function isTransfer()
+    {
+        return $this->kas && $this->kas->transfer_kas === 'Y';
+    }
+
+    /**
+     * Cek apakah pembayaran tunai (dari DataKas)
+     */
+    public function isTunai()
+    {
+        return !$this->isTransfer();
+    }
+
+    /**
+     * Get URL bukti transfer
+     */
+    public function getBuktiTransferUrlAttribute()
+    {
+        if ($this->bukti_transfer) {
+            return asset('storage/' . $this->bukti_transfer);
+        }
+        return null;
+    }
+
+    /**
+     * Get badge status verifikasi
+     */
+    public function getStatusBadgeAttribute()
+    {
+        $badges = [
+            'pending' => '<span class="badge bg-warning"><i class="ti ti-clock-hour-4"></i> Menunggu Verifikasi</span>',
+            'approved' => '<span class="badge bg-success"><i class="ti ti-check"></i> Terverifikasi</span>',
+            'rejected' => '<span class="badge bg-danger"><i class="ti ti-x"></i> Ditolak</span>',
+        ];
+
+        return $badges[$this->status_verifikasi] ?? '';
+    }
+
+    /**
+     * Get badge tipe pembayaran (dari kas)
+     */
+    public function getTipeBadgeAttribute()
+    {
+        if ($this->isTransfer()) {
+            return '<span class="badge bg-info"><i class="ti ti-credit-card"></i> Transfer - ' . $this->kas->nama_kas . '</span>';
+        }
+
+        return '<span class="badge bg-primary"><i class="ti ti-cash"></i> Tunai - ' . ($this->kas ? $this->kas->nama_kas : 'Kas') . '</span>';
+    }
+
+    // =============================================
+    // ACCESSOR - EXISTING
+    // =============================================
 
     /**
      * Accessor: Format waktu bayar
@@ -142,29 +301,5 @@ class DetailBayarAngsuran extends Model
             $bulan = floor($hari / 30);
             return "Terlambat {$bulan} Bulan";
         }
-    }
-
-    /**
-     * Scope: Filter by pinjaman
-     */
-    public function scopeByPinjaman($query, $pinjamanId)
-    {
-        return $query->where('pinjaman_id', $pinjamanId);
-    }
-
-    /**
-     * Scope: Filter by tanggal range
-     */
-    public function scopeByTanggalRange($query, $startDate, $endDate)
-    {
-        return $query->whereBetween('tanggal_bayar', [$startDate, $endDate]);
-    }
-
-    /**
-     * Scope: Filter by kode bayar
-     */
-    public function scopeByKodeBayar($query, $kode)
-    {
-        return $query->where('kode_bayar', 'like', '%' . $kode . '%');
     }
 }

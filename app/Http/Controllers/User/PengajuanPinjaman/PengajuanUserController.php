@@ -20,10 +20,10 @@ class PengajuanUserController extends Controller
     private function getAnggota()
     {
         $user = Auth::user();
-        
+
         // Load relasi anggota dari User model
-        $user->load('anggota');
-        
+        $user->load(['anggota.user']);
+
         return $user->anggota;
     }
 
@@ -33,17 +33,35 @@ class PengajuanUserController extends Controller
     public function index()
     {
         $anggota = $this->getAnggota();
-        
+
         if (!$anggota) {
             return redirect()->route('user.dashboard')
                 ->with('error', 'Data anggota tidak ditemukan! Silakan hubungi administrator.');
         }
 
-        $pengajuan = PengajuanPinjaman::with(['anggota', 'lamaAngsuran'])
+        $pengajuan = PengajuanPinjaman::with(['anggota.user', 'lamaAngsuran'])
             ->where('anggota_id', $anggota->id)
             ->whereNull('deleted_at')
             ->orderBy('tanggal_pengajuan', 'desc')
             ->get();
+
+        // ✅ PERBAIKAN: Set foto untuk setiap pengajuan
+        foreach ($pengajuan as $item) {
+            $photoPath = 'assets/images/profile/user-1.jpg';
+
+            if ($item->anggota) {
+                // Priority 1: data_anggota.photo (bukan default)
+                if ($item->anggota->photo && $item->anggota->photo !== 'assets/images/profile/user-1.jpg') {
+                    $photoPath = 'storage/' . $item->anggota->photo;
+                }
+                // Priority 2: users.profile_image
+                elseif ($item->anggota->user && $item->anggota->user->profile_image) {
+                    $photoPath = 'storage/' . $item->anggota->user->profile_image;
+                }
+            }
+
+            $item->anggota->photo_display = $photoPath;
+        }
 
         $lama_angsuran_list = LamaAngsuran::where('aktif', 'Y')
             ->orderBy('lama_angsuran', 'asc')
@@ -90,9 +108,24 @@ class PengajuanUserController extends Controller
                 ->with('error', 'Data lama angsuran tidak tersedia! Silakan hubungi administrator.');
         }
 
+        // ✅ PERBAIKAN: Set foto dengan prioritas
+        $photoPath = 'assets/images/profile/user-1.jpg';
+
+        // Priority 1: data_anggota.photo (bukan default)
+        if ($anggota->photo && $anggota->photo !== 'assets/images/profile/user-1.jpg') {
+            $photoPath = 'storage/' . $anggota->photo;
+        }
+        // Priority 2: users.profile_image
+        elseif ($anggota->user && $anggota->user->profile_image) {
+            $photoPath = 'storage/' . $anggota->user->profile_image;
+        }
+
+        $anggota->photo_display = $photoPath;
+
         Log::info('Create Pengajuan - Success', [
             'anggota_id' => $anggota->id,
-            'anggota_nama' => $anggota->nama
+            'anggota_nama' => $anggota->nama,
+            'photo_path' => $photoPath
         ]);
 
         return view('user.PengajuanPinjaman.Pengajuan.FormPengajuanUser', compact('anggota', 'lama_angsuran'));
@@ -168,7 +201,7 @@ class PengajuanUserController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error creating pengajuan: ' . $e->getMessage());
-            
+
             return redirect()->back()
                 ->withInput()
                 ->with('error', 'Terjadi kesalahan saat menyimpan pengajuan. Silakan coba lagi.');
@@ -187,7 +220,7 @@ class PengajuanUserController extends Controller
         ]);
 
         $anggota = $this->getAnggota();
-        
+
         if (!$anggota) {
             return response()->json([
                 'success' => false,
@@ -218,30 +251,30 @@ class PengajuanUserController extends Controller
         try {
             if ($validated['field'] === 'nominal') {
                 $jumlah = (int) str_replace('.', '', $validated['value']);
-                
+
                 if ($jumlah < 500000) {
                     return response()->json([
                         'success' => false,
                         'message' => 'Minimal pinjaman adalah Rp 500.000'
                     ], 400);
                 }
-                
+
                 $pengajuan->jumlah = $jumlah;
-                
+
             } elseif ($validated['field'] === 'lama_ags') {
                 $lamaAngsuran = LamaAngsuran::where('id', $validated['value'])
                     ->where('aktif', 'Y')
                     ->first();
-                
+
                 if (!$lamaAngsuran) {
                     return response()->json([
                         'success' => false,
                         'message' => 'Lama angsuran tidak valid'
                     ], 400);
                 }
-                
+
                 $pengajuan->lama_angsuran_id = $validated['value'];
-                
+
             } elseif ($validated['field'] === 'keterangan') {
                 if (strlen($validated['value']) > 500) {
                     return response()->json([
@@ -249,7 +282,7 @@ class PengajuanUserController extends Controller
                         'message' => 'Keterangan maksimal 500 karakter'
                     ], 400);
                 }
-                
+
                 $pengajuan->keterangan = $validated['value'];
             }
 
@@ -264,7 +297,7 @@ class PengajuanUserController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error updating pengajuan: ' . $e->getMessage());
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Terjadi kesalahan saat memperbarui data'
@@ -282,7 +315,7 @@ class PengajuanUserController extends Controller
         ]);
 
         $anggota = $this->getAnggota();
-        
+
         if (!$anggota) {
             return response()->json([
                 'success' => false,
@@ -313,7 +346,7 @@ class PengajuanUserController extends Controller
         try {
             $pengajuan->status = 4;
             $pengajuan->save();
-            
+
             DB::commit();
 
             return response()->json([
@@ -324,7 +357,7 @@ class PengajuanUserController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error cancelling pengajuan: ' . $e->getMessage());
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Terjadi kesalahan saat membatalkan pengajuan'
@@ -338,15 +371,31 @@ class PengajuanUserController extends Controller
     public function cetak($id)
     {
         $anggota = $this->getAnggota();
-        
+
         if (!$anggota) {
             abort(404, 'Data anggota tidak ditemukan');
         }
 
-        $pengajuan = PengajuanPinjaman::with(['anggota', 'lamaAngsuran', 'user'])
+        $pengajuan = PengajuanPinjaman::with(['anggota.user', 'lamaAngsuran', 'user'])
             ->where('anggota_id', $anggota->id)
             ->whereNull('deleted_at')
             ->findOrFail($id);
+
+        // ✅ PERBAIKAN: Set foto untuk cetak
+        if ($pengajuan->anggota) {
+            $photoPath = 'assets/images/profile/user-1.jpg';
+
+            // Priority 1: data_anggota.photo (bukan default)
+            if ($pengajuan->anggota->photo && $pengajuan->anggota->photo !== 'assets/images/profile/user-1.jpg') {
+                $photoPath = 'storage/' . $pengajuan->anggota->photo;
+            }
+            // Priority 2: users.profile_image
+            elseif ($pengajuan->anggota->user && $pengajuan->anggota->user->profile_image) {
+                $photoPath = 'storage/' . $pengajuan->anggota->user->profile_image;
+            }
+
+            $pengajuan->anggota->photo_display = $photoPath;
+        }
 
         return view('user.PengajuanPinjaman.Pengajuan.cetak', compact('pengajuan'));
     }

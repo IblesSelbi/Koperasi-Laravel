@@ -115,12 +115,31 @@ class PenarikanTunaiController extends Controller
     // API untuk mendapatkan detail anggota (foto, departemen)
     public function getAnggotaDetail($id)
     {
-        $anggota = DataAnggota::findOrFail($id);
+        $anggota = DataAnggota::with('user')->findOrFail($id);
+
+        // ✅ Prioritaskan foto terbaru (sync dengan user)
+        $photoPath = null;
+
+        // Cek foto di data_anggota dulu
+        if ($anggota->photo && $anggota->photo !== 'assets/images/profile/user-1.jpg') {
+            $photoPath = $anggota->photo;
+        }
+        // Fallback ke foto user jika ada
+        elseif ($anggota->user && $anggota->user->profile_image) {
+            $photoPath = $anggota->user->profile_image;
+        }
+
+        // Generate full URL
+        $photoUrl = $photoPath
+            ? asset('storage/' . $photoPath)
+            : asset('assets/images/profile/user-1.jpg');
+
         return response()->json([
             'id_anggota' => $anggota->id_anggota,
             'nama' => $anggota->nama,
-            'departement' => $anggota->departement,
-            'photo' => $anggota->photo ?? 'assets/images/profile/user-1.jpg'
+            'departement' => $anggota->departement ?? '-',
+            'photo' => $photoPath ?? 'assets/images/profile/user-1.jpg', // Path saja
+            'photo_url' => $photoUrl // Full URL untuk ditampilkan
         ]);
     }
 }

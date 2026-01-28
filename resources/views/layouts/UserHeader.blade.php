@@ -39,6 +39,12 @@
                             </a>
                         </li>
                         <li>
+                            <a class="dropdown-item {{ request()->routeIs('user.bayar.index') ? 'active' : '' }}"
+                                href="{{ route('user.bayar.index') }}">
+                                Bayar Angsuran
+                            </a>
+                        </li>
+                        <li>
                             <hr class="dropdown-divider">
                         </li>
                         <li>
@@ -82,39 +88,57 @@
         </div>
 
         <div class="navbar-collapse justify-content-end px-0">
-            <ul class="navbar-nav flex-row ms-auto align-items-center">
-                <li class="nav-item me-3">
-                    <span class="text-dark">
-                        <i class="ti ti-calendar"></i> <span id="tanggal">{{ date('d F Y') }}</span>
-                        <i class="ti ti-clock ms-2"></i> <span id="jam">00:00:00</span>
-                    </span>
+            <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-end">
+
+                <!-- Tanggal | Jam -->
+                <li class="nav-item me-1 d-flex align-items-center text-dark">
+                    <i class="ti ti-calendar me-1"></i>
+                    <span id="tanggal">{{ date('d F Y') }}</span>
+
+                    <span class="mx-2"></span>
+
+                    <i class="ti ti-clock me-1"></i>
+                    <span id="jam">00:00:00</span>
                 </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link" href="javascript:void(0)" id="dropUser" data-bs-toggle="dropdown"
+
+                <!-- Divider -->
+                <li class="nav-item d-flex align-items-center mx-3">
+                    <div style="width:2px; height:40px; background:#adb5bd;"></div>
+                </li>
+
+                <!-- Nama + Avatar -->
+                <li class="nav-item dropdown d-flex align-items-center me-3">
+
+                    <!-- Nama -->
+                    <a class="nav-link fs-4 p-0 mx-1" href="javascript:void(0)" id="dropUser" data-bs-toggle="dropdown"
                         aria-expanded="false">
-                        <img src="{{ Auth::user()->avatar ?? asset('assets/images/profile/user-1.jpg') }}" alt="Profile"
-                            width="35" height="35" class="rounded-circle">
+                        <span class="fw-semibold me-2 text-dark">
+                            {{ Auth::user()->name }}
+                        </span>
                     </a>
 
+                    <!-- Avatar -->
+                    <a class="nav-link p-0" href="javascript:void(0)" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="{{ Auth::user()->profile_image
+                            ? asset('storage/' . Auth::user()->profile_image)
+                            : asset('assets/images/profile/user-1.jpg') }}" alt="{{ Auth::user()->name }}" width="35" height="35"
+                            class="rounded-circle object-fit-cover">
+                    </a>
+
+                    <!-- Dropdown -->
                     <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="dropUser">
                         <div class="message-body">
-                            {{-- Profile Info --}}
+
+                            <!-- Info user -->
                             <div class="px-3 py-2 border-bottom">
                                 <p class="mb-1 fw-semibold">{{ Auth::user()->name }}</p>
                                 <p class="mb-0 text-muted small">{{ Auth::user()->email }}</p>
                             </div>
 
-                            {{-- Menu Items --}}
                             <a href="{{ route('user.profile.edit') }}"
                                 class="d-flex align-items-center gap-2 dropdown-item">
                                 <i class="ti ti-user fs-6"></i>
                                 <p class="mb-0 fs-3">Profil Saya</p>
-                            </a>
-
-                            <a href="{{ route('user.profile.edit') }}"
-                                class="d-flex align-items-center gap-2 dropdown-item">
-                                <i class="ti ti-camera fs-6"></i>
-                                <p class="mb-0 fs-3">Ubah Foto</p>
                             </a>
 
                             <a href="{{ route('user.profile.edit') }}#password"
@@ -123,10 +147,8 @@
                                 <p class="mb-0 fs-3">Ubah Password</p>
                             </a>
 
-                            {{-- Divider --}}
                             <div class="dropdown-divider"></div>
 
-                            {{-- Logout Button --}}
                             <form method="POST" action="{{ route('logout') }}" class="px-2 py-2">
                                 @csrf
                                 <button type="submit" class="btn btn-outline-primary w-100">

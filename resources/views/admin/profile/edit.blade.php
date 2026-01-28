@@ -24,7 +24,7 @@
 
                             <label for="profile_image" class="cursor-pointer position-relative">
                                 <img id="previewImage"
-                                    src="{{ $user->profile_image ? asset('storage/' . $user->profile_image) : asset('pictures/smkn13.png') }}"
+                                    src="{{ $user->profile_image ? asset('storage/' . $user->profile_image) : asset('assets/images/profile/user-1.jpg') }}"
                                     alt="Profile Image"
                                     class="rounded-circle object-fit-cover border border-2 border-light-subtle shadow-sm hover-opacity-75 transition"
                                     style="width: 120px; height: 120px; cursor: pointer;" />
@@ -99,7 +99,7 @@
                                     </div>
                                 </div>
                                 <h6 class="fw-semibold mb-0 text-dark">
-                                    {{ $user->created_at ? $user->created_at->format('M Y') : '-' }}
+                                    {{ $user->created_at ? $user->created_at->TranslatedFormat('d M Y') : '-' }}
                                 </h6>
                                 <small class="text-muted">Member Since</small>
                             </div>

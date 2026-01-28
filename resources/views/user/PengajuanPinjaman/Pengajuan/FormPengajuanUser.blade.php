@@ -74,32 +74,32 @@
                             <div class="row mb-3">
                                 <label class="col-sm-3 col-form-label fw-semibold">ID Anggota</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control-plaintext fw-bold" readonly 
-                                           value="{{ $anggota->id_anggota }}">
+                                    <input type="text" class="form-control-plaintext fw-bold" readonly
+                                        value="{{ $anggota->id_anggota }}">
                                 </div>
                             </div>
 
                             <div class="row mb-3">
                                 <label class="col-sm-3 col-form-label fw-semibold">Nama Lengkap</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control-plaintext fw-bold" readonly 
-                                           value="{{ $anggota->nama }}">
+                                    <input type="text" class="form-control-plaintext fw-bold" readonly
+                                        value="{{ $anggota->nama }}">
                                 </div>
                             </div>
 
                             <div class="row mb-3">
                                 <label class="col-sm-3 col-form-label fw-semibold">Departemen</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control-plaintext" readonly 
-                                           value="{{ $anggota->departement }}">
+                                    <input type="text" class="form-control-plaintext" readonly
+                                        value="{{ $anggota->departement }}">
                                 </div>
                             </div>
 
                             <div class="row mb-3">
                                 <label class="col-sm-3 col-form-label fw-semibold">No. Telepon</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control-plaintext" readonly 
-                                           value="{{ $anggota->no_telp ?? '-' }}">
+                                    <input type="text" class="form-control-plaintext" readonly
+                                        value="{{ $anggota->no_telp ?? '-' }}">
                                 </div>
                             </div>
                         </div>
@@ -135,8 +135,8 @@
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-text">Rp</span>
-                                    <input type="text" class="form-control" name="nominal" id="nominal" 
-                                           placeholder="0" value="{{ old('nominal') }}" required>
+                                    <input type="text" class="form-control" name="nominal" id="nominal" placeholder="0"
+                                        value="{{ old('nominal') }}" required>
                                 </div>
                                 <small class="text-muted">Minimal pinjaman Rp 500.000</small>
                             </div>
@@ -160,9 +160,9 @@
                                 <label class="form-label fw-semibold">
                                     Keterangan / Tujuan Pinjaman <span class="text-danger">*</span>
                                 </label>
-                                <textarea class="form-control" name="keterangan" id="keterangan" 
-                                          rows="4" placeholder="Jelaskan tujuan dan kebutuhan pinjaman Anda..." 
-                                          required>{{ old('keterangan') }}</textarea>
+                                <textarea class="form-control" name="keterangan" id="keterangan" rows="4"
+                                    placeholder="Jelaskan tujuan dan kebutuhan pinjaman Anda..."
+                                    required>{{ old('keterangan') }}</textarea>
                                 <small class="text-muted">Maksimal 500 karakter</small>
                             </div>
                         </div>
@@ -172,7 +172,7 @@
                             <h6 class="fw-semibold mb-3 text-primary border-bottom pb-2">
                                 <i class="ti ti-calculator me-2"></i>Simulasi Angsuran
                             </h6>
-                            
+
                             <div class="alert alert-warning" id="simulasiInfo">
                                 <i class="ti ti-info-circle me-2"></i>
                                 Isi nominal dan lama angsuran untuk melihat simulasi
@@ -213,10 +213,10 @@
                                 <i class="ti ti-photo me-2"></i>Foto Anggota
                             </h6>
                             <div class="text-center border rounded p-3" style="min-height: 300px;">
-                                <img src="{{ asset($anggota->photo ?? 'assets/images/profile/user-1.jpg') }}" 
-                                     alt="Foto Anggota" 
-                                     class="img-fluid rounded shadow-sm" 
-                                     style="max-height: 280px;">
+                                <img src="{{ asset($anggota->photo_display ?? 'assets/images/profile/user-1.jpg') }}"
+                                    alt="Foto {{ $anggota->nama }}" class="img-fluid rounded shadow-sm"
+                                    style="max-height: 280px;"
+                                    onerror="this.src='{{ asset('assets/images/profile/user-1.jpg') }}'">
                             </div>
                         </div>
 
@@ -259,132 +259,132 @@
 @endsection
 
 @push('scripts')
-<script>
-    $(document).ready(function() {
-        // Format Rupiah Input
-        $('#nominal').on('input', function() {
-            let value = $(this).val().replace(/[^0-9]/g, '');
-            if (value) {
-                $(this).val(parseInt(value).toLocaleString('id-ID'));
-            }
-            hitungSimulasi();
-        });
-
-        // Update simulasi saat lama angsuran berubah
-        $('#lamaAngsuran').on('change', function() {
-            hitungSimulasi();
-        });
-
-        // Hitung Simulasi Angsuran
-        function hitungSimulasi() {
-            const nominalStr = $('#nominal').val().replace(/[^0-9]/g, '');
-            const nominal = parseInt(nominalStr) || 0;
-            const lamaAngsuran = parseInt($('#lamaAngsuran option:selected').text()) || 0;
-
-            if (nominal > 0 && lamaAngsuran > 0) {
-                const angsuranBulan = Math.ceil(nominal / lamaAngsuran);
-                const totalBayar = angsuranBulan * lamaAngsuran;
-
-                // Update simulasi
-                $('#simTotalPinjaman').text('Rp ' + nominal.toLocaleString('id-ID'));
-                $('#simLamaAngsuran').text(lamaAngsuran + ' Bulan');
-                $('#simAngsuranBulan').text('Rp ' + angsuranBulan.toLocaleString('id-ID'));
-                $('#simTotalBayar').text('Rp ' + totalBayar.toLocaleString('id-ID'));
-
-                // Show table, hide info
-                $('#simulasiInfo').addClass('d-none');
-                $('#simulasiTable').removeClass('d-none');
-            } else {
-                // Hide table, show info
-                $('#simulasiInfo').removeClass('d-none');
-                $('#simulasiTable').addClass('d-none');
-            }
-        }
-
-        // Validasi sebelum submit
-        $('#formPengajuan').on('submit', function(e) {
-            const nominalStr = $('#nominal').val().replace(/[^0-9]/g, '');
-            const nominal = parseInt(nominalStr) || 0;
-
-            if (nominal < 500000) {
-                e.preventDefault();
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Nominal Tidak Valid',
-                    text: 'Minimal pinjaman adalah Rp 500.000',
-                    confirmButtonColor: '#dc3545'
-                });
-                return false;
-            }
-
-            // Konfirmasi submit
-            e.preventDefault();
-            Swal.fire({
-                title: 'Konfirmasi Pengajuan',
-                html: `
-                    <div class="text-start">
-                        <p class="mb-2">Pastikan data sudah benar:</p>
-                        <ul>
-                            <li><strong>Jenis:</strong> ${$('#jenisPinjaman option:selected').text()}</li>
-                            <li><strong>Nominal:</strong> Rp ${nominal.toLocaleString('id-ID')}</li>
-                            <li><strong>Lama:</strong> ${$('#lamaAngsuran option:selected').text()}</li>
-                        </ul>
-                        <p class="mb-0 text-danger"><small>Data yang sudah dikirim tidak dapat diubah kecuali masih dalam status pending.</small></p>
-                    </div>
-                `,
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: '<i class="ti ti-send"></i> Ya, Kirim',
-                cancelButtonText: '<i class="ti ti-x"></i> Batal',
-                confirmButtonColor: '#0d6efd',
-                customClass: {
-                    confirmButton: 'btn btn-primary',
-                    cancelButton: 'btn btn-secondary'
+    <script>
+        $(document).ready(function () {
+            // Format Rupiah Input
+            $('#nominal').on('input', function () {
+                let value = $(this).val().replace(/[^0-9]/g, '');
+                if (value) {
+                    $(this).val(parseInt(value).toLocaleString('id-ID'));
                 }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Show loading
-                    Swal.fire({
-                        title: 'Mengirim Pengajuan...',
-                        text: 'Mohon tunggu sebentar',
-                        allowOutsideClick: false,
-                        showConfirmButton: false,
-                        willOpen: () => {
-                            Swal.showLoading();
-                        }
-                    });
-                    
-                    // Submit form
-                    this.submit();
-                }
+                hitungSimulasi();
             });
-        });
 
-        // Reset form handler
-        $('button[type="reset"]').on('click', function(e) {
-            e.preventDefault();
-            Swal.fire({
-                title: 'Reset Form?',
-                text: 'Semua data yang telah diisi akan dihapus',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Ya, Reset',
-                cancelButtonText: 'Batal',
-                confirmButtonColor: '#ffc107'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $('#formPengajuan')[0].reset();
+            // Update simulasi saat lama angsuran berubah
+            $('#lamaAngsuran').on('change', function () {
+                hitungSimulasi();
+            });
+
+            // Hitung Simulasi Angsuran
+            function hitungSimulasi() {
+                const nominalStr = $('#nominal').val().replace(/[^0-9]/g, '');
+                const nominal = parseInt(nominalStr) || 0;
+                const lamaAngsuran = parseInt($('#lamaAngsuran option:selected').text()) || 0;
+
+                if (nominal > 0 && lamaAngsuran > 0) {
+                    const angsuranBulan = Math.ceil(nominal / lamaAngsuran);
+                    const totalBayar = angsuranBulan * lamaAngsuran;
+
+                    // Update simulasi
+                    $('#simTotalPinjaman').text('Rp ' + nominal.toLocaleString('id-ID'));
+                    $('#simLamaAngsuran').text(lamaAngsuran + ' Bulan');
+                    $('#simAngsuranBulan').text('Rp ' + angsuranBulan.toLocaleString('id-ID'));
+                    $('#simTotalBayar').text('Rp ' + totalBayar.toLocaleString('id-ID'));
+
+                    // Show table, hide info
+                    $('#simulasiInfo').addClass('d-none');
+                    $('#simulasiTable').removeClass('d-none');
+                } else {
+                    // Hide table, show info
                     $('#simulasiInfo').removeClass('d-none');
                     $('#simulasiTable').addClass('d-none');
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Form Direset',
-                        timer: 1000,
-                        showConfirmButton: false
-                    });
                 }
+            }
+
+            // Validasi sebelum submit
+            $('#formPengajuan').on('submit', function (e) {
+                const nominalStr = $('#nominal').val().replace(/[^0-9]/g, '');
+                const nominal = parseInt(nominalStr) || 0;
+
+                if (nominal < 500000) {
+                    e.preventDefault();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Nominal Tidak Valid',
+                        text: 'Minimal pinjaman adalah Rp 500.000',
+                        confirmButtonColor: '#dc3545'
+                    });
+                    return false;
+                }
+
+                // Konfirmasi submit
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Konfirmasi Pengajuan',
+                    html: `
+                        <div class="text-start">
+                            <p class="mb-2">Pastikan data sudah benar:</p>
+                            <ul>
+                                <li><strong>Jenis:</strong> ${$('#jenisPinjaman option:selected').text()}</li>
+                                <li><strong>Nominal:</strong> Rp ${nominal.toLocaleString('id-ID')}</li>
+                                <li><strong>Lama:</strong> ${$('#lamaAngsuran option:selected').text()}</li>
+                            </ul>
+                            <p class="mb-0 text-danger"><small>Data yang sudah dikirim tidak dapat diubah kecuali masih dalam status pending.</small></p>
+                        </div>
+                    `,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: '<i class="ti ti-send"></i> Ya, Kirim',
+                    cancelButtonText: '<i class="ti ti-x"></i> Batal',
+                    confirmButtonColor: '#0d6efd',
+                    customClass: {
+                        confirmButton: 'btn btn-primary',
+                        cancelButton: 'btn btn-secondary'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Show loading
+                        Swal.fire({
+                            title: 'Mengirim Pengajuan...',
+                            text: 'Mohon tunggu sebentar',
+                            allowOutsideClick: false,
+                            showConfirmButton: false,
+                            willOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+
+                        // Submit form
+                        this.submit();
+                    }
+                });
+            });
+
+            // Reset form handler
+            $('button[type="reset"]').on('click', function (e) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Reset Form?',
+                    text: 'Semua data yang telah diisi akan dihapus',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, Reset',
+                    cancelButtonText: 'Batal',
+                    confirmButtonColor: '#ffc107'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $('#formPengajuan')[0].reset();
+                        $('#simulasiInfo').removeClass('d-none');
+                        $('#simulasiTable').addClass('d-none');
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Form Direset',
+                            timer: 1000,
+                            showConfirmButton: false
+                        });
+                    }
+                });
             });
         });
-    });
-</script>
+    </script>
 @endpush

@@ -3,12 +3,12 @@
 @section('title', 'Penarikan Tunai')
 
 @push('styles')
-<style>
-    #tabelPenarikan td,
-    #tabelPenarikan th {
-        white-space: nowrap;
-    }
-</style>
+    <style>
+        #tabelPenarikan td,
+        #tabelPenarikan th {
+            white-space: nowrap;
+        }
+    </style>
 @endpush
 
 @section('content')
@@ -75,7 +75,8 @@
     <div class="card">
         <div class="card-body">
             <div class="table-responsive">
-                <table id="tabelPenarikan" class="table table-hover align-middle rounded-2 border overflow-hidden" style="width:100%">
+                <table id="tabelPenarikan" class="table table-hover align-middle rounded-2 border overflow-hidden"
+                    style="width:100%">
                     <thead class="table-primary">
                         <tr>
                             <th class="text-center" width="50">
@@ -147,12 +148,12 @@
                     </tfoot>
                 </table>
             </div>
-            
+
             @if($penarikan->isEmpty())
-            <div class="text-center text-muted py-4">
-                <i class="ti ti-database-off fs-1"></i>
-                <p class="mb-0">Tidak ada data penarikan tunai</p>
-            </div>
+                <div class="text-center text-muted py-4">
+                    <i class="ti ti-database-off fs-1"></i>
+                    <p class="mb-0">Tidak ada data penarikan tunai</p>
+                </div>
             @endif
         </div>
     </div>
@@ -181,7 +182,8 @@
 
                                 <div class="mb-3">
                                     <label class="form-label">Nama Penarik</label>
-                                    <input type="text" class="form-control" id="namaPenarik" placeholder="Jika bukan anggota sendiri">
+                                    <input type="text" class="form-control" id="namaPenarik"
+                                        placeholder="Jika bukan anggota sendiri">
                                 </div>
 
                                 <div class="mb-3">
@@ -201,9 +203,8 @@
                                     <select class="form-select" id="anggotaId" required>
                                         <option value="">-- Pilih Anggota --</option>
                                         @foreach($anggota_list as $anggota)
-                                            <option value="{{ $anggota->id }}" 
-                                                    data-photo="{{ $anggota->photo }}"
-                                                    data-dept="{{ $anggota->departement }}">
+                                            <option value="{{ $anggota->id }}" data-photo="{{ $anggota->photo }}"
+                                                data-dept="{{ $anggota->departement }}">
                                                 {{ $anggota->id_anggota }} - {{ $anggota->nama }}
                                             </option>
                                         @endforeach
@@ -254,7 +255,8 @@
                                 <div class="mb-3">
                                     <label class="form-label">Foto Anggota</label>
                                     <div class="border rounded p-3 text-center" style="min-height: 250px;">
-                                        <div id="fotoAnggota" class="d-flex align-items-center justify-content-center" style="height: 230px;">
+                                        <div id="fotoAnggota" class="d-flex align-items-center justify-content-center"
+                                            style="height: 230px;">
                                             <span class="text-muted">Pilih anggota untuk melihat foto</span>
                                         </div>
                                     </div>
@@ -279,322 +281,352 @@
 @endsection
 
 @push('scripts')
-<script>
-    let fpTanggal;
+    <script>
+        let fpTanggal;
 
-    $(document).ready(function() {
-        // Initialize DataTable
-        const table = $('#tabelPenarikan').DataTable({
-            pageLength: 10,
-            order: [[3, 'desc']],
-            scrollX: true,
-            columnDefs: [
-                { orderable: false, targets: [0, 1, 10] }
-            ],
-            language: {
-                lengthMenu: "Tampilkan _MENU_ data per halaman",
-                zeroRecords: "Data tidak ditemukan",
-                info: "Menampilkan halaman _PAGE_ dari _PAGES_",
-                infoEmpty: "Tidak ada data tersedia",
-                infoFiltered: "(difilter dari _MAX_ total data)",
-                search: "Cari:",
-                paginate: {
-                    first: "Pertama",
-                    last: "Terakhir",
-                    next: "Selanjutnya",
-                    previous: "Sebelumnya"
+        $(document).ready(function () {
+            // Initialize DataTable
+            const table = $('#tabelPenarikan').DataTable({
+                pageLength: 10,
+                order: [[3, 'desc']],
+                scrollX: true,
+                columnDefs: [
+                    { orderable: false, targets: [0, 1, 10] }
+                ],
+                language: {
+                    lengthMenu: "Tampilkan _MENU_ data per halaman",
+                    zeroRecords: "Data tidak ditemukan",
+                    info: "Menampilkan halaman _PAGE_ dari _PAGES_",
+                    infoEmpty: "Tidak ada data tersedia",
+                    infoFiltered: "(difilter dari _MAX_ total data)",
+                    search: "Cari:",
+                    paginate: {
+                        first: "Pertama",
+                        last: "Terakhir",
+                        next: "Selanjutnya",
+                        previous: "Sebelumnya"
+                    }
                 }
-            }
-        });
-
-        // Initialize Flatpickr
-        fpTanggal = flatpickr("#filterTanggal", {
-            mode: "range",
-            dateFormat: "d M Y",
-            locale: "id",
-            allowInput: false,
-            clickOpens: true,
-            onChange: function(selectedDates) {
-                if (selectedDates.length === 2) {
-                    filterByDateRange(selectedDates[0], selectedDates[1]);
-                }
-            }
-        });
-
-        // Event listener untuk tombol kalender
-        $('#btnTanggal').on('click', function() {
-            fpTanggal.open();
-        });
-
-        // Event listener untuk input tanggal
-        $('#filterTanggal').on('click', function() {
-            fpTanggal.open();
-        });
-
-        // Filter by Jenis Simpanan
-        $('#filterSimpanan').on('change', function() {
-            table.column(7).search(this.value).draw();
-        });
-
-        // Click row to check checkbox
-        $('#tabelPenarikan tbody').on('click', 'tr', function(e) {
-            if ($(e.target).is('input[type="checkbox"]') || $(e.target).is('button') || $(e.target).closest('button').length) return;
-            
-            const checkbox = $(this).find('.row-checkbox');
-            checkbox.prop('checked', !checkbox.prop('checked'));
-            $(this).toggleClass('table-active');
-        });
-
-        // Select All
-        $('#selectAll').on('click', function(e) {
-            e.stopPropagation();
-            const isChecked = this.checked;
-            $('.row-checkbox').prop('checked', isChecked);
-            if (isChecked) {
-                $('#tabelPenarikan tbody tr').addClass('table-active');
-            } else {
-                $('#tabelPenarikan tbody tr').removeClass('table-active');
-            }
-        });
-
-        // Handle Anggota Selection - Show Photo & Dept
-        $('#anggotaId').on('change', function() {
-            const selectedOption = $(this).find('option:selected');
-            const photo = selectedOption.data('photo') || 'assets/images/profile/user-1.jpg';
-            const dept = selectedOption.data('dept') || '-';
-            
-            if ($(this).val()) {
-                $('#fotoAnggota').html(`<img src="{{ asset('') }}${photo}" alt="Foto Anggota" class="img-fluid rounded" style="max-height: 230px;">`);
-                $('#departemenInfo').val(dept);
-            } else {
-                $('#fotoAnggota').html('<span class="text-muted">Pilih anggota untuk melihat foto</span>');
-                $('#departemenInfo').val('');
-            }
-        });
-
-        // Handle Jenis Simpanan - Auto fill
-        $('#jenisSimpananId').on('change', function() {
-            const selectedOption = $(this).find('option:selected');
-            const jumlah = selectedOption.data('jumlah');
-            
-            if (jumlah > 0) {
-                $('#jumlah').val(parseInt(jumlah).toLocaleString('id-ID'));
-            }
-        });
-
-        // Format Currency
-        $('#jumlah').on('input', function(e) {
-            let value = e.target.value.replace(/[^0-9]/g, '');
-            if (value) {
-                value = parseInt(value).toLocaleString('id-ID');
-            }
-            e.target.value = value;
-        });
-
-        // Set default datetime
-        $('#modalForm').on('show.bs.modal', function() {
-            if ($('#modalTitle').text() === 'Tambah Data Penarikan Tunai') {
-                const now = new Date();
-                $('#tanggalTransaksi').val(now.toISOString().slice(0, 16));
-                $('#fotoAnggota').html('<span class="text-muted">Pilih anggota untuk melihat foto</span>');
-                $('#departemenInfo').val('');
-            }
-        });
-
-        // Submit Form
-        $('#formPenarikan').on('submit', function(e) {
-            e.preventDefault();
-
-            const method = $('#formMethod').val();
-            const id = $('#formId').val();
-            const url = method === 'POST' 
-                ? '{{ route("simpanan.penarikan.store") }}' 
-                : `/admin/penarikan/${id}`;
-
-            const data = {
-                tanggal_transaksi: $('#tanggalTransaksi').val(),
-                anggota_id: $('#anggotaId').val(),
-                jenis_simpanan_id: $('#jenisSimpananId').val(),
-                jumlah: $('#jumlah').val().replace(/\./g, ''),
-                dari_kas_id: $('#dariKasId').val(),
-                nama_penarik: $('#namaPenarik').val(),
-                no_identitas: $('#noIdentitas').val(),
-                alamat: $('#alamat').val(),
-                keterangan: $('#keterangan').val(),
-            };
-
-            fetch(url, {
-                method: method === 'POST' ? 'POST' : 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                body: JSON.stringify(data)
-            })
-            .then(res => res.json())
-            .then(res => {
-                if (res.success) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Berhasil!',
-                        text: res.message,
-                        showConfirmButton: false,
-                        timer: 1500
-                    }).then(() => location.reload());
-                }
-            })
-            .catch(err => {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Gagal!',
-                    text: 'Terjadi kesalahan saat menyimpan data'
-                });
             });
-        });
-    });
 
-    function tambahData() {
-        $('#modalTitle').text('Tambah Data Penarikan Tunai');
-        $('#formPenarikan')[0].reset();
-        $('#formMethod').val('POST');
-        $('#formId').val('');
-        const now = new Date();
-        $('#tanggalTransaksi').val(now.toISOString().slice(0, 16));
-        $('#fotoAnggota').html('<span class="text-muted">Pilih anggota untuk melihat foto</span>');
-        $('#departemenInfo').val('');
-        $('#modalForm').modal('show');
-    }
+            // Initialize Flatpickr
+            fpTanggal = flatpickr("#filterTanggal", {
+                mode: "range",
+                dateFormat: "d M Y",
+                locale: "id",
+                allowInput: false,
+                clickOpens: true,
+                onChange: function (selectedDates) {
+                    if (selectedDates.length === 2) {
+                        filterByDateRange(selectedDates[0], selectedDates[1]);
+                    }
+                }
+            });
 
-    function editData() {
-        const checked = $('.row-checkbox:checked');
-        if (checked.length === 0) {
-            Swal.fire('Peringatan', 'Pilih data yang akan diedit!', 'warning');
-            return;
-        }
-        if (checked.length > 1) {
-            Swal.fire('Peringatan', 'Pilih hanya satu data!', 'warning');
-            return;
-        }
+            // Event listener untuk tombol kalender
+            $('#btnTanggal').on('click', function () {
+                fpTanggal.open();
+            });
 
-        const id = checked.first().data('id');
-        
-        Swal.fire({
-            title: 'Loading...',
-            text: 'Mengambil data',
-            allowOutsideClick: false,
-            didOpen: () => {
-                Swal.showLoading();
-            }
-        });
-        
-        fetch(`/admin/penarikan/${id}`, {
-            headers: {
-                'Accept': 'application/json',
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-        })
-        .then(res => {
-            if (!res.ok) throw new Error('Network response was not ok');
-            return res.json();
-        })
-        .then(data => {
-            Swal.close();
-            
-            $('#modalTitle').text('Edit Data Penarikan Tunai');
-            $('#formMethod').val('PUT');
-            $('#formId').val(data.id);
-            
-            const date = new Date(data.tanggal_transaksi);
-            $('#tanggalTransaksi').val(date.toISOString().slice(0, 16));
-            
-            $('#anggotaId').val(data.anggota_id).trigger('change');
-            $('#jenisSimpananId').val(data.jenis_simpanan_id);
-            $('#jumlah').val(parseInt(data.jumlah).toLocaleString('id-ID'));
-            $('#dariKasId').val(data.dari_kas_id);
-            $('#namaPenarik').val(data.nama_penarik);
-            $('#noIdentitas').val(data.no_identitas);
-            $('#alamat').val(data.alamat);
-            $('#keterangan').val(data.keterangan);
-            
-            $('#modalForm').modal('show');
-        })
-        .catch(err => {
-            Swal.fire('Error', 'Gagal mengambil data!', 'error');
-            console.error('Error:', err);
-        });
-    }
+            // Event listener untuk input tanggal
+            $('#filterTanggal').on('click', function () {
+                fpTanggal.open();
+            });
 
-    function hapusData() {
-        const checked = $('.row-checkbox:checked');
-        if (checked.length === 0) {
-            Swal.fire('Peringatan', 'Pilih data yang akan dihapus!', 'warning');
-            return;
-        }
+            // Filter by Jenis Simpanan
+            $('#filterSimpanan').on('change', function () {
+                table.column(7).search(this.value).draw();
+            });
 
-        Swal.fire({
-            title: 'Konfirmasi Hapus',
-            text: `Hapus ${checked.length} data penarikan?`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Ya, Hapus!',
-            cancelButtonText: 'Batal'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                const ids = [];
-                checked.each(function() {
-                    ids.push($(this).data('id'));
-                });
+            // Click row to check checkbox
+            $('#tabelPenarikan tbody').on('click', 'tr', function (e) {
+                if ($(e.target).is('input[type="checkbox"]') || $(e.target).is('button') || $(e.target).closest('button').length) return;
 
-                Promise.all(ids.map(id => 
-                    fetch(`/admin/penarikan/${id}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                const checkbox = $(this).find('.row-checkbox');
+                checkbox.prop('checked', !checkbox.prop('checked'));
+                $(this).toggleClass('table-active');
+            });
+
+            // Select All
+            $('#selectAll').on('click', function (e) {
+                e.stopPropagation();
+                const isChecked = this.checked;
+                $('.row-checkbox').prop('checked', isChecked);
+                if (isChecked) {
+                    $('#tabelPenarikan tbody tr').addClass('table-active');
+                } else {
+                    $('#tabelPenarikan tbody tr').removeClass('table-active');
+                }
+            });
+
+            // Handle Anggota Selection - Show Photo & Dept
+            $('#anggotaId').on('change', function () {
+                const anggotaId = $(this).val();
+
+                if (anggotaId) {
+                    // ✅ Fetch foto terbaru dari server (route penarikan)
+                    fetch(`/admin/penarikan/anggota-detail/${anggotaId}`)
+                        .then(res => {
+                            if (!res.ok) {
+                                throw new Error(`HTTP error! status: ${res.status}`);
+                            }
+                            return res.json();
+                        })
+                        .then(data => {
+                            console.log('Data received:', data); // Debug log
+
+                            // Gunakan foto terbaru dengan timestamp untuk avoid cache
+                            const photoUrl = data.photo_url
+                                ? `${data.photo_url}?v=${Date.now()}`
+                                : '{{ asset("assets/images/profile/user-1.jpg") }}';
+
+                            $('#fotoAnggota').html(`
+                        <img src="${photoUrl}" 
+                             alt="Foto Anggota" 
+                             class="img-fluid rounded" 
+                             style="max-height: 230px; object-fit: cover;"
+                             onerror="this.src='{{ asset("assets/images/profile/user-1.jpg") }}'">
+                    `);
+                            $('#departemenInfo').val(data.departement || '-');
+                        })
+                        .catch(err => {
+                            console.error('Error loading photo:', err);
+                            $('#fotoAnggota').html(`
+                        <span class="text-danger">
+                            <i class="ti ti-alert-circle"></i> Gagal memuat foto<br>
+                            <small>${err.message}</small>
+                        </span>
+                    `);
+                        });
+                } else {
+                    $('#fotoAnggota').html('<span class="text-muted">Pilih anggota untuk melihat foto</span>');
+                    $('#departemenInfo').val('');
+                }
+            });
+
+            // Handle Jenis Simpanan - Auto fill
+            $('#jenisSimpananId').on('change', function () {
+                const selectedOption = $(this).find('option:selected');
+                const jumlah = selectedOption.data('jumlah');
+
+                if (jumlah > 0) {
+                    $('#jumlah').val(parseInt(jumlah).toLocaleString('id-ID'));
+                }
+            });
+
+            // Format Currency
+            $('#jumlah').on('input', function (e) {
+                let value = e.target.value.replace(/[^0-9]/g, '');
+                if (value) {
+                    value = parseInt(value).toLocaleString('id-ID');
+                }
+                e.target.value = value;
+            });
+
+            // Set default datetime
+            $('#modalForm').on('show.bs.modal', function () {
+                if ($('#modalTitle').text() === 'Tambah Data Penarikan Tunai') {
+                    const now = new Date();
+                    $('#tanggalTransaksi').val(now.toISOString().slice(0, 16));
+                    $('#fotoAnggota').html('<span class="text-muted">Pilih anggota untuk melihat foto</span>');
+                    $('#departemenInfo').val('');
+                }
+            });
+
+            // Submit Form
+            $('#formPenarikan').on('submit', function (e) {
+                e.preventDefault();
+
+                const method = $('#formMethod').val();
+                const id = $('#formId').val();
+                const url = method === 'POST'
+                    ? '{{ route("simpanan.penarikan.store") }}'
+                    : `/admin/penarikan/${id}`;
+
+                const data = {
+                    tanggal_transaksi: $('#tanggalTransaksi').val(),
+                    anggota_id: $('#anggotaId').val(),
+                    jenis_simpanan_id: $('#jenisSimpananId').val(),
+                    jumlah: $('#jumlah').val().replace(/\./g, ''),
+                    dari_kas_id: $('#dariKasId').val(),
+                    nama_penarik: $('#namaPenarik').val(),
+                    no_identitas: $('#noIdentitas').val(),
+                    alamat: $('#alamat').val(),
+                    keterangan: $('#keterangan').val(),
+                };
+
+                fetch(url, {
+                    method: method === 'POST' ? 'POST' : 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    body: JSON.stringify(data)
+                })
+                    .then(res => res.json())
+                    .then(res => {
+                        if (res.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil!',
+                                text: res.message,
+                                showConfirmButton: false,
+                                timer: 1500
+                            }).then(() => location.reload());
                         }
                     })
-                )).then(() => {
-                    Swal.fire('Berhasil!', 'Data berhasil dihapus', 'success')
-                        .then(() => location.reload());
-                });
-            }
-        });
-    }
-
-    function filterByDateRange(startDate, endDate) {
-        $.fn.dataTable.ext.search.push(function(settings, data) {
-            // data[3] = "15 Jan 2026 14:30"
-            const parts = data[3].split(' ');
-            const dateStr = `${parts[1]} ${parts[0]} ${parts[2]}`; 
-            const rowDate = new Date(dateStr);
-
-            rowDate.setHours(0, 0, 0, 0);
-            startDate.setHours(0, 0, 0, 0);
-            endDate.setHours(23, 59, 59, 999);
-
-            return rowDate >= startDate && rowDate <= endDate;
+                    .catch(err => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal!',
+                            text: 'Terjadi kesalahan saat menyimpan data'
+                        });
+                    });
+            });
         });
 
-        $('#tabelPenarikan').DataTable().draw();
-        $.fn.dataTable.ext.search.pop();
-    }
-
-    function cariData() {
-        const search = $('#searchInput').val();
-        $('#tabelPenarikan').DataTable().search(search).draw();
-    }
-
-    function resetFilter() {
-        $('#searchInput').val('');
-        $('#filterSimpanan').val('');
-        $('#tabelPenarikan').DataTable().search('').columns().search('').draw();
-
-        if (fpTanggal) {
-            fpTanggal.clear();
+        function tambahData() {
+            $('#modalTitle').text('Tambah Data Penarikan Tunai');
+            $('#formPenarikan')[0].reset();
+            $('#formMethod').val('POST');
+            $('#formId').val('');
+            const now = new Date();
+            $('#tanggalTransaksi').val(now.toISOString().slice(0, 16));
+            $('#fotoAnggota').html('<span class="text-muted">Pilih anggota untuk melihat foto</span>');
+            $('#departemenInfo').val('');
+            $('#modalForm').modal('show');
         }
-    }
 
-    function cetakNota(id) {
-        window.open(`/admin/penarikan/cetak/${id}`, '_blank');
-    }
-</script>
+        function editData() {
+            const checked = $('.row-checkbox:checked');
+            if (checked.length === 0) {
+                Swal.fire('Peringatan', 'Pilih data yang akan diedit!', 'warning');
+                return;
+            }
+            if (checked.length > 1) {
+                Swal.fire('Peringatan', 'Pilih hanya satu data!', 'warning');
+                return;
+            }
+
+            const id = checked.first().data('id');
+
+            Swal.fire({
+                title: 'Loading...',
+                text: 'Mengambil data',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            fetch(`/admin/penarikan/${id}`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            })
+                .then(res => {
+                    if (!res.ok) throw new Error('Network response was not ok');
+                    return res.json();
+                })
+                .then(data => {
+                    Swal.close();
+
+                    $('#modalTitle').text('Edit Data Penarikan Tunai');
+                    $('#formMethod').val('PUT');
+                    $('#formId').val(data.id);
+
+                    const date = new Date(data.tanggal_transaksi);
+                    $('#tanggalTransaksi').val(date.toISOString().slice(0, 16));
+
+                    $('#anggotaId').val(data.anggota_id).trigger('change');
+                    $('#jenisSimpananId').val(data.jenis_simpanan_id);
+                    $('#jumlah').val(parseInt(data.jumlah).toLocaleString('id-ID'));
+                    $('#dariKasId').val(data.dari_kas_id);
+                    $('#namaPenarik').val(data.nama_penarik);
+                    $('#noIdentitas').val(data.no_identitas);
+                    $('#alamat').val(data.alamat);
+                    $('#keterangan').val(data.keterangan);
+
+                    $('#modalForm').modal('show');
+                })
+                .catch(err => {
+                    Swal.fire('Error', 'Gagal mengambil data!', 'error');
+                    console.error('Error:', err);
+                });
+        }
+
+        function hapusData() {
+            const checked = $('.row-checkbox:checked');
+            if (checked.length === 0) {
+                Swal.fire('Peringatan', 'Pilih data yang akan dihapus!', 'warning');
+                return;
+            }
+
+            Swal.fire({
+                title: 'Konfirmasi Hapus',
+                text: `Hapus ${checked.length} data penarikan?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const ids = [];
+                    checked.each(function () {
+                        ids.push($(this).data('id'));
+                    });
+
+                    Promise.all(ids.map(id =>
+                        fetch(`/admin/penarikan/${id}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            }
+                        })
+                    )).then(() => {
+                        Swal.fire('Berhasil!', 'Data berhasil dihapus', 'success')
+                            .then(() => location.reload());
+                    });
+                }
+            });
+        }
+
+        function filterByDateRange(startDate, endDate) {
+            $.fn.dataTable.ext.search.push(function (settings, data) {
+                // data[3] = "15 Jan 2026 14:30"
+                const parts = data[3].split(' ');
+                const dateStr = `${parts[1]} ${parts[0]} ${parts[2]}`;
+                const rowDate = new Date(dateStr);
+
+                rowDate.setHours(0, 0, 0, 0);
+                startDate.setHours(0, 0, 0, 0);
+                endDate.setHours(23, 59, 59, 999);
+
+                return rowDate >= startDate && rowDate <= endDate;
+            });
+
+            $('#tabelPenarikan').DataTable().draw();
+            $.fn.dataTable.ext.search.pop();
+        }
+
+        function cariData() {
+            const search = $('#searchInput').val();
+            $('#tabelPenarikan').DataTable().search(search).draw();
+        }
+
+        function resetFilter() {
+            $('#searchInput').val('');
+            $('#filterSimpanan').val('');
+            $('#tabelPenarikan').DataTable().search('').columns().search('').draw();
+
+            if (fpTanggal) {
+                fpTanggal.clear();
+            }
+        }
+
+        function cetakNota(id) {
+            window.open(`/admin/penarikan/cetak/${id}`, '_blank');
+        }
+    </script>
 @endpush

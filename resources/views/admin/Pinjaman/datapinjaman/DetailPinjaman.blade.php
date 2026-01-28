@@ -94,7 +94,7 @@
                                 <tr>
                                     <td class="text-muted">Dept</td>
                                     <td>:</td>
-                                    <td>{{ $pinjaman->anggota_departement }}</td>
+                                    <td>{{ $pinjaman->anggota_departemen }}</td>
                                 </tr>
                                 <tr>
                                     <td class="text-muted">TTL</td>

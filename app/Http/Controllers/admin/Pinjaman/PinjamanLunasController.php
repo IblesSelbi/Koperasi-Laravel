@@ -30,7 +30,7 @@ class PinjamanLunasController extends Controller
                 'pinjaman.lamaAngsuran',
                 'user'
             ])
-                ->whereNull('deleted_at'); // ✅ Explicit filter untuk data yang tidak soft deleted
+                ->whereNull('deleted_at');
 
             // Filter by Kode
             if ($request->filled('kode')) {
@@ -64,6 +64,7 @@ class PinjamanLunasController extends Controller
             $pinjamanLunas = $query->orderBy('tanggal_lunas', 'desc')->get();
 
             // Format data untuk view dengan validasi
+            // Format data untuk view dengan validasi
             foreach ($pinjamanLunas as $item) {
                 // ✅ VALIDASI: Skip jika pinjaman null
                 if (!$item->pinjaman) {
@@ -90,7 +91,20 @@ class PinjamanLunasController extends Controller
                     $item->anggota_id = $pinjaman->anggota->id_anggota ?? '-';
                     $item->anggota_nama = $pinjaman->anggota->nama ?? 'Unknown';
                     $item->anggota_departemen = $pinjaman->anggota->departement ?? '-';
-                    $item->anggota_foto = $pinjaman->anggota->photo ?? 'assets/images/profile/user-1.jpg';
+
+                    // ✅ PERBAIKAN: Prioritas foto seperti di PinjamanController
+                    $photoPath = 'assets/images/profile/user-1.jpg';
+
+                    // Priority 1: data_anggota.photo (bukan default)
+                    if ($pinjaman->anggota->photo && $pinjaman->anggota->photo !== 'assets/images/profile/user-1.jpg') {
+                        $photoPath = 'storage/' . $pinjaman->anggota->photo;
+                    }
+                    // Priority 2: users.profile_image
+                    elseif ($pinjaman->anggota->user && $pinjaman->anggota->user->profile_image) {
+                        $photoPath = 'storage/' . $pinjaman->anggota->user->profile_image;
+                    }
+
+                    $item->anggota_foto = $photoPath;
                 }
 
                 // Set properties lainnya
@@ -155,7 +169,17 @@ class PinjamanLunasController extends Controller
 
             $pinjaman = $pinjamanLunas->pinjaman;
 
-            // Data pinjaman untuk view
+            $photoPath = 'assets/images/profile/user-1.jpg';
+
+            // Priority 1: data_anggota.photo (bukan default)
+            if ($pinjaman->anggota && $pinjaman->anggota->photo && $pinjaman->anggota->photo !== 'assets/images/profile/user-1.jpg') {
+                $photoPath = 'storage/' . $pinjaman->anggota->photo;
+            }
+            // Priority 2: users.profile_image
+            elseif ($pinjaman->anggota && $pinjaman->anggota->user && $pinjaman->anggota->user->profile_image) {
+                $photoPath = 'storage/' . $pinjaman->anggota->user->profile_image;
+            }
+
             $pinjamanData = (object) [
                 'id' => $pinjamanLunas->id,
                 'kode' => $pinjamanLunas->kode_lunas,
@@ -172,7 +196,7 @@ class PinjamanLunasController extends Controller
                 'anggota_ttl' => ($pinjaman->anggota->tempat_lahir ?? '-') . ', ' .
                     Carbon::parse($pinjaman->anggota->tanggal_lahir)->translatedFormat('d F Y'),
                 'anggota_kota' => $pinjaman->anggota->kota ?? '-',
-                'anggota_foto' => $pinjaman->anggota->photo ?? 'assets/images/profile/user-1.jpg',
+                'anggota_foto' => $photoPath,
 
                 // Data Keuangan
                 'pokok_pinjaman' => $pinjaman->pokok_pinjaman,

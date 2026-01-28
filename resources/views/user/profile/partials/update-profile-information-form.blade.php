@@ -47,7 +47,7 @@
                 name="email"
                 class="form-control @error('email') is-invalid @enderror"
                 value="{{ old('email', $user->email) }}"
-                placeholder="contoh@email.com"
+                placeholder="user@example.com"
                 required
             >
             @error('email')
