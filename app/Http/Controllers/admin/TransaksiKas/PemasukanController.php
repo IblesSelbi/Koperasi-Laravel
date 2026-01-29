@@ -8,6 +8,7 @@ use App\Models\Admin\DataMaster\JenisAkun;
 use App\Models\Admin\DataMaster\DataKas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class PemasukanController extends Controller
 {
@@ -95,5 +96,31 @@ class PemasukanController extends Controller
             'success' => true,
             'message' => 'Data pemasukan berhasil dihapus!'
         ]);
+    }
+
+    /**
+     * Cetak Laporan Pemasukan Kas (PDF)
+     */
+    public function cetakLaporan(Request $request)
+    {
+        $query = Pemasukan::with(['untukKas', 'dariAkun', 'user']);
+
+        // Filter berdasarkan tanggal jika ada
+        if ($request->has('start_date') && $request->has('end_date')) {
+            $query->whereBetween('tanggal_transaksi', [$request->start_date, $request->end_date]);
+        }
+
+        $pemasukan = $query->orderBy('tanggal_transaksi', 'asc')->get();
+        $total_pemasukan = $pemasukan->sum('jumlah');
+        $identitas = \App\Models\Admin\Setting\IdentitasKoperasi::first();
+
+        // Periode untuk header
+        $periode = 'Periode ' . ($request->start_date ? \Carbon\Carbon::parse($request->start_date)->format('d F Y') : '01 Januari ' . date('Y'));
+        $periode .= ' - ' . ($request->end_date ? \Carbon\Carbon::parse($request->end_date)->format('d F Y') : '31 Desember ' . date('Y'));
+
+        $pdf = Pdf::loadView('admin.TransaksiKas.pemasukan.cetak', compact('pemasukan', 'total_pemasukan', 'identitas', 'periode'));
+        $pdf->setPaper('a4', 'landscape');
+
+        return $pdf->stream('Laporan_Pemasukan_Kas.pdf');
     }
 }

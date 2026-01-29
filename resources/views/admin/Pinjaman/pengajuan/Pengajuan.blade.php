@@ -125,7 +125,8 @@
                         </button>
                         <div class="ms-auto">
                             <span class="badge bg-primary-subtle text-primary px-3 py-2">
-                                <i class="ti ti-file-text"></i> Total Data: <strong id="totalData">{{ $total_pengajuan }}</strong>
+                                <i class="ti ti-file-text"></i> Total Data: <strong
+                                    id="totalData">{{ $total_pengajuan }}</strong>
                             </span>
                         </div>
                     </div>
@@ -169,7 +170,8 @@
                                     <div class="d-flex align-items-center">
                                         <div>
                                             <strong>{{ $item->anggota->nama }}</strong><br>
-                                            <small class="text-muted">ID: {{ $item->anggota->id_anggota }} {{ $item->anggota->departement }}</small>
+                                            <small class="text-muted">ID: {{ $item->anggota->id_anggota }}
+                                                {{ $item->anggota->departement }}</small>
                                         </div>
                                     </div>
                                 </td>
@@ -183,7 +185,8 @@
                                     @endif
                                 </td>
                                 <td class="text-end">
-                                    <span class="fw-bold text-success fs-4">Rp {{ number_format($item->jumlah, 0, ',', '.') }}</span>
+                                    <span class="fw-bold text-success fs-4">Rp
+                                        {{ number_format($item->jumlah, 0, ',', '.') }}</span>
                                 </td>
                                 <td class="text-center">
                                     <span class="badge bg-secondary">{{ $item->jumlah_angsuran }}</span>
@@ -218,7 +221,8 @@
                                 <td>
                                     <small class="text-muted">Sisa Jml Pinjaman:</small> {{ $item->sisa_pinjaman }}<br>
                                     <small class="text-muted">Sisa Jml Angsuran:</small> {{ $item->sisa_angsuran }}<br>
-                                    <small class="text-muted">Sisa Tagihan:</small> Rp {{ number_format($item->sisa_tagihan, 0, ',', '.') }}
+                                    <small class="text-muted">Sisa Tagihan:</small> Rp
+                                    {{ number_format($item->sisa_tagihan, 0, ',', '.') }}
                                 </td>
                                 <td class="text-center" style="min-width: 200px;">
                                     @if($item->status == 0)
@@ -376,6 +380,25 @@
                 });
             });
 
+            // AUTO-SELECT FILTER DARI URL
+            const urlParams = new URLSearchParams(window.location.search);
+
+            if (urlParams.get('jenis')) {
+                $('#filterJenis').val(urlParams.get('jenis'));
+            }
+
+            if (urlParams.get('status')) {
+                $('#filterStatus').val(urlParams.get('status'));
+            }
+
+            if (urlParams.get('bulan')) {
+                $('#filterBulan').val(urlParams.get('bulan'));
+            }
+
+            if (urlParams.get('tanggal')) {
+                $('#filterTanggal').val(urlParams.get('tanggal'));
+            }
+
             // Initialize Bootstrap Tooltips
             const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
             tooltipTriggerList.map(function (tooltipTriggerEl) {
@@ -390,20 +413,20 @@
             Swal.fire({
                 title: 'Setujui Pengajuan',
                 html: `
-                    <div class="text-start">
-                        <p class="mb-3">Apakah Anda yakin ingin <strong class="text-success">MENYETUJUI</strong> pengajuan ini?</p>
-                        
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Tanggal Pencairan <span class="text-danger">*</span></label>
-                            <input type="date" id="swal-tglcair" class="form-control" value="${today}" required>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Alasan / Catatan</label>
-                            <textarea id="swal-alasan" class="form-control" rows="3" placeholder="Opsional - Tambahkan catatan jika diperlukan"></textarea>
-                        </div>
-                    </div>
-                `,
+                                            <div class="text-start">
+                                                <p class="mb-3">Apakah Anda yakin ingin <strong class="text-success">MENYETUJUI</strong> pengajuan ini?</p>
+
+                                                <div class="mb-3">
+                                                    <label class="form-label fw-semibold">Tanggal Pencairan <span class="text-danger">*</span></label>
+                                                    <input type="date" id="swal-tglcair" class="form-control" value="${today}" required>
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label class="form-label fw-semibold">Alasan / Catatan</label>
+                                                    <textarea id="swal-alasan" class="form-control" rows="3" placeholder="Opsional - Tambahkan catatan jika diperlukan"></textarea>
+                                                </div>
+                                            </div>
+                                        `,
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonText: '<i class="ti ti-check"></i> Ya, Setujui',
@@ -436,15 +459,15 @@
             Swal.fire({
                 title: 'Tolak Pengajuan',
                 html: `
-                    <div class="text-start">
-                        <p class="mb-3">Apakah Anda yakin ingin <strong class="text-danger">MENOLAK</strong> pengajuan ini?</p>
-                        
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Alasan Penolakan <span class="text-danger">*</span></label>
-                            <textarea id="swal-alasan" class="form-control" rows="3" placeholder="Wajib diisi - Jelaskan alasan penolakan" required></textarea>
-                        </div>
-                    </div>
-                `,
+                                            <div class="text-start">
+                                                <p class="mb-3">Apakah Anda yakin ingin <strong class="text-danger">MENOLAK</strong> pengajuan ini?</p>
+
+                                                <div class="mb-3">
+                                                    <label class="form-label fw-semibold">Alasan Penolakan <span class="text-danger">*</span></label>
+                                                    <textarea id="swal-alasan" class="form-control" rows="3" placeholder="Wajib diisi - Jelaskan alasan penolakan" required></textarea>
+                                                </div>
+                                            </div>
+                                        `,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: '<i class="ti ti-x"></i> Ya, Tolak',
@@ -476,15 +499,15 @@
             Swal.fire({
                 title: 'Pending Pengajuan',
                 html: `
-                    <div class="text-start">
-                        <p class="mb-3">Pengajuan akan ditandai sebagai <strong class="text-primary">PENDING</strong></p>
-                        
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Alasan / Catatan</label>
-                            <textarea id="swal-alasan" class="form-control" rows="3" placeholder="Opsional - Jelaskan alasan pending"></textarea>
-                        </div>
-                    </div>
-                `,
+                                            <div class="text-start">
+                                                <p class="mb-3">Pengajuan akan ditandai sebagai <strong class="text-primary">PENDING</strong></p>
+
+                                                <div class="mb-3">
+                                                    <label class="form-label fw-semibold">Alasan / Catatan</label>
+                                                    <textarea id="swal-alasan" class="form-control" rows="3" placeholder="Opsional - Jelaskan alasan pending"></textarea>
+                                                </div>
+                                            </div>
+                                        `,
                 icon: 'info',
                 showCancelButton: true,
                 confirmButtonText: '<i class="ti ti-clock"></i> Ya, Pending',
@@ -612,7 +635,7 @@
                     alasan: alasan,
                     tgl_cair: tglCair
                 },
-                success: function(response) {
+                success: function (response) {
                     Swal.fire({
                         icon: 'success',
                         title: 'Berhasil!',
@@ -623,7 +646,7 @@
                         location.reload();
                     });
                 },
-                error: function(xhr) {
+                error: function (xhr) {
                     Swal.fire({
                         icon: 'error',
                         title: 'Gagal!',
@@ -633,9 +656,19 @@
             });
         }
 
-        // Function: Cetak Pengajuan
         function cetakPengajuan(id) {
-            const url = `{{ url('pinjaman/pengajuan/cetak') }}/${id}`;
+            const url = `{{ url('admin/pengajuan/cetak') }}/${id}`;
+            window.open(url, '_blank');
+        }
+
+        // Cetak Laporan
+        function cetakLaporan() {
+            const jenis = $('#filterJenis').val() || '';
+            const status = $('#filterStatus').val() || '';
+            const bulan = $('#filterBulan').val() || '';
+            const tanggal = $('#filterTanggal').val() || '';
+
+            const url = `{{ route('pinjaman.pengajuan.cetak') }}?jenis=${jenis}&status=${status}&bulan=${bulan}&tanggal=${tanggal}`;
             window.open(url, '_blank');
         }
 

@@ -228,16 +228,17 @@ Route::middleware('auth')
         // PEMASUKAN
         Route::controller(PemasukanController::class)->group(function () {
             Route::get('/pemasukan', 'index')->name('pemasukan');
+            Route::get('/pemasukan/cetak', 'cetakLaporan')->name('pemasukan.cetak');
             Route::get('/pemasukan/{id}', 'show')->name('pemasukan.show');
             Route::post('/pemasukan', 'store')->name('pemasukan.store');
             Route::put('/pemasukan/{id}', 'update')->name('pemasukan.update');
             Route::delete('/pemasukan/{id}', 'destroy')->name('pemasukan.destroy');
-            Route::get('/pemasukan/cetak', 'cetak')->name('pemasukan.cetak');
         });
 
         // PENGELUARAN
         Route::controller(PengeluaranController::class)->group(function () {
             Route::get('/pengeluaran', 'index')->name('pengeluaran');
+            Route::get('/pengeluaran/cetak', 'cetakLaporan')->name('pengeluaran.cetak');
             Route::get('/pengeluaran/{id}', 'show')->name('pengeluaran.show');
             Route::post('/pengeluaran', 'store')->name('pengeluaran.store');
             Route::put('/pengeluaran/{id}', 'update')->name('pengeluaran.update');
@@ -247,6 +248,7 @@ Route::middleware('auth')
         // TRANSFER
         Route::controller(TransferController::class)->group(function () {
             Route::get('/transfer', 'index')->name('transfer');
+            Route::get('/transfer/cetak', 'cetakLaporan')->name('transfer.cetak');
             Route::get('/transfer/{id}', 'show')->name('transfer.show');
             Route::post('/transfer', 'store')->name('transfer.store');
             Route::put('/transfer/{id}', 'update')->name('transfer.update');
@@ -263,7 +265,10 @@ Route::middleware('auth')
         // SETORAN TUNAI
         Route::controller(SetoranTunaiController::class)->group(function () {
             Route::get('/setoran', 'index')->name('setoran');
+            Route::get('/setoran/cetak-laporan', 'cetakLaporan')->name('setoran.cetak-laporan');
+            Route::get('/setoran/cetak/{id}', 'cetakNota')->name('setoran.cetak');
             Route::get('/setoran/anggota-detail/{id}', 'getAnggotaDetail')->name('setoran.anggota.detail');
+            Route::get('/setoran/cetak-pdf/{id}', 'cetakPDF')->name('setoran.cetak.pdf');
             Route::get('/setoran/{id}', 'show')->name('setoran.show');
             Route::post('/setoran', 'store')->name('setoran.store');
             Route::put('/setoran/{id}', 'update')->name('setoran.update');
@@ -273,7 +278,10 @@ Route::middleware('auth')
         // PENARIKAN TUNAI
         Route::controller(PenarikanTunaiController::class)->group(function () {
             Route::get('/penarikan', 'index')->name('penarikan');
+            Route::get('/penarikan/cetak-laporan', 'cetakLaporan')->name('penarikan.cetak-laporan');
+            Route::get('/penarikan/cetak/{id}', 'cetakNota')->name('penarikan.cetak');
             Route::get('/penarikan/anggota-detail/{id}', 'getAnggotaDetail')->name('penarikan.anggota.detail');
+            Route::get('/penarikan/cetak-pdf/{id}', 'cetakPDF')->name('penarikan.cetak.pdf');
             Route::get('/penarikan/{id}', 'show')->name('penarikan.show');
             Route::post('/penarikan', 'store')->name('penarikan.store');
             Route::put('/penarikan/{id}', 'update')->name('penarikan.update');
@@ -292,9 +300,9 @@ Route::middleware('auth')
         Route::controller(PengajuanController::class)->group(function () {
             Route::get('/pengajuan', 'index')->name('pengajuan');
             Route::post('/pengajuan/aksi', 'aksi')->name('pengajuan.aksi');
-
-            Route::get('/pengajuan/cetak', 'cetak')->name('pengajuan.cetak');
-            Route::get('/pengajuan/cetak-laporan', 'cetakLaporan')->name('pengajuan.cetak-laporan');
+        
+            Route::get('/pengajuan/cetak/{id}', 'cetak')->name('pengajuan.cetak-single');
+            Route::get('/pengajuan/cetak-laporan', 'cetakLaporan')->name('pengajuan.cetak');
 
             Route::get('/pengajuan/export/excel', 'exportExcel')->name('pengajuan.export.excel');
             Route::get('/pengajuan/export/pdf', 'exportPDF')->name('pengajuan.export.pdf');

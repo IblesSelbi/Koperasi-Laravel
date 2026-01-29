@@ -64,6 +64,9 @@
                     </div>
                 </div>
                 <div class="col-lg-auto">
+                    <button class="btn btn-success btn-sm" onclick="cetakLaporan()">
+                        <i class="ti ti-printer"></i> Cetak Laporan
+                    </button>
                     <button class="btn btn-secondary btn-sm" onclick="resetFilter()">
                         <i class="ti ti-refresh"></i> Reset
                     </button>
@@ -383,22 +386,22 @@
                                 : '{{ asset("assets/images/profile/user-1.jpg") }}';
 
                             $('#fotoAnggota').html(`
-                        <img src="${photoUrl}" 
-                             alt="Foto Anggota" 
-                             class="img-fluid rounded" 
-                             style="max-height: 230px; object-fit: cover;"
-                             onerror="this.src='{{ asset("assets/images/profile/user-1.jpg") }}'">
-                    `);
+                                    <img src="${photoUrl}" 
+                                         alt="Foto Anggota" 
+                                         class="img-fluid rounded" 
+                                         style="max-height: 230px; object-fit: cover;"
+                                         onerror="this.src='{{ asset("assets/images/profile/user-1.jpg") }}'">
+                                `);
                             $('#departemenInfo').val(data.departement || '-');
                         })
                         .catch(err => {
                             console.error('Error loading photo:', err);
                             $('#fotoAnggota').html(`
-                        <span class="text-danger">
-                            <i class="ti ti-alert-circle"></i> Gagal memuat foto<br>
-                            <small>${err.message}</small>
-                        </span>
-                    `);
+                                    <span class="text-danger">
+                                        <i class="ti ti-alert-circle"></i> Gagal memuat foto<br>
+                                        <small>${err.message}</small>
+                                    </span>
+                                `);
                         });
                 } else {
                     $('#fotoAnggota').html('<span class="text-muted">Pilih anggota untuk melihat foto</span>');
@@ -629,6 +632,19 @@
 
         function cetakNota(id) {
             window.open(`/admin/setoran/cetak/${id}`, '_blank');
+        }
+
+        function cetakLaporan() {
+            const dates = fpTanggal ? fpTanggal.selectedDates : [];
+            let url = '{{ route("simpanan.setoran.cetak-laporan") }}';
+
+            if (dates.length === 2) {
+                const startDate = dates[0].toISOString().split('T')[0];
+                const endDate = dates[1].toISOString().split('T')[0];
+                url += `?start_date=${startDate}&end_date=${endDate}`;
+            }
+
+            window.open(url, '_blank');
         }
     </script>
 @endpush

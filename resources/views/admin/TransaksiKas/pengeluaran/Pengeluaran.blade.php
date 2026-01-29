@@ -46,6 +46,9 @@
                     </div>
                 </div>
                 <div class="col-lg-auto">
+                    <button class="btn btn-success btn-sm" onclick="cetakLaporan()">
+                        <i class="ti ti-printer"></i> Cetak Laporan
+                    </button>
                     <button class="btn btn-secondary btn-sm" onclick="resetFilter()">
                         <i class="ti ti-refresh"></i> Reset
                     </button>
@@ -55,11 +58,11 @@
     </div>
 
     <!-- Data Table Card -->
-     <div class="card">
+    <div class="card">
         <div class="card-body">
             <div class="table-responsive">
                 <table id="tabelPengeluaran" class="table table-hover align-middle rounded-2 border overflow-hidden"
-                    style="width:100%"> 
+                    style="width:100%">
                     <thead class="table-primary">
                         <tr>
                             <th class="text-center" width="50px">
@@ -125,12 +128,12 @@
                     </tfoot>
                 </table>
             </div>
-            
+
             @if($pengeluaran->isEmpty())
-            <div class="text-center text-muted py-4">
-                <i class="ti ti-database-off fs-1"></i>
-                <p class="mb-0">Tidak ada data pengeluaran</p>
-            </div>
+                <div class="text-center text-muted py-4">
+                    <i class="ti ti-database-off fs-1"></i>
+                    <p class="mb-0">Tidak ada data pengeluaran</p>
+                </div>
             @endif
         </div>
     </div>
@@ -199,252 +202,274 @@
 @endsection
 
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script>
-    $(document).ready(function() {
-        // Initialize DataTable
-        const table = $('#tabelPengeluaran').DataTable({
-            pageLength: 10,
-            order: [[3, 'desc']],
-            columnDefs: [
-                { orderable: false, targets: [0, 1] }
-            ],
-            language: {
-                lengthMenu: "Tampilkan _MENU_ data per halaman",
-                zeroRecords: "Data tidak ditemukan",
-                info: "Menampilkan halaman _PAGE_ dari _PAGES_",
-                infoEmpty: "Tidak ada data tersedia",
-                infoFiltered: "(difilter dari _MAX_ total data)",
-                search: "Cari:",
-                paginate: {
-                    first: "Pertama",
-                    last: "Terakhir",
-                    next: "Selanjutnya",
-                    previous: "Sebelumnya"
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        let fpTanggal;
+
+        $(document).ready(function () {
+            // Initialize DataTable
+            const table = $('#tabelPengeluaran').DataTable({
+                pageLength: 10,
+                order: [[3, 'desc']],
+                columnDefs: [
+                    { orderable: false, targets: [0, 1] }
+                ],
+                language: {
+                    lengthMenu: "Tampilkan _MENU_ data per halaman",
+                    zeroRecords: "Data tidak ditemukan",
+                    info: "Menampilkan halaman _PAGE_ dari _PAGES_",
+                    infoEmpty: "Tidak ada data tersedia",
+                    infoFiltered: "(difilter dari _MAX_ total data)",
+                    search: "Cari:",
+                    paginate: {
+                        first: "Pertama",
+                        last: "Terakhir",
+                        next: "Selanjutnya",
+                        previous: "Sebelumnya"
+                    }
                 }
-            }
-        });
-
-        // Initialize Flatpickr
-        flatpickr("#filterTanggal", {
-            mode: "range",
-            dateFormat: "d M Y",
-            locale: "id",
-            onChange: function(selectedDates, dateStr, instance) {
-                if (selectedDates.length === 2) {
-                    filterByDateRange(selectedDates[0], selectedDates[1]);
-                }
-            }
-        });
-
-        // Click row to check checkbox
-        $('#tabelPengeluaran tbody').on('click', 'tr', function(e) {
-            if ($(e.target).is('input[type="checkbox"]')) return;
-            
-            const checkbox = $(this).find('.row-checkbox');
-            checkbox.prop('checked', !checkbox.prop('checked'));
-            $(this).toggleClass('table-active');
-        });
-
-        // Select All
-        $('#selectAll').on('click', function(e) {
-            e.stopPropagation();
-            const isChecked = this.checked;
-            $('.row-checkbox').prop('checked', isChecked);
-            if (isChecked) {
-                $('#tabelPengeluaran tbody tr').addClass('table-active');
-            } else {
-                $('#tabelPengeluaran tbody tr').removeClass('table-active');
-            }
-        });
-
-        // Format Currency
-        $('#jumlah').on('input', function(e) {
-            let value = e.target.value.replace(/[^0-9]/g, '');
-            if (value) {
-                value = parseInt(value).toLocaleString('id-ID');
-            }
-            e.target.value = value;
-        });
-
-        // Set default datetime
-        $('#modalForm').on('show.bs.modal', function() {
-            if ($('#modalTitle').text() === 'Tambah Data Pengeluaran') {
-                const now = new Date();
-                $('#tanggalTransaksi').val(now.toISOString().slice(0, 16));
-            }
-        });
-
-        // Submit Form
-        $('#formPengeluaran').on('submit', function(e) {
-            e.preventDefault();
-
-            const method = $('#formMethod').val();
-            const id = $('#formId').val();
-            const url = method === 'POST' 
-                ? '{{ route("kas.pengeluaran.store") }}' 
-                : `/admin/pengeluaran/${id}`;
-
-            const data = {
-                tanggal_transaksi: $('#tanggalTransaksi').val(),
-                uraian: $('#uraian').val(),
-                dari_kas_id: $('#dariKas').val(),
-                untuk_akun_id: $('#untukAkun').val(),
-                jumlah: $('#jumlah').val().replace(/\./g, ''),
-            };
-
-            fetch(url, {
-                method: method === 'POST' ? 'POST' : 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                body: JSON.stringify(data)
-            })
-            .then(res => res.json())
-            .then(res => {
-                if (res.success) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Berhasil!',
-                        text: res.message,
-                        showConfirmButton: false,
-                        timer: 1500
-                    }).then(() => location.reload());
-                }
-            })
-            .catch(err => {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Gagal!',
-                    text: 'Terjadi kesalahan saat menyimpan data'
-                });
             });
-        });
-    });
 
-    function tambahData() {
-        $('#modalTitle').text('Tambah Data Pengeluaran');
-        $('#formPengeluaran')[0].reset();
-        $('#formMethod').val('POST');
-        $('#formId').val('');
-        const now = new Date();
-        $('#tanggalTransaksi').val(now.toISOString().slice(0, 16));
-        $('#modalForm').modal('show');
-    }
-
-    function editData() {
-        const checked = $('.row-checkbox:checked');
-        if (checked.length === 0) {
-            Swal.fire('Peringatan', 'Pilih data yang akan diedit!', 'warning');
-            return;
-        }
-        if (checked.length > 1) {
-            Swal.fire('Peringatan', 'Pilih hanya satu data!', 'warning');
-            return;
-        }
-
-        const id = checked.first().data('id');
-        
-        Swal.fire({
-            title: 'Loading...',
-            text: 'Mengambil data',
-            allowOutsideClick: false,
-            didOpen: () => {
-                Swal.showLoading();
-            }
-        });
-        
-        fetch(`/admin/pengeluaran/${id}`, {
-            headers: {
-                'Accept': 'application/json',
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-        })
-            .then(res => {
-                if (!res.ok) throw new Error('Network response was not ok');
-                return res.json();
-            })
-            .then(data => {
-                Swal.close();
-                
-                $('#modalTitle').text('Edit Data Pengeluaran');
-                $('#formMethod').val('PUT');
-                $('#formId').val(data.id);
-                
-                const date = new Date(data.tanggal_transaksi);
-                const formattedDate = date.toISOString().slice(0, 16);
-                
-                $('#tanggalTransaksi').val(formattedDate);
-                $('#uraian').val(data.uraian);
-                $('#dariKas').val(data.dari_kas_id);
-                $('#untukAkun').val(data.untuk_akun_id);
-                $('#jumlah').val(parseInt(data.jumlah).toLocaleString('id-ID'));
-                $('#modalForm').modal('show');
-            })
-            .catch(err => {
-                Swal.fire('Error', 'Gagal mengambil data!', 'error');
-                console.error('Error:', err);
+            // Initialize Flatpickr
+            fpTanggal = flatpickr("#filterTanggal", {
+                mode: "range",
+                dateFormat: "d M Y",
+                locale: "id",
+                allowInput: false,
+                clickOpens: true,
+                onChange: function (selectedDates) {
+                    if (selectedDates.length === 2) {
+                        filterByDateRange(selectedDates[0], selectedDates[1]);
+                    }
+                }
             });
-    }
 
-    function hapusData() {
-        const checked = $('.row-checkbox:checked');
-        if (checked.length === 0) {
-            Swal.fire('Peringatan', 'Pilih data yang akan dihapus!', 'warning');
-            return;
-        }
+            $('#btnTanggal').on('click', function () {
+                fpTanggal.open();
+            });
 
-        Swal.fire({
-            title: 'Konfirmasi Hapus',
-            text: `Hapus ${checked.length} data pengeluaran?`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Ya, Hapus!',
-            cancelButtonText: 'Batal'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                const ids = [];
-                checked.each(function() {
-                    ids.push($(this).data('id'));
-                });
+            // Click row to check checkbox
+            $('#tabelPengeluaran tbody').on('click', 'tr', function (e) {
+                if ($(e.target).is('input[type="checkbox"]')) return;
 
-                Promise.all(ids.map(id => 
-                    fetch(`/admin/pengeluaran/${id}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                const checkbox = $(this).find('.row-checkbox');
+                checkbox.prop('checked', !checkbox.prop('checked'));
+                $(this).toggleClass('table-active');
+            });
+
+            // Select All
+            $('#selectAll').on('click', function (e) {
+                e.stopPropagation();
+                const isChecked = this.checked;
+                $('.row-checkbox').prop('checked', isChecked);
+                if (isChecked) {
+                    $('#tabelPengeluaran tbody tr').addClass('table-active');
+                } else {
+                    $('#tabelPengeluaran tbody tr').removeClass('table-active');
+                }
+            });
+
+            // Format Currency
+            $('#jumlah').on('input', function (e) {
+                let value = e.target.value.replace(/[^0-9]/g, '');
+                if (value) {
+                    value = parseInt(value).toLocaleString('id-ID');
+                }
+                e.target.value = value;
+            });
+
+            // Set default datetime
+            $('#modalForm').on('show.bs.modal', function () {
+                if ($('#modalTitle').text() === 'Tambah Data Pengeluaran') {
+                    const now = new Date();
+                    $('#tanggalTransaksi').val(now.toISOString().slice(0, 16));
+                }
+            });
+
+            // Submit Form
+            $('#formPengeluaran').on('submit', function (e) {
+                e.preventDefault();
+
+                const method = $('#formMethod').val();
+                const id = $('#formId').val();
+                const url = method === 'POST'
+                    ? '{{ route("kas.pengeluaran.store") }}'
+                    : `/admin/pengeluaran/${id}`;
+
+                const data = {
+                    tanggal_transaksi: $('#tanggalTransaksi').val(),
+                    uraian: $('#uraian').val(),
+                    dari_kas_id: $('#dariKas').val(),
+                    untuk_akun_id: $('#untukAkun').val(),
+                    jumlah: $('#jumlah').val().replace(/\./g, ''),
+                };
+
+                fetch(url, {
+                    method: method === 'POST' ? 'POST' : 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    body: JSON.stringify(data)
+                })
+                    .then(res => res.json())
+                    .then(res => {
+                        if (res.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil!',
+                                text: res.message,
+                                showConfirmButton: false,
+                                timer: 1500
+                            }).then(() => location.reload());
                         }
                     })
-                )).then(() => {
-                    Swal.fire('Berhasil!', 'Data berhasil dihapus', 'success')
-                        .then(() => location.reload());
-                });
-            }
+                    .catch(err => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal!',
+                            text: 'Terjadi kesalahan saat menyimpan data'
+                        });
+                    });
+            });
         });
-    }
 
-    function filterByDateRange(startDate, endDate) {
-        $.fn.dataTable.ext.search.push(
-            function(settings, data, dataIndex) {
-                const rowDate = new Date(data[3]);
-                return rowDate >= startDate && rowDate <= endDate;
+        function tambahData() {
+            $('#modalTitle').text('Tambah Data Pengeluaran');
+            $('#formPengeluaran')[0].reset();
+            $('#formMethod').val('POST');
+            $('#formId').val('');
+            const now = new Date();
+            $('#tanggalTransaksi').val(now.toISOString().slice(0, 16));
+            $('#modalForm').modal('show');
+        }
+
+        function editData() {
+            const checked = $('.row-checkbox:checked');
+            if (checked.length === 0) {
+                Swal.fire('Peringatan', 'Pilih data yang akan diedit!', 'warning');
+                return;
             }
-        );
-        $('#tabelPengeluaran').DataTable().draw();
-        $.fn.dataTable.ext.search.pop();
-    }
+            if (checked.length > 1) {
+                Swal.fire('Peringatan', 'Pilih hanya satu data!', 'warning');
+                return;
+            }
 
-    function cariData() {
-        const search = $('#searchInput').val();
-        $('#tabelPengeluaran').DataTable().search(search).draw();
-    }
+            const id = checked.first().data('id');
 
-    function resetFilter() {
-        $('#searchInput').val('');
-        $('#filterTanggal').val('');
-        $('#tabelPengeluaran').DataTable().search('').draw();
-        flatpickr("#filterTanggal").clear();
-    }
-</script>
+            Swal.fire({
+                title: 'Loading...',
+                text: 'Mengambil data',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            fetch(`/admin/pengeluaran/${id}`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            })
+                .then(res => {
+                    if (!res.ok) throw new Error('Network response was not ok');
+                    return res.json();
+                })
+                .then(data => {
+                    Swal.close();
+
+                    $('#modalTitle').text('Edit Data Pengeluaran');
+                    $('#formMethod').val('PUT');
+                    $('#formId').val(data.id);
+
+                    const date = new Date(data.tanggal_transaksi);
+                    const formattedDate = date.toISOString().slice(0, 16);
+
+                    $('#tanggalTransaksi').val(formattedDate);
+                    $('#uraian').val(data.uraian);
+                    $('#dariKas').val(data.dari_kas_id);
+                    $('#untukAkun').val(data.untuk_akun_id);
+                    $('#jumlah').val(parseInt(data.jumlah).toLocaleString('id-ID'));
+                    $('#modalForm').modal('show');
+                })
+                .catch(err => {
+                    Swal.fire('Error', 'Gagal mengambil data!', 'error');
+                    console.error('Error:', err);
+                });
+        }
+
+        function hapusData() {
+            const checked = $('.row-checkbox:checked');
+            if (checked.length === 0) {
+                Swal.fire('Peringatan', 'Pilih data yang akan dihapus!', 'warning');
+                return;
+            }
+
+            Swal.fire({
+                title: 'Konfirmasi Hapus',
+                text: `Hapus ${checked.length} data pengeluaran?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const ids = [];
+                    checked.each(function () {
+                        ids.push($(this).data('id'));
+                    });
+
+                    Promise.all(ids.map(id =>
+                        fetch(`/admin/pengeluaran/${id}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            }
+                        })
+                    )).then(() => {
+                        Swal.fire('Berhasil!', 'Data berhasil dihapus', 'success')
+                            .then(() => location.reload());
+                    });
+                }
+            });
+        }
+
+        function filterByDateRange(startDate, endDate) {
+            $.fn.dataTable.ext.search.push(
+                function (settings, data, dataIndex) {
+                    const rowDate = new Date(data[3]);
+                    return rowDate >= startDate && rowDate <= endDate;
+                }
+            );
+            $('#tabelPengeluaran').DataTable().draw();
+            $.fn.dataTable.ext.search.pop();
+        }
+
+        function cariData() {
+            const search = $('#searchInput').val();
+            $('#tabelPengeluaran').DataTable().search(search).draw();
+        }
+
+        function resetFilter() {
+            $('#searchInput').val('');
+            $('#filterTanggal').val('');
+            $('#tabelPengeluaran').DataTable().search('').draw();
+            flatpickr("#filterTanggal").clear();
+        }
+
+        // FUNCTION CETAK LAPORAN
+        function cetakLaporan() {
+            const dates = fpTanggal.selectedDates;
+            let url = '{{ route("kas.pengeluaran.cetak") }}';
+
+            if (dates.length === 2) {
+                const startDate = dates[0].toISOString().split('T')[0];
+                const endDate = dates[1].toISOString().split('T')[0];
+                url += `?start_date=${startDate}&end_date=${endDate}`;
+            }
+
+            window.open(url, '_blank');
+        }
+    </script>
 @endpush

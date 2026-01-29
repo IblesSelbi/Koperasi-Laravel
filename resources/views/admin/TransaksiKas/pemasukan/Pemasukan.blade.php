@@ -49,8 +49,8 @@
                     </div>
                 </div>
                 <div class="col-lg-auto">
-                    <button class="btn btn-info btn-sm" onclick="cetakLaporan()">
-                        <i class="ti ti-printer"></i> Cetak
+                    <button class="btn btn-success btn-sm" onclick="cetakLaporan()">
+                        <i class="ti ti-printer"></i> Cetak Laporan
                     </button>
                     <button class="btn btn-secondary btn-sm" onclick="resetFilter()">
                         <i class="ti ti-refresh"></i> Reset
@@ -65,7 +65,7 @@
         <div class="card-body">
             <div class="table-responsive">
                 <table id="tabelPemasukan" class="table table-hover align-middle rounded-2 border overflow-hidden"
-                    style="width:100%"> 
+                    style="width:100%">
                     <thead class="table-primary">
                         <tr>
                             <th class="text-center" width="50px">
@@ -86,9 +86,7 @@
                         @foreach($pemasukan as $index => $item)
                             <tr data-id="{{ $item->id }}">
                                 <td class="text-center" onclick="event.stopPropagation()">
-                                    <input type="checkbox"
-                                        class="row-checkbox form-check-input"
-                                        data-id="{{ $item->id }}">
+                                    <input type="checkbox" class="row-checkbox form-check-input" data-id="{{ $item->id }}">
                                 </td>
                                 <td class="text-center text-muted">
                                     {{ $index + 1 }}
@@ -137,12 +135,12 @@
                     </tfoot>
                 </table>
             </div>
-            
+
             @if($pemasukan->isEmpty())
-            <div class="text-center text-muted py-4">
-                <i class="ti ti-database-off fs-1"></i>
-                <p class="mb-0">Tidak ada data pemasukan</p>
-            </div>
+                <div class="text-center text-muted py-4">
+                    <i class="ti ti-database-off fs-1"></i>
+                    <p class="mb-0">Tidak ada data pemasukan</p>
+                </div>
             @endif
         </div>
     </div>
@@ -211,274 +209,279 @@
 @endsection
 
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script>
-    $(document).ready(function() {
-        // Initialize DataTable
-        const table = $('#tabelPemasukan').DataTable({
-            pageLength: 10,
-            order: [[3, 'desc']],
-            columnDefs: [
-                { orderable: false, targets: [0, 1] }
-            ],
-            language: {
-                lengthMenu: "Tampilkan _MENU_ data per halaman",
-                zeroRecords: "Data tidak ditemukan",
-                info: "Menampilkan halaman _PAGE_ dari _PAGES_",
-                infoEmpty: "Tidak ada data tersedia",
-                infoFiltered: "(difilter dari _MAX_ total data)",
-                search: "Cari:",
-                paginate: {
-                    first: "Pertama",
-                    last: "Terakhir",
-                    next: "Selanjutnya",
-                    previous: "Sebelumnya"
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        let fpTanggal; // ✅ Deklarasi global
+
+        $(document).ready(function () {
+            // Initialize DataTable
+            const table = $('#tabelPemasukan').DataTable({
+                pageLength: 10,
+                order: [[3, 'desc']],
+                columnDefs: [
+                    { orderable: false, targets: [0, 1] }
+                ],
+                language: {
+                    lengthMenu: "Tampilkan _MENU_ data per halaman",
+                    zeroRecords: "Data tidak ditemukan",
+                    info: "Menampilkan halaman _PAGE_ dari _PAGES_",
+                    infoEmpty: "Tidak ada data tersedia",
+                    infoFiltered: "(difilter dari _MAX_ total data)",
+                    search: "Cari:",
+                    paginate: {
+                        first: "Pertama",
+                        last: "Terakhir",
+                        next: "Selanjutnya",
+                        previous: "Sebelumnya"
+                    }
                 }
-            }
-        });
-
-        // Initialize Flatpickr (Date Range Picker)
-        flatpickr("#filterTanggal", {
-            mode: "range",
-            dateFormat: "d M Y",
-            locale: "id",
-            onChange: function(selectedDates, dateStr, instance) {
-                if (selectedDates.length === 2) {
-                    filterByDateRange(selectedDates[0], selectedDates[1]);
-                }
-            }
-        });
-
-        // Click row to check checkbox
-        $('#tabelPemasukan tbody').on('click', 'tr', function(e) {
-            if ($(e.target).is('input[type="checkbox"]')) return;
-            
-            const checkbox = $(this).find('.row-checkbox');
-            checkbox.prop('checked', !checkbox.prop('checked'));
-            $(this).toggleClass('table-active');
-        });
-
-        // Select All
-        $('#selectAll').on('click', function(e) {
-            e.stopPropagation();
-            const isChecked = this.checked;
-            $('.row-checkbox').prop('checked', isChecked);
-            if (isChecked) {
-                $('#tabelPemasukan tbody tr').addClass('table-active');
-            } else {
-                $('#tabelPemasukan tbody tr').removeClass('table-active');
-            }
-        });
-
-        // Update row selection style when checkbox clicked
-        $('.row-checkbox').on('change', function() {
-            $(this).closest('tr').toggleClass('table-active', this.checked);
-        });
-
-        // Format Currency
-        $('#jumlah').on('input', function(e) {
-            let value = e.target.value.replace(/[^0-9]/g, '');
-            if (value) {
-                value = parseInt(value).toLocaleString('id-ID');
-            }
-            e.target.value = value;
-        });
-
-        // Set default datetime
-        $('#modalForm').on('show.bs.modal', function() {
-            if ($('#modalTitle').text() === 'Tambah Data Pemasukan') {
-                const now = new Date();
-                $('#tanggalTransaksi').val(now.toISOString().slice(0, 16));
-            }
-        });
-
-        // Submit Form
-        $('#formPemasukan').on('submit', function(e) {
-            e.preventDefault();
-
-            const method = $('#formMethod').val();
-            const id = $('#formId').val();
-            const url = method === 'POST' 
-                ? '{{ route("kas.pemasukan.store") }}' 
-                : `/admin/pemasukan/${id}`;
-
-            const data = {
-                tanggal_transaksi: $('#tanggalTransaksi').val(),
-                uraian: $('#uraian').val(),
-                untuk_kas_id: $('#untukKas').val(),
-                dari_akun_id: $('#dariAkun').val(),
-                jumlah: $('#jumlah').val().replace(/\./g, ''),
-            };
-
-            fetch(url, {
-                method: method === 'POST' ? 'POST' : 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                body: JSON.stringify(data)
-            })
-            .then(res => res.json())
-            .then(res => {
-                if (res.success) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Berhasil!',
-                        text: res.message,
-                        showConfirmButton: false,
-                        timer: 1500
-                    }).then(() => location.reload());
-                }
-            })
-            .catch(err => {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Gagal!',
-                    text: 'Terjadi kesalahan saat menyimpan data'
-                });
             });
-        });
-    });
 
-    function tambahData() {
-        $('#modalTitle').text('Tambah Data Pemasukan');
-        $('#formPemasukan')[0].reset();
-        $('#formMethod').val('POST');
-        $('#formId').val('');
-        const now = new Date();
-        $('#tanggalTransaksi').val(now.toISOString().slice(0, 16));
-        $('#modalForm').modal('show');
-    }
-
-    function editData() {
-        const checked = $('.row-checkbox:checked');
-        if (checked.length === 0) {
-            Swal.fire('Peringatan', 'Pilih data yang akan diedit!', 'warning');
-            return;
-        }
-        if (checked.length > 1) {
-            Swal.fire('Peringatan', 'Pilih hanya satu data!', 'warning');
-            return;
-        }
-
-        const id = checked.first().data('id');
-        
-        // Tampilkan loading
-        Swal.fire({
-            title: 'Loading...',
-            text: 'Mengambil data',
-            allowOutsideClick: false,
-            didOpen: () => {
-                Swal.showLoading();
-            }
-        });
-        
-        fetch(`/admin/pemasukan/${id}`, {
-            headers: {
-                'Accept': 'application/json',
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-        })
-            .then(res => {
-                if (!res.ok) throw new Error('Network response was not ok');
-                return res.json();
-            })
-            .then(data => {
-                Swal.close(); // Tutup loading
-                
-                $('#modalTitle').text('Edit Data Pemasukan');
-                $('#formMethod').val('PUT');
-                $('#formId').val(data.id);
-                
-                // Format tanggal untuk datetime-local input
-                const date = new Date(data.tanggal_transaksi);
-                const formattedDate = date.toISOString().slice(0, 16);
-                
-                $('#tanggalTransaksi').val(formattedDate);
-                $('#uraian').val(data.uraian);
-                $('#untukKas').val(data.untuk_kas_id);
-                $('#dariAkun').val(data.dari_akun_id);
-                $('#jumlah').val(parseInt(data.jumlah).toLocaleString('id-ID'));
-                $('#modalForm').modal('show');
-            })
-            .catch(err => {
-                Swal.fire('Error', 'Gagal mengambil data! Pastikan route sudah benar.', 'error');
-                console.error('Error:', err);
+            // ✅ Initialize Flatpickr - SIMPAN KE VARIABLE GLOBAL
+            fpTanggal = flatpickr("#filterTanggal", {
+                mode: "range",
+                dateFormat: "d M Y",
+                locale: "id",
+                allowInput: false,
+                clickOpens: true,
+                onChange: function (selectedDates) {
+                    if (selectedDates.length === 2) {
+                        filterByDateRange(selectedDates[0], selectedDates[1]);
+                    }
+                }
             });
-    }
 
-    function hapusData() {
-        const checked = $('.row-checkbox:checked');
-        if (checked.length === 0) {
-            Swal.fire('Peringatan', 'Pilih data yang akan dihapus!', 'warning');
-            return;
-        }
+            // Click row to check checkbox
+            $('#tabelPemasukan tbody').on('click', 'tr', function (e) {
+                if ($(e.target).is('input[type="checkbox"]')) return;
 
-        Swal.fire({
-            title: 'Konfirmasi Hapus',
-            text: `Hapus ${checked.length} data pemasukan?`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Ya, Hapus!',
-            cancelButtonText: 'Batal'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                const ids = [];
-                checked.each(function() {
-                    ids.push($(this).data('id'));
-                });
+                const checkbox = $(this).find('.row-checkbox');
+                checkbox.prop('checked', !checkbox.prop('checked'));
+                $(this).toggleClass('table-active');
+            });
 
-                Promise.all(ids.map(id => 
-                    fetch(`/admin/pemasukan/${id}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            // Select All
+            $('#selectAll').on('click', function (e) {
+                e.stopPropagation();
+                const isChecked = this.checked;
+                $('.row-checkbox').prop('checked', isChecked);
+                if (isChecked) {
+                    $('#tabelPemasukan tbody tr').addClass('table-active');
+                } else {
+                    $('#tabelPemasukan tbody tr').removeClass('table-active');
+                }
+            });
+
+            // Format Currency
+            $('#jumlah').on('input', function (e) {
+                let value = e.target.value.replace(/[^0-9]/g, '');
+                if (value) {
+                    value = parseInt(value).toLocaleString('id-ID');
+                }
+                e.target.value = value;
+            });
+
+            // Set default datetime
+            $('#modalForm').on('show.bs.modal', function () {
+                if ($('#modalTitle').text() === 'Tambah Data Pemasukan') {
+                    const now = new Date();
+                    $('#tanggalTransaksi').val(now.toISOString().slice(0, 16));
+                }
+            });
+
+            // Submit Form
+            $('#formPemasukan').on('submit', function (e) {
+                e.preventDefault();
+
+                const method = $('#formMethod').val();
+                const id = $('#formId').val();
+                const url = method === 'POST'
+                    ? '{{ route("kas.pemasukan.store") }}'
+                    : `/admin/pemasukan/${id}`;
+
+                const data = {
+                    tanggal_transaksi: $('#tanggalTransaksi').val(),
+                    uraian: $('#uraian').val(),
+                    untuk_kas_id: $('#untukKas').val(),
+                    dari_akun_id: $('#dariAkun').val(),
+                    jumlah: $('#jumlah').val().replace(/\./g, ''),
+                };
+
+                fetch(url, {
+                    method: method === 'POST' ? 'POST' : 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    body: JSON.stringify(data)
+                })
+                    .then(res => res.json())
+                    .then(res => {
+                        if (res.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil!',
+                                text: res.message,
+                                showConfirmButton: false,
+                                timer: 1500
+                            }).then(() => location.reload());
                         }
                     })
-                )).then(() => {
-                    Swal.fire('Berhasil!', 'Data berhasil dihapus', 'success')
-                        .then(() => location.reload());
-                });
-            }
-        });
-    }
-
-    function filterByDateRange(startDate, endDate) {
-        $.fn.dataTable.ext.search.push(
-            function(settings, data, dataIndex) {
-                const rowDate = new Date(data[3]); // Kolom tanggal (index 3)
-                return rowDate >= startDate && rowDate <= endDate;
-            }
-        );
-        $('#tabelPemasukan').DataTable().draw();
-        $.fn.dataTable.ext.search.pop();
-    }
-
-    function cariData() {
-        const search = $('#searchInput').val();
-        $('#tabelPemasukan').DataTable().search(search).draw();
-    }
-
-    function resetFilter() {
-        $('#searchInput').val('');
-        $('#filterTanggal').val('');
-        $('#tabelPemasukan').DataTable().search('').draw();
-        flatpickr("#filterTanggal").clear();
-    }
-
-    function cetakLaporan() {
-        const checked = $('.row-checkbox:checked');
-        let url = '/admin/pemasukan/cetak';
-        
-        if (checked.length > 0) {
-            const ids = [];
-            checked.each(function() {
-                ids.push($(this).data('id'));
+                    .catch(err => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal!',
+                            text: 'Terjadi kesalahan saat menyimpan data'
+                        });
+                    });
             });
-            url += '?ids=' + ids.join(',');
+        });
+
+        function tambahData() {
+            $('#modalTitle').text('Tambah Data Pemasukan');
+            $('#formPemasukan')[0].reset();
+            $('#formMethod').val('POST');
+            $('#formId').val('');
+            const now = new Date();
+            $('#tanggalTransaksi').val(now.toISOString().slice(0, 16));
+            $('#modalForm').modal('show');
         }
-        
-        window.open(url, '_blank');
-    }
-</script>
+
+        function editData() {
+            const checked = $('.row-checkbox:checked');
+            if (checked.length === 0) {
+                Swal.fire('Peringatan', 'Pilih data yang akan diedit!', 'warning');
+                return;
+            }
+            if (checked.length > 1) {
+                Swal.fire('Peringatan', 'Pilih hanya satu data!', 'warning');
+                return;
+            }
+
+            const id = checked.first().data('id');
+
+            Swal.fire({
+                title: 'Loading...',
+                text: 'Mengambil data',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            fetch(`/admin/pemasukan/${id}`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            })
+                .then(res => {
+                    if (!res.ok) throw new Error('Network response was not ok');
+                    return res.json();
+                })
+                .then(data => {
+                    Swal.close();
+
+                    $('#modalTitle').text('Edit Data Pemasukan');
+                    $('#formMethod').val('PUT');
+                    $('#formId').val(data.id);
+
+                    const date = new Date(data.tanggal_transaksi);
+                    $('#tanggalTransaksi').val(date.toISOString().slice(0, 16));
+                    $('#uraian').val(data.uraian);
+                    $('#untukKas').val(data.untuk_kas_id);
+                    $('#dariAkun').val(data.dari_akun_id);
+                    $('#jumlah').val(parseInt(data.jumlah).toLocaleString('id-ID'));
+                    $('#modalForm').modal('show');
+                })
+                .catch(err => {
+                    Swal.fire('Error', 'Gagal mengambil data!', 'error');
+                    console.error('Error:', err);
+                });
+        }
+
+        function hapusData() {
+            const checked = $('.row-checkbox:checked');
+            if (checked.length === 0) {
+                Swal.fire('Peringatan', 'Pilih data yang akan dihapus!', 'warning');
+                return;
+            }
+
+            Swal.fire({
+                title: 'Konfirmasi Hapus',
+                text: `Hapus ${checked.length} data pemasukan?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const ids = [];
+                    checked.each(function () {
+                        ids.push($(this).data('id'));
+                    });
+
+                    Promise.all(ids.map(id =>
+                        fetch(`/admin/pemasukan/${id}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            }
+                        })
+                    )).then(() => {
+                        Swal.fire('Berhasil!', 'Data berhasil dihapus', 'success')
+                            .then(() => location.reload());
+                    });
+                }
+            });
+        }
+
+        function filterByDateRange(startDate, endDate) {
+            $.fn.dataTable.ext.search.push(function (settings, data) {
+                // data[3] = "15 Jan 2026 14:30"
+                const parts = data[3].split(' ');
+                const dateStr = `${parts[1]} ${parts[0]} ${parts[2]}`;
+                const rowDate = new Date(dateStr);
+
+                rowDate.setHours(0, 0, 0, 0);
+                startDate.setHours(0, 0, 0, 0);
+                endDate.setHours(23, 59, 59, 999);
+
+                return rowDate >= startDate && rowDate <= endDate;
+            });
+
+            $('#tabelPemasukan').DataTable().draw();
+            $.fn.dataTable.ext.search.pop();
+        }
+
+        function cariData() {
+            const search = $('#searchInput').val();
+            $('#tabelPemasukan').DataTable().search(search).draw();
+        }
+
+        function resetFilter() {
+            $('#searchInput').val('');
+            $('#tabelPemasukan').DataTable().search('').draw();
+            
+            if (fpTanggal) {
+                fpTanggal.clear();
+            }
+        }
+
+        // ✅ FUNCTION CETAK LAPORAN - SATU-SATUNYA VERSI
+        function cetakLaporan() {
+            const dates = fpTanggal ? fpTanggal.selectedDates : [];
+            let url = '{{ route("kas.pemasukan.cetak") }}';
+
+            // Jika ada filter tanggal, tambahkan ke URL
+            if (dates.length === 2) {
+                const startDate = dates[0].toISOString().split('T')[0];
+                const endDate = dates[1].toISOString().split('T')[0];
+                url += `?start_date=${startDate}&end_date=${endDate}`;
+            }
+
+            // Buka PDF di tab baru
+            window.open(url, '_blank');
+        }
+    </script>
 @endpush

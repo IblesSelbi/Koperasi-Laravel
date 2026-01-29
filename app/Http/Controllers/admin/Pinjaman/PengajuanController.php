@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 
 class PengajuanController extends Controller
@@ -35,7 +36,7 @@ class PengajuanController extends Controller
                 $bulan = Carbon::createFromFormat('Y-m', $request->bulan);
                 $startDate = $bulan->copy()->subMonth()->day(21)->startOfDay();
                 $endDate = $bulan->copy()->day(20)->endOfDay();
-                
+
                 $query->whereBetween('tanggal_pengajuan', [$startDate, $endDate]);
             } catch (\Exception $e) {
                 Log::warning('Invalid bulan format: ' . $request->bulan);
@@ -49,7 +50,7 @@ class PengajuanController extends Controller
                 try {
                     $startDate = Carbon::createFromFormat('d/m/Y', trim($dates[0]))->startOfDay();
                     $endDate = Carbon::createFromFormat('d/m/Y', trim($dates[1]))->endOfDay();
-                    
+
                     $query->whereBetween('tanggal_pengajuan', [$startDate, $endDate]);
                 } catch (\Exception $e) {
                     Log::warning('Invalid tanggal format: ' . $request->tanggal);
@@ -95,7 +96,7 @@ class PengajuanController extends Controller
         DB::beginTransaction();
         try {
             $message = $this->processAction($pengajuan, $validated['aksi'], $validated['alasan'] ?? null, $validated['tgl_cair'] ?? null);
-            
+
             DB::commit();
 
             return response()->json([
@@ -106,7 +107,7 @@ class PengajuanController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error processing aksi pengajuan: ' . $e->getMessage());
-            
+
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage()
@@ -124,30 +125,30 @@ class PengajuanController extends Controller
                 if (!$pengajuan->canBeApproved()) {
                     throw new \Exception('Hanya pengajuan dengan status pending yang dapat disetujui');
                 }
-                
+
                 $pengajuan->status = 1;
                 $pengajuan->tanggal_cair = $tglCair ?? now()->format('Y-m-d');
                 $pengajuan->alasan = $alasan;
                 $pengajuan->approved_by = Auth::id();
                 $pengajuan->save();
-                
+
                 return 'Pengajuan berhasil disetujui';
 
             case 'tolak':
                 if (!$pengajuan->canBeRejected()) {
                     throw new \Exception('Pengajuan ini tidak dapat ditolak');
                 }
-                
+
                 if (empty($alasan)) {
                     throw new \Exception('Alasan penolakan wajib diisi');
                 }
-                
+
                 $pengajuan->status = 2;
                 $pengajuan->alasan = $alasan;
                 $pengajuan->approved_by = Auth::id();
                 $pengajuan->tanggal_cair = null;
                 $pengajuan->save();
-                
+
                 return 'Pengajuan berhasil ditolak';
 
             case 'pending':
@@ -155,34 +156,34 @@ class PengajuanController extends Controller
                 $pengajuan->alasan = $alasan;
                 $pengajuan->tanggal_cair = null;
                 $pengajuan->save();
-                
+
                 return 'Pengajuan berhasil dikembalikan ke status pending';
 
             case 'batal':
                 $pengajuan->status = 4;
                 $pengajuan->approved_by = Auth::id();
                 $pengajuan->save();
-                
+
                 return 'Pengajuan berhasil dibatalkan';
 
             case 'terlaksana':
                 if (!$pengajuan->canBeMarkedTerlaksana()) {
                     throw new \Exception('Hanya pengajuan yang disetujui yang dapat ditandai terlaksana');
                 }
-                
+
                 $pengajuan->status = 3;
                 $pengajuan->save();
-                
+
                 return 'Pengajuan berhasil ditandai terlaksana';
 
             case 'belum':
                 if ($pengajuan->status != 3) {
                     throw new \Exception('Hanya pengajuan terlaksana yang dapat dikembalikan');
                 }
-                
+
                 $pengajuan->status = 1;
                 $pengajuan->save();
-                
+
                 return 'Status pengajuan berhasil dikembalikan ke disetujui';
 
             case 'hapus':
@@ -195,16 +196,61 @@ class PengajuanController extends Controller
     }
 
     /**
-     * Print single pengajuan
+     * Print single pengajuan (Cetak per ID)
      */
     public function cetak($id)
     {
         $pengajuan = PengajuanPinjaman::with(['anggota', 'lamaAngsuran', 'user', 'approvedBy'])
             ->findOrFail($id);
 
-        return view('admin.Pinjaman.pengajuan.cetak', compact('pengajuan'));
+        $identitas = \App\Models\Admin\Setting\IdentitasKoperasi::first();
+
+        // ✅ Hitung terbilang di controller
+        $terbilang = $this->terbilang($pengajuan->jumlah);
+
+        $pdf = Pdf::loadView('admin.Pinjaman.pengajuan.cetak', compact('pengajuan', 'identitas', 'terbilang'));
+        $pdf->setPaper([0, 0, 595.28, 419.53]);
+
+        return $pdf->stream('Bukti_Pengajuan_' . $pengajuan->id_ajuan . '.pdf');
     }
 
+    /**
+     * Fungsi terbilang (tambahkan di controller)
+     */
+    private function terbilang($angka)
+    {
+        $angka = abs($angka);
+        $baca = ["", "satu", "dua", "tiga", "empat", "lima", "enam", "tujuh", "delapan", "sembilan", "sepuluh", "sebelas"];
+        $terbilang = "";
+
+        if ($angka < 12) {
+            $terbilang = " " . $baca[$angka];
+        } elseif ($angka < 20) {
+            $terbilang = $this->terbilang($angka - 10) . " belas";
+        } elseif ($angka < 100) {
+            $terbilang = $this->terbilang($angka / 10) . " puluh" . $this->terbilang($angka % 10);
+        } elseif ($angka < 200) {
+            $terbilang = " seratus" . $this->terbilang($angka - 100);
+        } elseif ($angka < 1000) {
+            $terbilang = $this->terbilang($angka / 100) . " ratus" . $this->terbilang($angka % 100);
+        } elseif ($angka < 2000) {
+            $terbilang = " seribu" . $this->terbilang($angka - 1000);
+        } elseif ($angka < 1000000) {
+            $terbilang = $this->terbilang($angka / 1000) . " ribu" . $this->terbilang($angka % 1000);
+        } elseif ($angka < 1000000000) {
+            $terbilang = $this->terbilang($angka / 1000000) . " juta" . $this->terbilang($angka % 1000000);
+        } elseif ($angka < 1000000000000) {
+            $terbilang = $this->terbilang($angka / 1000000000) . " milyar" . $this->terbilang(fmod($angka, 1000000000));
+        } elseif ($angka < 1000000000000000) {
+            $terbilang = $this->terbilang($angka / 1000000000000) . " trilyun" . $this->terbilang(fmod($angka, 1000000000000));
+        }
+
+        return trim($terbilang);
+    }
+
+    /**
+     * Print laporan with filters
+     */
     /**
      * Print laporan with filters
      */
@@ -215,17 +261,21 @@ class PengajuanController extends Controller
         $bulan = $request->get('bulan', '');
         $tanggal = $request->get('tanggal', '');
 
-        $query = PengajuanPinjaman::with(['anggota', 'lamaAngsuran', 'user', 'approvedBy']);
+        // ✅ Mulai query builder
+        $query = PengajuanPinjaman::query()
+            ->with(['anggota', 'lamaAngsuran', 'user', 'approvedBy']);
 
-        if ($jenis) {
-            $query->byJenis($jenis);
+        // Apply filters HANYA jika ada nilai
+        if (!empty($jenis)) {
+            $query->where('jenis_pinjaman', $jenis);
         }
 
-        if ($status !== '') {
-            $query->byStatus($status);
+        // ✅ Perbaikan: Gunakan !empty() atau strlen() untuk status
+        if ($status !== '' && $status !== null) {
+            $query->where('status', $status);
         }
 
-        if ($bulan) {
+        if (!empty($bulan)) {
             try {
                 $bulanDate = Carbon::createFromFormat('Y-m', $bulan);
                 $startDate = $bulanDate->copy()->subMonth()->day(21)->startOfDay();
@@ -236,7 +286,7 @@ class PengajuanController extends Controller
             }
         }
 
-        if ($tanggal) {
+        if (!empty($tanggal)) {
             $dates = explode(' - ', $tanggal);
             if (count($dates) === 2) {
                 try {
@@ -249,15 +299,23 @@ class PengajuanController extends Controller
             }
         }
 
+        // ✅ Execute query
         $pengajuan = $query->orderBy('tanggal_pengajuan', 'desc')->get();
 
-        return view('admin.Pinjaman.pengajuan.cetakLaporan', compact(
+        $identitas = \App\Models\Admin\Setting\IdentitasKoperasi::first();
+
+        $pdf = Pdf::loadView('admin.Pinjaman.pengajuan.cetakLaporan', compact(
             'pengajuan',
             'jenis',
             'status',
             'bulan',
-            'tanggal'
+            'tanggal',
+            'identitas'
         ));
+
+        $pdf->setPaper('a4', 'landscape');
+
+        return $pdf->stream('Laporan_Pengajuan_Pinjaman.pdf');
     }
 
     /**
@@ -271,7 +329,7 @@ class PengajuanController extends Controller
             ->get();
 
         // return Excel::download(new PengajuanExport($pengajuan), 'pengajuan-pinjaman.xlsx');
-        
+
         return response()->download(public_path('dummy.xlsx'));
     }
 
@@ -287,7 +345,7 @@ class PengajuanController extends Controller
 
         // $pdf = PDF::loadView('admin.Pinjaman.pengajuan.exportPdf', compact('pengajuan'));
         // return $pdf->download('pengajuan-pinjaman.pdf');
-        
+
         return response()->download(public_path('dummy.pdf'));
     }
 }

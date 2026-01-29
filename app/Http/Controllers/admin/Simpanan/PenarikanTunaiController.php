@@ -9,6 +9,7 @@ use App\Models\Admin\DataMaster\JenisSimpanan;
 use App\Models\Admin\DataMaster\DataKas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class PenarikanTunaiController extends Controller
 {
@@ -141,5 +142,101 @@ class PenarikanTunaiController extends Controller
             'photo' => $photoPath ?? 'assets/images/profile/user-1.jpg', // Path saja
             'photo_url' => $photoUrl // Full URL untuk ditampilkan
         ]);
+    }
+
+    /**
+     * Cetak Nota Penarikan Tunai (HTML View)
+     */
+    /**
+     * Cetak Nota Penarikan Tunai (Langsung PDF di Browser)
+     */
+    public function cetakNota($id)
+    {
+        $penarikan = PenarikanTunai::with(['anggota', 'jenisSimpanan', 'dariKas', 'user'])->findOrFail($id);
+        $terbilang = $this->terbilang($penarikan->jumlah);
+        $identitas = \App\Models\Admin\Setting\IdentitasKoperasi::first();
+
+        $pdf = Pdf::loadView('admin.simpanan.penarikan.cetak', compact('penarikan', 'terbilang', 'identitas'));
+        $pdf->setPaper('a5', 'landscape');
+
+        // ✅ Stream PDF (tampil di browser)
+        return $pdf->stream('Bukti_Penarikan_' . $penarikan->kode_transaksi . '.pdf');
+    }
+
+    /**
+     * Cetak PDF Penarikan Tunai (Download)
+     */
+    public function cetakPDF($id)
+    {
+        $penarikan = PenarikanTunai::with(['anggota', 'jenisSimpanan', 'dariKas', 'user'])->findOrFail($id);
+        $terbilang = $this->terbilang($penarikan->jumlah);
+        $identitas = \App\Models\Admin\Setting\IdentitasKoperasi::first();
+
+        $pdf = Pdf::loadView('admin.simpanan.penarikan.cetak', compact('penarikan', 'terbilang', 'identitas'));
+        $pdf->setPaper('a5', 'landscape');
+
+        // ✅ Download PDF
+        return $pdf->download('Bukti_Penarikan_' . $penarikan->kode_transaksi . '.pdf');
+    }
+
+    /**
+     * Fungsi untuk convert angka ke terbilang
+     */
+    private function terbilang($angka)
+    {
+        $angka = abs($angka);
+        $baca = ["", "satu", "dua", "tiga", "empat", "lima", "enam", "tujuh", "delapan", "sembilan", "sepuluh", "sebelas"];
+        $terbilang = "";
+
+        if ($angka < 12) {
+            $terbilang = " " . $baca[$angka];
+        } elseif ($angka < 20) {
+            $terbilang = $this->terbilang($angka - 10) . " belas";
+        } elseif ($angka < 100) {
+            $terbilang = $this->terbilang($angka / 10) . " puluh" . $this->terbilang($angka % 10);
+        } elseif ($angka < 200) {
+            $terbilang = " seratus" . $this->terbilang($angka - 100);
+        } elseif ($angka < 1000) {
+            $terbilang = $this->terbilang($angka / 100) . " ratus" . $this->terbilang($angka % 100);
+        } elseif ($angka < 2000) {
+            $terbilang = " seribu" . $this->terbilang($angka - 1000);
+        } elseif ($angka < 1000000) {
+            $terbilang = $this->terbilang($angka / 1000) . " ribu" . $this->terbilang($angka % 1000);
+        } elseif ($angka < 1000000000) {
+            $terbilang = $this->terbilang($angka / 1000000) . " juta" . $this->terbilang($angka % 1000000);
+        } elseif ($angka < 1000000000000) {
+            $terbilang = $this->terbilang($angka / 1000000000) . " milyar" . $this->terbilang(fmod($angka, 1000000000));
+        } elseif ($angka < 1000000000000000) {
+            $terbilang = $this->terbilang($angka / 1000000000000) . " trilyun" . $this->terbilang(fmod($angka, 1000000000000));
+        }
+
+        return trim($terbilang);
+    }
+
+    public function cetakLaporan(Request $request)
+    {
+        $query = PenarikanTunai::with(['anggota', 'jenisSimpanan', 'dariKas', 'user']);
+
+        // Filter berdasarkan tanggal jika ada
+        if ($request->has('start_date') && $request->has('end_date')) {
+            $query->whereBetween('tanggal_transaksi', [$request->start_date, $request->end_date]);
+        }
+
+        $penarikan = $query->orderBy('tanggal_transaksi', 'asc')->get();
+        $total_penarikan = $penarikan->sum('jumlah');
+        $identitas = \App\Models\Admin\Setting\IdentitasKoperasi::first();
+
+        // Periode untuk header
+        if ($request->has('start_date') && $request->has('end_date')) {
+            $periode = 'Periode ' . \Carbon\Carbon::parse($request->start_date)->format('d F Y');
+            $periode .= ' - ' . \Carbon\Carbon::parse($request->end_date)->format('d F Y');
+        } else {
+            $periode = 'Periode Semua Data';
+        }
+
+        $pdf = Pdf::loadView('admin.simpanan.penarikan.cetaklaporan', compact('penarikan', 'total_penarikan', 'identitas', 'periode'));
+        $pdf->setPaper('a4', 'landscape');
+
+        return $pdf->stream('Laporan_Penarikan_Tunai.pdf');
     }
 }
