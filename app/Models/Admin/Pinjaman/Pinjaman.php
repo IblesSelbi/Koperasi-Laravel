@@ -47,7 +47,7 @@ class Pinjaman extends Model
         'biaya_bunga' => 'decimal:2',
         'biaya_admin' => 'decimal:2',
         'jumlah_angsuran' => 'decimal:2',
-        'deleted_at' => 'datetime',  // TAMBAHAN
+        'deleted_at' => 'datetime',
     ];
 
     // Accessor otomatis ter-load
@@ -95,11 +95,19 @@ class Pinjaman extends Model
     }
 
     /**
-     * Relasi ke Kas
+     * Relasi ke Kas - DIPERBAIKI nama method
+     */
+    public function dariKas()
+    {
+        return $this->belongsTo(DataKas::class, 'dari_kas_id');
+    }
+
+    /**
+     * Alias untuk backward compatibility
      */
     public function kas()
     {
-        return $this->belongsTo(DataKas::class, 'dari_kas_id');
+        return $this->dariKas();
     }
 
     /**
@@ -226,8 +234,8 @@ class Pinjaman extends Model
      */
     public function getTanggalHapusFormattedAttribute()
     {
-        return $this->deleted_at ? 
-            $this->deleted_at->translatedFormat('d F Y H:i') : 
+        return $this->deleted_at ?
+            $this->deleted_at->translatedFormat('d F Y H:i') :
             null;
     }
 
@@ -306,7 +314,7 @@ class Pinjaman extends Model
         $this->deleted_by = $userId;
         $this->alasan_hapus = $alasan;
         $this->save();
-        
+
         return $this->delete();
     }
 
@@ -318,7 +326,7 @@ class Pinjaman extends Model
         $this->deleted_by = null;
         $this->alasan_hapus = null;
         $this->save();
-        
+
         return $this->restore();
     }
 
@@ -330,7 +338,7 @@ class Pinjaman extends Model
         // Tidak bisa hapus jika sudah divalidasi lunas
         $sudahValidasiLunas = \App\Models\Admin\Pinjaman\PinjamanLunas::where('pinjaman_id', $this->id)
             ->exists();
-        
+
         if ($sudahValidasiLunas) {
             return [
                 'can_delete' => false,

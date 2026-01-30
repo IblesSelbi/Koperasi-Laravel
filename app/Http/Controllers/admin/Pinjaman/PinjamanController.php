@@ -16,6 +16,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 
 class PinjamanController extends Controller
@@ -204,7 +205,7 @@ class PinjamanController extends Controller
         $angsuranPerBulan = $pinjaman->angsuran_pokok + $pinjaman->biaya_bunga;
         $tanggalMulai = Carbon::parse($pinjaman->tanggal_pinjam);
 
-        // ✅ GENERATE SEMUA KODE DULU
+        // GENERATE SEMUA KODE DULU
         $lastBayar = BayarAngsuran::withTrashed()->orderBy('id', 'desc')->first();
         $startNumber = $lastBayar ? ((int) substr($lastBayar->kode_bayar, 3)) + 1 : 1;
 
@@ -213,7 +214,7 @@ class PinjamanController extends Controller
             $kodeBayar = 'BYR' . str_pad($startNumber + ($i - 1), 5, '0', STR_PAD_LEFT);
 
             BayarAngsuran::create([
-                'kode_bayar' => $kodeBayar, // ✅ Pakai kode yang sudah digenerate
+                'kode_bayar' => $kodeBayar,
                 'pinjaman_id' => $pinjaman->id,
                 'angsuran_ke' => $i,
                 'tanggal_jatuh_tempo' => $tanggalJatuhTempo,
@@ -814,15 +815,67 @@ class PinjamanController extends Controller
         }
     }
 
+    // Tambahkan method ini di PinjamanController.php
+
     /**
-     * Print single pinjaman nota
+     * Print single pinjaman (Cetak per ID)
      */
     public function cetak($id)
     {
-        $pinjaman = Pinjaman::with(['anggota', 'pengajuan', 'lamaAngsuran', 'kas', 'user'])
+        $pinjaman = Pinjaman::with(['anggota', 'lamaAngsuran', 'user', 'dariKas'])
             ->findOrFail($id);
 
-        return view('admin.Pinjaman.datapinjaman.cetak', compact('pinjaman'));
+        $identitas = \App\Models\Admin\Setting\IdentitasKoperasi::first();
+
+        // Hitung terbilang di controller
+        $terbilang = $this->terbilang($pinjaman->pokok_pinjaman);
+
+        $pdf = Pdf::loadView('admin.Pinjaman.DataPinjaman.Cetak', compact('pinjaman', 'identitas', 'terbilang'));
+        $pdf->setPaper([0, 0, 595.28, 419.53]); // A5 Landscape
+
+        return $pdf->stream('Bukti_Pinjaman_' . $pinjaman->kode_pinjaman . '.pdf');
+    }
+
+    public function cetakDetail($id)
+    {
+        try {
+            $pinjaman = Pinjaman::with([
+                'anggota',
+                'lamaAngsuran',
+                'dariKas',
+                'user',
+                'detailPembayaran' => function ($query) {
+                    $query->whereNull('deleted_at')
+                        ->orderBy('created_at', 'asc');
+                }
+            ])->findOrFail($id);
+
+            // Ambil data transaksi pembayaran
+            $transaksi = DetailBayarAngsuran::where('pinjaman_id', $id)
+                ->whereNull('deleted_at')
+                ->with(['kas', 'user'])
+                ->orderBy('tanggal_bayar', 'asc')
+                ->get()
+                ->map(function ($item, $index) {
+                    return (object) [
+                        'no' => $index + 1,
+                        'kode_bayar' => $item->kode_bayar,
+                        'tanggal_bayar' => $item->tanggal_bayar,
+                        'angsuran_ke' => $item->angsuran_ke,
+                        'jenis_pembayaran' => $item->kas->nama_kas ?? 'Kas Tunai',
+                        'jumlah_bayar' => $item->jumlah_bayar,
+                        'denda' => $item->denda ?? 0,
+                    ];
+                });
+
+            $pdf = Pdf::loadView('admin.Pinjaman.datapinjaman.CetakDetail', compact('pinjaman', 'transaksi'));
+            $pdf->setPaper('a4', 'portrait');
+
+            return $pdf->stream('Detail-Pinjaman-' . $pinjaman->kode_pinjaman . '.pdf');
+        } catch (\Exception $e) {
+            Log::error('Error cetak detail: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal mencetak detail: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -835,23 +888,26 @@ class PinjamanController extends Controller
         $nama = $request->get('nama', '');
         $tanggal = $request->get('tanggal', '');
 
-        $query = Pinjaman::with(['anggota', 'pengajuan', 'lamaAngsuran', 'barang', 'kas', 'user']);
+        // Mulai query builder
+        $query = Pinjaman::query()
+            ->with(['anggota', 'lamaAngsuran', 'user', 'dariKas']);
 
-        if ($status !== '') {
-            $query->byStatus($status);
+        // Apply filters HANYA jika ada nilai
+        if ($status !== '' && $status !== null) {
+            $query->where('status_lunas', $status);
         }
 
-        if ($kode) {
-            $query->where('kode_pinjaman', 'like', '%' . $kode . '%');
+        if (!empty($kode)) {
+            $query->where('kode_pinjaman', 'LIKE', '%' . $kode . '%');
         }
 
-        if ($nama) {
+        if (!empty($nama)) {
             $query->whereHas('anggota', function ($q) use ($nama) {
-                $q->where('nama', 'like', '%' . $nama . '%');
+                $q->where('nama', 'LIKE', '%' . $nama . '%');
             });
         }
 
-        if ($tanggal) {
+        if (!empty($tanggal)) {
             $dates = explode(' - ', $tanggal);
             if (count($dates) === 2) {
                 try {
@@ -864,15 +920,57 @@ class PinjamanController extends Controller
             }
         }
 
+        // Execute query
         $pinjaman = $query->orderBy('tanggal_pinjam', 'desc')->get();
 
-        return view('admin.Pinjaman.datapinjaman.cetakLaporan', compact(
+        $identitas = \App\Models\Admin\Setting\IdentitasKoperasi::first();
+
+        $pdf = Pdf::loadView('admin.Pinjaman.datapinjaman.cetakLaporan', compact(
             'pinjaman',
             'status',
             'kode',
             'nama',
-            'tanggal'
+            'tanggal',
+            'identitas'
         ));
+
+        $pdf->setPaper('a4', 'landscape');
+
+        return $pdf->stream('Laporan_Pinjaman_Anggota.pdf');
+    }
+
+    /**
+     * Fungsi terbilang (helper)
+     */
+    private function terbilang($angka)
+    {
+        $angka = abs($angka);
+        $baca = ["", "satu", "dua", "tiga", "empat", "lima", "enam", "tujuh", "delapan", "sembilan", "sepuluh", "sebelas"];
+        $terbilang = "";
+
+        if ($angka < 12) {
+            $terbilang = " " . $baca[$angka];
+        } elseif ($angka < 20) {
+            $terbilang = $this->terbilang($angka - 10) . " belas";
+        } elseif ($angka < 100) {
+            $terbilang = $this->terbilang($angka / 10) . " puluh" . $this->terbilang($angka % 10);
+        } elseif ($angka < 200) {
+            $terbilang = " seratus" . $this->terbilang($angka - 100);
+        } elseif ($angka < 1000) {
+            $terbilang = $this->terbilang($angka / 100) . " ratus" . $this->terbilang($angka % 100);
+        } elseif ($angka < 2000) {
+            $terbilang = " seribu" . $this->terbilang($angka - 1000);
+        } elseif ($angka < 1000000) {
+            $terbilang = $this->terbilang($angka / 1000) . " ribu" . $this->terbilang($angka % 1000);
+        } elseif ($angka < 1000000000) {
+            $terbilang = $this->terbilang($angka / 1000000) . " juta" . $this->terbilang($angka % 1000000);
+        } elseif ($angka < 1000000000000) {
+            $terbilang = $this->terbilang($angka / 1000000000) . " milyar" . $this->terbilang(fmod($angka, 1000000000));
+        } elseif ($angka < 1000000000000000) {
+            $terbilang = $this->terbilang($angka / 1000000000000) . " trilyun" . $this->terbilang(fmod($angka, 1000000000000));
+        }
+
+        return trim($terbilang);
     }
 
     /**

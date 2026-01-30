@@ -331,6 +331,7 @@
                 url += '?' + params.toString();
             }
 
+            // Buka di tab baru untuk cetak
             window.open(url, '_blank');
         }
 

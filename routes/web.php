@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\User;
 use App\Http\Controllers\Auth;
@@ -327,6 +326,7 @@ Route::middleware('auth')
             Route::post('/pinjaman/{id}/recalculate', 'recalculate')->name('pinjaman.recalculate');
 
             Route::get('/pinjaman/cetak-laporan', 'cetakLaporan')->name('pinjaman.cetak.laporan');
+            Route::get('/pinjaman/cetak/{id}', 'cetak')->name('pinjaman.cetak');
             Route::get('/pinjaman/export/excel', 'exportExcel')->name('pinjaman.export.excel');
             Route::get('/pinjaman/export/pdf', 'exportPDF')->name('pinjaman.export.pdf');
 
@@ -336,7 +336,7 @@ Route::middleware('auth')
             Route::delete('/pinjaman/{id}', 'destroy')->name('pinjaman.destroy');
 
             Route::get('/pinjaman/{id}', 'show')->name('pinjaman.detail');
-            Route::get('/pinjaman/cetak/{id}', 'cetak')->name('pinjaman.cetak');
+            Route::get('/pinjaman/cetak-detail/{id}', 'cetakDetail')->name('pinjaman.cetak.detail');
             Route::post('/pinjaman/validasi-lunas/{id}', 'validasiLunas')->name('pinjaman.validasi-lunas');
         });
 
@@ -346,7 +346,7 @@ Route::middleware('auth')
             Route::get('/bayar', 'index')->name('bayar');
             Route::get('/bayar/detail/{id}', 'show')->name('bayar.detail');
 
-            // ✅ CRITICAL: Route spesifik HARUS di atas route dinamis
+            // CRITICAL: Route spesifik HARUS di atas route dinamis
             Route::get('/bayar/get-bukti-transfer/{id}', 'getBuktiTransfer')->name('bayar.getBuktiTransfer');
             Route::get('/bayar/get-detail/{id}', 'getDetail')->name('bayar.getDetail');
             Route::get('/bayar/get-pembayaran/{id}', 'getPembayaran')->name('bayar.getPembayaran');
@@ -380,6 +380,7 @@ Route::middleware('auth')
 
             // Route spesifik di atas route dengan {id}
             Route::get('/lunas/riwayat-batal', 'riwayatBatal')->name('lunas.riwayat-batal');
+            Route::get('/lunas/cetak/{id}', 'cetak')->name('lunas.cetak');
             Route::get('/lunas/cetak-detail/{id}', 'cetakDetail')->name('lunas.cetak-detail');
             Route::get('/lunas/cetak-laporan', 'cetakLaporan')->name('lunas.cetak-laporan');
             Route::get('/lunas/export/excel', 'exportExcel')->name('lunas.export.excel');
@@ -398,7 +399,6 @@ Route::middleware('auth')
             // Route dengan {id} di paling bawah
             Route::get('/lunas/{id}', 'show')->name('lunas.detail');
         });
-
 
     });
 

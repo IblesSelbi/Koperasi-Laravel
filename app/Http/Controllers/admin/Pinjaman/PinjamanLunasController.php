@@ -273,6 +273,9 @@ class PinjamanLunasController extends Controller
     /**
      * Print laporan pinjaman lunas
      */
+    /**
+     * Print laporan pinjaman lunas
+     */
     public function cetakLaporan(Request $request)
     {
         try {
@@ -280,18 +283,24 @@ class PinjamanLunasController extends Controller
             $nama = $request->get('nama', '');
             $tanggal = $request->get('tanggal', '');
 
-            $query = PinjamanLunas::with(['pinjaman.anggota']);
+            $query = PinjamanLunas::with([
+                'pinjaman.anggota',
+                'pinjaman.lamaAngsuran'
+            ])->whereNull('deleted_at');
 
+            // Filter by Kode
             if ($kode) {
                 $query->filterKode($kode);
             }
 
+            // Filter by Nama Anggota
             if ($nama) {
                 $query->whereHas('pinjaman.anggota', function ($q) use ($nama) {
                     $q->where('nama', 'like', '%' . $nama . '%');
                 });
             }
 
+            // Filter by Tanggal Range
             if ($tanggal) {
                 $dates = explode(' - ', $tanggal);
                 if (count($dates) === 2) {
@@ -310,26 +319,195 @@ class PinjamanLunasController extends Controller
 
             $pinjamanLunas = $query->orderBy('tanggal_lunas', 'desc')
                 ->get()
+                ->filter(function ($item) {
+                    return $item->pinjaman !== null && $item->pinjaman->anggota !== null;
+                })
                 ->map(function ($item) {
+                    $pinjaman = $item->pinjaman;
+
                     return (object) [
                         'kode' => $item->kode_lunas,
-                        'tanggal_pinjam' => $item->pinjaman->tanggal_pinjam->format('d-m-Y'),
-                        'anggota_nama' => $item->pinjaman->anggota->nama ?? 'Unknown',
-                        'total_tagihan' => $item->total_dibayar,
+                        'anggota_id' => $pinjaman->anggota->id_anggota ?? '-',
+                        'anggota_nama' => $pinjaman->anggota->nama ?? 'Unknown',
+                        'anggota_departemen' => $pinjaman->anggota->departement ?? '-',
+                        'tanggal_pinjam' => $pinjaman->tanggal_pinjam,
+                        'tanggal_tempo' => Carbon::parse($pinjaman->tanggal_pinjam)
+                            ->addMonths($item->lama_cicilan)
+                            ->format('Y-m-d'),
+                        'tanggal_lunas' => $item->tanggal_lunas,
+                        'lama_pinjaman' => $item->lama_cicilan,
+                        'total_tagihan' => $pinjaman->pokok_pinjaman + ($pinjaman->biaya_bunga * $item->lama_cicilan),
+                        'total_denda' => $item->total_denda,
+                        'sudah_dibayar' => $item->total_dibayar,
                         'status_lunas' => 'Lunas',
                     ];
                 });
 
-            return view('admin.Pinjaman.lunas.cetak_laporan_lunas', compact('pinjamanLunas', 'kode', 'nama', 'tanggal'));
+            $identitas = \App\Models\Admin\Setting\IdentitasKoperasi::first();
+
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.Pinjaman.lunas.cetaklaporan', compact(
+                'pinjamanLunas',
+                'kode',
+                'nama',
+                'tanggal',
+                'identitas'
+            ));
+
+            $pdf->setPaper('a4', 'landscape');
+
+            return $pdf->stream('Laporan_Pinjaman_Lunas_' . date('d-m-Y') . '.pdf');
 
         } catch (\Exception $e) {
-            Log::error('Error di cetakLaporan', [
+            Log::error('Error di cetakLaporan PinjamanLunas', [
+                'error' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return back()->with('error', 'Gagal mencetak laporan: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Cetak Nota Pinjaman Lunas (A5 Landscape)
+     */
+    public function cetak($id)
+    {
+        try {
+            $pinjamanLunas = PinjamanLunas::with([
+                'pinjaman.anggota',
+                'pinjaman.lamaAngsuran',
+                'user'
+            ])->findOrFail($id);
+
+            $identitas = \App\Models\Admin\Setting\IdentitasKoperasi::first();
+
+            // Hitung terbilang
+            $terbilang = $this->terbilang($pinjamanLunas->pinjaman->pokok_pinjaman ?? 0);
+
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.Pinjaman.lunas.cetak', compact(
+                'pinjamanLunas',
+                'identitas',
+                'terbilang'
+            ));
+
+            $pdf->setPaper([0, 0, 595.28, 419.53]); // A5 Landscape
+
+            return $pdf->stream('Nota_Pinjaman_Lunas_' . $pinjamanLunas->kode_lunas . '.pdf');
+
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            Log::warning('Pinjaman lunas tidak ditemukan untuk cetak', ['id' => $id]);
+            return redirect()->route('pinjaman.lunas')
+                ->with('error', 'Data pinjaman lunas tidak ditemukan.');
+
+        } catch (\Exception $e) {
+            Log::error('Error cetak nota pinjaman lunas', [
+                'id' => $id,
                 'error' => $e->getMessage(),
                 'line' => $e->getLine()
             ]);
 
-            return back()->with('error', 'Gagal mencetak laporan. Silakan coba lagi.');
+            return redirect()->back()->with('error', 'Gagal mencetak nota: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Cetak Detail Pinjaman Lunas (A4 Portrait)
+     */
+    public function cetakDetail($id)
+    {
+        try {
+            $pinjamanLunas = PinjamanLunas::with([
+                'pinjaman.anggota',
+                'pinjaman.lamaAngsuran',
+                'user'
+            ])->findOrFail($id);
+
+            // Ambil transaksi pembayaran
+            $transaksi = DetailBayarAngsuran::where('pinjaman_id', $pinjamanLunas->pinjaman->id)
+                ->whereNull('deleted_at')
+                ->with(['kas', 'user'])
+                ->orderBy('tanggal_bayar', 'asc')
+                ->get()
+                ->map(function ($item, $index) use ($pinjamanLunas) {
+                    $lamaAngsuran = $pinjamanLunas->lama_cicilan;
+
+                    return (object) [
+                        'no' => $index + 1,
+                        'kode_bayar' => $item->kode_bayar,
+                        'tanggal_bayar' => $item->tanggal_bayar,
+                        'angsuran_ke' => $item->angsuran_ke,
+                        'jenis_pembayaran' => $item->angsuran_ke == $lamaAngsuran ? 'Pelunasan' : 'Angsuran',
+                        'jumlah_bayar' => $item->total_bayar,
+                        'denda' => $item->denda ?? 0,
+                    ];
+                });
+
+            $identitas = \App\Models\Admin\Setting\IdentitasKoperasi::first();
+
+            // ✅ TAMBAHKAN INI - Hitung terbilang jika dibutuhkan di view
+            $terbilang = $this->terbilang($pinjamanLunas->pinjaman->pokok_pinjaman ?? 0);
+
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.Pinjaman.lunas.cetakdetail', compact(
+                'pinjamanLunas',
+                'transaksi',
+                'identitas',
+                'terbilang' 
+            ));
+
+            $pdf->setPaper('a4', 'portrait');
+
+            return $pdf->stream('Detail_Pinjaman_Lunas_' . $pinjamanLunas->kode_lunas . '.pdf');
+
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            Log::warning('Pinjaman lunas tidak ditemukan untuk cetak detail', ['id' => $id]);
+            return redirect()->route('pinjaman.lunas')
+                ->with('error', 'Data pinjaman lunas tidak ditemukan.');
+
+        } catch (\Exception $e) {
+            Log::error('Error cetak detail pinjaman lunas', [
+                'id' => $id,
+                'error' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return redirect()->back()->with('error', 'Gagal mencetak detail: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Fungsi helper terbilang (untuk controller)
+     */
+    private function terbilang($angka)
+    {
+        $angka = abs($angka);
+        $baca = ["", "satu", "dua", "tiga", "empat", "lima", "enam", "tujuh", "delapan", "sembilan", "sepuluh", "sebelas"];
+        $terbilang = "";
+
+        if ($angka < 12) {
+            $terbilang = " " . $baca[$angka];
+        } elseif ($angka < 20) {
+            $terbilang = $this->terbilang($angka - 10) . " belas";
+        } elseif ($angka < 100) {
+            $terbilang = $this->terbilang($angka / 10) . " puluh" . $this->terbilang($angka % 10);
+        } elseif ($angka < 200) {
+            $terbilang = " seratus" . $this->terbilang($angka - 100);
+        } elseif ($angka < 1000) {
+            $terbilang = $this->terbilang($angka / 100) . " ratus" . $this->terbilang($angka % 100);
+        } elseif ($angka < 2000) {
+            $terbilang = " seribu" . $this->terbilang($angka - 1000);
+        } elseif ($angka < 1000000) {
+            $terbilang = $this->terbilang($angka / 1000) . " ribu" . $this->terbilang($angka % 1000);
+        } elseif ($angka < 1000000000) {
+            $terbilang = $this->terbilang($angka / 1000000) . " juta" . $this->terbilang($angka % 1000000);
+        } elseif ($angka < 1000000000000) {
+            $terbilang = $this->terbilang($angka / 1000000000) . " milyar" . $this->terbilang(fmod($angka, 1000000000));
+        } elseif ($angka < 1000000000000000) {
+            $terbilang = $this->terbilang($angka / 1000000000000) . " trilyun" . $this->terbilang(fmod($angka, 1000000000000));
+        }
+
+        return trim($terbilang);
     }
 
     /**

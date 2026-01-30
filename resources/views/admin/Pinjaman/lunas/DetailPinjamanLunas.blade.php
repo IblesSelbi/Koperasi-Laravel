@@ -463,13 +463,11 @@
 
         // Function: Cetak Nota
         function cetakNota(kodeBayar) {
-            Swal.fire({
-                icon: 'info',
-                title: 'Cetak Nota',
-                text: 'Fitur cetak nota pembayaran sedang dalam pengembangan',
-                confirmButtonText: 'OK'
-            });
-        }
+        // Ambil ID pinjaman lunas dari halaman (dari data pinjaman)
+        const pinjamanLunasId = {{ $pinjaman->id }};
+        const url = `{{ route('pinjaman.lunas.cetak', ':id') }}`.replace(':id', pinjamanLunasId);
+        window.open(url, '_blank');
+    }
 
         // ✅ FIXED: Function Batalkan Pelunasan
         function batalkanLunas(id) {
