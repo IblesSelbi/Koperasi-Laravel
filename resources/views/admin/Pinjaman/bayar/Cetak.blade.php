@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -209,7 +208,6 @@
         }
     </style>
 </head>
-
 <body>
     <!-- Header dengan Logo -->
     <div class="header">
@@ -318,19 +316,19 @@
                     <td>: Rp {{ number_format($data['angsuran_bunga'], 0, ',', '.') }}</td>
                 </tr>
                 @if($data['denda'] > 0)
-                    <tr>
-                        <td class="label">Denda Keterlambatan</td>
-                        <td>: Rp {{ number_format($data['denda'], 0, ',', '.') }}</td>
-                        <td class="label">Biaya Admin</td>
-                        <td>: Rp {{ number_format($data['biaya_admin'], 0, ',', '.') }}</td>
-                    </tr>
+                <tr>
+                    <td class="label">Denda Keterlambatan</td>
+                    <td>: Rp {{ number_format($data['denda'], 0, ',', '.') }}</td>
+                    <td class="label">Biaya Admin</td>
+                    <td>: Rp {{ number_format($data['biaya_admin'], 0, ',', '.') }}</td>
+                </tr>
                 @else
-                    <tr>
-                        <td class="label">Biaya Admin</td>
-                        <td>: Rp {{ number_format($data['biaya_admin'], 0, ',', '.') }}</td>
-                        <td class="label"></td>
-                        <td></td>
-                    </tr>
+                <tr>
+                    <td class="label">Biaya Admin</td>
+                    <td>: Rp {{ number_format($data['biaya_admin'], 0, ',', '.') }}</td>
+                    <td class="label"></td>
+                    <td></td>
+                </tr>
                 @endif
                 <tr class="total-row">
                     <td class="label"><strong>TOTAL DIBAYAR</strong></td>
@@ -351,10 +349,10 @@
                     <td>: {{ \Carbon\Carbon::parse($data['tanggal_pinjam'])->format('d F Y') }}</td>
                 </tr>
                 @if($data['keterangan'])
-                    <tr>
-                        <td class="label">Keterangan</td>
-                        <td colspan="3">: {{ $data['keterangan'] }}</td>
-                    </tr>
+                <tr>
+                    <td class="label">Keterangan</td>
+                    <td colspan="3">: {{ $data['keterangan'] }}</td>
+                </tr>
                 @endif
             </table>
         </div>
@@ -380,9 +378,7 @@
     <div class="footer">
         <p>{{ $identitas->alamat ?? '-' }}, {{ now()->format('d F Y') }}</p>
         <p>Email: {{ $identitas->email ?? '-' }} | Website: {{ $identitas->web ?? '-' }}</p>
-        <p style="font-style: italic; margin-top: 2px;">** Tanda terima ini sah jika telah dibubuhi cap dan tanda tangan
-            oleh pihak yang berwenang **</p>
+        <p style="font-style: italic; margin-top: 2px;">** Tanda terima ini sah jika telah dibubuhi cap dan tanda tangan oleh pihak yang berwenang **</p>
     </div>
 </body>
-
 </html>

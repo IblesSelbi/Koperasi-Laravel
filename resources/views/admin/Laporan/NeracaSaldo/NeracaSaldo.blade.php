@@ -200,10 +200,33 @@
             $('#fmCari').submit();
         }
 
+        // Function: Cetak Laporan (SUDAH FIX)
         function cetak() {
             const picker = $('#daterange-btn').data('daterangepicker');
+            
+            if (!picker) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Peringatan!',
+                    text: 'Silakan pilih rentang tanggal terlebih dahulu',
+                    confirmButtonColor: '#3085d6'
+                });
+                return;
+            }
+
             const tgl_dari = picker.startDate.format('YYYY-MM-DD');
             const tgl_samp = picker.endDate.format('YYYY-MM-DD');
+
+            // Validasi tanggal
+            if (!moment(tgl_dari, 'YYYY-MM-DD').isValid() || !moment(tgl_samp, 'YYYY-MM-DD').isValid()) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: 'Format tanggal tidak valid',
+                    confirmButtonColor: '#dc3545'
+                });
+                return;
+            }
 
             const url = '{{ route("laporan.neraca-saldo.cetak") }}?tgl_dari=' + tgl_dari + '&tgl_samp=' + tgl_samp;
             const win = window.open(url, '_blank');
@@ -211,7 +234,12 @@
             if (win) {
                 win.focus();
             } else {
-                alert('Popup jangan di block. Silakan aktifkan popup di browser Anda.');
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Popup Terblokir!',
+                    text: 'Silakan aktifkan popup di browser Anda.',
+                    confirmButtonColor: '#ffc107'
+                });
             }
         }
     </script>

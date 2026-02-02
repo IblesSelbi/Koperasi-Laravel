@@ -495,75 +495,69 @@
             }, 1500);
         }
 
-        // Function: Cetak Laporan
         function cetakLaporan() {
-            const dateRange = $('#filterDateRange').val();
+            const periode = $('#filterPeriode').val();
+            const periodeText = $('#periodeText').text();
 
-            if (!dateRange) {
+            if (!periode) {
                 Swal.fire({
                     icon: 'warning',
                     title: 'Peringatan!',
-                    text: 'Silakan pilih rentang tanggal terlebih dahulu',
+                    text: 'Silakan pilih periode terlebih dahulu',
                     confirmButtonColor: '#3085d6'
                 });
                 return;
             }
 
             Swal.fire({
-                title: 'Pilih Format Laporan',
+                title: 'Cetak Laporan',
                 html: `
-                                <div class="text-start">
-                                    <p class="mb-3">Pilih format laporan yang akan dicetak:</p>
-                                    <div class="list-group">
-                                        <a href="#" class="list-group-item list-group-item-action" onclick="cetakLaporanFormat('ringkas')">
-                                            <div class="d-flex w-100 justify-content-between">
-                                                <h6 class="mb-1"><i class="ti ti-file-text text-info"></i> Laporan Ringkas</h6>
-                                            </div>
-                                            <p class="mb-1 text-muted small">Tampilan sederhana dengan informasi penting</p>
-                                        </a>
-                                        <a href="#" class="list-group-item list-group-item-action" onclick="cetakLaporanFormat('lengkap')">
-                                            <div class="d-flex w-100 justify-content-between">
-                                                <h6 class="mb-1"><i class="ti ti-file-description text-primary"></i> Laporan Lengkap</h6>
-                                            </div>
-                                            <p class="mb-1 text-muted small">Tampilan detail dengan semua informasi transaksi</p>
-                                        </a>
-                                        <a href="#" class="list-group-item list-group-item-action" onclick="cetakLaporanFormat('summary')">
-                                            <div class="d-flex w-100 justify-content-between">
-                                                <h6 class="mb-1"><i class="ti ti-chart-bar text-success"></i> Laporan Summary</h6>
-                                            </div>
-                                            <p class="mb-1 text-muted small">Ringkasan dengan grafik dan statistik</p>
-                                        </a>
-                                    </div>
-                                </div>`,
-                showConfirmButton: false,
+                <div class="text-start">
+                    <p><strong>Laporan Buku Besar</strong></p>
+                    <hr>
+                    <table class="table table-sm">
+                        <tr>
+                            <td width="40%">Periode</td>
+                            <td><strong>${periodeText}</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Total Akun</td>
+                            <td><strong>${$('#totalAkun').text()} akun</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Total Saldo</td>
+                            <td><strong class="text-primary">${$('#totalSaldo').text()}</strong></td>
+                        </tr>
+                    </table>
+                    <hr>
+                    <p class="text-muted">Laporan akan dibuka di tab baru</p>
+                </div>
+            `,
+                icon: 'info',
                 showCancelButton: true,
+                confirmButtonText: '<i class="ti ti-printer"></i> Cetak',
                 cancelButtonText: '<i class="ti ti-x"></i> Batal',
-                width: '600px',
+                confirmButtonColor: '#0d6efd',
                 customClass: {
+                    confirmButton: 'btn btn-primary',
                     cancelButton: 'btn btn-secondary'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const url = `{{ route('laporan.buku-besar.cetak') }}?periode=${periode}`;
+                    window.open(url, '_blank');
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil!',
+                        text: 'Laporan dibuka di tab baru',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
                 }
             });
         }
 
-        // Function: Cetak Laporan Format
-        function cetakLaporanFormat(format) {
-            Swal.close();
-            const dateRange = $('#filterDateRange').val();
-            const dates = dateRange.split(' - ');
-            const startDate = moment(dates[0], 'DD MMM YYYY').format('YYYY-MM-DD');
-            const endDate = moment(dates[1], 'DD MMM YYYY').format('YYYY-MM-DD');
-
-            Swal.fire({
-                icon: 'info',
-                title: 'Membuka Jendela Cetak',
-                text: 'Laporan akan dibuka di tab baru',
-                timer: 1500,
-                showConfirmButton: false
-            });
-
-            const url = `{{ route('laporan.transaksi-kas.cetak') }}?start_date=${startDate}&end_date=${endDate}&format=${format}`;
-            window.open(url, '_blank');
-        }
 
         // Function: Export Excel
         function exportExcel() {
@@ -582,29 +576,29 @@
             Swal.fire({
                 title: 'Export ke Excel',
                 html: `
-                                <div class="text-start">
-                                    <p class="mb-3">Pilih format export:</p>
-                                    <div class="mb-3">
-                                        <label class="form-label fw-semibold">Format File</label>
-                                        <select id="swal-format" class="form-select">
-                                            <option value="xlsx">Excel (.xlsx)</option>
-                                            <option value="xls">Excel 97-2003 (.xls)</option>
-                                            <option value="csv">CSV (.csv)</option>
-                                        </select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label fw-semibold">Template</label>
-                                        <select id="swal-template" class="form-select">
-                                            <option value="standard">Standard</option>
-                                            <option value="detailed">Detailed</option>
-                                            <option value="summary">Summary Only</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="swal-include-chart" checked>
-                                        <label class="form-check-label" for="swal-include-chart">Sertakan grafik</label>
-                                    </div>
-                                </div>`,
+                                                        <div class="text-start">
+                                                            <p class="mb-3">Pilih format export:</p>
+                                                            <div class="mb-3">
+                                                                <label class="form-label fw-semibold">Format File</label>
+                                                                <select id="swal-format" class="form-select">
+                                                                    <option value="xlsx">Excel (.xlsx)</option>
+                                                                    <option value="xls">Excel 97-2003 (.xls)</option>
+                                                                    <option value="csv">CSV (.csv)</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label class="form-label fw-semibold">Template</label>
+                                                                <select id="swal-template" class="form-select">
+                                                                    <option value="standard">Standard</option>
+                                                                    <option value="detailed">Detailed</option>
+                                                                    <option value="summary">Summary Only</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="checkbox" id="swal-include-chart" checked>
+                                                                <label class="form-check-label" for="swal-include-chart">Sertakan grafik</label>
+                                                            </div>
+                                                        </div>`,
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonText: '<i class="ti ti-download"></i> Export',
@@ -666,33 +660,33 @@
             Swal.fire({
                 title: 'Export ke PDF',
                 html: `
-                                <div class="text-start">
-                                    <p class="mb-3">Konfigurasi export PDF:</p>
-                                    <div class="mb-3">
-                                        <label class="form-label fw-semibold">Orientasi Halaman</label>
-                                        <select id="swal-orientasi" class="form-select">
-                                            <option value="portrait">Portrait (Tegak)</option>
-                                            <option value="landscape">Landscape (Mendatar)</option>
-                                        </select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label fw-semibold">Ukuran Kertas</label>
-                                        <select id="swal-paper" class="form-select">
-                                            <option value="A4">A4</option>
-                                            <option value="Letter">Letter</option>
-                                            <option value="Legal">Legal</option>
-                                            <option value="F4">F4</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-check mb-2">
-                                        <input class="form-check-input" type="checkbox" id="swal-include-header" checked>
-                                        <label class="form-check-label" for="swal-include-header">Sertakan header koperasi</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="swal-include-footer" checked>
-                                        <label class="form-check-label" for="swal-include-footer">Sertakan footer dan tanda tangan</label>
-                                    </div>
-                                </div>`,
+                                                        <div class="text-start">
+                                                            <p class="mb-3">Konfigurasi export PDF:</p>
+                                                            <div class="mb-3">
+                                                                <label class="form-label fw-semibold">Orientasi Halaman</label>
+                                                                <select id="swal-orientasi" class="form-select">
+                                                                    <option value="portrait">Portrait (Tegak)</option>
+                                                                    <option value="landscape">Landscape (Mendatar)</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label class="form-label fw-semibold">Ukuran Kertas</label>
+                                                                <select id="swal-paper" class="form-select">
+                                                                    <option value="A4">A4</option>
+                                                                    <option value="Letter">Letter</option>
+                                                                    <option value="Legal">Legal</option>
+                                                                    <option value="F4">F4</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="form-check mb-2">
+                                                                <input class="form-check-input" type="checkbox" id="swal-include-header" checked>
+                                                                <label class="form-check-label" for="swal-include-header">Sertakan header koperasi</label>
+                                                            </div>
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="checkbox" id="swal-include-footer" checked>
+                                                                <label class="form-check-label" for="swal-include-footer">Sertakan footer dan tanda tangan</label>
+                                                            </div>
+                                                        </div>`,
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonText: '<i class="ti ti-file-type-pdf"></i> Export PDF',

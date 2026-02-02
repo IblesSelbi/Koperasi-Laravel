@@ -206,7 +206,7 @@
                             <button type="button" class="btn btn-danger btn-sm" onclick="exportPDF()">
                                 <i class="ti ti-file-type-pdf"></i> Export PDF
                             </button>
-                            <button type="button" class="btn btn-info btn-sm" onclick="cetakLaporan()">
+                            <button type="button" class="btn btn-info btn-sm" onclick="cetakLaporanAnggota()">
                                 <i class="ti ti-printer"></i> Cetak Laporan
                             </button>
                         </div>
@@ -383,10 +383,16 @@
             window.open(url, '_blank');
         }
 
-        // Function: Cetak Laporan
-        function cetakLaporan() {
-            const params = new URLSearchParams(window.location.search);
-            const url = "{{ route('laporan.anggota.cetak') }}?" + params.toString();
+        // Contoh untuk Laporan Anggota
+        const laporanAnggotaUrl = "{{ route('laporan.anggota.cetak') }}";
+
+        function cetakLaporanAnggota() {
+            const aktif = $('#filterStatus').val() || '';
+            const gender = $('#filterGender').val() || '';
+            const jabatan = $('#filterJabatan').val() || '';
+            const departemen = $('#filterDepartemen').val() || '';
+
+            const url = `${laporanAnggotaUrl}?aktif=${aktif}&gender=${gender}&jabatan=${jabatan}&departemen=${departemen}`;
 
             window.open(url, '_blank');
         }

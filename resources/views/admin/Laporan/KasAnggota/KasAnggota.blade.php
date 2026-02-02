@@ -115,7 +115,7 @@
             <div class="row mt-3 pt-3 border-top">
                 <div class="col-12">
                     <div class="d-flex gap-2 flex-wrap">
-                        <button class="btn btn-info btn-sm" onclick="cetakLaporan()">
+                        <button class="btn btn-info btn-sm" onclick="cetakKasAnggota()">
                             <i class="ti ti-printer"></i> Cetak Laporan
                         </button>
                         <button class="btn btn-success btn-sm" onclick="exportExcel()">
@@ -368,61 +368,17 @@
             window.location.href = '{{ route("laporan.kas-anggota") }}';
         }
 
-        // Function: Cetak Laporan
-        function cetakLaporan() {
-            const params = new URLSearchParams();
-            
-            const anggota = $('#filterAnggota').val();
-            const status = $('#filterStatus').val();
-            const jabatan = $('#filterJabatan').val();
+        const laporanKasAnggotaUrl = "{{ route('laporan.kasanggota.cetak') }}";
 
-            if (anggota) params.append('anggota', anggota);
-            if (status) params.append('status', status);
-            if (jabatan) params.append('jabatan', jabatan);
+        function cetakKasAnggota() {
+            const anggota = $('#filterAnggota').val() || '';
+            const status  = $('#filterStatus').val() || '';
+            const jabatan = $('#filterJabatan').val() || '';
 
-            let filterInfo = 'Semua Data';
-            if (anggota) {
-                const selectedText = $('#filterAnggota option:selected').text();
-                filterInfo = `Anggota: ${selectedText}`;
-            }
-            if (status) filterInfo += ` | Status: ${status}`;
-            if (jabatan) filterInfo += ` | Jabatan: ${jabatan}`;
-
-            Swal.fire({
-                title: 'Cetak Laporan',
-                html: `
-                    <div class="text-start">
-                        <p><strong>Filter yang diterapkan:</strong></p>
-                        <p class="text-muted">${filterInfo}</p>
-                        <hr>
-                        <p>Laporan akan dibuka di tab baru</p>
-                    </div>
-                `,
-                icon: 'info',
-                showCancelButton: true,
-                confirmButtonText: '<i class="ti ti-printer"></i> Cetak',
-                cancelButtonText: '<i class="ti ti-x"></i> Batal',
-                confirmButtonColor: '#0d6efd',
-                customClass: {
-                    confirmButton: 'btn btn-primary',
-                    cancelButton: 'btn btn-secondary'
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    const url = `{{ route('laporan.kas-anggota.cetak') }}?${params.toString()}`;
-                    window.open(url, '_blank');
-
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Berhasil!',
-                        text: 'Laporan dibuka di tab baru',
-                        timer: 2000,
-                        showConfirmButton: false
-                    });
-                }
-            });
+            const url = `${laporanKasAnggotaUrl}?anggota=${anggota}&status=${status}&jabatan=${jabatan}`;
+            window.open(url, '_blank');
         }
-
+        
         // Function: Export Excel
         function exportExcel() {
             Swal.fire({
@@ -474,6 +430,7 @@
                     }, 1500);
                 }
             });
+
         }
     </script>
 @endpush

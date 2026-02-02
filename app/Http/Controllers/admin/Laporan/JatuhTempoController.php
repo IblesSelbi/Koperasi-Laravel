@@ -97,64 +97,6 @@ class JatuhTempoController extends Controller
     }
 
     /**
-     * Print laporan jatuh tempo with filters
-     */
-    public function cetakLaporan(Request $request)
-    {
-        $periode = $request->get('periode', date('Y-m'));
-        
-        // Parse periode
-        $year = substr($periode, 0, 4);
-        $month = substr($periode, 5, 2);
-        
-        // Query sama seperti index
-        $angsuran = BayarAngsuran::with(['pinjaman.anggota', 'pinjaman.lamaAngsuran'])
-            ->whereYear('tanggal_jatuh_tempo', $year)
-            ->whereMonth('tanggal_jatuh_tempo', $month)
-            ->where('status_bayar', 'Belum')
-            ->whereNull('deleted_at')
-            ->whereHas('pinjaman', function($query) {
-                $query->whereNull('deleted_at')
-                      ->where('status_lunas', 'Belum');
-            })
-            ->orderBy('tanggal_jatuh_tempo', 'asc')
-            ->get();
-
-        $jatuhTempo = $angsuran->map(function($item) {
-            $pinjaman = $item->pinjaman;
-            
-            $totalDibayar = DetailBayarAngsuran::where('pinjaman_id', $pinjaman->id)
-                ->whereNull('deleted_at')
-                ->sum('total_bayar');
-
-            return (object)[
-                'kode_pinjam' => $pinjaman->kode_pinjaman,
-                'id_anggota' => $pinjaman->anggota->id_anggota ?? '-',
-                'nama_anggota' => $pinjaman->anggota->nama ?? 'Unknown',
-                'tanggal_pinjam' => $pinjaman->tanggal_pinjam->format('Y-m-d'),
-                'tanggal_tempo' => $item->tanggal_jatuh_tempo->format('Y-m-d'),
-                'lama_pinjam' => $pinjaman->lamaAngsuran->lama_angsuran ?? 0,
-                'jumlah_tagihan' => $pinjaman->jumlah_angsuran,
-                'dibayar' => $totalDibayar,
-                'sisa_tagihan' => $pinjaman->jumlah_angsuran - $totalDibayar,
-                'angsuran_ke' => $item->angsuran_ke,
-            ];
-        });
-
-        $totalTagihan = $jatuhTempo->sum('jumlah_tagihan');
-        $totalDibayar = $jatuhTempo->sum('dibayar');
-        $sisaTagihan = $jatuhTempo->sum('sisa_tagihan');
-        
-        return view('admin.laporan.JatuhTempo.CetakJatuhTempo', compact(
-            'jatuhTempo', 
-            'periode',
-            'totalTagihan',
-            'totalDibayar',
-            'sisaTagihan'
-        ));
-    }
-
-    /**
      * Export to Excel
      */
     public function exportExcel(Request $request)

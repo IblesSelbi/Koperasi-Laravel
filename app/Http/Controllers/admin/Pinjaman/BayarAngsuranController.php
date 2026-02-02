@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 
 class BayarAngsuranController extends Controller
@@ -763,34 +764,114 @@ class BayarAngsuranController extends Controller
     /**
      * Print bukti pembayaran
      */
+    /**
+     * Print bukti pembayaran angsuran
+     */
     public function cetakNota($id)
     {
-        $detailBayar = DetailBayarAngsuran::with([
-            'pinjaman.anggota.user',
-            'pinjaman.lamaAngsuran',
-            'angsuran',
-            'kas',
-            'user'
-        ])->findOrFail($id);
+        try {
+            $detailBayar = DetailBayarAngsuran::with([
+                'pinjaman.anggota.user',
+                'pinjaman.lamaAngsuran',
+                'pinjaman.kas',
+                'angsuran',
+                'kas',
+                'user'
+            ])->findOrFail($id);
 
-        // ✅ PERBAIKAN: Set foto untuk cetak nota
-        $pinjaman = $detailBayar->pinjaman;
-        if ($pinjaman && $pinjaman->anggota) {
-            $photoPath = 'assets/images/profile/user-1.jpg';
+            // ✅ Set foto untuk cetak nota
+            $pinjaman = $detailBayar->pinjaman;
+            if ($pinjaman && $pinjaman->anggota) {
+                $photoPath = 'assets/images/profile/user-1.jpg';
 
-            // Priority 1: data_anggota.photo (bukan default)
-            if ($pinjaman->anggota->photo && $pinjaman->anggota->photo !== 'assets/images/profile/user-1.jpg') {
-                $photoPath = 'storage/' . $pinjaman->anggota->photo;
+                // Priority 1: data_anggota.photo (bukan default)
+                if ($pinjaman->anggota->photo && $pinjaman->anggota->photo !== 'assets/images/profile/user-1.jpg') {
+                    $photoPath = $pinjaman->anggota->photo;
+                }
+                // Priority 2: users.profile_image
+                elseif ($pinjaman->anggota->user && $pinjaman->anggota->user->profile_image) {
+                    $photoPath = $pinjaman->anggota->user->profile_image;
+                }
+
+                $pinjaman->anggota->foto_display = $photoPath;
             }
-            // Priority 2: users.profile_image
-            elseif ($pinjaman->anggota->user && $pinjaman->anggota->user->profile_image) {
-                $photoPath = 'storage/' . $pinjaman->anggota->user->profile_image;
-            }
 
-            $pinjaman->anggota->foto_display = $photoPath;
+            // Prepare data untuk nota
+            $data = [
+                'kode_bayar' => $detailBayar->kode_bayar,
+                'tanggal_bayar' => $detailBayar->tanggal_bayar,
+                'kode_pinjaman' => $pinjaman->kode_pinjaman,
+                'angsuran_ke' => $detailBayar->angsuran_ke,
+                'lama_pinjaman' => $pinjaman->lamaAngsuran->lama_angsuran,
+                'id_anggota' => $pinjaman->anggota->id_anggota,
+                'nama_anggota' => $pinjaman->anggota->nama,
+                'departemen' => $pinjaman->anggota->departement ?? '-',
+                'foto_anggota' => $pinjaman->anggota->foto_display,
+                'tanggal_pinjam' => $pinjaman->tanggal_pinjam,
+                'pokok_pinjaman' => $pinjaman->pokok_pinjaman,
+                'angsuran_pokok' => $pinjaman->angsuran_pokok,
+                'angsuran_bunga' => $pinjaman->biaya_bunga,
+                'biaya_admin' => $pinjaman->biaya_admin ?? 0,
+                'denda' => $detailBayar->denda ?? 0,
+                'jumlah_bayar' => $detailBayar->jumlah_bayar,
+                'total_bayar' => $detailBayar->total_bayar,
+                'nama_kas' => $detailBayar->kas->nama_kas ?? '-',
+                'user' => $detailBayar->user->name ?? 'System',
+                'keterangan' => $detailBayar->keterangan ?? '',
+                'status_verifikasi' => $detailBayar->status_verifikasi,
+                'bukti_transfer' => $detailBayar->bukti_transfer,
+            ];
+
+            // Terbilang
+            $terbilang = $this->terbilang($data['total_bayar']);
+
+            // Get identitas lembaga
+            $identitas = \App\Models\Admin\Setting\IdentitasKoperasi::first();
+
+            // Generate PDF
+            $pdf = Pdf::loadView('admin.Pinjaman.bayar.Cetak', compact('data', 'terbilang', 'identitas', 'detailBayar'));
+            $pdf->setPaper([0, 0, 595.28, 419.53]); // A5 Landscape
+
+            return $pdf->stream('Nota_Pembayaran_' . $data['kode_bayar'] . '.pdf');
+
+        } catch (\Exception $e) {
+            Log::error('Error cetak nota: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal mencetak nota: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Helper function untuk terbilang
+     */
+    private function terbilang($angka)
+    {
+        $angka = abs($angka);
+        $baca = ["", "satu", "dua", "tiga", "empat", "lima", "enam", "tujuh", "delapan", "sembilan", "sepuluh", "sebelas"];
+        $terbilang = "";
+
+        if ($angka < 12) {
+            $terbilang = " " . $baca[$angka];
+        } elseif ($angka < 20) {
+            $terbilang = $this->terbilang($angka - 10) . " belas";
+        } elseif ($angka < 100) {
+            $terbilang = $this->terbilang($angka / 10) . " puluh" . $this->terbilang($angka % 10);
+        } elseif ($angka < 200) {
+            $terbilang = " seratus" . $this->terbilang($angka - 100);
+        } elseif ($angka < 1000) {
+            $terbilang = $this->terbilang($angka / 100) . " ratus" . $this->terbilang($angka % 100);
+        } elseif ($angka < 2000) {
+            $terbilang = " seribu" . $this->terbilang($angka - 1000);
+        } elseif ($angka < 1000000) {
+            $terbilang = $this->terbilang($angka / 1000) . " ribu" . $this->terbilang($angka % 1000);
+        } elseif ($angka < 1000000000) {
+            $terbilang = $this->terbilang($angka / 1000000) . " juta" . $this->terbilang($angka % 1000000);
+        } elseif ($angka < 1000000000000) {
+            $terbilang = $this->terbilang($angka / 1000000000) . " milyar" . $this->terbilang(fmod($angka, 1000000000));
+        } elseif ($angka < 1000000000000000) {
+            $terbilang = $this->terbilang($angka / 1000000000000) . " trilyun" . $this->terbilang(fmod($angka, 1000000000000));
         }
 
-        return view('admin.Pinjaman.bayar.cetak_nota', compact('detailBayar'));
+        return trim($terbilang);
     }
 
     /**

@@ -197,48 +197,6 @@ class BukuBesarController extends Controller
     }
 
     /**
-     * Print laporan buku besar with filters
-     */
-    public function cetakLaporan(Request $request)
-    {
-        $periode = $request->get('periode', Carbon::now()->format('Y-m'));
-        
-        list($year, $month) = explode('-', $periode);
-        $startDate = Carbon::create($year, $month, 1)->startOfMonth()->format('Y-m-d');
-        $endDate = Carbon::create($year, $month, 1)->endOfMonth()->format('Y-m-d');
-
-        $kasAccounts = DataKas::where('aktif', 'Y')->get();
-        $bukuBesarData = [];
-        $totalSaldo = 0;
-
-        foreach ($kasAccounts as $kas) {
-            $transaksi = $this->getTransaksiByKas($kas->id, $startDate, $endDate);
-            
-            if ($transaksi->isNotEmpty()) {
-                $saldoAkhir = $transaksi->last()->saldo ?? 0;
-                $totalSaldo += $saldoAkhir;
-
-                $bukuBesarData[] = [
-                    'kas' => $kas,
-                    'transaksi' => $transaksi,
-                    'saldo_awal' => $this->getSaldoAwal($kas->id, $startDate),
-                    'saldo_akhir' => $saldoAkhir,
-                    'total_debet' => $transaksi->sum('debet'),
-                    'total_kredit' => $transaksi->sum('kredit'),
-                ];
-            }
-        }
-
-        return view('admin.Laporan.bukuBesar.CetakBukuBesar', compact(
-            'bukuBesarData',
-            'totalSaldo',
-            'periode',
-            'startDate',
-            'endDate'
-        ));
-    }
-
-    /**
      * Export to Excel
      */
     public function exportExcel(Request $request)

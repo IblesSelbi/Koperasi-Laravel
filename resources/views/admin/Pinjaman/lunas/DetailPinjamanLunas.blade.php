@@ -461,13 +461,57 @@
             window.open(url, '_blank');
         }
 
-        // Function: Cetak Nota
+        // ============================================
+        // CETAK NOTA PEMBAYARAN
+        // ============================================
+
+        // Function: Cetak Nota Pembayaran
         function cetakNota(kodeBayar) {
-        // Ambil ID pinjaman lunas dari halaman (dari data pinjaman)
-        const pinjamanLunasId = {{ $pinjaman->id }};
-        const url = `{{ route('pinjaman.lunas.cetak', ':id') }}`.replace(':id', pinjamanLunasId);
-        window.open(url, '_blank');
-    }
+            // Cari detail_bayar_id dari kode_bayar
+            Swal.fire({
+                title: 'Memuat Data...',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                willOpen: () => { Swal.showLoading(); }
+            });
+
+            // Ambil ID pinjaman lunas dari halaman
+            const pinjamanLunasId = {{ $pinjaman->id }};
+
+            // AJAX untuk mendapatkan detail_bayar_id
+            $.ajax({
+                url: '{{ route("pinjaman.lunas.get-detail-bayar-id") }}',
+                type: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    kode_bayar: kodeBayar,
+                    pinjaman_lunas_id: pinjamanLunasId
+                },
+                success: function(response) {
+                    Swal.close();
+                    if (response.success) {
+                        // Buka PDF di tab baru
+                        const url = `{{ route('pinjaman.lunas.cetak-nota', [':pinjamanLunasId', ':detailBayarId']) }}`
+                            .replace(':pinjamanLunasId', pinjamanLunasId)
+                            .replace(':detailBayarId', response.detail_bayar_id);
+                        window.open(url, '_blank');
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal!',
+                            text: response.message || 'Gagal mengambil data pembayaran'
+                        });
+                    }
+                },
+                error: function(xhr) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal!',
+                        text: xhr.responseJSON?.message || 'Terjadi kesalahan saat mengambil data'
+                    });
+                }
+            });
+        }
 
         // ✅ FIXED: Function Batalkan Pelunasan
         function batalkanLunas(id) {

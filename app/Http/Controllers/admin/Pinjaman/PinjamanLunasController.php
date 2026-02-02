@@ -369,40 +369,142 @@ class PinjamanLunasController extends Controller
     }
 
     /**
-     * Cetak Nota Pinjaman Lunas (A5 Landscape)
+     * Get detail_bayar_id dari kode_bayar (Helper untuk cetak nota)
      */
-    public function cetak($id)
+    public function getDetailBayarId(Request $request)
     {
         try {
-            $pinjamanLunas = PinjamanLunas::with([
-                'pinjaman.anggota',
-                'pinjaman.lamaAngsuran',
-                'user'
-            ])->findOrFail($id);
+            $validated = $request->validate([
+                'kode_bayar' => 'required|string',
+                'pinjaman_lunas_id' => 'required|exists:pinjaman_lunas,id'
+            ]);
 
-            $identitas = \App\Models\Admin\Setting\IdentitasKoperasi::first();
+            // Cari pinjaman lunas
+            $pinjamanLunas = PinjamanLunas::findOrFail($validated['pinjaman_lunas_id']);
 
-            // Hitung terbilang
-            $terbilang = $this->terbilang($pinjamanLunas->pinjaman->pokok_pinjaman ?? 0);
+            // Cari detail pembayaran berdasarkan kode_bayar dan pinjaman_id
+            $detailBayar = DetailBayarAngsuran::where('kode_bayar', $validated['kode_bayar'])
+                ->where('pinjaman_id', $pinjamanLunas->pinjaman_id)
+                ->whereNull('deleted_at')
+                ->first();
 
-            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.Pinjaman.lunas.cetak', compact(
-                'pinjamanLunas',
-                'identitas',
-                'terbilang'
-            ));
+            if (!$detailBayar) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Data pembayaran tidak ditemukan'
+                ], 404);
+            }
 
-            $pdf->setPaper([0, 0, 595.28, 419.53]); // A5 Landscape
+            return response()->json([
+                'success' => true,
+                'detail_bayar_id' => $detailBayar->id
+            ]);
 
-            return $pdf->stream('Nota_Pinjaman_Lunas_' . $pinjamanLunas->kode_lunas . '.pdf');
-
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            Log::warning('Pinjaman lunas tidak ditemukan untuk cetak', ['id' => $id]);
-            return redirect()->route('pinjaman.lunas')
-                ->with('error', 'Data pinjaman lunas tidak ditemukan.');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->validator->errors()->first()
+            ], 422);
 
         } catch (\Exception $e) {
-            Log::error('Error cetak nota pinjaman lunas', [
-                'id' => $id,
+            Log::error('Error get detail_bayar_id', [
+                'error' => $e->getMessage(),
+                'request' => $request->all()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengambil data pembayaran'
+            ], 500);
+        }
+    }
+
+    /**
+     * Cetak Nota Pembayaran Angsuran dari Detail Lunas
+     */
+    public function cetakNotaPembayaran($pinjamanLunasId, $detailBayarId)
+    {
+        try {
+            // Cari detail pembayaran
+            $detailBayar = DetailBayarAngsuran::with([
+                'pinjaman.anggota.user',
+                'pinjaman.lamaAngsuran',
+                'angsuran',
+                'kas',
+                'user'
+            ])->findOrFail($detailBayarId);
+
+            // Validasi bahwa pembayaran ini milik pinjaman lunas yang dimaksud
+            $pinjamanLunas = PinjamanLunas::findOrFail($pinjamanLunasId);
+
+            if ($detailBayar->pinjaman_id !== $pinjamanLunas->pinjaman_id) {
+                throw new \Exception('Data pembayaran tidak sesuai dengan pinjaman lunas');
+            }
+
+            // Set foto untuk cetak nota
+            $pinjaman = $detailBayar->pinjaman;
+            if ($pinjaman && $pinjaman->anggota) {
+                $photoPath = 'assets/images/profile/user-1.jpg';
+
+                if ($pinjaman->anggota->photo && $pinjaman->anggota->photo !== 'assets/images/profile/user-1.jpg') {
+                    $photoPath = $pinjaman->anggota->photo;
+                } elseif ($pinjaman->anggota->user && $pinjaman->anggota->user->profile_image) {
+                    $photoPath = $pinjaman->anggota->user->profile_image;
+                }
+
+                $pinjaman->anggota->foto_display = $photoPath;
+            }
+
+            // Prepare data untuk nota
+            $data = [
+                'kode_bayar' => $detailBayar->kode_bayar,
+                'tanggal_bayar' => $detailBayar->tanggal_bayar,
+                'kode_pinjaman' => $pinjaman->kode_pinjaman,
+                'angsuran_ke' => $detailBayar->angsuran_ke,
+                'lama_pinjaman' => $pinjaman->lamaAngsuran->lama_angsuran,
+                'id_anggota' => $pinjaman->anggota->id_anggota,
+                'nama_anggota' => $pinjaman->anggota->nama,
+                'departemen' => $pinjaman->anggota->departement ?? '-',
+                'foto_anggota' => $pinjaman->anggota->foto_display,
+                'tanggal_pinjam' => $pinjaman->tanggal_pinjam,
+                'pokok_pinjaman' => $pinjaman->pokok_pinjaman,
+                'angsuran_pokok' => $pinjaman->angsuran_pokok,
+                'angsuran_bunga' => $pinjaman->biaya_bunga,
+                'biaya_admin' => $pinjaman->biaya_admin ?? 0,
+                'denda' => $detailBayar->denda ?? 0,
+                'jumlah_bayar' => $detailBayar->jumlah_bayar,
+                'total_bayar' => $detailBayar->total_bayar,
+                'nama_kas' => $detailBayar->kas->nama_kas ?? '-',
+                'user' => $detailBayar->user->name ?? 'System',
+                'keterangan' => $detailBayar->keterangan ?? '',
+                'status_verifikasi' => $detailBayar->status_verifikasi,
+                'bukti_transfer' => $detailBayar->bukti_transfer,
+            ];
+
+            // Terbilang
+            $terbilang = $this->terbilang($data['total_bayar']);
+
+            // Get identitas lembaga
+            $identitas = \App\Models\Admin\Setting\IdentitasKoperasi::first();
+
+            // Generate PDF
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.Pinjaman.bayar.Cetak', compact('data', 'terbilang', 'identitas', 'detailBayar'));
+            $pdf->setPaper([0, 0, 595.28, 419.53]); // A5 Landscape
+
+            return $pdf->stream('Nota_Pembayaran_' . $data['kode_bayar'] . '.pdf');
+
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            Log::warning('Data pembayaran tidak ditemukan untuk cetak', [
+                'pinjaman_lunas_id' => $pinjamanLunasId,
+                'detail_bayar_id' => $detailBayarId
+            ]);
+
+            return redirect()->back()->with('error', 'Data pembayaran tidak ditemukan.');
+
+        } catch (\Exception $e) {
+            Log::error('Error cetak nota pembayaran dari lunas', [
+                'pinjaman_lunas_id' => $pinjamanLunasId,
+                'detail_bayar_id' => $detailBayarId,
                 'error' => $e->getMessage(),
                 'line' => $e->getLine()
             ]);
@@ -452,7 +554,7 @@ class PinjamanLunasController extends Controller
                 'pinjamanLunas',
                 'transaksi',
                 'identitas',
-                'terbilang' 
+                'terbilang'
             ));
 
             $pdf->setPaper('a4', 'portrait');

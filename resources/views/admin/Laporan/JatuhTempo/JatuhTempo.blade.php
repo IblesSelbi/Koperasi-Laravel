@@ -275,6 +275,8 @@
         }
 
         // Function: Cetak Laporan
+        const laporanJatuhTempoUrl = "{{ route('laporan.jatuhtempo.cetak') }}";
+
         function cetakLaporan() {
             const periode = $('#filterPeriode').val();
             const periodeText = $('#periodeText').text().trim();
@@ -315,23 +317,23 @@
                             </tr>
                         </table>
                         <hr>
-                        <p class="text-muted">Laporan akan dibuka di tab baru</p>
+                        <p class="text-muted">Laporan akan dibuka di tab baru dalam format PDF</p>
                     </div>
                 `,
                 icon: 'info',
                 showCancelButton: true,
-                confirmButtonText: '<i class="ti ti-printer"></i> Cetak',
+                confirmButtonText: '<i class="ti ti-printer"></i> Cetak PDF',
                 cancelButtonText: '<i class="ti ti-x"></i> Batal',
                 confirmButtonColor: '#0d6efd'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    const url = `{{ route('laporan.jatuh-tempo.cetak') }}?periode=${periode}`;
+                    const url = `${laporanJatuhTempoUrl}?periode=${periode}`;
                     window.open(url, '_blank');
 
                     Swal.fire({
                         icon: 'success',
                         title: 'Berhasil!',
-                        text: 'Laporan dibuka di tab baru',
+                        text: 'Laporan PDF dibuka di tab baru',
                         timer: 2000,
                         showConfirmButton: false
                     });
