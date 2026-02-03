@@ -386,8 +386,19 @@
         // ===============================
         // CETAK & EXPORT (SERVER SIDE)
         // ===============================
+        const cetakJenisAkunUrl = "{{ route('master.jenis-akun.cetak') }}";
+
         function cetakLaporan() {
-            window.location.href = "{{ route('master.jenis-akun.cetak') }}";
+            const win = window.open(cetakJenisAkunUrl, '_blank');
+            if (win) {
+                win.focus();
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Popup Diblokir',
+                    text: 'Mohon izinkan popup untuk mencetak laporan',
+                });
+            }
         }
 
         function eksporData() {

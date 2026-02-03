@@ -3,7 +3,7 @@
 @section('title', 'Laporan Laba Rugi')
 
 @push('styles')
-     <!-- DataTables CSS -->
+    <!-- DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css">
     <!-- Daterangepicker -->
@@ -31,7 +31,8 @@
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <h4 class="fw-semibold mb-1">Laporan Laba Rugi</h4>
-                    <p class="text-muted fs-3 mb-0">{{ \Carbon\Carbon::parse($tglDari)->format('d M Y') }} - {{ \Carbon\Carbon::parse($tglSamp)->format('d M Y') }}</p>
+                    <p class="text-muted fs-3 mb-0">{{ \Carbon\Carbon::parse($tglDari)->format('d M Y') }} -
+                        {{ \Carbon\Carbon::parse($tglSamp)->format('d M Y') }}</p>
                 </div>
             </div>
         </div>
@@ -72,7 +73,8 @@
                         </label>
                         <button class="form-control text-start" type="button" id="daterange-btn">
                             <i class="ti ti-calendar me-2"></i>
-                            <span id="reportrange">{{ \Carbon\Carbon::parse($tglDari)->format('d M Y') }} - {{ \Carbon\Carbon::parse($tglSamp)->format('d M Y') }}</span>
+                            <span id="reportrange">{{ \Carbon\Carbon::parse($tglDari)->format('d M Y') }} -
+                                {{ \Carbon\Carbon::parse($tglSamp)->format('d M Y') }}</span>
                             <i class="ti ti-chevron-down float-end"></i>
                         </button>
                     </div>
@@ -132,7 +134,8 @@
                             </tr>
                             <tr>
                                 <td colspan="2" class="h_kanan"><strong>Estimasi Pendapatan Pinjaman</strong></td>
-                                <td class="h_kanan"><strong>{{ number_format($estimasiPendapatanPinjaman, 0, ',', '.') }}</strong></td>
+                                <td class="h_kanan">
+                                    <strong>{{ number_format($estimasiPendapatanPinjaman, 0, ',', '.') }}</strong></td>
                             </tr>
                         @endif
                     </tbody>
@@ -149,7 +152,7 @@
             </h5>
         </div>
         <div class="card-body">
-           <div class="table-responsive shadow-sm rounded-2 border">
+            <div class="table-responsive shadow-sm rounded-2 border">
                 <table class="table table-hover align-middle mb-0" style="width:100%">
                     <thead class="table-primary">
                         <tr class="header_kolom">
@@ -299,14 +302,14 @@
             }, 500);
         }
 
-        // Function: Cetak Laporan
+        // Function: Cetak Laporan (sudah ada di file)
         function cetak() {
             const tglDari = $('#tgl_dari').val();
             const tglSamp = $('#tgl_samp').val();
 
             const url = `{{ route('laporan.laba-rugi.cetak') }}?tgl_dari=${tglDari}&tgl_samp=${tglSamp}`;
             const win = window.open(url, '_blank');
-            
+
             if (win) {
                 win.focus();
             } else {

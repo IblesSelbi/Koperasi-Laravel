@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\DataMaster;
 
 use App\Http\Controllers\Controller;
 use App\Models\Admin\DataMaster\DataBarang;
+use App\Exports\Admin\DataMaster\DataBarangExport;
 use Illuminate\Http\Request;
 
 class DataBarangController extends Controller
@@ -68,11 +69,24 @@ class DataBarangController extends Controller
 
     public function export()
     {
-        return response('Export Excel Data Barang');
+        try {
+            $export = new DataBarangExport();
+            $result = $export->export();
+
+            return response()->download(
+                $result['path'],
+                $result['filename'],
+                [
+                    'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                ]
+            )->deleteFileAfterSend(true);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengekspor data: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
-    public function cetak()
-    {
-        return response('Cetak Laporan Data Barang');
-    }
 }

@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
     <!-- Daterangepicker CSS -->
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
-    
+
     <style>
         .h_tengah {
             text-align: center;
@@ -30,7 +30,8 @@
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <h4 class="fw-semibold mb-1">Laporan Data Simpanan</h4>
-                    <p class="text-muted fs-3 mb-0">Periode {{ \Carbon\Carbon::parse($tglDari)->format('d M Y') }} - {{ \Carbon\Carbon::parse($tglSamp)->format('d M Y') }}</p>
+                    <p class="text-muted fs-3 mb-0">Periode {{ \Carbon\Carbon::parse($tglDari)->format('d M Y') }} -
+                        {{ \Carbon\Carbon::parse($tglSamp)->format('d M Y') }}</p>
                 </div>
             </div>
         </div>
@@ -71,7 +72,8 @@
                         </label>
                         <button class="form-control text-start" type="button" id="daterange-btn">
                             <i class="ti ti-calendar me-2"></i>
-                            <span id="reportrange">{{ \Carbon\Carbon::parse($tglDari)->format('d M Y') }} - {{ \Carbon\Carbon::parse($tglSamp)->format('d M Y') }}</span>
+                            <span id="reportrange">{{ \Carbon\Carbon::parse($tglDari)->format('d M Y') }} -
+                                {{ \Carbon\Carbon::parse($tglSamp)->format('d M Y') }}</span>
                             <i class="ti ti-chevron-down float-end"></i>
                         </button>
                     </div>
@@ -206,14 +208,14 @@
             }, 500);
         }
 
-        // Function: Cetak Laporan
+        // Function: Cetak Laporan 
         function cetak() {
             const tglDari = $('#tgl_dari').val();
             const tglSamp = $('#tgl_samp').val();
 
             const url = `{{ route('laporan.kas-simpanan.cetak') }}?tgl_dari=${tglDari}&tgl_samp=${tglSamp}`;
             const win = window.open(url, '_blank');
-            
+
             if (win) {
                 win.focus();
             } else {

@@ -16,7 +16,9 @@
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <h4 class="fw-semibold mb-1">Laporan Data Kas Pinjaman</h4>
-                    <p class="text-muted fs-3 mb-0">Periode {{ \Carbon\Carbon::parse($tglDari)->format('d M Y') }} - {{ \Carbon\Carbon::parse($tglSamp)->format('d M Y') }}</p>
+                    <p class="text-muted fs-3 mb-0">Periode {{ \Carbon\Carbon::parse($tglDari)->format('d M Y') }} -
+                        {{ \Carbon\Carbon::parse($tglSamp)->format('d M Y') }}
+                    </p>
                 </div>
             </div>
         </div>
@@ -57,7 +59,8 @@
                         </label>
                         <button class="form-control text-start" type="button" id="daterange-btn">
                             <i class="ti ti-calendar me-2"></i>
-                            <span id="reportrange">{{ \Carbon\Carbon::parse($tglDari)->format('d M Y') }} - {{ \Carbon\Carbon::parse($tglSamp)->format('d M Y') }}</span>
+                            <span id="reportrange">{{ \Carbon\Carbon::parse($tglDari)->format('d M Y') }} -
+                                {{ \Carbon\Carbon::parse($tglSamp)->format('d M Y') }}</span>
                             <i class="ti ti-chevron-down float-end"></i>
                         </button>
                     </div>
@@ -82,66 +85,68 @@
     </div>
 
     <!-- Summary Statistics Card -->
-    <div class="card mb-3 shadow-sm">
-        <div class="card-body">
-            <h5 class="fw-semibold mb-4">
-                <i class="ti ti-file-analytics text-primary me-2"></i>Ringkasan Data
-            </h5>
+    @if(isset($summary) && is_object($summary))
+        <div class="card mb-3 shadow-sm">
+            <div class="card-body">
+                <h5 class="fw-semibold mb-4">
+                    <i class="ti ti-file-analytics text-primary me-2"></i>Ringkasan Data
+                </h5>
 
-            <div class="row g-3">
-                <!-- Jumlah Peminjam -->
-                <div class="col-md-4">
-                    <div class="border rounded-3 p-3 h-100 shadow-sm bg-white">
-                        <div class="d-flex align-items-center">
-                            <div class="me-3">
-                                <div class="icon-circle bg-info-subtle">
-                                    <i class="ti ti-users text-info-emphasis fs-4"></i>
+                <div class="row g-3">
+                    <!-- Jumlah Peminjam -->
+                    <div class="col-md-4">
+                        <div class="border rounded-3 p-3 h-100 shadow-sm bg-white">
+                            <div class="d-flex align-items-center">
+                                <div class="me-3">
+                                    <div class="icon-circle bg-info-subtle">
+                                        <i class="ti ti-users text-info-emphasis fs-4"></i>
+                                    </div>
                                 </div>
-                            </div>
-                            <div>
-                                <small class="text-muted">Jumlah Peminjam</small>
-                                <h4 class="fw-bold mb-0">{{ $summary->jumlah_peminjam }}</h4>
+                                <div>
+                                    <small class="text-muted">Jumlah Peminjam</small>
+                                    <h4 class="fw-bold mb-0">{{ $summary->jumlah_peminjam ?? 0 }}</h4>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Peminjam Lunas -->
-                <div class="col-md-4">
-                    <div class="border rounded-3 p-3 h-100 shadow-sm bg-white">
-                        <div class="d-flex align-items-center">
-                            <div class="me-3">
-                                <div class="icon-circle bg-success-subtle">
-                                    <i class="ti ti-circle-check text-success-emphasis fs-4"></i>
+                    <!-- Peminjam Lunas -->
+                    <div class="col-md-4">
+                        <div class="border rounded-3 p-3 h-100 shadow-sm bg-white">
+                            <div class="d-flex align-items-center">
+                                <div class="me-3">
+                                    <div class="icon-circle bg-success-subtle">
+                                        <i class="ti ti-circle-check text-success-emphasis fs-4"></i>
+                                    </div>
                                 </div>
-                            </div>
-                            <div>
-                                <small class="text-muted">Peminjam Lunas</small>
-                                <h4 class="fw-bold mb-0">{{ $summary->peminjam_lunas }}</h4>
+                                <div>
+                                    <small class="text-muted">Peminjam Lunas</small>
+                                    <h4 class="fw-bold mb-0">{{ $summary->peminjam_lunas ?? 0 }}</h4>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Belum Lunas -->
-                <div class="col-md-4">
-                    <div class="border rounded-3 p-3 h-100 shadow-sm bg-white">
-                        <div class="d-flex align-items-center">
-                            <div class="me-3">
-                                <div class="icon-circle bg-warning-subtle">
-                                    <i class="ti ti-clock-hour-3 text-warning-emphasis fs-4"></i>
+                    <!-- Belum Lunas -->
+                    <div class="col-md-4">
+                        <div class="border rounded-3 p-3 h-100 shadow-sm bg-white">
+                            <div class="d-flex align-items-center">
+                                <div class="me-3">
+                                    <div class="icon-circle bg-warning-subtle">
+                                        <i class="ti ti-clock-hour-3 text-warning-emphasis fs-4"></i>
+                                    </div>
                                 </div>
-                            </div>
-                            <div>
-                                <small class="text-muted">Belum Lunas</small>
-                                <h4 class="fw-bold mb-0">{{ $summary->belum_lunas }}</h4>
+                                <div>
+                                    <small class="text-muted">Belum Lunas</small>
+                                    <h4 class="fw-bold mb-0">{{ $summary->belum_lunas ?? 0 }}</h4>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    @endif
 
     <!-- Data Table Card -->
     <div class="card shadow-sm">
@@ -165,13 +170,13 @@
                                 </tr>
                             @endif
                         @endforeach
-                        
+
                         <tr class="table-light">
                             <td class="h_tengah header_kolom"></td>
                             <td class="header_kolom">Jumlah Tagihan + Denda</td>
                             <td class="h_kanan header_kolom">{{ number_format($jumlahTagihanDenda, 0, ',', '.') }}</td>
                         </tr>
-                        
+
                         @foreach($kasPinjaman as $index => $item)
                             @if($item->no == 4)
                                 <tr>
@@ -181,7 +186,7 @@
                                 </tr>
                             @endif
                         @endforeach
-                        
+
                         @foreach($kasPinjaman as $index => $item)
                             @if($item->no == 5)
                                 <tr style="background-color: #d1f2dd;">
@@ -264,7 +269,7 @@
 
             const url = `{{ route('laporan.kas-pinjaman.cetak') }}?tgl_dari=${tglDari}&tgl_samp=${tglSamp}`;
             const win = window.open(url, '_blank');
-            
+
             if (win) {
                 win.focus();
             } else {

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\DataMaster;
 
 use App\Http\Controllers\Controller;
 use App\Models\Admin\DataMaster\DataPengguna;
+use App\Exports\Admin\DataMaster\DataPenggunaExport;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -42,18 +43,18 @@ class DataPenggunaController extends Controller
         ]);
 
         DB::beginTransaction();
-        
+
         try {
             // Simpan password asli untuk users
             $plainPassword = $data['password'];
-            
+
             // Simpan ke data_pengguna (auto hash di model)
             $pengguna = DataPengguna::create($data);
 
             // Buat akun di tabel users
             User::create([
                 'name' => $data['username'],
-                'email' => $data['username'] . '@gmail.com', 
+                'email' => $data['username'] . '@gmail.com',
                 'password' => Hash::make($plainPassword),
                 'role_id' => 1,
             ]);
@@ -66,7 +67,7 @@ class DataPenggunaController extends Controller
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal menambahkan data: ' . $e->getMessage()
@@ -88,10 +89,12 @@ class DataPenggunaController extends Controller
                 function ($attribute, $value, $fail) use ($oldUsername) {
                     $email = $value . '@gmail.com';
                     $oldEmail = $oldUsername . '@gmail.com';
-                    
-                    if (User::where('email', $email)
+
+                    if (
+                        User::where('email', $email)
                             ->where('email', '!=', $oldEmail)
-                            ->exists()) {
+                            ->exists()
+                    ) {
                         $fail('Username sudah digunakan di sistem.');
                     }
                 },
@@ -106,7 +109,7 @@ class DataPenggunaController extends Controller
         try {
             // Simpan password asli jika ada
             $plainPassword = $data['password'] ?? null;
-            
+
             // Hapus password dari array jika kosong
             if (empty($data['password'])) {
                 unset($data['password']);
@@ -117,7 +120,7 @@ class DataPenggunaController extends Controller
 
             // Update user di tabel users
             $user = User::where('email', $oldUsername . '@gmail.com')->first();
-            
+
             if ($user) {
                 $updateUserData = [
                     'name' => $data['username'],
@@ -140,7 +143,7 @@ class DataPenggunaController extends Controller
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal memperbarui data: ' . $e->getMessage()
@@ -170,7 +173,7 @@ class DataPenggunaController extends Controller
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal menghapus data: ' . $e->getMessage()
@@ -180,11 +183,24 @@ class DataPenggunaController extends Controller
 
     public function export()
     {
-        return response('Export Excel Data Pengguna');
+        try {
+            $export = new DataPenggunaExport();
+            $result = $export->export();
+
+            return response()->download(
+                $result['path'],
+                $result['filename'],
+                [
+                    'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                ]
+            )->deleteFileAfterSend(true);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengekspor data: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
-    public function cetak()
-    {
-        return response('Cetak Laporan Data Pengguna');
-    }
 }

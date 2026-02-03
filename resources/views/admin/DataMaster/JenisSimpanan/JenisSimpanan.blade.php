@@ -327,7 +327,20 @@
         // CETAK & EXPORT (SERVER SIDE)
         // ===============================
         function cetakLaporan() {
-            window.location.href = "{{ route('master.jenis-simpanan.cetak') }}";
+            // Bisa menambahkan filter jika diperlukan
+            const url = `{{ route('master.jenis-simpanan.cetak') }}`;
+
+            const win = window.open(url, '_blank');
+
+            if (win) {
+                win.focus();
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Popup Diblokir',
+                    text: 'Mohon izinkan popup untuk mencetak laporan',
+                });
+            }
         }
 
         function eksporData() {

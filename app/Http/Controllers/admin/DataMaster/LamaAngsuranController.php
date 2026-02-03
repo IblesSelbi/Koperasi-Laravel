@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Admin\DataMaster;
 use App\Http\Controllers\Controller;
 use App\Models\Admin\DataMaster\LamaAngsuran;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log; // ✅ TAMBAHKAN INI
+use App\Exports\Admin\DataMaster\LamaAngsuranExport;
+
+use Illuminate\Support\Facades\Log; 
 
 class LamaAngsuranController extends Controller
 {
@@ -76,7 +78,7 @@ class LamaAngsuranController extends Controller
             ]);
         } catch (\Exception $e) {
             Log::error('Error getting lama angsuran list: ' . $e->getMessage());
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal memuat data lama angsuran'
@@ -86,11 +88,24 @@ class LamaAngsuranController extends Controller
 
     public function export()
     {
-        return response('Export Excel Lama Angsuran');
+        try {
+            $export = new LamaAngsuranExport();
+            $result = $export->export();
+
+            return response()->download(
+                $result['path'],
+                $result['filename'],
+                [
+                    'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                ]
+            )->deleteFileAfterSend(true);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengekspor data: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
-    public function cetak()
-    {
-        return response('Cetak Laporan Lama Angsuran');
-    }
 }

@@ -12,7 +12,8 @@ use App\Http\Controllers\Admin\DataMaster\{
     LamaAngsuranController,
     DataBarangController,
     DataAnggotaController,
-    DataPenggunaController
+    DataPenggunaController,
+    CetakLaporanDataMasterController
 };
 use App\Http\Controllers\Admin\TransaksiKas\{
     PemasukanController,
@@ -469,31 +470,26 @@ Route::middleware('auth')
         // Kas Simpanan
         Route::controller(KasSimpananController::class)->group(function () {
             Route::get('/kas-simpanan', 'index')->name('kas-simpanan');
-            Route::get('/kas-simpanan/cetak', 'cetakLaporan')->name('kas-simpanan.cetak');
         });
 
         // Kas Pinjaman
         Route::controller(KasPinjamanController::class)->group(function () {
             Route::get('/kas-pinjaman', 'index')->name('kas-pinjaman');
-            Route::get('/kas-pinjaman/cetak', 'cetakLaporan')->name('kas-pinjaman.cetak');
         });
 
         // Saldo Kas
         Route::controller(SaldoKasController::class)->group(function () {
             Route::get('/saldo-kas', 'index')->name('saldo-kas');
-            Route::get('/saldo-kas/cetak', 'cetakLaporan')->name('saldo-kas.cetak');
         });
 
         // Laba Rugi
         Route::controller(LabaRugiController::class)->group(function () {
             Route::get('/laba-rugi', 'index')->name('laba-rugi');
-            Route::get('/laba-rugi/cetak', 'cetakLaporan')->name('laba-rugi.cetak');
         });
 
         // SHU
         Route::controller(SHUController::class)->group(function () {
             Route::get('/shu', 'index')->name('shu');
-            Route::get('/shu/cetak', 'cetakLaporan')->name('shu.cetak');
         });
 
     });
@@ -507,11 +503,11 @@ Route::middleware('auth')
             Route::get('/buku-besar/cetak', 'cetakBukuBesar')->name('buku-besar.cetak');
             Route::get('/jatuh-tempo/cetak', 'cetakJatuhTempo')->name('jatuhtempo.cetak');
             Route::get('/kas-anggota/cetak', 'cetakKasAnggota')->name('kasanggota.cetak');
-            Route::get('/kas-pinjaman/cetak', 'cetakKasPinjaman')->name('kaspinjaman.cetak');
-            Route::get('/kas-simpanan/cetak', 'cetakKasSimpanan')->name('kassimpanan.cetak');
-            Route::get('/laba-rugi/cetak', 'cetakLabaRugi')->name('labarugi.cetak');
+            Route::get('/kas-pinjaman/cetak', 'cetakKasPinjaman')->name('kas-pinjaman.cetak');
+            Route::get('/kas-simpanan/cetak', 'cetakKasSimpanan')->name('kas-simpanan.cetak');
+            Route::get('/laba-rugi/cetak', 'cetakLabaRugi')->name('laba-rugi.cetak');
             Route::get('/neraca-saldo/cetak', 'cetakNeracaSaldo')->name('neraca-saldo.cetak');
-            Route::get('/saldo-kas/cetak', 'cetakSaldoKas')->name('saldokas.cetak');
+            Route::get('/saldo-kas/cetak', 'cetakSaldoKas')->name('saldo-kas.cetak');
             Route::get('/shu/cetak', 'cetakSHU')->name('shu.cetak');
             Route::get('/transaksi-kas/cetak', 'cetakTransaksiKas')->name('transaksi-kas.cetak');
             Route::get('/kredit-macet/cetak', 'cetakKreditMacet')->name('kreditmacet.cetak');
@@ -531,7 +527,6 @@ Route::middleware('auth')
             Route::put('/jenis-simpanan/{id}', 'update')->name('jenis-simpanan.update');
             Route::delete('/jenis-simpanan/{id}', 'destroy')->name('jenis-simpanan.destroy');
             Route::get('/jenis-simpanan/export', 'export')->name('jenis-simpanan.export');
-            Route::get('/jenis-simpanan/cetak', 'cetak')->name('jenis-simpanan.cetak');
         });
 
         // JENIS AKUN
@@ -541,7 +536,6 @@ Route::middleware('auth')
             Route::put('/jenis-akun/{id}', 'update')->name('jenis-akun.update');
             Route::delete('/jenis-akun/{id}', 'destroy')->name('jenis-akun.destroy');
             Route::get('/jenis-akun/export', 'export')->name('jenis-akun.export');
-            Route::get('/jenis-akun/cetak', 'cetak')->name('jenis-akun.cetak');
         });
 
         // DATA KAS
@@ -551,7 +545,6 @@ Route::middleware('auth')
             Route::put('/data-kas/{id}', 'update')->name('data-kas.update');
             Route::delete('/data-kas/{id}', 'destroy')->name('data-kas.destroy');
             Route::get('/data-kas/export', 'export')->name('data-kas.export');
-            Route::get('/data-kas/cetak', 'cetak')->name('data-kas.cetak');
         });
 
         // LAMA ANGSURAN
@@ -559,7 +552,6 @@ Route::middleware('auth')
             // API Endpoints 
             Route::get('/lama-angsuran/list', 'list')->name('lama-angsuran.list');
             Route::get('/lama-angsuran/export', 'export')->name('lama-angsuran.export');
-            Route::get('/lama-angsuran/cetak', 'cetak')->name('lama-angsuran.cetak');
 
             // Index & CRUD
             Route::get('/lama-angsuran', 'index')->name('lama-angsuran');
@@ -575,21 +567,19 @@ Route::middleware('auth')
             Route::put('/data-barang/{id}', 'update')->name('data-barang.update');
             Route::delete('/data-barang/{id}', 'destroy')->name('data-barang.destroy');
             Route::get('/data-barang/export', 'export')->name('data-barang.export');
-            Route::get('/data-barang/cetak', 'cetak')->name('data-barang.cetak');
         });
 
         // DATA ANGGOTA
         Route::controller(DataAnggotaController::class)->group(function () {
+            Route::get('/data-anggota/export', 'export')->name('data-anggota.export');
+            Route::get('/data-anggota/import', 'showImport')->name('data-anggota.import');
+            Route::post('/data-anggota/import/process', 'processImport')->name('data-anggota.import.process');
+
             Route::get('/data-anggota', 'index')->name('data-anggota');
             Route::post('/data-anggota', 'store')->name('data-anggota.store');
             Route::get('/data-anggota/{id}/edit', 'edit')->name('data-anggota.edit');
             Route::put('/data-anggota/{id}', 'update')->name('data-anggota.update');
             Route::delete('/data-anggota/{id}', 'destroy')->name('data-anggota.destroy');
-
-            Route::get('/data-anggota/export', 'export')->name('data-anggota.export');
-            Route::get('/data-anggota/import', 'showImport')->name('data-anggota.import');
-            Route::post('/data-anggota/import', 'processImport')->name('data-anggota.import.process');
-            Route::get('/data-anggota/cetak', 'cetak')->name('data-anggota.cetak');
         });
 
         // DATA PENGGUNA
@@ -600,11 +590,28 @@ Route::middleware('auth')
             Route::delete('/data-pengguna/{id}', 'destroy')->name('data-pengguna.destroy');
 
             Route::get('/data-pengguna/export', 'export')->name('data-pengguna.export');
-            Route::get('/data-pengguna/cetak', 'cetak')->name('data-pengguna.cetak');
         });
 
     });
 
+// Route untuk Cetak Laporan Data Master
+Route::middleware('auth')
+    ->prefix('admin/data-master')
+    ->name('master.')
+    ->group(function () {
+        Route::controller(CetakLaporanDataMasterController::class)->group(function () {
+            Route::get('/data-anggota/cetak', 'cetakDataAnggota')->name('data-anggota.cetak');
+            Route::get('/data-barang/cetak', 'cetakDataBarang')->name('data-barang.cetak');
+            Route::get('/data-kas/cetak', 'cetakDataKas')->name('data-kas.cetak');
+            Route::get('/data-pengguna/cetak', 'cetakDataPengguna')->name('data-pengguna.cetak');
+            Route::get('/jenis-akun/cetak', 'cetakJenisAkun')->name('jenis-akun.cetak');
+            Route::get('/jenis-simpanan/cetak', 'cetakJenisSimpanan')->name('jenis-simpanan.cetak');
+            Route::get('/lama-angsuran/cetak', 'cetakLamaAngsuran')->name('lama-angsuran.cetak');
+        });
+    });
+
+
+// SETTING
 Route::middleware('auth')
     ->prefix('admin')
     ->name('setting.')

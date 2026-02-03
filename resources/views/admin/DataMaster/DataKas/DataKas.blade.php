@@ -428,8 +428,19 @@
         }
        
         // CETAK & EXPORT (SERVER SIDE)
+        const cetakDataKasUrl = "{{ route('master.data-kas.cetak') }}";
+
         function cetakLaporan() {
-            window.location.href = "{{ route('master.data-kas.cetak') }}";
+            const win = window.open(cetakDataKasUrl, '_blank');
+            if (win) {
+                win.focus();
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Popup Diblokir',
+                    text: 'Mohon izinkan popup untuk mencetak laporan',
+                });
+            }
         }
 
         function eksporData() {

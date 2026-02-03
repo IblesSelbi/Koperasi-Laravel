@@ -9,7 +9,8 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
     <!-- Select2 -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css"
+        rel="stylesheet" />
 @endpush
 
 @section('content')
@@ -19,7 +20,8 @@
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <h4 class="fw-semibold mb-1">Laporan Sisa Hasil Usaha (SHU)</h4>
-                    <p class="text-muted fs-3 mb-0">Periode {{ \Carbon\Carbon::parse($tglDari)->format('d M Y') }} - {{ \Carbon\Carbon::parse($tglSamp)->format('d M Y') }}</p>
+                    <p class="text-muted fs-3 mb-0">Periode {{ \Carbon\Carbon::parse($tglDari)->format('d M Y') }} -
+                        {{ \Carbon\Carbon::parse($tglSamp)->format('d M Y') }}</p>
                 </div>
             </div>
         </div>
@@ -60,7 +62,8 @@
                         </label>
                         <button class="form-control text-start" type="button" id="daterange-btn">
                             <i class="ti ti-calendar me-2"></i>
-                            <span id="reportrange">{{ \Carbon\Carbon::parse($tglDari)->format('d M Y') }} - {{ \Carbon\Carbon::parse($tglSamp)->format('d M Y') }}</span>
+                            <span id="reportrange">{{ \Carbon\Carbon::parse($tglDari)->format('d M Y') }} -
+                                {{ \Carbon\Carbon::parse($tglSamp)->format('d M Y') }}</span>
                             <i class="ti ti-chevron-down float-end"></i>
                         </button>
                     </div>
@@ -101,55 +104,55 @@
     <!-- Summary Cards -->
     <div class="row g-3 mb-2">
 
-    <!-- TOTAL PENDAPATAN -->
-    <div class="col-md-6">
-        <div class="card border-0 shadow-sm">
-            <div class="card-body py-3">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <span class="text-muted small">Total Pendapatan</span>
-                        <h4 class="fw-semibold mb-1">
-                            Rp {{ number_format($pendapatan['total'], 0, ',', '.') }}
-                        </h4>
-                        <small class="text-muted">
-                            Bunga {{ number_format($pendapatan['bunga'], 0, ',', '.') }} ·
-                            Denda {{ number_format($pendapatan['denda'], 0, ',', '.') }}
-                        </small>
-                    </div>
-                    <div class="text-success fs-8">
-                        <i class="ti ti-arrow-up-right"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="card-footer bg-success bg-opacity-10 py-1"></div>
-        </div>
-    </div>
-
-    <!-- TOTAL BEBAN -->
-    <div class="col-md-6">
-        <div class="card border-0 shadow-sm">
-            <div class="card-body py-3">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <span class="text-muted small">Total Beban</span>
-                        <h4 class="fw-semibold mb-1">
-                            Rp {{ number_format($beban['total'], 0, ',', '.') }}
-                        </h4>
-                        <small class="text-muted">
-                            Operasional {{ number_format($beban['operasional'], 0, ',', '.') }} ·
-                            Administrasi {{ number_format($beban['administrasi'], 0, ',', '.') }}
-                        </small>
-                    </div>
-                    <div class="text-danger fs-8">
-                        <i class="ti ti-arrow-down-right"></i>
+        <!-- TOTAL PENDAPATAN -->
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="text-muted small">Total Pendapatan</span>
+                            <h4 class="fw-semibold mb-1">
+                                Rp {{ number_format($pendapatan['total'], 0, ',', '.') }}
+                            </h4>
+                            <small class="text-muted">
+                                Bunga {{ number_format($pendapatan['bunga'], 0, ',', '.') }} ·
+                                Denda {{ number_format($pendapatan['denda'], 0, ',', '.') }}
+                            </small>
+                        </div>
+                        <div class="text-success fs-8">
+                            <i class="ti ti-arrow-up-right"></i>
+                        </div>
                     </div>
                 </div>
+                <div class="card-footer bg-success bg-opacity-10 py-1"></div>
             </div>
-            <div class="card-footer bg-danger bg-opacity-10 py-1"></div>
         </div>
-    </div>
 
-</div>
+        <!-- TOTAL BEBAN -->
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="text-muted small">Total Beban</span>
+                            <h4 class="fw-semibold mb-1">
+                                Rp {{ number_format($beban['total'], 0, ',', '.') }}
+                            </h4>
+                            <small class="text-muted">
+                                Operasional {{ number_format($beban['operasional'], 0, ',', '.') }} ·
+                                Administrasi {{ number_format($beban['administrasi'], 0, ',', '.') }}
+                            </small>
+                        </div>
+                        <div class="text-danger fs-8">
+                            <i class="ti ti-arrow-down-right"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-danger bg-opacity-10 py-1"></div>
+            </div>
+        </div>
+
+    </div>
 
 
     <!-- Data Table Card -->
@@ -161,15 +164,18 @@
                         <!-- SHU Sebelum & Setelah Pajak -->
                         <tr class="table-light">
                             <td class="h_kiri header_kolom" colspan="2"><strong>SHU Sebelum Pajak</strong></td>
-                            <td class="h_kanan header_kolom"><strong>{{ number_format($shuSebelumPajak, 0, ',', '.') }}</strong></td>
+                            <td class="h_kanan header_kolom">
+                                <strong>{{ number_format($shuSebelumPajak, 0, ',', '.') }}</strong></td>
                         </tr>
                         <tr class="table-light">
                             <td class="h_kiri header_kolom" colspan="2"><strong>Pajak PPh (5%)</strong></td>
-                            <td class="h_kanan header_kolom"><strong>{{ number_format($pajakPPh, 0, ',', '.') }}</strong></td>
+                            <td class="h_kanan header_kolom"><strong>{{ number_format($pajakPPh, 0, ',', '.') }}</strong>
+                            </td>
                         </tr>
                         <tr class="table-light">
                             <td class="h_kiri header_kolom" colspan="2"><strong>SHU Setelah Pajak</strong></td>
-                            <td class="h_kanan header_kolom"><strong>{{ number_format($shuSetelahPajak, 0, ',', '.') }}</strong></td>
+                            <td class="h_kanan header_kolom">
+                                <strong>{{ number_format($shuSetelahPajak, 0, ',', '.') }}</strong></td>
                         </tr>
 
                         <!-- Pembagian SHU untuk Dana-dana -->
@@ -225,11 +231,13 @@
                         <!-- Total -->
                         <tr class="table-light">
                             <td class="header_kolom"><strong>Total Pendapatan Anggota</strong></td>
-                            <td colspan="2" class="h_kanan header_kolom"><strong>{{ number_format($totalPendapatanAnggota, 0, ',', '.') }}</strong></td>
+                            <td colspan="2" class="h_kanan header_kolom">
+                                <strong>{{ number_format($totalPendapatanAnggota, 0, ',', '.') }}</strong></td>
                         </tr>
                         <tr class="table-light">
                             <td class="header_kolom"><strong>Total Simpanan Anggota</strong></td>
-                            <td colspan="2" class="h_kanan header_kolom"><strong>{{ number_format($totalSimpananAnggota, 0, ',', '.') }}</strong></td>
+                            <td colspan="2" class="h_kanan header_kolom">
+                                <strong>{{ number_format($totalSimpananAnggota, 0, ',', '.') }}</strong></td>
                         </tr>
                     </tbody>
                 </table>
@@ -310,7 +318,7 @@
             }, 500);
         }
 
-        // Function: Cetak Laporan
+        // Function: Cetak Laporan (sudah ada di file)
         function cetak() {
             const anggotaId = $('#anggota_id').val() || '';
             const tglDari = $('#tgl_dari').val();
@@ -318,7 +326,7 @@
 
             const url = `{{ route('laporan.shu.cetak') }}?anggota_id=${anggotaId}&tgl_dari=${tglDari}&tgl_samp=${tglSamp}`;
             const win = window.open(url, '_blank');
-            
+
             if (win) {
                 win.focus();
             } else {

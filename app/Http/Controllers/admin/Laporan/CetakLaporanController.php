@@ -591,17 +591,29 @@ class CetakLaporanController extends Controller
 
         $jumlahTagihanDenda = $tagihanPinjaman + $tagihanDenda;
 
-        return view('admin.Laporan.KasPinjaman.CetakKasPinjaman', compact(
-            'kasPinjaman',
-            'summary',
-            'jumlahTagihanDenda',
-            'tglDari',
-            'tglSamp'
-        ));
+        // Generate PDF
+        $pdf = Pdf::loadView(
+            'admin.Laporan.KasPinjaman.Cetak',
+            compact(
+                'kasPinjaman',
+                'summary',
+                'jumlahTagihanDenda',
+                'tglDari',
+                'tglSamp'
+            )
+        );
+
+        $pdf->setPaper('a4', 'portrait');
+        $pdf->setOption('enable-local-file-access', true);
+
+        return $pdf->stream('Laporan_Kas_Pinjaman_' . $tglDari . '_' . $tglSamp . '.pdf');
     }
 
     // ==================== LAPORAN KAS SIMPANAN ====================
 
+    /**
+     * Cetak Laporan Kas Simpanan
+     */
     /**
      * Cetak Laporan Kas Simpanan
      */
@@ -644,18 +656,30 @@ class CetakLaporanController extends Controller
             $totalJumlah += $jumlah;
         }
 
-        return view('admin.Laporan.KasSimpanan.CetakKasSimpanan', compact(
-            'kasSimpanan',
-            'totalSimpanan',
-            'totalPenarikan',
-            'totalJumlah',
-            'tglDari',
-            'tglSamp'
-        ));
+        // Generate PDF
+        $pdf = Pdf::loadView(
+            'admin.Laporan.KasSimpanan.Cetak',
+            compact(
+                'kasSimpanan',
+                'totalSimpanan',
+                'totalPenarikan',
+                'totalJumlah',
+                'tglDari',
+                'tglSamp'
+            )
+        );
+
+        $pdf->setPaper('a4', 'portrait');
+        $pdf->setOption('enable-local-file-access', true);
+
+        return $pdf->stream('Laporan_Kas_Simpanan_' . $tglDari . '_' . $tglSamp . '.pdf');
     }
 
     // ==================== LAPORAN LABA RUGI ====================
 
+    /**
+     * Cetak Laporan Laba Rugi
+     */
     /**
      * Cetak Laporan Laba Rugi
      */
@@ -787,18 +811,27 @@ class CetakLaporanController extends Controller
         $jumlahBiaya = $biayaList->sum('jumlah');
         $labaRugi = $jumlahPendapatan - $jumlahBiaya;
 
-        return view('admin.Laporan.LabaRugi.CetakLabaRugi', compact(
-            'estimasiPinjaman',
-            'pendapatanList',
-            'biayaList',
-            'jumlahTagihan',
-            'estimasiPendapatanPinjaman',
-            'jumlahPendapatan',
-            'jumlahBiaya',
-            'labaRugi',
-            'tglDari',
-            'tglSamp'
-        ));
+        // Generate PDF
+        $pdf = Pdf::loadView(
+            'admin.Laporan.LabaRugi.Cetak',
+            compact(
+                'estimasiPinjaman',
+                'pendapatanList',
+                'biayaList',
+                'jumlahTagihan',
+                'estimasiPendapatanPinjaman',
+                'jumlahPendapatan',
+                'jumlahBiaya',
+                'labaRugi',
+                'tglDari',
+                'tglSamp'
+            )
+        );
+
+        $pdf->setPaper('a4', 'portrait');
+        $pdf->setOption('enable-local-file-access', true);
+
+        return $pdf->stream('Laporan_Laba_Rugi_' . $tglDari . '_' . $tglSamp . '.pdf');
     }
 
     // ==================== LAPORAN NERACA SALDO ====================
@@ -979,6 +1012,9 @@ class CetakLaporanController extends Controller
     /**
      * Cetak Laporan Saldo Kas
      */
+    /**
+     * Cetak Laporan Saldo Kas
+     */
     public function cetakSaldoKas(Request $request)
     {
         $periode = $request->get('periode', Carbon::now()->format('Y-m'));
@@ -1013,14 +1049,25 @@ class CetakLaporanController extends Controller
         $totalSaldo = $saldoPeriodeSebelumnya + $jumlahSaldo;
         $periodeDisplay = $periodeCarbon->locale('id')->isoFormat('MMMM YYYY');
 
-        return view('admin.Laporan.SaldoKas.CetakSaldoKas', compact(
-            'saldoKas',
-            'saldoPeriodeSebelumnya',
-            'jumlahSaldo',
-            'totalSaldo',
-            'periode',
-            'periodeDisplay'
-        ));
+        // Generate PDF
+        $pdf = Pdf::loadView(
+            'admin.Laporan.SaldoKas.Cetak',
+            compact(
+                'saldoKas',
+                'saldoPeriodeSebelumnya',
+                'jumlahSaldo',
+                'totalSaldo',
+                'periode',
+                'periodeDisplay',
+                'startDate',
+                'endDate'
+            )
+        );
+
+        $pdf->setPaper('a4', 'portrait');
+        $pdf->setOption('enable-local-file-access', true);
+
+        return $pdf->stream('Laporan_Saldo_Kas_' . $periode . '.pdf');
     }
 
     /**
@@ -1169,26 +1216,54 @@ class CetakLaporanController extends Controller
                 $anggota = null;
             }
 
-            return view('admin.Laporan.shu.cetak_shu', compact(
-                'shuSebelumPajak',
-                'pajakPPh',
-                'shuSetelahPajak',
-                'danaCadangan',
-                'jasaAnggota',
-                'danaPengurus',
-                'danaKaryawan',
-                'danaPendidikan',
-                'danaSosial',
-                'jasaUsaha',
-                'jasaModal',
-                'totalPendapatanAnggota',
-                'totalSimpananAnggota',
-                'tglDari',
-                'tglSamp',
-                'anggota',
-                'pendapatan',
-                'beban'
-            ));
+            // Persentase dari setting
+            $persenDanaCadangan = $sukuBunga->dana_cadangan ?? 40;
+            $persenJasaAnggota = $sukuBunga->jasa_anggota ?? 40;
+            $persenDanaPengurus = $sukuBunga->dana_pengurus ?? 5;
+            $persenDanaKaryawan = $sukuBunga->dana_karyawan ?? 5;
+            $persenDanaPendidikan = $sukuBunga->dana_pend ?? 5;
+            $persenDanaSosial = $sukuBunga->dana_sosial ?? 5;
+            $persenJasaUsaha = $sukuBunga->jasa_usaha ?? 70;
+            $persenJasaModal = $sukuBunga->jasa_modal ?? 30;
+
+            // Generate PDF
+            $pdf = Pdf::loadView(
+                'admin.Laporan.SHU.Cetak',
+                compact(
+                    'shuSebelumPajak',
+                    'pajakPPh',
+                    'shuSetelahPajak',
+                    'danaCadangan',
+                    'jasaAnggota',
+                    'danaPengurus',
+                    'danaKaryawan',
+                    'danaPendidikan',
+                    'danaSosial',
+                    'jasaUsaha',
+                    'jasaModal',
+                    'totalPendapatanAnggota',
+                    'totalSimpananAnggota',
+                    'tglDari',
+                    'tglSamp',
+                    'anggota',
+                    'pendapatan',
+                    'beban',
+                    'persenPajak',
+                    'persenDanaCadangan',
+                    'persenJasaAnggota',
+                    'persenDanaPengurus',
+                    'persenDanaKaryawan',
+                    'persenDanaPendidikan',
+                    'persenDanaSosial',
+                    'persenJasaUsaha',
+                    'persenJasaModal'
+                )
+            );
+
+            $pdf->setPaper('a4', 'portrait');
+            $pdf->setOption('enable-local-file-access', true);
+
+            return $pdf->stream('Laporan_SHU_' . $tglDari . '_' . $tglSamp . '.pdf');
 
         } catch (\Exception $e) {
             Log::error('Error printing SHU: ' . $e->getMessage());

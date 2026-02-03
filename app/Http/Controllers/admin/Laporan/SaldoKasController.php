@@ -208,66 +208,6 @@ class SaldoKasController extends Controller
     }
 
     /**
-     * Print laporan saldo kas
-     */
-    public function cetakLaporan(Request $request)
-    {
-        // Get periode from request
-        $periode = $request->get('periode', Carbon::now()->format('Y-m'));
-        
-        // Parse periode
-        $periodeCarbon = Carbon::parse($periode . '-01');
-        $startDate = $periodeCarbon->copy()->startOfMonth();
-        $endDate = $periodeCarbon->copy()->endOfMonth();
-        
-        // Periode sebelumnya
-        $periodeSebelumnya = $periodeCarbon->copy()->subMonth()->endOfMonth();
-
-        // Get all active kas
-        $kasList = DataKas::where('aktif', 'Y')
-            ->orderBy('nama_kas', 'asc')
-            ->get();
-
-        $saldoKas = collect();
-        $no = 1;
-
-        // Hitung saldo periode sebelumnya
-        $saldoPeriodeSebelumnya = 0;
-
-        foreach ($kasList as $kas) {
-            // Hitung saldo periode sebelumnya
-            $saldoAwalKas = $this->hitungSaldoSampai($kas->id, $periodeSebelumnya);
-            $saldoPeriodeSebelumnya += $saldoAwalKas;
-
-            // Hitung mutasi periode ini
-            $mutasiPeriode = $this->hitungMutasiPeriode($kas->id, $startDate, $endDate);
-            
-            $saldoKas->push((object)[
-                'no' => $no++,
-                'nama_kas' => $kas->nama_kas,
-                'saldo' => $mutasiPeriode,
-            ]);
-        }
-
-        // Calculate totals
-        $jumlahSaldo = $saldoKas->sum('saldo');
-        $totalSaldo = $saldoPeriodeSebelumnya + $jumlahSaldo;
-
-        // Format periode untuk display
-        $periodeDisplay = $periodeCarbon->locale('id')->isoFormat('MMMM YYYY');
-
-        // Return view for printing
-        return view('admin.Laporan.SaldoKas.CetakSaldoKas', compact(
-            'saldoKas',
-            'saldoPeriodeSebelumnya',
-            'jumlahSaldo',
-            'totalSaldo',
-            'periode',
-            'periodeDisplay'
-        ));
-    }
-
-    /**
      * Get detail mutasi kas (optional - for debugging/detail view)
      */
     public function getDetailMutasi(Request $request, $kasId)

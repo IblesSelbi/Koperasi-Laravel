@@ -8,22 +8,22 @@
             white-space: nowrap;
             vertical-align: middle;
         }
-        
+
         /* Fix untuk tombol aksi agar horizontal */
         #tabelDataAnggota tbody td:last-child {
             white-space: nowrap !important;
         }
-        
+
         /* Pastikan kolom aksi tidak membungkus */
         #tabelDataAnggota tbody td {
             vertical-align: middle;
         }
-        
+
         /* Fix untuk responsive tanpa merusak layout tombol */
         .dataTables_wrapper .dataTables_scroll {
             overflow-x: auto;
         }
-        
+
         /* Tombol dalam satu baris */
         .action-buttons {
             display: inline-flex;
@@ -128,7 +128,8 @@
                                     <img src="{{ asset($item->photo_url) }}" class="rounded-circle" width="40" height="40">
                                 </td>
                                 <td class="text-center">
-                                    <span class="badge bg-primary-subtle text-primary fw-semibold">{{ $item->id_anggota }}</span>
+                                    <span
+                                        class="badge bg-primary-subtle text-primary fw-semibold">{{ $item->id_anggota }}</span>
                                 </td>
                                 <td>
                                     <div class="fw-semibold text-dark">{{ $item->username }}</div>
@@ -145,7 +146,8 @@
                                 <td>{{ $item->departement ?: '-' }}</td>
                                 <td class="text-center">{{ $item->tanggal_registrasi->format('d/m/Y') }}</td>
                                 <td class="text-center">
-                                    <span class="badge bg-{{ $item->aktif == 'Aktif' ? 'success' : 'danger' }}-subtle text-{{ $item->aktif == 'Aktif' ? 'success' : 'danger' }} fw-semibold">
+                                    <span
+                                        class="badge bg-{{ $item->aktif == 'Aktif' ? 'success' : 'danger' }}-subtle text-{{ $item->aktif == 'Aktif' ? 'success' : 'danger' }} fw-semibold">
                                         {{ $item->aktif }}
                                     </span>
                                 </td>
@@ -154,7 +156,8 @@
                                         <button class="btn btn-sm btn-warning" onclick="editData({{ $item->id }})" title="Edit">
                                             <i class="ti ti-edit"></i>
                                         </button>
-                                        <button class="btn btn-sm btn-danger" onclick="hapusData({{ $item->id }})" title="Hapus">
+                                        <button class="btn btn-sm btn-danger" onclick="hapusData({{ $item->id }})"
+                                            title="Hapus">
                                             <i class="ti ti-trash"></i>
                                         </button>
                                     </div>
@@ -382,9 +385,9 @@
                 scrollX: true,
                 autoWidth: false,
                 columnDefs: [
-                    { 
-                        orderable: false, 
-                        targets: '_all' 
+                    {
+                        orderable: false,
+                        targets: '_all'
                     },
                     {
                         // Fix width untuk kolom aksi
@@ -619,8 +622,19 @@
         }
 
         // Cetak & Export
+        const cetakDataAnggotaUrl = "{{ route('master.data-anggota.cetak') }}";
+
         function cetakLaporan() {
-            window.location.href = "{{ route('master.data-anggota.cetak') }}";
+            const win = window.open(cetakDataAnggotaUrl, '_blank');
+            if (win) {
+                win.focus();
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Popup Diblokir',
+                    text: 'Mohon izinkan popup untuk mencetak laporan',
+                });
+            }
         }
 
         function eksporData() {

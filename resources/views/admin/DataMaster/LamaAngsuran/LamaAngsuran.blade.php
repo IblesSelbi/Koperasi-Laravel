@@ -140,8 +140,8 @@
                         <input type="hidden" id="editId" value="">
                         <div class="mb-3">
                             <label class="form-label">Lama Angsuran (Bulan) <span class="text-danger">*</span></label>
-                            <input type="number" class="form-control" id="lamaAngsuran"
-                                placeholder="Masukkan lama angsuran" min="1" max="120" required>
+                            <input type="number" class="form-control" id="lamaAngsuran" placeholder="Masukkan lama angsuran"
+                                min="1" max="120" required>
                             <div class="form-text">Masukkan jumlah bulan (contoh: 3, 6, 12, 24, 36)</div>
                         </div>
                         <div class="mb-3">
@@ -309,8 +309,19 @@
         }
 
         // CETAK & EXPORT (SERVER SIDE)
+        const cetakLamaAngsuranUrl = "{{ route('master.lama-angsuran.cetak') }}";
+
         function cetakLaporan() {
-            window.location.href = "{{ route('master.lama-angsuran.cetak') }}";
+            const win = window.open(cetakLamaAngsuranUrl, '_blank');
+            if (win) {
+                win.focus();
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Popup Diblokir',
+                    text: 'Mohon izinkan popup untuk mencetak laporan',
+                });
+            }
         }
 
         function eksporData() {

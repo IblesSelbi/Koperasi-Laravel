@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
     <!-- Daterangepicker CSS -->
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
-    
+
     <style>
         .h_tengah {
             text-align: center;
@@ -109,7 +109,8 @@
                     <tbody>
                         <tr class="table-light">
                             <td class="h_kanan header_kolom" colspan="2"><strong>SALDO PERIODE SEBELUMNYA</strong></td>
-                            <td class="h_kanan header_kolom"><strong>{{ number_format($saldoPeriodeSebelumnya, 0, ',', '.') }}</strong></td>
+                            <td class="h_kanan header_kolom">
+                                <strong>{{ number_format($saldoPeriodeSebelumnya, 0, ',', '.') }}</strong></td>
                         </tr>
                         @forelse($saldoKas as $item)
                             <tr>
@@ -128,7 +129,8 @@
                         @if($saldoKas->isNotEmpty())
                             <tr class="table-light">
                                 <td colspan="2" class="h_kanan header_kolom"><strong>Jumlah</strong></td>
-                                <td class="h_kanan header_kolom"><strong>{{ number_format($jumlahSaldo, 0, ',', '.') }}</strong></td>
+                                <td class="h_kanan header_kolom"><strong>{{ number_format($jumlahSaldo, 0, ',', '.') }}</strong>
+                                </td>
                             </tr>
                             <tr style="background-color: #d1f2dd;">
                                 <td colspan="2" class="h_kanan"><strong>Saldo</strong></td>
@@ -149,8 +151,10 @@
                 <div>
                     <h6 class="mb-2">Penjelasan Perhitungan:</h6>
                     <ul class="mb-0 small text-muted">
-                        <li><strong>Saldo Periode Sebelumnya:</strong> Total saldo semua kas sampai akhir bulan sebelumnya</li>
-                        <li><strong>Mutasi Periode Ini:</strong> Pemasukan - Pengeluaran + Transfer Masuk - Transfer Keluar + Setoran - Penarikan - Pinjaman + Angsuran</li>
+                        <li><strong>Saldo Periode Sebelumnya:</strong> Total saldo semua kas sampai akhir bulan sebelumnya
+                        </li>
+                        <li><strong>Mutasi Periode Ini:</strong> Pemasukan - Pengeluaran + Transfer Masuk - Transfer Keluar
+                            + Setoran - Penarikan - Pinjaman + Angsuran</li>
                         <li><strong>Saldo Akhir:</strong> Saldo Periode Sebelumnya + Jumlah Mutasi Periode Ini</li>
                     </ul>
                 </div>
@@ -173,10 +177,10 @@
         // Initialize Daterangepicker
         $(document).ready(function () {
             moment.locale('id');
-            
+
             // Parse periode dari format YYYY-MM
             var currentPeriode = moment('{{ $periode }}', 'YYYY-MM');
-            
+
             $('#daterange-btn').daterangepicker({
                 singleDatePicker: true,
                 showDropdowns: true,
@@ -194,10 +198,10 @@
             }, function (start) {
                 // Update display
                 $('#reportrange').html(start.format('MMMM YYYY'));
-                
+
                 // Update hidden input dengan format YYYY-MM
                 $('#periode').val(start.format('YYYY-MM'));
-                
+
                 // Auto submit
                 doSearch();
             });
@@ -206,7 +210,7 @@
             $('#reportrange').html(currentPeriode.format('MMMM YYYY'));
 
             // Handle button click to open picker
-            $('#daterange-btn').on('click', function() {
+            $('#daterange-btn').on('click', function () {
                 $(this).data('daterangepicker').show();
             });
         });
@@ -233,13 +237,13 @@
             window.location.href = '{{ route("laporan.saldo-kas") }}';
         }
 
-        // Function: Cetak Laporan
+        // Function: Cetak Laporan (sudah ada di file, pastikan route benar)
         function cetak() {
             const periode = $('#periode').val();
 
             const url = `{{ route('laporan.saldo-kas.cetak') }}?periode=${periode}`;
             const win = window.open(url, '_blank');
-            
+
             if (win) {
                 win.focus();
             } else {

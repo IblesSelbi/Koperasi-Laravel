@@ -88,9 +88,8 @@
                     </thead>
                     <tbody>
                         @foreach($dataBarang as $index => $item)
-                            <tr data-id="{{ $item->id }}" data-nama="{{ $item->nama_barang }}"
-                                data-type="{{ $item->type }}" data-merk="{{ $item->merk }}"
-                                data-harga="{{ $item->harga }}" data-jumlah="{{ $item->jumlah }}"
+                            <tr data-id="{{ $item->id }}" data-nama="{{ $item->nama_barang }}" data-type="{{ $item->type }}"
+                                data-merk="{{ $item->merk }}" data-harga="{{ $item->harga }}" data-jumlah="{{ $item->jumlah }}"
                                 data-ket="{{ $item->keterangan }}">
                                 <td class="text-center text-muted fw-medium"></td>
                                 <td>
@@ -361,8 +360,19 @@
         }
 
         // CETAK & EXPORT (SERVER SIDE)
+        const cetakDataBarangUrl = "{{ route('master.data-barang.cetak') }}";
+
         function cetakLaporan() {
-            window.location.href = "{{ route('master.data-barang.cetak') }}";
+            const win = window.open(cetakDataBarangUrl, '_blank');
+            if (win) {
+                win.focus();
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Popup Diblokir',
+                    text: 'Mohon izinkan popup untuk mencetak laporan',
+                });
+            }
         }
 
         function eksporData() {

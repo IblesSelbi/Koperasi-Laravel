@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\DataMaster;
 
 use App\Http\Controllers\Controller;
 use App\Models\Admin\DataMaster\DataKas;
+use App\Exports\Admin\DataMaster\DataKasExport;
 use Illuminate\Http\Request;
 
 class DataKasController extends Controller
@@ -74,11 +75,24 @@ class DataKasController extends Controller
 
     public function export()
     {
-        return response('Export Excel Data Kas');
+        try {
+            $export = new DataKasExport();
+            $result = $export->export();
+
+            return response()->download(
+                $result['path'],
+                $result['filename'],
+                [
+                    'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                ]
+            )->deleteFileAfterSend(true);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengekspor data: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
-    public function cetak()
-    {
-        return response('Cetak Laporan Data Kas');
-    }
 }

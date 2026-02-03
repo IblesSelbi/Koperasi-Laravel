@@ -85,8 +85,8 @@
                     </thead>
                     <tbody>
                         @foreach($dataPengguna as $index => $item)
-                            <tr data-id="{{ $item->id }}" data-username="{{ $item->username }}"
-                                data-level="{{ $item->level }}" data-status="{{ $item->status }}">
+                            <tr data-id="{{ $item->id }}" data-username="{{ $item->username }}" data-level="{{ $item->level }}"
+                                data-status="{{ $item->status }}">
                                 <td class="text-center text-muted fw-medium"></td>
                                 <td>
                                     <div class="d-flex align-items-center">
@@ -108,7 +108,8 @@
                                         ];
                                         $color = $levelColors[$item->level] ?? 'secondary';
                                     @endphp
-                                    <span class="badge bg-{{ $color }}-subtle text-{{ $color }} px-3 py-2">{{ $item->level }}</span>
+                                    <span
+                                        class="badge bg-{{ $color }}-subtle text-{{ $color }} px-3 py-2">{{ $item->level }}</span>
                                 </td>
                                 <td class="text-center">
                                     <span
@@ -166,9 +167,10 @@
                         <!-- Password -->
                         <div class="mb-3">
                             <label class="form-label">Password <span id="passLabel" class="text-danger">*</span></label>
-                            <input type="password" class="form-control" id="password"
-                                placeholder="Masukkan password" required>
-                            <small class="text-muted" id="passHint" style="display: none;">Kosongkan jika tidak ingin mengubah password</small>
+                            <input type="password" class="form-control" id="password" placeholder="Masukkan password"
+                                required>
+                            <small class="text-muted" id="passHint" style="display: none;">Kosongkan jika tidak ingin
+                                mengubah password</small>
                         </div>
 
                         <!-- Status -->
@@ -366,8 +368,19 @@
         }
 
         // Cetak & Export
+        const cetakDataPenggunaUrl = "{{ route('master.data-pengguna.cetak') }}";
+
         function cetakLaporan() {
-            window.location.href = "{{ route('master.data-pengguna.cetak') }}";
+            const win = window.open(cetakDataPenggunaUrl, '_blank');
+            if (win) {
+                win.focus();
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Popup Diblokir',
+                    text: 'Mohon izinkan popup untuk mencetak laporan',
+                });
+            }
         }
 
         function eksporData() {
