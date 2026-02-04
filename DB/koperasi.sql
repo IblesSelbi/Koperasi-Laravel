@@ -48,7 +48,7 @@ CREATE TABLE `bayar_angsuran` (
   CONSTRAINT `bayar_angsuran_ke_kas_id_foreign` FOREIGN KEY (`ke_kas_id`) REFERENCES `data_kas` (`id`),
   CONSTRAINT `bayar_angsuran_pinjaman_id_foreign` FOREIGN KEY (`pinjaman_id`) REFERENCES `pinjaman` (`id`) ON DELETE CASCADE,
   CONSTRAINT `bayar_angsuran_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2018 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2041 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `bayar_angsuran` */
 
@@ -57,15 +57,31 @@ insert  into `bayar_angsuran`(`id`,`kode_bayar`,`pinjaman_id`,`angsuran_ke`,`tan
 (1002,'BYR00002',108,2,'2026-03-22','2026-01-22 09:05:00',787500.00,787500.00,0.00,1,'Lunas',NULL,1,'2026-01-22 09:02:59','2026-01-22 09:05:55',NULL),
 (1003,'BYR00003',108,3,'2026-04-22','2026-01-22 09:05:00',787500.00,787500.00,0.00,1,'Lunas',NULL,1,'2026-01-22 09:02:59','2026-01-22 09:06:01',NULL),
 (1004,'BYR00004',108,4,'2026-05-22','2026-01-22 09:06:00',787500.00,787500.00,0.00,3,'Lunas',NULL,1,'2026-01-22 09:02:59','2026-01-22 09:06:07',NULL),
-(2009,'BYR02009',114,1,'2025-10-15',NULL,787500.00,0.00,0.00,NULL,'Belum',NULL,NULL,'2026-01-23 08:24:27','2026-01-23 08:24:27',NULL),
-(2010,'BYR02010',114,2,'2025-11-15',NULL,787500.00,0.00,0.00,NULL,'Belum',NULL,NULL,'2026-01-23 08:24:27','2026-01-23 08:24:27',NULL),
-(2011,'BYR02011',114,3,'2025-12-15',NULL,787500.00,0.00,0.00,NULL,'Belum',NULL,NULL,'2026-01-23 08:24:27','2026-01-23 08:24:27',NULL),
-(2012,'BYR02012',114,4,'2026-01-15',NULL,787500.00,0.00,0.00,NULL,'Belum',NULL,NULL,'2026-01-23 08:24:27','2026-01-23 08:24:27',NULL),
+(2009,'BYR02009',114,1,'2025-10-15','2026-01-28 08:19:00',787500.00,787500.00,525000.00,1,'Lunas',NULL,1,'2026-01-23 08:24:27','2026-01-28 08:19:11',NULL),
+(2010,'BYR02010',114,2,'2025-11-15','2026-01-28 06:39:07',787500.00,1157500.00,370000.00,3,'Lunas',NULL,1,'2026-01-23 08:24:27','2026-01-28 06:39:36',NULL),
+(2011,'BYR02011',114,3,'2025-12-15','2026-01-28 07:17:15',787500.00,1007500.00,220000.00,3,'Lunas',NULL,1,'2026-01-23 08:24:27','2026-01-28 07:44:33',NULL),
+(2012,'BYR02012',114,4,'2026-01-15',NULL,787500.00,0.00,0.00,NULL,'Belum',NULL,NULL,'2026-01-23 08:24:27','2026-01-28 09:46:16',NULL),
 (2013,'BYR02013',115,1,'2026-02-23',NULL,787500.00,0.00,0.00,NULL,'Belum',NULL,NULL,'2026-01-23 08:39:57','2026-01-23 08:45:16','2026-01-23 08:45:16'),
 (2014,'BYR02014',115,2,'2026-03-23',NULL,787500.00,0.00,0.00,NULL,'Belum',NULL,NULL,'2026-01-23 08:39:57','2026-01-23 08:45:16','2026-01-23 08:45:16'),
 (2015,'BYR02015',115,3,'2026-04-23',NULL,787500.00,0.00,0.00,NULL,'Belum',NULL,NULL,'2026-01-23 08:39:57','2026-01-23 08:45:16','2026-01-23 08:45:16'),
 (2016,'BYR02016',115,4,'2026-05-23',NULL,787500.00,0.00,0.00,NULL,'Belum',NULL,NULL,'2026-01-23 08:39:57','2026-01-23 08:45:16','2026-01-23 08:45:16'),
-(2017,'BYR02017',115,1,'2026-02-23',NULL,3150000.00,0.00,0.00,NULL,'Belum',NULL,NULL,'2026-01-23 08:45:16','2026-01-23 08:45:16',NULL);
+(2017,'BYR02017',115,1,'2026-02-23','2026-01-28 07:08:00',3150000.00,3150000.00,0.00,1,'Lunas',NULL,1,'2026-01-23 08:45:16','2026-01-28 07:08:05',NULL),
+(2018,'BYR02018',116,1,'2026-02-26','2026-01-26 02:50:00',1750000.00,1750000.00,0.00,1,'Lunas','lunas bulan 1',1,'2026-01-26 02:47:40','2026-01-26 02:50:25',NULL),
+(2019,'BYR02019',116,2,'2026-03-26','2026-01-26 02:50:00',1750000.00,1750000.00,0.00,1,'Lunas',NULL,1,'2026-01-26 02:47:40','2026-01-26 02:50:52',NULL),
+(2020,'BYR02020',116,3,'2026-04-26','2026-01-26 02:50:00',1750000.00,1750000.00,0.00,1,'Lunas',NULL,1,'2026-01-26 02:47:40','2026-01-26 02:51:02',NULL),
+(2021,'BYR02021',117,1,'2026-02-28','2026-01-28 03:40:00',1400000.00,1400000.00,0.00,3,'Lunas',NULL,1,'2026-01-28 01:22:43','2026-01-28 03:40:49',NULL),
+(2022,'BYR02022',117,2,'2026-03-28','2026-01-28 04:50:48',1400000.00,1400000.00,0.00,3,'Lunas',NULL,1,'2026-01-28 01:22:43','2026-01-28 04:50:48',NULL),
+(2023,'BYR02023',117,3,'2026-04-28',NULL,1400000.00,0.00,0.00,NULL,'Belum',NULL,NULL,'2026-01-28 01:22:43','2026-01-28 01:22:43',NULL),
+(2031,'BYR02024',121,1,'2026-02-28','2026-01-28 06:15:08',525000.00,525000.00,0.00,3,'Lunas',NULL,1,'2026-01-28 04:10:10','2026-01-28 06:17:08',NULL),
+(2032,'BYR02025',121,2,'2026-03-28','2026-01-28 07:14:00',525000.00,525000.00,0.00,1,'Lunas','s',1,'2026-01-28 04:10:10','2026-01-28 07:14:47',NULL),
+(2033,'BYR02026',122,1,'2026-02-28','2026-01-28 06:54:00',2625000.00,2625000.00,0.00,1,'Lunas',NULL,1,'2026-01-28 06:54:15','2026-01-28 06:54:39',NULL),
+(2034,'BYR02027',122,2,'2026-03-28','2026-01-28 06:55:17',2625000.00,2625000.00,0.00,3,'Lunas',NULL,1,'2026-01-28 06:54:15','2026-01-28 06:55:30',NULL),
+(2035,'BYR02028',122,3,'2026-04-28','2026-01-28 06:55:00',2625000.00,2625000.00,0.00,1,'Lunas',NULL,1,'2026-01-28 06:54:15','2026-01-28 06:55:57',NULL),
+(2036,'BYR02029',122,4,'2026-05-28','2026-01-28 06:56:48',2625000.00,2625000.00,0.00,3,'Lunas',NULL,1,'2026-01-28 06:54:15','2026-01-28 06:57:09',NULL),
+(2037,'BYR02030',123,1,'2026-03-04','2026-02-04 06:23:11',1050000.00,1050000.00,0.00,3,'Lunas',NULL,1,'2026-02-04 06:22:41','2026-02-04 06:23:35',NULL),
+(2038,'BYR02031',123,2,'2026-04-04','2026-02-04 06:26:11',1050000.00,1050000.00,0.00,3,'Lunas',NULL,1,'2026-02-04 06:22:41','2026-02-04 06:27:58',NULL),
+(2039,'BYR02032',123,3,'2026-05-04','2026-02-04 06:30:18',1050000.00,1050000.00,0.00,4,'Lunas',NULL,1,'2026-02-04 06:22:41','2026-02-04 06:30:36',NULL),
+(2040,'BYR02033',123,4,'2026-06-04',NULL,1050000.00,0.00,0.00,NULL,'Belum',NULL,NULL,'2026-02-04 06:22:41','2026-02-04 06:22:41',NULL);
 
 /*Table structure for table `cache` */
 
@@ -128,16 +144,16 @@ CREATE TABLE `data_anggota` (
   KEY `idx_aktif` (`aktif`),
   KEY `data_anggota_user_id_foreign` (`user_id`),
   CONSTRAINT `data_anggota_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `data_anggota` */
 
 insert  into `data_anggota`(`id`,`user_id`,`photo`,`id_anggota`,`username`,`password`,`nama`,`jenis_kelamin`,`tempat_lahir`,`tanggal_lahir`,`status`,`departement`,`pekerjaan`,`agama`,`alamat`,`kota`,`no_telp`,`tanggal_registrasi`,`jabatan`,`aktif`,`created_at`,`updated_at`) values 
 (1,NULL,'assets/images/profile/user-1.jpg','AG0001','ibless@gmail.com','$2y$12$lEflbG8vLPc9Ag4Uhk2OWuJP08WjEC5LisyH01sskVmXJB4EG7n52','iam ibless','Laki-laki','sad','2025-12-29','Belum Kawin','Produksi Slitting','Lainnya','Islam','fasfaafafdaf','sad','04578987654','2026-01-09','Anggota','Aktif','2026-01-09 07:24:46','2026-01-23 06:30:38'),
-(5,NULL,'anggota/anggota_1768203624.png','AG0002','adssss','$2y$12$gsdGrN0v7Khqpl2xO1nd/ONVwgtpIcq8Ou2NMQx8/I/VhBGoB.WtO','sadsss','Perempuan','sad','2026-01-09','Belum Kawin','Produksi Slitting','PNS','Islam','asda','sad','04578987654','2026-01-12','Pengurus','Aktif','2026-01-12 07:40:26','2026-01-12 07:40:26'),
 (6,NULL,'assets/images/profile/user-1.jpg','AG0003','adssssadsad','$2y$12$ISMo72y3qQtebmJm/JFV5eqGRcQeVEDpDP9QPgH0Rqszqik4m/vLC','sadsssasda','Laki-laki','sad','2026-01-09','Kawin','WH','Buruh','Islam','Villa Pajajaran Permai Blok F-16','sad','04578987654','2026-01-12','Anggota','Aktif','2026-01-12 07:40:50','2026-01-21 07:31:17'),
-(7,2,'assets/images/profile/user-1.jpg','AG0004','user','$2y$12$XtJ2Y7VMLl8Colq4hcb.henOJ123E3G3JpqqGhrJ9GJrOyqXPrzDK','User Koperasi','Laki-laki','Jakartaaaaa','1990-01-01','Belum Kawin','Produksi Slitting','Karyawan Swasta','Islam','Jakartuy','Jakarta','081234567890','2026-01-13','Pengurus','Aktif','2026-01-13 16:49:08','2026-01-23 07:23:04'),
-(11,8,'assets/images/profile/user-1.jpg','AG0005','oi','$2y$12$zl4s/MvZATwP643UtJCSlOrGtyt9CHdjWxCpRPUmReZPjxtE/jf8S','iam ibless','Laki-laki','sad','2025-12-29','Kawin','Produksi Slitting','TNI','Islam','VIlla Pajajaran Permai Blok F-111','sad','04578987654','2026-01-23','Anggota','Aktif','2026-01-23 06:51:21','2026-01-23 06:54:42');
+(7,2,'profile-images/profile_2_1769480272.png','AG0004','user','$2y$12$XtJ2Y7VMLl8Colq4hcb.henOJ123E3G3JpqqGhrJ9GJrOyqXPrzDK','User Koperasi','Laki-laki','Jakartaaaaa','1990-01-01','Belum Kawin','Produksi Slitting','Karyawan Swasta','Islam','Jakartuy','Jakarta','081234567890','2026-01-13','Pengurus','Aktif','2026-01-13 16:49:08','2026-01-27 02:17:52'),
+(11,8,'assets/images/profile/user-1.jpg','AG0005','oi','$2y$12$zl4s/MvZATwP643UtJCSlOrGtyt9CHdjWxCpRPUmReZPjxtE/jf8S','iam ibless','Laki-laki','sad','2025-12-29','Kawin','Produksi Slitting','TNI','Islam','VIlla Pajajaran Permai Blok F-111','sad','04578987654','2026-01-23','Anggota','Aktif','2026-01-23 06:51:21','2026-01-23 06:54:42'),
+(14,14,'assets/images/profile/user-1.jpg','AG0006','CEO','$2y$12$Gw82GKHUe02w36ZQFVB/NuylT2RTMjclmRz5k94yMbvb6yPaLJfrm','AKU CEO KAYA RAYA','Laki-laki','sad','2026-01-09','Kawin','Purchasing','TNI','Islam','istana','sad','04578987654','2026-02-04','Anggota','Aktif','2026-02-04 02:05:04','2026-02-04 02:05:04');
 
 /*Table structure for table `data_barang` */
 
@@ -168,6 +184,8 @@ DROP TABLE IF EXISTS `data_kas`;
 CREATE TABLE `data_kas` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `nama_kas` varchar(225) NOT NULL,
+  `no_rekening` varchar(50) DEFAULT NULL,
+  `pemilik_rekening` varchar(225) DEFAULT NULL,
   `aktif` enum('Y','T') NOT NULL DEFAULT 'Y',
   `simpanan` enum('Y','T') NOT NULL DEFAULT 'Y',
   `penarikan` enum('Y','T') NOT NULL DEFAULT 'Y',
@@ -179,13 +197,15 @@ CREATE TABLE `data_kas` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `data_kas` */
 
-insert  into `data_kas`(`id`,`nama_kas`,`aktif`,`simpanan`,`penarikan`,`pinjaman`,`angsuran`,`pemasukan_kas`,`pengeluaran_kas`,`transfer_kas`,`created_at`,`updated_at`) values 
-(1,'Kas Tunai','Y','Y','Y','Y','Y','Y','Y','T','2026-01-09 06:55:07','2026-01-09 06:55:16'),
-(3,'zzz','Y','Y','Y','Y','Y','Y','Y','Y','2026-01-12 02:42:46','2026-01-12 02:42:46');
+insert  into `data_kas`(`id`,`nama_kas`,`no_rekening`,`pemilik_rekening`,`aktif`,`simpanan`,`penarikan`,`pinjaman`,`angsuran`,`pemasukan_kas`,`pengeluaran_kas`,`transfer_kas`,`created_at`,`updated_at`) values 
+(1,'Kas Tunai',NULL,NULL,'Y','Y','Y','Y','Y','Y','Y','T','2026-01-09 06:55:07','2026-01-09 06:55:16'),
+(3,'Transfer BRI','9876-5432-1003','Nurif','Y','Y','Y','Y','Y','Y','Y','Y','2026-01-12 02:42:46','2026-02-04 09:05:09'),
+(4,'Transfer BCA','9876-5432-1002','Alfaka','Y','Y','Y','Y','Y','Y','Y','Y',NULL,'2026-02-04 09:04:54'),
+(5,'Transfer Mandiri','9876-5432-1001','Burhan','Y','Y','Y','Y','Y','Y','Y','Y',NULL,'2026-02-04 09:04:12');
 
 /*Table structure for table `data_pengguna` */
 
@@ -223,6 +243,11 @@ CREATE TABLE `detail_bayar_angsuran` (
   `denda` decimal(15,2) NOT NULL DEFAULT 0.00 COMMENT 'Denda keterlambatan',
   `total_bayar` decimal(15,2) NOT NULL DEFAULT 0.00 COMMENT 'jumlah_bayar + denda',
   `ke_kas_id` bigint(20) DEFAULT NULL COMMENT 'Masuk ke kas mana',
+  `bukti_transfer` varchar(255) DEFAULT NULL,
+  `status_verifikasi` enum('pending','approved','rejected') DEFAULT 'approved',
+  `catatan_verifikasi` text DEFAULT NULL,
+  `verified_at` timestamp NULL DEFAULT NULL,
+  `verified_by` bigint(20) unsigned DEFAULT NULL,
   `keterangan` text DEFAULT NULL,
   `user_id` bigint(20) unsigned DEFAULT NULL COMMENT 'User yang memproses pembayaran',
   `created_at` timestamp NULL DEFAULT NULL,
@@ -237,19 +262,49 @@ CREATE TABLE `detail_bayar_angsuran` (
   KEY `detail_bayar_angsuran_kode_bayar_index` (`kode_bayar`),
   KEY `detail_bayar_angsuran_tanggal_bayar_index` (`tanggal_bayar`),
   KEY `detail_bayar_angsuran_angsuran_ke_index` (`angsuran_ke`),
+  KEY `detail_bayar_angsuran_verified_by_foreign` (`verified_by`),
+  KEY `detail_bayar_angsuran_status_verifikasi_index` (`status_verifikasi`),
+  KEY `detail_bayar_angsuran_verified_at_index` (`verified_at`),
   CONSTRAINT `detail_bayar_angsuran_bayar_angsuran_id_foreign` FOREIGN KEY (`bayar_angsuran_id`) REFERENCES `bayar_angsuran` (`id`) ON DELETE CASCADE,
   CONSTRAINT `detail_bayar_angsuran_ke_kas_id_foreign` FOREIGN KEY (`ke_kas_id`) REFERENCES `data_kas` (`id`) ON DELETE SET NULL,
   CONSTRAINT `detail_bayar_angsuran_pinjaman_id_foreign` FOREIGN KEY (`pinjaman_id`) REFERENCES `pinjaman` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `detail_bayar_angsuran_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  CONSTRAINT `detail_bayar_angsuran_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `detail_bayar_angsuran_verified_by_foreign` FOREIGN KEY (`verified_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `fk_detail_bayar_verified_by` FOREIGN KEY (`verified_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB AUTO_INCREMENT=48 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `detail_bayar_angsuran` */
 
-insert  into `detail_bayar_angsuran`(`id`,`kode_bayar`,`bayar_angsuran_id`,`pinjaman_id`,`angsuran_ke`,`tanggal_bayar`,`jumlah_bayar`,`denda`,`total_bayar`,`ke_kas_id`,`keterangan`,`user_id`,`created_at`,`updated_at`,`deleted_at`) values 
-(17,'TBY00001',1001,108,1,'2026-01-22 09:04:00',787500.00,0.00,787500.00,1,NULL,1,'2026-01-22 09:04:55','2026-01-22 09:04:55',NULL),
-(18,'TBY00002',1002,108,2,'2026-01-22 09:05:00',787500.00,0.00,787500.00,1,NULL,1,'2026-01-22 09:05:55','2026-01-22 09:05:55',NULL),
-(19,'TBY00003',1003,108,3,'2026-01-22 09:05:00',787500.00,0.00,787500.00,1,NULL,1,'2026-01-22 09:06:01','2026-01-22 09:06:01',NULL),
-(20,'TBY00004',1004,108,4,'2026-01-22 09:06:00',787500.00,0.00,787500.00,3,NULL,1,'2026-01-22 09:06:07','2026-01-22 09:06:07',NULL);
+insert  into `detail_bayar_angsuran`(`id`,`kode_bayar`,`bayar_angsuran_id`,`pinjaman_id`,`angsuran_ke`,`tanggal_bayar`,`jumlah_bayar`,`denda`,`total_bayar`,`ke_kas_id`,`bukti_transfer`,`status_verifikasi`,`catatan_verifikasi`,`verified_at`,`verified_by`,`keterangan`,`user_id`,`created_at`,`updated_at`,`deleted_at`) values 
+(17,'TBY00001',1001,108,1,'2026-01-22 09:04:00',787500.00,0.00,787500.00,1,NULL,'approved',NULL,'2026-01-27 15:26:53',NULL,NULL,1,'2026-01-22 09:04:55','2026-01-22 09:04:55',NULL),
+(18,'TBY00002',1002,108,2,'2026-01-22 09:05:00',787500.00,0.00,787500.00,1,NULL,'approved',NULL,'2026-01-27 15:26:53',NULL,NULL,1,'2026-01-22 09:05:55','2026-01-22 09:05:55',NULL),
+(19,'TBY00003',1003,108,3,'2026-01-22 09:05:00',787500.00,0.00,787500.00,1,NULL,'approved',NULL,'2026-01-27 15:26:53',NULL,NULL,1,'2026-01-22 09:06:01','2026-01-22 09:06:01',NULL),
+(20,'TBY00004',1004,108,4,'2026-01-22 09:06:00',787500.00,0.00,787500.00,3,NULL,'approved',NULL,'2026-01-27 15:26:53',NULL,NULL,1,'2026-01-22 09:06:07','2026-01-22 09:06:07',NULL),
+(21,'TBY00005',2018,116,1,'2026-01-26 02:50:00',1750000.00,0.00,1750000.00,1,NULL,'approved',NULL,'2026-01-27 15:26:53',NULL,'lunas bulan 1',1,'2026-01-26 02:50:25','2026-01-26 02:50:25',NULL),
+(22,'TBY00006',2019,116,2,'2026-01-26 02:50:00',1750000.00,0.00,1750000.00,1,NULL,'approved',NULL,'2026-01-27 15:26:53',NULL,NULL,1,'2026-01-26 02:50:52','2026-01-26 02:50:52',NULL),
+(23,'TBY00007',2020,116,3,'2026-01-26 02:50:00',1750000.00,0.00,1750000.00,1,NULL,'approved',NULL,'2026-01-27 15:26:53',NULL,NULL,1,'2026-01-26 02:51:02','2026-01-26 02:51:02',NULL),
+(24,'TBY00008',2009,114,1,'2026-01-26 03:11:00',787500.00,515000.00,1302500.00,3,NULL,'approved',NULL,'2026-01-27 15:26:53',NULL,NULL,1,'2026-01-26 03:11:38','2026-01-28 08:19:01','2026-01-28 08:19:01'),
+(25,'TBY00009',2021,117,1,'2026-01-28 03:40:00',1400000.00,0.00,1400000.00,3,NULL,'approved',NULL,'2026-01-28 03:40:49',1,NULL,1,'2026-01-28 03:40:49','2026-01-28 03:40:49',NULL),
+(27,'TBY00011',2022,117,2,'2026-01-28 04:50:22',1400000.00,0.00,1400000.00,3,'bukti_transfer/bukti_transfer_1769575822_6979958ee31fa.jpeg','approved','Pembayaran diverifikasi dan disetujui','2026-01-28 04:50:48',1,'Pembayaran via transfer dari user',2,'2026-01-28 04:50:22','2026-01-28 04:50:48',NULL),
+(28,'TBY00012',2031,121,1,'2026-01-28 06:15:08',525000.00,0.00,525000.00,3,'bukti_transfer/bukti_transfer_1769580908_6979a96c688ee.png','approved','Pembayaran diverifikasi dan disetujui','2026-01-28 06:17:08',1,'sss',2,'2026-01-28 06:15:08','2026-01-28 06:17:08',NULL),
+(30,'TBY00014',2010,114,2,'2026-01-28 06:39:07',787500.00,370000.00,1157500.00,3,'bukti_transfer/bukti_transfer_1769582347_6979af0b3fdc2.png','approved','Pembayaran diverifikasi dan disetujui','2026-01-28 06:39:36',1,'Pembayaran via transfer dari user',2,'2026-01-28 06:39:07','2026-01-28 06:39:36',NULL),
+(31,'TBY00015',2011,114,3,'2026-01-28 06:39:00',787500.00,220000.00,1007500.00,1,NULL,'approved',NULL,'2026-01-28 06:39:45',1,NULL,1,'2026-01-28 06:39:45','2026-01-28 07:16:38','2026-01-28 07:16:38'),
+(32,'TBY00016',2033,122,1,'2026-01-28 06:54:00',2625000.00,0.00,2625000.00,1,NULL,'approved',NULL,'2026-01-28 06:54:39',1,NULL,1,'2026-01-28 06:54:39','2026-01-28 06:54:39',NULL),
+(33,'TBY00017',2034,122,2,'2026-01-28 06:55:17',2625000.00,0.00,2625000.00,3,'bukti_transfer/bukti_transfer_1769583317_6979b2d5d9570.png','approved','Pembayaran diverifikasi dan disetujui','2026-01-28 06:55:30',1,'Pembayaran via transfer dari user',2,'2026-01-28 06:55:17','2026-01-28 06:55:30',NULL),
+(34,'TBY00018',2035,122,3,'2026-01-28 06:55:00',2625000.00,0.00,2625000.00,1,NULL,'approved',NULL,'2026-01-28 06:55:57',1,NULL,1,'2026-01-28 06:55:57','2026-01-28 06:55:57',NULL),
+(35,'TBY00019',2036,122,4,'2026-01-28 06:56:48',2625000.00,0.00,2625000.00,3,'bukti_transfer/bukti_transfer_1769583408_6979b3307ff8f.png','approved','Pembayaran diverifikasi dan disetujui','2026-01-28 06:57:09',1,'Pembayaran via transfer dari user',2,'2026-01-28 06:56:48','2026-01-28 06:57:09',NULL),
+(36,'TBY00020',2017,115,1,'2026-01-28 07:08:00',3150000.00,0.00,3150000.00,1,NULL,'approved',NULL,'2026-01-28 07:08:05',1,NULL,1,'2026-01-28 07:08:05','2026-01-28 07:08:05',NULL),
+(37,'TBY00021',2032,121,2,'2026-01-28 07:14:00',525000.00,0.00,525000.00,1,NULL,'approved',NULL,'2026-01-28 07:14:11',1,NULL,1,'2026-01-28 07:14:11','2026-01-28 07:14:29','2026-01-28 07:14:29'),
+(38,'TBY00022',2032,121,2,'2026-01-28 07:14:00',525000.00,0.00,525000.00,1,NULL,'approved',NULL,'2026-01-28 07:14:47',1,'s',1,'2026-01-28 07:14:47','2026-01-28 07:14:47',NULL),
+(39,'TBY00023',2011,114,3,'2026-01-28 07:17:15',787500.00,220000.00,1007500.00,3,'bukti_transfer/bukti_transfer_1769584635_6979b7fbc7f44.png','approved','Pembayaran diverifikasi dan disetujui','2026-01-28 07:44:33',1,'Pembayaran via transfer dari user',2,'2026-01-28 07:17:15','2026-01-28 07:44:33',NULL),
+(40,'TBY00024',2012,114,4,'2026-01-28 08:14:00',787500.00,65000.00,852500.00,1,NULL,'approved',NULL,'2026-01-28 08:14:22',1,NULL,1,'2026-01-28 08:14:22','2026-01-28 08:14:42','2026-01-28 08:14:42'),
+(41,'TBY00025',2009,114,1,'2026-01-28 08:19:00',787500.00,525000.00,1312500.00,1,NULL,'approved',NULL,'2026-01-28 08:19:11',1,NULL,1,'2026-01-28 08:19:11','2026-01-28 08:19:11',NULL),
+(42,'TBY00026',2012,114,4,'2026-01-28 09:27:08',787500.00,65000.00,852500.00,3,'bukti_transfer/bukti_transfer_1769592428_6979d66cbf6f5.jpeg','approved','Pembayaran diverifikasi dan disetujui','2026-01-28 09:31:06',1,'Pembayaran via transfer dari user',2,'2026-01-28 09:27:08','2026-01-28 09:46:16','2026-01-28 09:46:16'),
+(43,'TBY00027',2037,123,1,'2026-02-04 06:23:11',1050000.00,0.00,1050000.00,3,'bukti_transfer/bukti_transfer_1770186191_6982e5cf0de49.jpeg','approved','Pembayaran diverifikasi dan disetujui','2026-02-04 06:23:35',1,'Pembayaran via transfer dari user',14,'2026-02-04 06:23:11','2026-02-04 06:23:35',NULL),
+(44,'TBY00028',2038,123,2,'2026-02-04 06:26:11',1050000.00,0.00,1050000.00,3,'bukti_transfer/bukti_transfer_1770186371_6982e683d4c56.jpeg','approved','Pembayaran diverifikasi dan disetujui','2026-02-04 06:27:58',1,'Pembayaran via transfer dari user',14,'2026-02-04 06:26:11','2026-02-04 06:27:58',NULL),
+(45,'TBY00029',2039,123,3,'2026-02-04 06:30:18',1050000.00,0.00,1050000.00,4,'bukti_transfer/bukti_transfer_1770186618_6982e77af0b1b.jpeg','approved','Pembayaran diverifikasi dan disetujui','2026-02-04 06:30:36',1,'s',14,'2026-02-04 06:30:18','2026-02-04 06:30:36',NULL),
+(46,'TBY00030',2040,123,4,'2026-02-04 09:32:10',1050000.00,0.00,1050000.00,4,'bukti_transfer/bukti_transfer_1770197530_6983121a5fcd0.jpeg','rejected','ssssssssssssssss','2026-02-04 16:44:25',1,'ss',14,'2026-02-04 09:32:10','2026-02-04 16:44:25',NULL),
+(47,'TBY00031',2040,123,4,'2026-02-04 16:54:33',1050000.00,0.00,1050000.00,4,'bukti_transfer/bukti_transfer_1770198873_69831759b8365.jpeg','pending',NULL,NULL,NULL,'s',14,'2026-02-04 16:54:33','2026-02-04 16:54:33',NULL);
 
 /*Table structure for table `detail_pinjaman_lunas` */
 
@@ -323,7 +378,7 @@ CREATE TABLE `identitas_koperasi` (
 /*Data for the table `identitas_koperasi` */
 
 insert  into `identitas_koperasi`(`id`,`nama_lembaga`,`nama_ketua`,`hp_ketua`,`alamat`,`telepon`,`kota`,`email`,`web`,`logo`,`created_at`,`updated_at`) values 
-(1,'Koperasi Akeno','Riski Juanda','080000000000','AKENO MULTIMEDIA SOLUTION, Vila Bandung Indah 40393 Jawa West Java','0821-2135-5234','Bandung','master@akeno-ms.com','www.koperasi.akeno.id','assets/images/logos/logo-koperasi-1769137392.png','2026-01-23 02:52:33','2026-01-23 03:05:49');
+(1,'Koperasi','Riski Juanda','080000000000','AKENO MULTIMEDIA SOLUTION, Vila Bandung Indah 40393 Jawa West Java','0821-2135-5234','Bandung','master@akeno-ms.com','www.koperasi.akeno.id','assets/images/logos/logo-koperasi-1769137392.png','2026-01-23 02:52:33','2026-01-29 07:50:30');
 
 /*Table structure for table `jenis_akun` */
 
@@ -525,12 +580,13 @@ CREATE TABLE `pemasukan` (
   CONSTRAINT `pemasukan_dari_akun_id_foreign` FOREIGN KEY (`dari_akun_id`) REFERENCES `jenis_akun` (`id`),
   CONSTRAINT `pemasukan_untuk_kas_id_foreign` FOREIGN KEY (`untuk_kas_id`) REFERENCES `data_kas` (`id`),
   CONSTRAINT `pemasukan_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `pemasukan` */
 
 insert  into `pemasukan`(`id`,`kode_transaksi`,`tanggal_transaksi`,`uraian`,`untuk_kas_id`,`dari_akun_id`,`jumlah`,`user_id`,`created_at`,`updated_at`,`deleted_at`) values 
-(1,'TKD00001','2026-01-22 08:41:00','sssss',1,34,2600000.00,1,'2026-01-22 08:41:25','2026-01-22 08:41:25',NULL);
+(1,'TKD00001','2026-01-22 08:41:00','sssss',3,34,2600000.00,1,'2026-01-22 08:41:25','2026-01-29 07:35:53',NULL),
+(2,'TKD00002','2026-01-29 07:35:00','s',1,27,1000002.00,1,'2026-01-29 07:35:45','2026-01-29 07:35:58','2026-01-29 07:35:58');
 
 /*Table structure for table `penarikan_tunai` */
 
@@ -573,7 +629,6 @@ insert  into `penarikan_tunai`(`id`,`kode_transaksi`,`tanggal_transaksi`,`anggot
 (2,'PNR00002','2026-01-13 02:46:00',1,14,100000.00,1,'ads','das','da','sdad',1,'2026-01-13 02:46:45','2026-01-22 08:33:59','2026-01-22 08:33:59'),
 (3,'TRK00003','2026-01-13 02:47:00',1,13,323232.00,1,'dsada','dsada','dsada','sda',1,'2026-01-13 02:47:54','2026-01-22 08:34:00','2026-01-22 08:34:00'),
 (4,'TRK00004','2026-01-13 02:48:00',6,14,1000002.00,1,'dasda','dsadas','sdada','sda',1,'2026-01-13 02:48:18','2026-01-13 04:11:20','2026-01-13 04:11:20'),
-(5,'TRK00005','2026-01-22 08:43:00',5,14,100000.00,1,'dasda','sada','ssssssssssss','ssssssssssss',1,'2026-01-22 08:43:32','2026-01-23 06:43:28','2026-01-23 06:43:28'),
 (6,'TRK00006','2026-01-23 06:43:00',7,14,100000.00,1,'dasda','Sada','zzzzzzz',NULL,1,'2026-01-23 06:43:46','2026-01-23 06:43:46',NULL);
 
 /*Table structure for table `pengajuan_pinjaman` */
@@ -609,7 +664,7 @@ CREATE TABLE `pengajuan_pinjaman` (
   CONSTRAINT `pengajuan_pinjaman_approved_by_foreign` FOREIGN KEY (`approved_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
   CONSTRAINT `pengajuan_pinjaman_lama_angsuran_id_foreign` FOREIGN KEY (`lama_angsuran_id`) REFERENCES `lama_angsuran` (`id`),
   CONSTRAINT `pengajuan_pinjaman_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=105 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=113 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `pengajuan_pinjaman` */
 
@@ -620,9 +675,17 @@ insert  into `pengajuan_pinjaman`(`id`,`id_ajuan`,`tanggal_pengajuan`,`anggota_i
 (4,'G.26.01.003','2026-01-20 02:40:49',7,'Barang',1000000.00,2,'asd',1,'2026-01-20',NULL,1,2,'2026-01-20 02:40:49','2026-01-23 08:23:18','2026-01-23 08:23:18'),
 (100,'T.26.01.100','2025-11-01 10:00:00',1,'Biasa',2000000.00,2,'Testing jatuh tempo - sudah lewat',3,'2025-11-01',NULL,1,1,'2026-01-21 14:54:31','2026-01-22 09:03:04','2026-01-22 09:03:04'),
 (101,'G.26.01.004','2026-01-22 09:00:06',7,'Barang',3000000.00,2,'beli hp',3,'2026-01-22','oke',1,2,'2026-01-22 09:00:06','2026-01-22 09:02:59',NULL),
-(102,'B.26.01.002','2026-01-23 07:34:41',7,'Biasa',3000000.00,2,'sssss',1,'2026-01-23',NULL,1,2,'2026-01-23 07:34:41','2026-01-23 08:36:51',NULL),
+(102,'B.26.01.002','2026-01-23 07:34:41',7,'Biasa',3000000.00,2,'sssss',3,'2026-01-23',NULL,1,2,'2026-01-23 07:34:41','2026-01-27 04:04:44',NULL),
 (103,'B.26.01.003','2026-01-23 07:50:21',11,'Biasa',3000000.00,2,'1',3,NULL,'mmmmmmmmmmmmmm',1,8,'2026-01-23 07:50:21','2026-01-23 08:39:57',NULL),
-(104,'G.26.01.005','2026-01-23 08:43:19',11,'Barang',3000000.00,1,'asasa',0,NULL,NULL,NULL,8,'2026-01-23 08:43:19','2026-01-23 08:43:19',NULL);
+(104,'G.26.01.005','2026-01-23 08:43:19',11,'Barang',3000000.00,1,'asasa',0,NULL,NULL,NULL,8,'2026-01-23 08:43:19','2026-01-23 08:43:19',NULL),
+(105,'G.26.01.006','2026-01-26 02:45:56',7,'Barang',5000000.00,5,'membeli hp infinix note 50 pro',3,'2026-01-26','diterima',1,2,'2026-01-26 02:45:56','2026-01-26 02:47:40',NULL),
+(106,'G.26.01.007','2026-01-28 01:22:05',7,'Barang',4000000.00,5,'a',3,'2026-01-28',NULL,1,2,'2026-01-28 01:22:05','2026-01-28 01:22:43',NULL),
+(107,'G.26.01.008','2026-01-28 03:49:56',7,'Barang',1000000.00,4,'s',1,'2026-01-28',NULL,1,2,'2026-01-28 03:49:56','2026-01-28 04:09:24','2026-01-28 04:09:24'),
+(108,'G.26.01.009','2026-01-28 04:09:55',7,'Barang',1000000.00,4,'SSSSSSSSSSSS',3,'2026-01-28',NULL,1,2,'2026-01-28 04:09:55','2026-01-28 04:10:10',NULL),
+(109,'B.26.01.004','2026-01-28 06:53:38',7,'Biasa',10000000.00,2,'s',3,'2026-01-28',NULL,1,2,'2026-01-28 06:53:38','2026-01-28 06:54:15',NULL),
+(110,'G.26.02.001','2026-02-04 01:29:32',7,'Barang',10000000.00,4,'ss',0,NULL,NULL,NULL,2,'2026-02-04 01:29:32','2026-02-04 01:29:32',NULL),
+(111,'G.26.02.002','2026-02-04 02:06:03',14,'Barang',4000000.00,2,'beli hp',3,'2026-02-04',NULL,1,14,'2026-02-04 02:06:03','2026-02-04 06:22:41',NULL),
+(112,'B.26.02.001','2026-02-04 07:37:10',14,'Biasa',10000.00,4,'s',0,NULL,NULL,NULL,14,'2026-02-04 07:37:10','2026-02-04 07:37:10',NULL);
 
 /*Table structure for table `pengeluaran` */
 
@@ -705,14 +768,19 @@ CREATE TABLE `pinjaman` (
   CONSTRAINT `pinjaman_lama_angsuran_id_foreign` FOREIGN KEY (`lama_angsuran_id`) REFERENCES `lama_angsuran` (`id`),
   CONSTRAINT `pinjaman_pengajuan_id_foreign` FOREIGN KEY (`pengajuan_id`) REFERENCES `pengajuan_pinjaman` (`id`),
   CONSTRAINT `pinjaman_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=116 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=124 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `pinjaman` */
 
 insert  into `pinjaman`(`id`,`kode_pinjaman`,`pengajuan_id`,`tanggal_pinjam`,`anggota_id`,`barang_id`,`jenis_pinjaman`,`pokok_pinjaman`,`lama_angsuran_id`,`angsuran_pokok`,`bunga_persen`,`biaya_bunga`,`biaya_admin`,`jumlah_angsuran`,`dari_kas_id`,`keterangan`,`status_lunas`,`user_id`,`created_at`,`updated_at`,`deleted_at`,`deleted_by`,`alasan_hapus`) values 
 (108,'PJ00001',101,'2025-12-24 16:02:00',7,NULL,'Barang',3000000.00,2,750000.00,5.00,37500.00,0.00,3150000.00,1,'ssss','Lunas',1,'2026-01-22 09:02:58','2026-01-22 09:06:07',NULL,NULL,NULL),
-(114,'PJ00004',102,'2026-01-23 15:38:00',7,NULL,'Biasa',3000000.00,2,750000.00,5.00,37500.00,0.00,3150000.00,1,NULL,'Belum',1,'2026-01-23 08:24:27','2026-01-23 08:24:27',NULL,NULL,NULL),
-(115,'PJ00005',103,'2026-01-23 15:39:00',11,NULL,'Biasa',3000000.00,3,3000000.00,5.00,150000.00,0.00,3150000.00,1,NULL,'Belum',1,'2026-01-23 08:39:57','2026-01-23 08:45:16',NULL,NULL,NULL);
+(114,'PJ00004',102,'2026-01-23 15:38:00',7,NULL,'Biasa',3000000.00,2,750000.00,5.00,37500.00,0.00,3150000.00,1,NULL,'Belum',1,'2026-01-23 08:24:27','2026-01-27 04:04:44',NULL,NULL,NULL),
+(115,'PJ00005',103,'2026-01-23 15:39:00',11,NULL,'Biasa',3000000.00,3,3000000.00,5.00,150000.00,0.00,3150000.00,1,NULL,'Lunas',1,'2026-01-23 08:39:57','2026-01-28 07:08:05',NULL,NULL,NULL),
+(116,'PJ00006',105,'2026-01-26 09:47:00',7,NULL,'Barang',5000000.00,5,1666666.67,5.00,83333.33,0.00,5250000.00,1,NULL,'Lunas',1,'2026-01-26 02:47:40','2026-01-26 02:51:02',NULL,NULL,NULL),
+(117,'PJ00007',106,'2026-01-28 08:22:00',7,NULL,'Barang',4000000.00,5,1333333.33,5.00,66666.67,0.00,4200000.00,1,NULL,'Lunas',1,'2026-01-28 01:22:43','2026-01-28 04:50:48',NULL,NULL,NULL),
+(121,'PJ00008',108,'2026-01-28 11:10:00',7,NULL,'Barang',1000000.00,4,500000.00,5.00,25000.00,0.00,1050000.00,1,NULL,'Lunas',1,'2026-01-28 04:10:10','2026-01-28 07:14:59',NULL,NULL,NULL),
+(122,'PJ00009',109,'2026-01-28 13:54:00',7,NULL,'Biasa',10000000.00,2,2500000.00,5.00,125000.00,0.00,10500000.00,1,NULL,'Lunas',1,'2026-01-28 06:54:15','2026-01-28 06:57:09',NULL,NULL,NULL),
+(123,'PJ00010',111,'2026-02-04 13:22:00',14,NULL,'Barang',4000000.00,2,1000000.00,5.00,50000.00,0.00,4200000.00,1,NULL,'Belum',1,'2026-02-04 06:22:41','2026-02-04 06:22:41',NULL,NULL,NULL);
 
 /*Table structure for table `pinjaman_lunas` */
 
@@ -747,12 +815,16 @@ CREATE TABLE `pinjaman_lunas` (
   CONSTRAINT `pinjaman_lunas_deleted_by_foreign` FOREIGN KEY (`deleted_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
   CONSTRAINT `pinjaman_lunas_pinjaman_id_foreign` FOREIGN KEY (`pinjaman_id`) REFERENCES `pinjaman` (`id`) ON DELETE CASCADE,
   CONSTRAINT `pinjaman_lunas_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `pinjaman_lunas` */
 
 insert  into `pinjaman_lunas`(`id`,`kode_lunas`,`pinjaman_id`,`tanggal_lunas`,`total_pokok`,`total_bunga`,`total_denda`,`total_dibayar`,`lama_cicilan`,`total_angsuran`,`keterangan`,`user_id`,`deleted_by`,`alasan_batal`,`deleted_at`,`created_at`,`updated_at`) values 
-(7,'TPJ00001',108,'2026-01-22 09:06:00',3000000.00,150000.00,0.00,3150000.00,4,4,'Validasi pelunasan pinjaman PJ00001',1,NULL,NULL,NULL,'2026-01-22 09:06:32','2026-01-22 09:06:32');
+(7,'TPJ00001',108,'2026-01-22 09:06:00',3000000.00,150000.00,0.00,3150000.00,4,4,'Validasi pelunasan pinjaman PJ00001',1,NULL,NULL,NULL,'2026-01-22 09:06:32','2026-01-22 09:06:32'),
+(8,'TPJ00002',116,'2026-01-26 02:50:00',5000000.00,249999.99,0.00,5250000.00,3,3,'Validasi pelunasan pinjaman PJ00006',1,NULL,NULL,NULL,'2026-01-26 02:51:47','2026-01-26 02:51:47'),
+(9,'TPJ00003',122,'2026-01-28 06:56:48',10000000.00,500000.00,0.00,10500000.00,4,4,'Validasi pelunasan pinjaman PJ00009',1,NULL,NULL,NULL,'2026-01-28 06:58:11','2026-01-28 06:58:11'),
+(10,'TPJ00004',121,'2026-01-28 07:14:00',1000000.00,50000.00,0.00,1050000.00,2,2,'Validasi pelunasan pinjaman PJ00008',1,1,'ssssssssssss','2026-01-28 07:14:23','2026-01-28 07:14:14','2026-01-28 07:14:23'),
+(11,'TPJ00005',121,'2026-01-28 07:14:00',1000000.00,50000.00,0.00,1050000.00,2,2,'Validasi pelunasan pinjaman PJ00008',1,NULL,NULL,NULL,'2026-01-28 07:14:59','2026-01-28 07:14:59');
 
 /*Table structure for table `roles` */
 
@@ -792,9 +864,8 @@ CREATE TABLE `sessions` (
 /*Data for the table `sessions` */
 
 insert  into `sessions`(`id`,`user_id`,`ip_address`,`user_agent`,`payload`,`last_activity`) values 
-('brjl3MWfPVw2DbtpJ6Ji4wzuvjtqsAHM5YmjwEeT',1,'127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiTEJaTUk1dUtwQ1VreVU4aUNYQkFDcVljMldBRWFPTVFWT0dBTXp1aSI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzc6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hZG1pbi9iYXlhci8xMDkiO3M6NToicm91dGUiO3M6MTk6InBpbmphbWFuLmJheWFyLnNob3ciO31zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aToxO30=',1769159177),
-('ocFKQFoErI1U2fCfi4kAKcqEOOUgf6M5Kcu8xMa3',2,'127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiSUVSZDNpVmp4MGp3SEhXWjVVRHB5SnZpd1Y5bTVJTVozWGl1Nnd4byI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mjc6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9sb2dpbiI7czo1OiJyb3V0ZSI7czo1OiJsb2dpbiI7fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjI7fQ==',1769152635),
-('sBsQzNz78CeN5a54ZQtIboLko7SJGpaxLWNWiHNn',1,'127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0','YTo0OntzOjY6Il90b2tlbiI7czo0MDoialVZSnlmQzg2TWQzWFNCb1AzWVVPSVJtT3JOVmpUc2pieTE5d1MzWCI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDI6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hZG1pbi9qZW5pcy1zaW1wYW5hbiI7czo1OiJyb3V0ZSI7czoyMToibWFzdGVyLmplbmlzLXNpbXBhbmFuIjt9czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTt9',1769159063);
+('E0gJAGjnpoxGya1OJpAY9aBWRrTHREP6GfSuYfPW',14,'127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0','YTo1OntzOjY6Il90b2tlbiI7czo0MDoiUjB6STBkazFhck51cGRzTXNNQkg3azBrWUhHd0NYYWpLWWFoYWNSNCI7czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjQ1OiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvdXNlci9iYXlhci1hbmdzdXJhbi8xMjMiO3M6NToicm91dGUiO3M6MTU6InVzZXIuYmF5YXIuc2hvdyI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjE0O30=',1770198874),
+('L2UvkXH6KokFSD7JuxbWtwW7iGolSusMuhJ2Aw3B',1,'127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiYTEwd1YwWHV3TWxhTkFXUWlwWkVFdW84UVpaUDV6Z1VUc24wbWt1aCI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MzM6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hZG1pbi9iYXlhciI7czo1OiJyb3V0ZSI7czoxNDoicGluamFtYW4uYmF5YXIiO31zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aToxO30=',1770199577);
 
 /*Table structure for table `setoran_tunai` */
 
@@ -828,15 +899,15 @@ CREATE TABLE `setoran_tunai` (
   CONSTRAINT `setoran_tunai_jenis_simpanan_id_foreign` FOREIGN KEY (`jenis_simpanan_id`) REFERENCES `jenis_simpanan` (`id`),
   CONSTRAINT `setoran_tunai_untuk_kas_id_foreign` FOREIGN KEY (`untuk_kas_id`) REFERENCES `data_kas` (`id`),
   CONSTRAINT `setoran_tunai_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `setoran_tunai` */
 
 insert  into `setoran_tunai`(`id`,`kode_transaksi`,`tanggal_transaksi`,`anggota_id`,`jenis_simpanan_id`,`jumlah`,`untuk_kas_id`,`nama_penyetor`,`no_identitas`,`alamat`,`keterangan`,`user_id`,`created_at`,`updated_at`,`deleted_at`) values 
 (1,'TRD00001','2026-01-13 01:50:00',1,13,100000.00,1,'sada','sada','asda','sad',1,'2026-01-13 01:52:19','2026-01-22 08:33:52','2026-01-22 08:33:52'),
-(2,'TRD00002','2026-01-13 02:25:00',5,14,100000.00,1,'sad',NULL,'dasda','daasd',1,'2026-01-13 02:26:10','2026-01-13 02:27:22','2026-01-13 02:27:22'),
 (3,'TRD00003','2026-01-22 08:43:00',1,14,100000.00,1,'sad','sada','sssssssss','sssss',1,'2026-01-22 08:43:15','2026-01-22 08:43:15',NULL),
-(4,'TRD00004','2026-01-23 01:56:00',7,14,10000000.00,1,'sad','sada','sssssss','sss',1,'2026-01-23 01:56:43','2026-01-23 01:56:43',NULL);
+(4,'TRD00004','2026-01-23 01:56:00',7,14,10000000.00,1,'sad','sada','sssssss','sss',1,'2026-01-23 01:56:43','2026-01-23 01:56:43',NULL),
+(5,'TRD00005','2026-01-26 02:53:00',7,14,100000.00,1,NULL,'111','ss',NULL,1,'2026-01-26 02:54:18','2026-01-26 02:54:18',NULL);
 
 /*Table structure for table `suku_bunga` */
 
@@ -910,6 +981,7 @@ CREATE TABLE `users` (
   `name` varchar(255) NOT NULL,
   `role_id` int(10) unsigned DEFAULT NULL,
   `email` varchar(255) NOT NULL,
+  `profile_image` varchar(255) DEFAULT NULL,
   `email_verified_at` timestamp NULL DEFAULT NULL,
   `password` varchar(255) NOT NULL,
   `remember_token` varchar(100) DEFAULT NULL,
@@ -919,15 +991,16 @@ CREATE TABLE `users` (
   UNIQUE KEY `users_email_unique` (`email`),
   KEY `role_id` (`role_id`),
   CONSTRAINT `users_ibfk_2` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `users` */
 
-insert  into `users`(`id`,`name`,`role_id`,`email`,`email_verified_at`,`password`,`remember_token`,`created_at`,`updated_at`) values 
-(1,'Admin Koperasi',1,'admin@gmail.com',NULL,'$2y$12$rK0GcJJ6xgqWxbVLCIIcwOLi0sLJ5qEdn.fJKXlicKjoWN5tDIC6q','Uee9AZ0r3V4rhjqEb6iwjhc5nANdaRvitS6MdUewRTXv7FVZUlrSBR9NOqK9','2026-01-08 03:05:11','2026-01-08 03:05:11'),
-(2,'User Koperasi',2,'user@gmail.com',NULL,'$2y$12$hSWSS0QO7.1JrCfd3dmlfOnvOQtMN4rriHmPneKzMvKAzKr1SX/O2',NULL,'2026-01-08 03:19:57','2026-01-08 03:19:57'),
-(8,'iam ibless',2,'oi@gmail.com',NULL,'$2y$12$zl4s/MvZATwP643UtJCSlOrGtyt9CHdjWxCpRPUmReZPjxtE/jf8S',NULL,'2026-01-23 06:51:21','2026-01-23 06:54:42'),
-(10,'admin3',1,'admin3@gmail.com',NULL,'$2y$12$YH5ZPkoux2SQ2swjM7DBKuwBdOEPVC5i5BmZrwDshR/AHNXYQEDZq',NULL,'2026-01-23 08:59:28','2026-01-23 09:02:47');
+insert  into `users`(`id`,`name`,`role_id`,`email`,`profile_image`,`email_verified_at`,`password`,`remember_token`,`created_at`,`updated_at`) values 
+(1,'Admin Koperasi',1,'admin@gmail.com','profile-images/profile_1_1769420216.png',NULL,'$2y$12$.k3fm7sFrlIvM2Lr3F2Qt.L6.gxmHm/JiAvLpjINvdSxApCS.W6Hi','H7hkYWGaLMcRX4yp7d9FT13BMUIHjoDWEiuwN3RKka8jviDu0uo6VbzYFIkV','2026-01-08 03:05:11','2026-01-27 02:24:43'),
+(2,'user',2,'user@gmail.com','profile-images/profile_2_1769480272.png',NULL,'$2y$12$NXM9mfRIexZhztQlhbKUnOa8NM7lGGSimqav2u3dEdF2T6ut0Zb8i',NULL,'2026-01-08 03:19:57','2026-02-03 08:53:48'),
+(8,'oi',2,'oi@gmail.com',NULL,NULL,'$2y$12$zl4s/MvZATwP643UtJCSlOrGtyt9CHdjWxCpRPUmReZPjxtE/jf8S',NULL,'2026-01-23 06:51:21','2026-02-03 08:53:48'),
+(10,'admin3',1,'admin3@gmail.com',NULL,NULL,'$2y$12$YH5ZPkoux2SQ2swjM7DBKuwBdOEPVC5i5BmZrwDshR/AHNXYQEDZq',NULL,'2026-01-23 08:59:28','2026-01-23 09:02:47'),
+(14,'AKU CEO KAYA RAYA',2,'ceo@gmail.com',NULL,NULL,'$2y$12$Gw82GKHUe02w36ZQFVB/NuylT2RTMjclmRz5k94yMbvb6yPaLJfrm',NULL,'2026-02-04 02:05:04','2026-02-04 02:05:04');
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
