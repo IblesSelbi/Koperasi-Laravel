@@ -138,7 +138,7 @@
                                     <input type="text" class="form-control" name="nominal" id="nominal" placeholder="0"
                                         value="{{ old('nominal') }}" required>
                                 </div>
-                                <small class="text-muted">Minimal pinjaman Rp 500.000</small>
+                                <small class="text-muted">Masukkan nominal sesuai kebutuhan</small>
                             </div>
 
                             <div class="mb-3">
@@ -306,12 +306,12 @@
                 const nominalStr = $('#nominal').val().replace(/[^0-9]/g, '');
                 const nominal = parseInt(nominalStr) || 0;
 
-                if (nominal < 500000) {
+                if (nominal <= 0) {
                     e.preventDefault();
                     Swal.fire({
                         icon: 'error',
                         title: 'Nominal Tidak Valid',
-                        text: 'Minimal pinjaman adalah Rp 500.000',
+                        text: 'Nominal pinjaman harus lebih dari 0',
                         confirmButtonColor: '#dc3545'
                     });
                     return false;
@@ -322,16 +322,16 @@
                 Swal.fire({
                     title: 'Konfirmasi Pengajuan',
                     html: `
-                        <div class="text-start">
-                            <p class="mb-2">Pastikan data sudah benar:</p>
-                            <ul>
-                                <li><strong>Jenis:</strong> ${$('#jenisPinjaman option:selected').text()}</li>
-                                <li><strong>Nominal:</strong> Rp ${nominal.toLocaleString('id-ID')}</li>
-                                <li><strong>Lama:</strong> ${$('#lamaAngsuran option:selected').text()}</li>
-                            </ul>
-                            <p class="mb-0 text-danger"><small>Data yang sudah dikirim tidak dapat diubah kecuali masih dalam status pending.</small></p>
-                        </div>
-                    `,
+                            <div class="text-start">
+                                <p class="mb-2">Pastikan data sudah benar:</p>
+                                <ul>
+                                    <li><strong>Jenis:</strong> ${$('#jenisPinjaman option:selected').text()}</li>
+                                    <li><strong>Nominal:</strong> Rp ${nominal.toLocaleString('id-ID')}</li>
+                                    <li><strong>Lama:</strong> ${$('#lamaAngsuran option:selected').text()}</li>
+                                </ul>
+                                <p class="mb-0 text-danger"><small>Data yang sudah dikirim tidak dapat diubah kecuali masih dalam status pending.</small></p>
+                            </div>
+                        `,
                     icon: 'question',
                     showCancelButton: true,
                     confirmButtonText: '<i class="ti ti-send"></i> Ya, Kirim',

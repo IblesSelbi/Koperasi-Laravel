@@ -354,12 +354,6 @@
         </div>
     </div>
 
-    <!-- Footer -->
-    <div class="footer">
-        <p>{{ $identitas->alamat ?? 'AKENO MULTIMEDIA SOLUTION, VILA BANDUNG INDAH 40393 JAWA WEST JAVA' }}, {{ now()->format('d F Y') }}</p>
-        <p>Email: {{ $identitas->email ?? 'admin@koperasi.id' }} | Website: {{ $identitas->web ?? 'www.koperasi-akeno.id' }}</p>
-        <p style="font-style: italic; margin-top: 1px;">** Tanda terima ini sah jika telah dibubuhi cap dan tanda tangan oleh pihak yang berwenang **</p>
-    </div>
 </body>
 
 </html>

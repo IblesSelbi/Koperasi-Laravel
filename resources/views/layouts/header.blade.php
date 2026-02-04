@@ -34,6 +34,29 @@
                 </div>
             </li>
 
+            <!-- ============ TAMBAH NOTIFIKASI PEMBAYARAN PENDING ============ -->
+            <li class="nav-item dropdown">
+                <a class="nav-link position-relative" href="javascript:void(0)" id="dropPembayaran"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="ti ti-credit-card fs-7"></i>
+                    <span class="position-absolute top-0 end-0 badge rounded-pill bg-danger notif-badge"
+                        style="font-size:11px" id="badge-pembayaran">0</span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-animate-up" aria-labelledby="dropPembayaran"
+                    style="min-width: 380px; max-height: 450px; overflow-y: auto;">
+                    <div class="message-body">
+                        <div class="px-3 py-2 bg-light border-bottom">
+                            <h6 class="mb-0">Pembayaran Menunggu Verifikasi</h6>
+                        </div>
+                        <div id="notif-pembayaran-list">
+                            <div class="px-3 py-3 text-center text-muted">
+                                <small>Tidak ada pembayaran pending</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </li>
+
             <!-- ============ Notifikasi Jatuh Tempo ============ -->
             <li class="nav-item dropdown">
                 <a class="nav-link position-relative" href="javascript:void(0)" id="dropJatuhTempo"
@@ -189,6 +212,67 @@
     </div>
 </div>
 
+<div class="modal fade" id="modalDetailPembayaran" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content rounded-3 overflow-hidden shadow-sm">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title fw-semibold">
+                    <i class="ti ti-credit-card me-2"></i>Detail Pembayaran Pending
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-warning d-flex align-items-center mb-4">
+                    <i class="ti ti-clock-hour-4 fs-5 me-2"></i>
+                    <span>Pembayaran transfer menunggu verifikasi Anda</span>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="text-muted small mb-1">Kode Bayar</label>
+                        <div class="fw-semibold fs-5" id="pembayaran-kode-bayar">-</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted small mb-1">Waktu Upload</label>
+                        <div class="fw-semibold" id="pembayaran-waktu">-</div>
+                    </div>
+                    <div class="col-md-12">
+                        <hr class="my-2">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted small mb-1">Nama Anggota</label>
+                        <div class="fw-semibold text-dark fs-5" id="pembayaran-nama">-</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted small mb-1">Kode Pinjaman</label>
+                        <div id="pembayaran-kode-pinjaman">-</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted small mb-1">Angsuran Ke</label>
+                        <div id="pembayaran-angsuran-ke">-</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted small mb-1">Bank Transfer</label>
+                        <div id="pembayaran-bank">-</div>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="text-muted small mb-1">Total Dibayar</label>
+                        <div class="fw-semibold text-success fs-7" id="pembayaran-total">-</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="ti ti-x me-1"></i>Tutup
+                </button>
+                <a href="#" id="btn-verifikasi-pembayaran" class="btn btn-warning">
+                    <i class="ti ti-eye me-1"></i>Verifikasi Pembayaran
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- ============ Modal Detail Jatuh Tempo ============ -->
 <div class="modal fade" id="modalDetailJatuhTempo" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -248,11 +332,13 @@
         $(document).ready(function () {
             // Load notifications saat halaman dimuat
             loadPengajuanNotifications();
+            loadPembayaranNotifications()
             loadJatuhTempoNotifications();
 
             // Auto refresh setiap 3 menit
             setInterval(function () {
                 loadPengajuanNotifications();
+                loadPembayaranNotifications();
                 loadJatuhTempoNotifications();
             }, 180000);
 
@@ -293,10 +379,10 @@
 
                 if (data.length === 0) {
                     container.html(`
-                                                                        <div class="px-3 py-3 text-center text-muted">
-                                                                            <small>Tidak ada pengajuan baru</small>
-                                                                        </div>
-                                                                    `);
+                                                                                    <div class="px-3 py-3 text-center text-muted">
+                                                                                        <small>Tidak ada pengajuan baru</small>
+                                                                                    </div>
+                                                                                `);
                     return;
                 }
 
@@ -306,34 +392,34 @@
                         item.jenis === 'Barang' ? 'info' : 'primary';
 
                     html += `
-                                                                        <a href="javascript:void(0)" 
-                                                                           class="dropdown-item border-bottom py-3 notif-pengajuan-item"
-                                                                           data-id="${item.id}"
-                                                                           data-id-ajuan="${item.id_ajuan}"
-                                                                           data-nama="${item.nama}"
-                                                                           data-jenis="${item.jenis}"
-                                                                           data-jumlah="${item.jumlah}"
-                                                                           data-tanggal="${item.tanggal_full}">
-                                                                            <div class="d-flex align-items-start">
-                                                                                <div class="flex-shrink-0">
-                                                                                    <div class="round-40 d-flex align-items-center justify-content-center bg-${badgeClass}-subtle">
-                                                                                        <i class="ti ti-file-text fs-6 text-${badgeClass}"></i>
-                                                                                    </div>
-                                                                                </div>
-                                                                                <div class="flex-grow-1 ms-3">
-                                                                                    <h6 class="mb-1 fw-semibold">${item.nama}</h6>
-                                                                                    <p class="mb-1 fs-2 text-muted">${item.id_ajuan}</p>
-                                                                                    <div class="d-flex justify-content-between align-items-center">
-                                                                                        <span class="badge bg-${badgeClass}-subtle text-${badgeClass} fw-semibold">
-                                                                                            ${item.jenis}
-                                                                                        </span>
-                                                                                        <span class="text-success fw-semibold">Rp ${formatRupiah(item.jumlah)}</span>
-                                                                                    </div>
-                                                                                    <small class="text-muted">${item.tanggal}</small>
-                                                                                </div>
-                                                                            </div>
-                                                                        </a>
-                                                                    `;
+                                                                                    <a href="javascript:void(0)" 
+                                                                                       class="dropdown-item border-bottom py-3 notif-pengajuan-item"
+                                                                                       data-id="${item.id}"
+                                                                                       data-id-ajuan="${item.id_ajuan}"
+                                                                                       data-nama="${item.nama}"
+                                                                                       data-jenis="${item.jenis}"
+                                                                                       data-jumlah="${item.jumlah}"
+                                                                                       data-tanggal="${item.tanggal_full}">
+                                                                                        <div class="d-flex align-items-start">
+                                                                                            <div class="flex-shrink-0">
+                                                                                                <div class="round-40 d-flex align-items-center justify-content-center bg-${badgeClass}-subtle">
+                                                                                                    <i class="ti ti-file-text fs-6 text-${badgeClass}"></i>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <div class="flex-grow-1 ms-3">
+                                                                                                <h6 class="mb-1 fw-semibold">${item.nama}</h6>
+                                                                                                <p class="mb-1 fs-2 text-muted">${item.id_ajuan}</p>
+                                                                                                <div class="d-flex justify-content-between align-items-center">
+                                                                                                    <span class="badge bg-${badgeClass}-subtle text-${badgeClass} fw-semibold">
+                                                                                                        ${item.jenis}
+                                                                                                    </span>
+                                                                                                    <span class="text-success fw-semibold">Rp ${formatRupiah(item.jumlah)}</span>
+                                                                                                </div>
+                                                                                                <small class="text-muted">${item.tanggal}</small>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </a>
+                                                                                `;
                 });
 
                 container.html(html);
@@ -373,48 +459,48 @@
 
                 if (data.length === 0) {
                     container.html(`
-                                                                <div class="px-3 py-3 text-center text-muted">
-                                                                    <small>Tidak ada notifikasi</small>
-                                                                </div>
-                                                            `);
+                                                                            <div class="px-3 py-3 text-center text-muted">
+                                                                                <small>Tidak ada notifikasi</small>
+                                                                            </div>
+                                                                        `);
                     return;
                 }
 
                 let html = '';
                 data.forEach(item => {
                     html += `
-                                                                <a href="javascript:void(0)" 
-                                                                   class="dropdown-item border-bottom py-3 notif-tempo-item"
-                                                                   data-id="${item.id}"
-                                                                   data-pinjaman-id="${item.pinjaman_id}"
-                                                                   data-kode="${item.kode_pinjaman}"
-                                                                   data-nama="${item.nama}"
-                                                                   data-angsuran-ke="${item.angsuran_ke}"
-                                                                   data-tanggal="${item.tanggal_jatuh_tempo_full}"
-                                                                   data-jumlah="${item.jumlah_angsuran}"
-                                                                   data-status="${item.status}"
-                                                                   data-badge="${item.badge}"
-                                                                   data-keterangan="${item.keterangan}">
-                                                                    <div class="d-flex align-items-start">
-                                                                        <div class="flex-shrink-0">
-                                                                            <div class="round-40 d-flex align-items-center justify-content-center bg-${item.badge}-subtle">
-                                                                                <i class="ti ${item.icon} fs-6 text-${item.badge}"></i>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="flex-grow-1 ms-3">
-                                                                            <h6 class="mb-1 fw-semibold">${item.nama}</h6>
-                                                                            <p class="mb-1 fs-2 text-muted">${item.kode_pinjaman} - Angsuran ke-${item.angsuran_ke}</p>
-                                                                            <div class="d-flex justify-content-between align-items-center">
-                                                                                <span class="badge bg-${item.badge}-subtle text-${item.badge} fw-semibold">
-                                                                                    ${item.keterangan}
-                                                                                </span>
-                                                                                <span class="text-success fw-semibold">Rp ${formatRupiah(item.jumlah_angsuran)}</span>
-                                                                            </div>
-                                                                            <small class="text-muted">${item.tanggal_jatuh_tempo_full}</small>
-                                                                        </div>
-                                                                    </div>
-                                                                </a>
-                                                            `;
+                                                                            <a href="javascript:void(0)" 
+                                                                               class="dropdown-item border-bottom py-3 notif-tempo-item"
+                                                                               data-id="${item.id}"
+                                                                               data-pinjaman-id="${item.pinjaman_id}"
+                                                                               data-kode="${item.kode_pinjaman}"
+                                                                               data-nama="${item.nama}"
+                                                                               data-angsuran-ke="${item.angsuran_ke}"
+                                                                               data-tanggal="${item.tanggal_jatuh_tempo_full}"
+                                                                               data-jumlah="${item.jumlah_angsuran}"
+                                                                               data-status="${item.status}"
+                                                                               data-badge="${item.badge}"
+                                                                               data-keterangan="${item.keterangan}">
+                                                                                <div class="d-flex align-items-start">
+                                                                                    <div class="flex-shrink-0">
+                                                                                        <div class="round-40 d-flex align-items-center justify-content-center bg-${item.badge}-subtle">
+                                                                                            <i class="ti ${item.icon} fs-6 text-${item.badge}"></i>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="flex-grow-1 ms-3">
+                                                                                        <h6 class="mb-1 fw-semibold">${item.nama}</h6>
+                                                                                        <p class="mb-1 fs-2 text-muted">${item.kode_pinjaman} - Angsuran ke-${item.angsuran_ke}</p>
+                                                                                        <div class="d-flex justify-content-between align-items-center">
+                                                                                            <span class="badge bg-${item.badge}-subtle text-${item.badge} fw-semibold">
+                                                                                                ${item.keterangan}
+                                                                                            </span>
+                                                                                            <span class="text-success fw-semibold">Rp ${formatRupiah(item.jumlah_angsuran)}</span>
+                                                                                        </div>
+                                                                                        <small class="text-muted">${item.tanggal_jatuh_tempo_full}</small>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </a>
+                                                                        `;
                 });
 
                 container.html(html);
@@ -440,6 +526,112 @@
                 // Show modal
                 $('#modalDetailPengajuan').modal('show');
             });
+
+            function loadPembayaranNotifications() {
+                $.ajax({
+                    url: "{{ route('admin.notifications.pembayaran-pending') }}",
+                    method: 'GET',
+                    success: function (response) {
+                        console.log('✅ Pembayaran Response:', response);
+                        if (response.success) {
+                            updatePembayaranBadge(response.count);
+                            renderPembayaranList(response.data);
+                        }
+                    },
+                    error: function (xhr) {
+                        console.error('❌ Error loading pembayaran notifications:', xhr);
+                    }
+                });
+            }
+
+            function updatePembayaranBadge(count) {
+                const badge = $('#badge-pembayaran');
+                if (count > 0) {
+                    badge.text(count > 99 ? '99+' : count).show();
+                } else {
+                    badge.text('0').hide();
+                }
+            }
+
+            function renderPembayaranList(data) {
+                const container = $('#notif-pembayaran-list');
+
+                if (data.length === 0) {
+                    container.html(`
+                            <div class="px-3 py-3 text-center text-muted">
+                                <small>Tidak ada pembayaran pending</small>
+                            </div>
+                        `);
+                    return;
+                }
+
+                let html = '';
+                data.forEach(item => {
+                    html += `
+                            <a href="javascript:void(0)" 
+                               class="dropdown-item border-bottom py-3 notif-pembayaran-item"
+                               data-id="${item.id}"
+                               data-kode-bayar="${item.kode_bayar}"
+                               data-pinjaman-id="${item.pinjaman_id}"
+                               data-kode-pinjaman="${item.kode_pinjaman}"
+                               data-nama="${item.nama_anggota}"
+                               data-angsuran-ke="${item.angsuran_ke}"
+                               data-bank="${item.bank_nama}"
+                               data-total="${item.total_bayar}"
+                               data-waktu="${item.waktu_full}">
+                                <div class="d-flex align-items-start">
+                                    <div class="flex-shrink-0">
+                                        <div class="round-40 d-flex align-items-center justify-content-center bg-warning-subtle">
+                                            <i class="ti ti-credit-card fs-6 text-warning"></i>
+                                        </div>
+                                    </div>
+                                    <div class="flex-grow-1 ms-3">
+                                        <h6 class="mb-1 fw-semibold">${item.nama_anggota}</h6>
+                                        <p class="mb-1 fs-2 text-muted">${item.kode_bayar} - ${item.kode_pinjaman}</p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="badge bg-warning-subtle text-warning fw-semibold">
+                                                Angsuran Ke-${item.angsuran_ke}
+                                            </span>
+                                            <span class="text-success fw-semibold">Rp ${formatRupiah(item.total_bayar)}</span>
+                                        </div>
+                                        <small class="text-muted">${item.waktu}</small>
+                                    </div>
+                                </div>
+                            </a>
+                        `;
+                });
+
+                container.html(html);
+            }
+
+            // ========== ✅ CLICK EVENT MODAL PEMBAYARAN ==========
+            $(document).on('click', '.notif-pembayaran-item', function () {
+                const data = $(this).data();
+
+                // Fill modal data
+                $('#pembayaran-kode-bayar').text(data.kodeBayar);
+                $('#pembayaran-waktu').text(data.waktu);
+                $('#pembayaran-nama').text(data.nama);
+                $('#pembayaran-kode-pinjaman').html(`<span class="badge bg-primary-subtle text-primary px-3 py-2">${data.kodePinjaman}</span>`);
+                $('#pembayaran-angsuran-ke').html(`<span class="badge bg-secondary px-3 py-2">Angsuran Ke-${data.angsuranKe}</span>`);
+                $('#pembayaran-bank').html(`<span class="badge bg-info px-3 py-2">${data.bank}</span>`);
+                $('#pembayaran-total').text('Rp ' + formatRupiah(data.total));
+
+                // Update button link ke halaman detail bayar
+                const detailUrl = "{{ route('pinjaman.bayar.show', ':id') }}".replace(':id', data.pinjamanId);
+                $('#btn-verifikasi-pembayaran').attr('href', detailUrl);
+
+                // Close dropdown
+                $('#dropPembayaran').dropdown('hide');
+
+                // Show modal
+                $('#modalDetailPembayaran').modal('show');
+            });
+
+            // ========== Helper Functions ==========
+            function formatRupiah(angka) {
+                return new Intl.NumberFormat('id-ID').format(angka);
+            }
 
             $(document).on('click', '.notif-tempo-item', function () {
                 const data = $(this).data();

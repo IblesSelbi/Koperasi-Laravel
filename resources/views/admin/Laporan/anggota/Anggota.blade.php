@@ -200,12 +200,6 @@
                                 <i class="ti ti-refresh"></i> Reset
                             </button>
                             <div class="vr"></div>
-                            <button type="button" class="btn btn-success btn-sm" onclick="exportExcel()">
-                                <i class="ti ti-file-spreadsheet"></i> Export Excel
-                            </button>
-                            <button type="button" class="btn btn-danger btn-sm" onclick="exportPDF()">
-                                <i class="ti ti-file-type-pdf"></i> Export PDF
-                            </button>
                             <button type="button" class="btn btn-info btn-sm" onclick="cetakLaporanAnggota()">
                                 <i class="ti ti-printer"></i> Cetak Laporan
                             </button>

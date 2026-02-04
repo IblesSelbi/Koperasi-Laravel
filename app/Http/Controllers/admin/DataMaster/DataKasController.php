@@ -23,6 +23,8 @@ class DataKasController extends Controller
     {
         $data = $request->validate([
             'nama_kas' => 'required|string|max:225',
+            'no_rekening' => 'nullable|string|max:50',
+            'pemilik_rekening' => 'nullable|string|max:225',
             'aktif' => 'required|in:Y,T',
             'simpanan' => 'required|in:Y,T',
             'penarikan' => 'required|in:Y,T',
@@ -45,6 +47,8 @@ class DataKasController extends Controller
     {
         $data = $request->validate([
             'nama_kas' => 'required|string|max:225',
+            'no_rekening' => 'nullable|string|max:50',
+            'pemilik_rekening' => 'nullable|string|max:225',
             'aktif' => 'required|in:Y,T',
             'simpanan' => 'required|in:Y,T',
             'penarikan' => 'required|in:Y,T',
@@ -94,5 +98,4 @@ class DataKasController extends Controller
             ], 500);
         }
     }
-
 }

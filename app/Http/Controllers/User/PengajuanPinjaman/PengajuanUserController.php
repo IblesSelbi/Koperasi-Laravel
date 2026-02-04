@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class PengajuanUserController extends Controller
 {
@@ -151,10 +152,10 @@ class PengajuanUserController extends Controller
         // Parse nominal
         $jumlah = (int) str_replace('.', '', $validated['nominal']);
 
-        if ($jumlah < 500000) {
+        if ($jumlah <= 0) {
             return redirect()->back()
                 ->withInput()
-                ->with('error', 'Minimal pinjaman adalah Rp 500.000');
+                ->with('error', 'Nominal pinjaman harus lebih dari 0');
         }
 
         $anggota = $this->getAnggota();
@@ -252,10 +253,10 @@ class PengajuanUserController extends Controller
             if ($validated['field'] === 'nominal') {
                 $jumlah = (int) str_replace('.', '', $validated['value']);
 
-                if ($jumlah < 500000) {
+                if ($jumlah <= 0) {
                     return response()->json([
                         'success' => false,
-                        'message' => 'Minimal pinjaman adalah Rp 500.000'
+                        'message' => 'Nominal pinjaman harus lebih dari 0'
                     ], 400);
                 }
 
@@ -366,7 +367,7 @@ class PengajuanUserController extends Controller
     }
 
     /**
-     * Print pengajuan
+     * Print pengajuan (Stream PDF di browser)
      */
     public function cetak($id)
     {
@@ -381,22 +382,62 @@ class PengajuanUserController extends Controller
             ->whereNull('deleted_at')
             ->findOrFail($id);
 
-        // ✅ PERBAIKAN: Set foto untuk cetak
-        if ($pengajuan->anggota) {
-            $photoPath = 'assets/images/profile/user-1.jpg';
+        $terbilang = $this->terbilang($pengajuan->jumlah);
+        $identitas = \App\Models\Admin\Setting\IdentitasKoperasi::first();
 
-            // Priority 1: data_anggota.photo (bukan default)
-            if ($pengajuan->anggota->photo && $pengajuan->anggota->photo !== 'assets/images/profile/user-1.jpg') {
-                $photoPath = 'storage/' . $pengajuan->anggota->photo;
-            }
-            // Priority 2: users.profile_image
-            elseif ($pengajuan->anggota->user && $pengajuan->anggota->user->profile_image) {
-                $photoPath = 'storage/' . $pengajuan->anggota->user->profile_image;
-            }
+        // Load view untuk PDF
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('user.PengajuanPinjaman.Pengajuan.cetak', compact('pengajuan', 'terbilang', 'identitas'));
 
-            $pengajuan->anggota->photo_display = $photoPath;
+        // Set paper size A5 landscape
+        $pdf->setPaper('a5', 'landscape');
+
+        // Stream PDF (tampil di browser)
+        return $pdf->stream('Bukti_Pengajuan_' . $pengajuan->id_ajuan . '.pdf');
+    }
+
+    /**
+     * Convert number to Indonesian words (terbilang)
+     */
+    private function terbilang($angka)
+    {
+        $angka = abs($angka);
+        $bilangan = [
+            '',
+            'Satu',
+            'Dua',
+            'Tiga',
+            'Empat',
+            'Lima',
+            'Enam',
+            'Tujuh',
+            'Delapan',
+            'Sembilan',
+            'Sepuluh',
+            'Sebelas'
+        ];
+
+        if ($angka < 12) {
+            return $bilangan[$angka];
+        } elseif ($angka < 20) {
+            return $this->terbilang($angka - 10) . ' Belas';
+        } elseif ($angka < 100) {
+            return $this->terbilang(floor($angka / 10)) . ' Puluh ' . $this->terbilang($angka % 10);
+        } elseif ($angka < 200) {
+            return 'Seratus ' . $this->terbilang($angka - 100);
+        } elseif ($angka < 1000) {
+            return $this->terbilang(floor($angka / 100)) . ' Ratus ' . $this->terbilang($angka % 100);
+        } elseif ($angka < 2000) {
+            return 'Seribu ' . $this->terbilang($angka - 1000);
+        } elseif ($angka < 1000000) {
+            return $this->terbilang(floor($angka / 1000)) . ' Ribu ' . $this->terbilang($angka % 1000);
+        } elseif ($angka < 1000000000) {
+            return $this->terbilang(floor($angka / 1000000)) . ' Juta ' . $this->terbilang($angka % 1000000);
+        } elseif ($angka < 1000000000000) {
+            return $this->terbilang(floor($angka / 1000000000)) . ' Miliar ' . $this->terbilang($angka % 1000000000);
+        } elseif ($angka < 1000000000000000) {
+            return $this->terbilang(floor($angka / 1000000000000)) . ' Triliun ' . $this->terbilang($angka % 1000000000000);
         }
 
-        return view('user.PengajuanPinjaman.Pengajuan.cetak', compact('pengajuan'));
+        return (string) $angka;
     }
 }

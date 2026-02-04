@@ -3,6 +3,18 @@
 @section('title', 'Master Data - Data Kas')
 
 @push('styles')
+    <style>
+        .info-rekening {
+            font-size: 0.75rem;
+            color: #6c757d;
+            margin-top: 2px;
+        }
+
+        .no-rek {
+            font-weight: 600;
+            color: #3d4248;
+        }
+    </style>
 @endpush
 
 @section('content')
@@ -92,13 +104,25 @@
                     <tbody>
                         @foreach($dataKas as $index => $item)
                             <tr data-id="{{ $item->id }}" data-nama="{{ $item->nama_kas }}"
-                                data-aktif="{{ $item->aktif }}" data-simpanan="{{ $item->simpanan }}"
-                                data-penarikan="{{ $item->penarikan }}" data-pinjaman="{{ $item->pinjaman }}"
-                                data-angsuran="{{ $item->angsuran }}" data-pemasukan="{{ $item->pemasukan_kas }}"
-                                data-pengeluaran="{{ $item->pengeluaran_kas }}" data-transfer="{{ $item->transfer_kas }}">
+                                data-no-rekening="{{ $item->no_rekening }}"
+                                data-pemilik-rekening="{{ $item->pemilik_rekening }}" data-aktif="{{ $item->aktif }}"
+                                data-simpanan="{{ $item->simpanan }}" data-penarikan="{{ $item->penarikan }}"
+                                data-pinjaman="{{ $item->pinjaman }}" data-angsuran="{{ $item->angsuran }}"
+                                data-pemasukan="{{ $item->pemasukan_kas }}" data-pengeluaran="{{ $item->pengeluaran_kas }}"
+                                data-transfer="{{ $item->transfer_kas }}">
                                 <td class="text-center text-muted fw-medium"></td>
                                 <td>
                                     <div class="fw-semibold text-dark">{{ $item->nama_kas }}</div>
+                                    @if($item->transfer_kas == 'Y' && ($item->no_rekening || $item->pemilik_rekening))
+                                        <div class="info-rekening text-muted fw-semibold">
+                                            @if($item->no_rekening)
+                                                <div class="no-rek">{{ $item->no_rekening }}</div>
+                                            @endif
+                                            @if($item->pemilik_rekening)
+                                                <div>({{ $item->pemilik_rekening }})</div>
+                                            @endif
+                                        </div>
+                                    @endif
                                 </td>
                                 <td class="text-center">
                                     <span
@@ -143,10 +167,12 @@
                                     </span>
                                 </td>
                                 <td class="text-center">
-                                    <span
-                                        class="badge bg-{{ $item->transfer_kas == 'Y' ? 'success' : 'danger' }}-subtle text-{{ $item->transfer_kas == 'Y' ? 'success' : 'danger' }} fw-semibold px-3 py-1">
-                                        {{ $item->transfer_kas }}
-                                    </span>
+                                    <div>
+                                        <span
+                                            class="badge bg-{{ $item->transfer_kas == 'Y' ? 'success' : 'danger' }}-subtle text-{{ $item->transfer_kas == 'Y' ? 'success' : 'danger' }} fw-semibold px-3 py-1">
+                                            {{ $item->transfer_kas }}
+                                        </span>
+                                    </div>
                                 </td>
                                 <td class="text-center">
                                     <button class="btn btn-sm btn-warning me-1" onclick="editData(this)" title="Edit">
@@ -176,11 +202,31 @@
                     <form id="formDataKas">
                         @csrf
                         <input type="hidden" id="editId" value="">
+
                         <div class="mb-3">
                             <label class="form-label">Nama Kas <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" id="namaKas" placeholder="Masukkan nama kas"
                                 maxlength="225" required>
                         </div>
+
+                        <!-- FIELD BARU: NO REKENING & PEMILIK -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">No Rekening</label>
+                                <input type="text" class="form-control" id="noRekening" placeholder="Contoh: 1234567890"
+                                    maxlength="50">
+                                <small class="text-muted">Opsional, untuk transfer kas</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Pemilik Rekening</label>
+                                <input type="text" class="form-control" id="pemilikRekening" placeholder="Contoh: Burhan"
+                                    maxlength="225">
+                                <small class="text-muted">Opsional, nama pemilik rekening</small>
+                            </div>
+                        </div>
+
+                        <hr class="my-3">
+
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Aktif <span class="text-danger">*</span></label>
@@ -292,7 +338,7 @@
             document.getElementById('modalTitle').innerText = 'Tambah Jenis Kas';
             document.getElementById('formDataKas').reset();
             document.getElementById('editId').value = '';
-            
+
             // Set default values
             document.getElementById('aktif').value = 'Y';
             document.getElementById('simpanan').value = 'Y';
@@ -316,6 +362,8 @@
             document.getElementById('modalTitle').innerText = 'Ubah Jenis Kas';
             document.getElementById('editId').value = row.dataset.id;
             document.getElementById('namaKas').value = row.dataset.nama;
+            document.getElementById('noRekening').value = row.dataset.noRekening || '';
+            document.getElementById('pemilikRekening').value = row.dataset.pemilikRekening || '';
             document.getElementById('aktif').value = row.dataset.aktif;
             document.getElementById('simpanan').value = row.dataset.simpanan;
             document.getElementById('penarikan').value = row.dataset.penarikan;
@@ -335,6 +383,8 @@
         function simpanData() {
             const id = document.getElementById('editId').value;
             const nama_kas = document.getElementById('namaKas').value;
+            const no_rekening = document.getElementById('noRekening').value;
+            const pemilik_rekening = document.getElementById('pemilikRekening').value;
             const aktif = document.getElementById('aktif').value;
             const simpanan = document.getElementById('simpanan').value;
             const penarikan = document.getElementById('penarikan').value;
@@ -356,6 +406,8 @@
                 },
                 body: JSON.stringify({
                     nama_kas,
+                    no_rekening,
+                    pemilik_rekening,
                     aktif,
                     simpanan,
                     penarikan,
@@ -426,7 +478,7 @@
                 showConfirmButton: false
             });
         }
-       
+
         // CETAK & EXPORT (SERVER SIDE)
         const cetakDataKasUrl = "{{ route('master.data-kas.cetak') }}";
 

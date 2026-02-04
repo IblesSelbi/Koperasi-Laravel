@@ -37,7 +37,6 @@
             border: 1px solid #fca5a5;
         }
 
-        /* ✅ PENTING: Tambahkan CSS untuk disabled state */
         .jadwal-card.disabled {
             opacity: 0.6;
             cursor: not-allowed !important;
@@ -46,6 +45,113 @@
         .jadwal-card.disabled:hover {
             transform: none !important;
             box-shadow: none !important;
+        }
+
+        /* ✅ PERBAIKAN: Style untuk info rekening - SIMPLE & PROFESIONAL */
+        .rekening-info {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 16px;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .rekening-info .bank-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .rekening-detail {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+        }
+
+        .rekening-detail label {
+            font-size: 11px;
+            color: #6c757d;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 500;
+        }
+
+        .rekening-detail .value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #212529;
+            letter-spacing: 0.5px;
+        }
+
+        /* ✅ PERBAIKAN: Tombol copy yang lebih soft */
+        .btn-copy {
+            background: #e7f1ff;
+            border: 1px solid #c3ddfd;
+            color: #5d87ff;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .btn-copy:hover {
+            background: #5d87ff;
+            border-color: #5d87ff;
+            color: white;
+        }
+
+        .btn-copy:active {
+            transform: scale(0.98);
+        }
+
+        .btn-copy.copied {
+            background: #d1f4e0;
+            border-color: #86efac;
+            color: #13a460;
+        }
+
+        .copy-animation {
+            animation: copyPulse 0.4s ease;
+        }
+
+        @keyframes copyPulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        /* ✅ Info text di bawah */
+        .rekening-info-text {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #e9ecef;
         }
     </style>
 @endpush
@@ -436,12 +542,13 @@
                                                         Kode: {{ $pendingForThis->kode_bayar }}
                                                     </small>
                                                     <small class="text-muted d-block">Dibayar:
-                                                        {{ $pendingForThis->tanggal_bayar->format('d M Y H:i') }}</small>
+                                                        {{ $pendingForThis->tanggal_bayar->timezone('Asia/Jakarta')->format('d M Y H:i') }}
+                                                    </small>
                                                     <small class="text-muted d-block">Jumlah: Rp
-                                                        {{ number_format($pendingForThis->jumlah_bayar, 0, ',', '.') }}</small>
+                                                        {{ number_format($pendingForThis->jumlah_bayar, 0, ',', '.') }}
+                                                    </small>
                                                 </div>
                                             @elseif($has_pending && $jadwal->status_bayar == 'Belum')
-                                                {{-- ✅ Tampilkan pesan untuk angsuran lain yang tidak bisa dipilih --}}
                                                 <div class="mt-2 p-2 bg-light rounded border">
                                                     <small class="text-muted d-block">
                                                         <i class="ti ti-lock"></i>
@@ -584,16 +691,52 @@
                                 <select class="form-select" name="ke_kas_id" id="keKasId" required>
                                     <option value="">-- Pilih Bank --</option>
                                     @foreach($kas_list as $kas)
-                                        <option value="{{ $kas->id }}">{{ $kas->nama_kas }}</option>
+                                        <option value="{{ $kas->id }}" data-no-rek="{{ $kas->no_rekening }}"
+                                            data-pemilik="{{ $kas->pemilik_rekening }}" data-nama="{{ $kas->nama_kas }}">
+                                            {{ $kas->nama_kas }}
+                                        </option>
                                     @endforeach
                                 </select>
                                 <small class="text-muted">Pilih bank tujuan transfer</small>
                             </div>
 
-                            {{-- ✅ BARU: Rincian Tagihan (Readonly) --}}
+                            <!-- ✅ BARU: Info Rekening (Hidden by default) -->
+                            <div id="rekeningInfo" class="mb-3" style="display: none;">
+                                <div class="rekening-info">
+                                    <div class="bank-name">
+                                        <i class="ti ti-building-bank"></i>
+                                        <span id="bankNameText"></span>
+                                    </div>
+
+                                    <!-- No Rekening (BISA DI COPY) -->
+                                    <div class="rekening-detail">
+                                        <label class="d-block">Nomor Rekening</label>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div class="value" id="noRekDisplay">-</div>
+                                            <button type="button" class="btn btn-copy btn-sm" onclick="copyToClipboard('noRek')"
+                                                id="btnCopyNoRek">
+                                                <i class="ti ti-copy"></i> Salin
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Atas Nama (HANYA DISPLAY - ALIGN LEFT) -->
+                                    <div class="rekening-detail">
+                                        <label class="d-block">Atas Nama</label>
+                                        <div class="value" id="pemilikDisplay">-</div>
+                                    </div>
+
+                                    <div class="rekening-info-text text-center">
+                                        <i class="ti ti-info-circle"></i>
+                                        Transfer ke rekening di atas sesuai total tagihan
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Rincian Tagihan (Readonly) --}}
                             <div class="mb-3">
                                 <label class="form-label fw-semibold">Rincian Tagihan</label>
-                                <div class="card bg-light border">
+                                <div class="card bg-light shadow-sm border">
                                     <div class="card-body p-3">
                                         {{-- Angsuran Pokok --}}
                                         <div class="d-flex justify-content-between mb-2">
@@ -714,15 +857,18 @@
                             <h6 class="fw-bold mb-3 mt-4">Status Pembayaran</h6>
                             <ul class="mb-3">
                                 <li class="mb-2">
-                                    <span class="badge bg-danger-subtle">Belum Bayar</span>
+                                    <span class="badge bg-danger-subtle text-danger shadow-sm fw-semibold">Belum
+                                        Bayar</span>
                                     - Angsuran yang belum dibayar
                                 </li>
                                 <li class="mb-2">
-                                    <span class="badge bg-warning">Pending Verifikasi</span>
+                                    <span class="badge bg-warning-subtle text-warning shadow-sm fw-semibold">Pending
+                                        Verifikasi</span>
                                     - Pembayaran sedang diverifikasi admin
                                 </li>
                                 <li class="mb-2">
-                                    <span class="badge bg-success">Terverifikasi</span>
+                                    <span
+                                        class="badge bg-success-subtle text-success shadow-sm fw-semibold">Terverifikasi</span>
                                     - Pembayaran sudah diverifikasi dan diterima
                                 </li>
                                 <li class="mb-2">
@@ -939,34 +1085,34 @@
                     // ... kode konfirmasi tetap sama
                     title: 'Konfirmasi Pembayaran',
                     html: `
-                                            <div class="text-start">
-                                                <p class="mb-2"><strong>Detail Pembayaran:</strong></p>
-                                                <table class="table table-sm table-bordered">
-                                                    <tr>
-                                                        <td><i class="ti ti-calendar"></i> Angsuran:</td>
-                                                        <td class="text-end"><strong>Ke-${selectedJadwal.angsuran_ke}</strong></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td><i class="ti ti-cash"></i> Angsuran Pokok:</td>
-                                                        <td class="text-end">Rp ${selectedJadwal.jumlah.toLocaleString('id-ID')}</td>
-                                                    </tr>
-                                                    ${selectedJadwal.denda > 0 ? `
-                                                    <tr>
-                                                        <td><i class="ti ti-alert-circle"></i> Denda (${selectedJadwal.hari_terlambat} hari):</td>
-                                                        <td class="text-end text-danger">Rp ${selectedJadwal.denda.toLocaleString('id-ID')}</td>
-                                                    </tr>
-                                                    ` : ''}
-                                                    <tr class="table-success fw-bold">
-                                                        <td>Total Tagihan:</td>
-                                                        <td class="text-end">Rp ${selectedJadwal.total.toLocaleString('id-ID')}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td><i class="ti ti-building-bank"></i> Bank:</td>
-                                                        <td class="text-end">${$('#keKasId option:selected').text()}</td>
-                                                    </tr>
-                                                </table>
-                                            </div>
-                                        `,
+                                                                        <div class="text-start">
+                                                                            <p class="mb-2"><strong>Detail Pembayaran:</strong></p>
+                                                                            <table class="table table-sm table-bordered">
+                                                                                <tr>
+                                                                                    <td><i class="ti ti-calendar"></i> Angsuran:</td>
+                                                                                    <td class="text-end"><strong>Ke-${selectedJadwal.angsuran_ke}</strong></td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td><i class="ti ti-cash"></i> Angsuran Pokok:</td>
+                                                                                    <td class="text-end">Rp ${selectedJadwal.jumlah.toLocaleString('id-ID')}</td>
+                                                                                </tr>
+                                                                                ${selectedJadwal.denda > 0 ? `
+                                                                                <tr>
+                                                                                    <td><i class="ti ti-alert-circle"></i> Denda (${selectedJadwal.hari_terlambat} hari):</td>
+                                                                                    <td class="text-end text-danger">Rp ${selectedJadwal.denda.toLocaleString('id-ID')}</td>
+                                                                                </tr>
+                                                                                ` : ''}
+                                                                                <tr class="table-success fw-bold">
+                                                                                    <td>Total Tagihan:</td>
+                                                                                    <td class="text-end">Rp ${selectedJadwal.total.toLocaleString('id-ID')}</td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td><i class="ti ti-building-bank"></i> Bank:</td>
+                                                                                    <td class="text-end">${$('#keKasId option:selected').text()}</td>
+                                                                                </tr>
+                                                                            </table>
+                                                                        </div>
+                                                                    `,
                     icon: 'question',
                     showCancelButton: true,
                     confirmButtonText: '<i class="ti ti-send"></i> Ya, Bayar',
@@ -1005,33 +1151,33 @@
                                 icon: 'success',
                                 title: 'Pembayaran Berhasil!',
                                 html: `
-                                            <div class="text-start">
-                                                <div class="alert alert-success">
-                                                    <p class="mb-2"><strong>Kode Pembayaran:</strong></p>
-                                                    <h4 class="mb-0 text-primary">${response.kode_bayar}</h4>
-                                                </div>
-                                                <table class="table table-sm">
-                                                    <tr>
-                                                        <td>Angsuran Pokok:</td>
-                                                        <td class="text-end">Rp ${selectedJadwal.jumlah.toLocaleString('id-ID')}</td>
-                                                    </tr>
-                                                    ${selectedJadwal.denda > 0 ? `
-                                                    <tr>
-                                                        <td>Denda:</td>
-                                                        <td class="text-end text-danger">Rp ${selectedJadwal.denda.toLocaleString('id-ID')}</td>
-                                                    </tr>
-                                                    ` : ''}
-                                                    <tr class="fw-bold border-top">
-                                                        <td>Total Dibayar:</td>
-                                                        <td class="text-end text-success">Rp ${selectedJadwal.total.toLocaleString('id-ID')}</td>
-                                                    </tr>
-                                                </table>
-                                                <p class="mb-0 text-muted">
-                                                    <i class="ti ti-info-circle"></i>
-                                                    Pembayaran Anda sedang diverifikasi. Cek status di riwayat pembayaran.
-                                                </p>
-                                            </div>
-                                        `,
+                                                                        <div class="text-start">
+                                                                            <div class="alert alert-success">
+                                                                                <p class="mb-2"><strong>Kode Pembayaran:</strong></p>
+                                                                                <h4 class="mb-0 text-primary">${response.kode_bayar}</h4>
+                                                                            </div>
+                                                                            <table class="table table-sm">
+                                                                                <tr>
+                                                                                    <td>Angsuran Pokok:</td>
+                                                                                    <td class="text-end">Rp ${selectedJadwal.jumlah.toLocaleString('id-ID')}</td>
+                                                                                </tr>
+                                                                                ${selectedJadwal.denda > 0 ? `
+                                                                                <tr>
+                                                                                    <td>Denda:</td>
+                                                                                    <td class="text-end text-danger">Rp ${selectedJadwal.denda.toLocaleString('id-ID')}</td>
+                                                                                </tr>
+                                                                                ` : ''}
+                                                                                <tr class="fw-bold border-top">
+                                                                                    <td>Total Dibayar:</td>
+                                                                                    <td class="text-end text-success">Rp ${selectedJadwal.total.toLocaleString('id-ID')}</td>
+                                                                                </tr>
+                                                                            </table>
+                                                                            <p class="mb-0 text-muted">
+                                                                                <i class="ti ti-info-circle"></i>
+                                                                                Pembayaran Anda sedang diverifikasi. Cek status di riwayat pembayaran.
+                                                                            </p>
+                                                                        </div>
+                                                                    `,
                                 confirmButtonColor: '#13a460',
                                 confirmButtonText: 'OK'
                             }).then(() => {
@@ -1062,6 +1208,84 @@
             window.showHelp = function () {
                 $('#modalBantuan').modal('show');
             };
-        });  // ← TUTUP $(document).ready
+
+            // ✅ Handle Bank Selection - Show Rekening Info
+            $('#keKasId').on('change', function () {
+                const selectedOption = $(this).find('option:selected');
+                const noRek = selectedOption.data('no-rek');
+                const pemilik = selectedOption.data('pemilik');
+                const namaBank = selectedOption.data('nama');
+
+                if (noRek && pemilik) {
+                    // Tampilkan card info rekening
+                    $('#bankNameText').text(namaBank);
+                    $('#noRekDisplay').text(noRek);
+                    $('#pemilikDisplay').text(pemilik);
+                    $('#rekeningInfo').slideDown(300);
+                } else {
+                    // Sembunyikan jika tidak ada data rekening
+                    $('#rekeningInfo').slideUp(300);
+                }
+            });
+
+            // ✅ Copy to Clipboard Function (HANYA NOMOR REKENING)
+            window.copyToClipboard = function (type) {
+                const textToCopy = $('#noRekDisplay').text();
+
+                if (!textToCopy || textToCopy === '-') {
+                    return;
+                }
+
+                // Copy menggunakan Clipboard API
+                navigator.clipboard.writeText(textToCopy).then(function () {
+                    // Success feedback
+                    const btn = $('#btnCopyNoRek');
+                    const originalHTML = btn.html();
+
+                    // Tambah class animation
+                    btn.addClass('copied copy-animation');
+                    btn.html('<i class="ti ti-check"></i> Tersalin!');
+
+                    // Toast notification
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Nomor Rekening Tersalin!',
+                        text: textToCopy,
+                        showConfirmButton: false,
+                        timer: 2000,
+                        timerProgressBar: true
+                    });
+
+                    // Reset button setelah 2 detik
+                    setTimeout(function () {
+                        btn.removeClass('copied copy-animation');
+                        btn.html(originalHTML);
+                    }, 2000);
+
+                }).catch(function (err) {
+                    console.error('Gagal menyalin:', err);
+
+                    // Fallback: gunakan execCommand (untuk browser lama)
+                    const tempInput = document.createElement('input');
+                    tempInput.value = textToCopy;
+                    document.body.appendChild(tempInput);
+                    tempInput.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(tempInput);
+
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Nomor Rekening Tersalin!',
+                        text: textToCopy,
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                });
+            };
+        });  
     </script>
 @endpush

@@ -9,9 +9,11 @@ class DataKas extends Model
     protected $table = 'data_kas';
 
     protected $primaryKey = 'id';
-    
+
     protected $fillable = [
         'nama_kas',
+        'no_rekening',
+        'pemilik_rekening',
         'aktif',
         'simpanan',
         'penarikan',

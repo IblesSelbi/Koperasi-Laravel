@@ -255,6 +255,46 @@
                 </div>
             </div>
 
+            <!-- Modal Tolak Pembayaran -->
+            <div class="modal fade" id="modalTolakPembayaran" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-light text-white">
+                            <h5 class="modal-title">
+                                <i class="ti ti-x-circle"></i> Tolak Pembayaran
+                            </h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="alert alert-danger">
+                                <i class="ti ti-alert-triangle"></i>
+                                <strong>Perhatian!</strong><br>
+                                Pembayaran akan ditolak dan user harus melakukan pembayaran ulang
+                            </div>
+
+                            <input type="hidden" id="tolakDetailId">
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">
+                                    Alasan Penolakan <span class="text-danger">*</span>
+                                </label>
+                                <textarea class="form-control" id="tolakAlasan" rows="4"
+                                    placeholder="Jelaskan alasan penolakan secara detail..." required></textarea>
+                                <small class="text-muted">Minimal 10 karakter</small>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                <i class="ti ti-x"></i> Batal
+                            </button>
+                            <button type="button" class="btn btn-danger" onclick="konfirmasiTolak()">
+                                <i class="ti ti-check"></i> Tolak Pembayaran
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Status Pembayaran -->
             <div class="card-footer bg-light">
                 <div class="row text-center">
@@ -666,103 +706,103 @@
         // Function showBuktiTransferModal (tidak perlu diubah)
         function showBuktiTransferModal(data) {
             const content = `
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="card border-success">
-                                <div class="card-header bg-success-subtle">
-                                    <h6 class="mb-0"><i class="ti ti-file-check"></i> Detail Pembayaran</h6>
-                                </div>
-                                <div class="card-body">
-                                    <table class="table table-sm table-borderless">
-                                        <tr>
-                                            <td class="fw-semibold" style="width: 40%;">Kode Bayar</td>
-                                            <td style="width: 5%;">:</td>
-                                            <td><span class="badge bg-primary-subtle text-primary fw-semibold">${data.kode_bayar}</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="fw-semibold">Status</td>
-                                            <td>:</td>
-                                            <td><span class="badge bg-success-subtle text-success fw-semibold">
-                                                <i class="ti ti-check"></i> ${data.status_verifikasi_text}
-                                            </span></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="fw-semibold">Nama Anggota</td>
-                                            <td>:</td>
-                                            <td>${data.anggota_nama}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="fw-semibold">Angsuran Ke</td>
-                                            <td>:</td>
-                                            <td><span class="badge bg-secondary">Ke-${data.angsuran_ke}</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="fw-semibold">Tanggal Bayar</td>
-                                            <td>:</td>
-                                            <td>${data.tanggal_bayar_formatted}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="fw-semibold">Jumlah Bayar</td>
-                                            <td>:</td>
-                                            <td class="text-success fw-bold">Rp ${data.jumlah_bayar_formatted}</td>
-                                        </tr>
-                                        ${data.denda > 0 ? `
-                                        <tr>
-                                            <td class="fw-semibold">Denda</td>
-                                            <td>:</td>
-                                            <td class="text-danger fw-bold">Rp ${data.denda_formatted}</td>
-                                        </tr>
-                                        ` : ''}
-                                        <tr class="border-top">
-                                            <td class="fw-semibold pt-2">Total Dibayar</td>
-                                            <td class="pt-2">:</td>
-                                            <td class="text-end pt-2">
-                                                <strong class="text-success fs-5">Rp ${data.total_bayar_formatted}</strong>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="fw-semibold">Bank Transfer</td>
-                                            <td>:</td>
-                                            <td><span class="badge bg-info">${data.bank_nama}</span></td>
-                                        </tr>
-                                        ${data.keterangan ? `
-                                        <tr>
-                                            <td class="fw-semibold">Keterangan</td>
-                                            <td>:</td>
-                                            <td>${data.keterangan}</td>
-                                        </tr>
-                                        ` : ''}
-                                    </table>
-                                    ${data.verified_by ? `
-                                    <div class="alert alert-success mt-3 mb-0">
-                                        <small>
-                                            <i class="ti ti-user-check"></i> Diverifikasi oleh: <strong>${data.verified_by}</strong><br>
-                                            <i class="ti ti-calendar"></i> Pada: ${data.verified_at_formatted}
-                                        </small>
-                                    </div>
-                                    ` : ''}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="card border-info">
-                                <div class="card-header bg-info-subtle">
-                                    <h6 class="mb-0"><i class="ti ti-photo"></i> Bukti Transfer</h6>
-                                </div>
-                                <div class="card-body text-center">
-                                    <img src="${data.bukti_url}" 
-                                         alt="Bukti Transfer" 
-                                         class="img-fluid rounded border shadow-sm" 
-                                         style="max-height: 500px; cursor: pointer;"
-                                         onclick="showFullImage('${data.bukti_url}')">
-                                    <p class="text-muted small mt-2 mb-0">
-                                        <i class="ti ti-info-circle"></i> Klik gambar untuk memperbesar
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="card border-success">
+                                                    <div class="card-header bg-success-subtle">
+                                                        <h6 class="mb-0"><i class="ti ti-file-check"></i> Detail Pembayaran</h6>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <table class="table table-sm table-borderless">
+                                                            <tr>
+                                                                <td class="fw-semibold" style="width: 40%;">Kode Bayar</td>
+                                                                <td style="width: 5%;">:</td>
+                                                                <td><span class="badge bg-primary-subtle text-primary fw-semibold">${data.kode_bayar}</span></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="fw-semibold">Status</td>
+                                                                <td>:</td>
+                                                                <td><span class="badge bg-success-subtle text-success fw-semibold">
+                                                                    <i class="ti ti-check"></i> ${data.status_verifikasi_text}
+                                                                </span></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="fw-semibold">Nama Anggota</td>
+                                                                <td>:</td>
+                                                                <td>${data.anggota_nama}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="fw-semibold">Angsuran Ke</td>
+                                                                <td>:</td>
+                                                                <td><span class="badge bg-secondary">Ke-${data.angsuran_ke}</span></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="fw-semibold">Tanggal Bayar</td>
+                                                                <td>:</td>
+                                                                <td>${data.tanggal_bayar_formatted}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="fw-semibold">Jumlah Bayar</td>
+                                                                <td>:</td>
+                                                                <td class="text-success fw-bold">Rp ${data.jumlah_bayar_formatted}</td>
+                                                            </tr>
+                                                            ${data.denda > 0 ? `
+                                                            <tr>
+                                                                <td class="fw-semibold">Denda</td>
+                                                                <td>:</td>
+                                                                <td class="text-danger fw-bold">Rp ${data.denda_formatted}</td>
+                                                            </tr>
+                                                            ` : ''}
+                                                            <tr class="border-top">
+                                                                <td class="fw-semibold pt-2">Total Dibayar</td>
+                                                                <td class="pt-2">:</td>
+                                                                <td class="text-end pt-2">
+                                                                    <strong class="text-success fs-5">Rp ${data.total_bayar_formatted}</strong>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="fw-semibold">Bank Transfer</td>
+                                                                <td>:</td>
+                                                                <td><span class="badge bg-info">${data.bank_nama}</span></td>
+                                                            </tr>
+                                                            ${data.keterangan ? `
+                                                            <tr>
+                                                                <td class="fw-semibold">Keterangan</td>
+                                                                <td>:</td>
+                                                                <td>${data.keterangan}</td>
+                                                            </tr>
+                                                            ` : ''}
+                                                        </table>
+                                                        ${data.verified_by ? `
+                                                        <div class="alert alert-success mt-3 mb-0">
+                                                            <small>
+                                                                <i class="ti ti-user-check"></i> Diverifikasi oleh: <strong>${data.verified_by}</strong><br>
+                                                                <i class="ti ti-calendar"></i> Pada: ${data.verified_at_formatted}
+                                                            </small>
+                                                        </div>
+                                                        ` : ''}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="card border-info">
+                                                    <div class="card-header bg-info-subtle">
+                                                        <h6 class="mb-0"><i class="ti ti-photo"></i> Bukti Transfer</h6>
+                                                    </div>
+                                                    <div class="card-body text-center">
+                                                        <img src="${data.bukti_url}" 
+                                                             alt="Bukti Transfer" 
+                                                             class="img-fluid rounded border shadow-sm" 
+                                                             style="max-height: 500px; cursor: pointer;"
+                                                             onclick="showFullImage('${data.bukti_url}')">
+                                                        <p class="text-muted small mt-2 mb-0">
+                                                            <i class="ti ti-info-circle"></i> Klik gambar untuk memperbesar
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    `;
 
             Swal.fire({
                 title: 'Bukti Transfer Pembayaran',
@@ -810,114 +850,114 @@
         // Function: Display Verifikasi Modal Content
         function displayVerifikasiModal(data) {
             const content = `
-                                                                            <div class="row">
-                                                                                <!-- LEFT: Detail Pembayaran -->
-                                                                                <div class="col-md-6">
-                                                                                    <div class="card border-warning">
-                                                                                        <div class="card-header bg-warning-subtle">
-                                                                                            <h6 class="mb-0"><i class="ti ti-file-text"></i> Detail Pembayaran</h6>
-                                                                                        </div>
-                                                                                        <div class="card-body">
-                                                                                            <table class="table table-sm">
-                                                                                                <tr>
-                                                                                                    <td class="fw-semibold">Kode Bayar</td>
-                                                                                                    <td>:</td>
-                                                                                                    <td><span class="badge bg-primary-subtle text-primary fw-semibold">${data.kode_bayar}</span></td>
-                                                                                                </tr>
-                                                                                                <tr>
-                                                                                                    <td class="fw-semibold">Nama Anggota</td>
-                                                                                                    <td>:</td>
-                                                                                                    <td>${data.anggota_nama}</td>
-                                                                                                </tr>
-                                                                                                <tr>
-                                                                                                    <td class="fw-semibold">Angsuran Ke</td>
-                                                                                                    <td>:</td>
-                                                                                                    <td><span class="badge bg-secondary">Ke-${data.angsuran_ke}</span></td>
-                                                                                                </tr>
-                                                                                                <tr>
-                                                                                                    <td class="fw-semibold">Tanggal Bayar</td>
-                                                                                                    <td>:</td>
-                                                                                                    <td>${data.tanggal_bayar_formatted}</td>
-                                                                                                </tr>
-                                                                                                <tr>
-                                                                                                    <td class="fw-semibold">Jumlah Angsuran</td>
-                                                                                                    <td>:</td>
-                                                                                                    <td>Rp ${data.jumlah_angsuran_formatted}</td>
-                                                                                                </tr>
-                                                                                                <tr>
-                                                                                                    <td class="fw-semibold">Jumlah Bayar</td>
-                                                                                                    <td>:</td>
-                                                                                                    <td class="text-success fw-bold">Rp ${data.jumlah_bayar_formatted}</td>
-                                                                                                </tr>
-                                                                                                <tr>
-                                                                                                    <td class="fw-semibold">Bank Transfer</td>
-                                                                                                    <td>:</td>
-                                                                                                    <td><span class="badge bg-info">${data.bank_nama}</span></td>
-                                                                                                </tr>
-                                                                                                ${data.keterangan ? `
-                                                                                                <tr>
-                                                                                                    <td class="fw-semibold">Keterangan</td>
-                                                                                                    <td>:</td>
-                                                                                                    <td>${data.keterangan}</td>
-                                                                                                </tr>
-                                                                                                ` : ''}
-                                                                                            </table>
+                                                                                                <div class="row">
+                                                                                                    <!-- LEFT: Detail Pembayaran -->
+                                                                                                    <div class="col-md-6">
+                                                                                                        <div class="card border-warning">
+                                                                                                            <div class="card-header bg-warning-subtle">
+                                                                                                                <h6 class="mb-0"><i class="ti ti-file-text"></i> Detail Pembayaran</h6>
+                                                                                                            </div>
+                                                                                                            <div class="card-body">
+                                                                                                                <table class="table table-sm">
+                                                                                                                    <tr>
+                                                                                                                        <td class="fw-semibold">Kode Bayar</td>
+                                                                                                                        <td>:</td>
+                                                                                                                        <td><span class="badge bg-primary-subtle text-primary fw-semibold">${data.kode_bayar}</span></td>
+                                                                                                                    </tr>
+                                                                                                                    <tr>
+                                                                                                                        <td class="fw-semibold">Nama Anggota</td>
+                                                                                                                        <td>:</td>
+                                                                                                                        <td>${data.anggota_nama}</td>
+                                                                                                                    </tr>
+                                                                                                                    <tr>
+                                                                                                                        <td class="fw-semibold">Angsuran Ke</td>
+                                                                                                                        <td>:</td>
+                                                                                                                        <td><span class="badge bg-secondary">Ke-${data.angsuran_ke}</span></td>
+                                                                                                                    </tr>
+                                                                                                                    <tr>
+                                                                                                                        <td class="fw-semibold">Tanggal Bayar</td>
+                                                                                                                        <td>:</td>
+                                                                                                                        <td>${data.tanggal_bayar_formatted}</td>
+                                                                                                                    </tr>
+                                                                                                                    <tr>
+                                                                                                                        <td class="fw-semibold">Jumlah Angsuran</td>
+                                                                                                                        <td>:</td>
+                                                                                                                        <td>Rp ${data.jumlah_angsuran_formatted}</td>
+                                                                                                                    </tr>
+                                                                                                                    <tr>
+                                                                                                                        <td class="fw-semibold">Jumlah Bayar</td>
+                                                                                                                        <td>:</td>
+                                                                                                                        <td class="text-success fw-bold">Rp ${data.jumlah_bayar_formatted}</td>
+                                                                                                                    </tr>
+                                                                                                                    <tr>
+                                                                                                                        <td class="fw-semibold">Bank Transfer</td>
+                                                                                                                        <td>:</td>
+                                                                                                                        <td><span class="badge bg-info">${data.bank_nama}</span></td>
+                                                                                                                    </tr>
+                                                                                                                    ${data.keterangan ? `
+                                                                                                                    <tr>
+                                                                                                                        <td class="fw-semibold">Keterangan</td>
+                                                                                                                        <td>:</td>
+                                                                                                                        <td>${data.keterangan}</td>
+                                                                                                                    </tr>
+                                                                                                                    ` : ''}
+                                                                                                                </table>
 
-                                                                                            <!-- Form Denda -->
-                                                                                            <div class="mt-3">
-                                                                                                <label class="form-label fw-semibold">Tambah Denda (Opsional)</label>
-                                                                                                <div class="input-group">
-                                                                                                    <span class="input-group-text">Rp</span>
-                                                                                                    <input type="number" class="form-control" id="dendaInput" min="0" step="1000" value="${data.denda_otomatis}">
+                                                                                                                <!-- Form Denda -->
+                                                                                                                <div class="mt-3">
+                                                                                                                    <label class="form-label fw-semibold">Tambah Denda (Opsional)</label>
+                                                                                                                    <div class="input-group">
+                                                                                                                        <span class="input-group-text">Rp</span>
+                                                                                                                        <input type="number" class="form-control" id="dendaInput" min="0" step="1000" value="${data.denda_otomatis}">
+                                                                                                                    </div>
+                                                                                                                    <small class="text-muted">Denda otomatis: Rp ${data.denda_otomatis.toLocaleString('id-ID')}</small>
+                                                                                                                </div>
+
+                                                                                                                <div class="mt-3">
+                                                                                                                    <label class="form-label fw-semibold">Catatan Verifikasi (Opsional)</label>
+                                                                                                                    <textarea class="form-control" id="catatanInput" rows="2" placeholder="Catatan tambahan..."></textarea>
+                                                                                                                </div>
+
+                                                                                                                <div class="alert alert-success mt-3">
+                                                                                                                    <div class="d-flex justify-content-between">
+                                                                                                                        <span>Total yang Diterima:</span>
+                                                                                                                        <strong class="fs-5" id="totalVerifikasi">Rp ${(parseFloat(data.jumlah_bayar) + parseFloat(data.denda_otomatis)).toLocaleString('id-ID')}</strong>
+                                                                                                                    </div>
+                                                                                                                </div>
+
+                                                                                                                <!-- Action Buttons -->
+                                                                                                                <div class="d-grid gap-2 mt-3">
+                                                                                                                    <button class="btn btn-success" onclick="approvePayment(${data.id})">
+                                                                                                                        <i class="ti ti-check"></i> Approve Pembayaran
+                                                                                                                    </button>
+                                                                                                                    <button class="btn btn-danger" onclick="rejectPayment(${data.id})">
+                                                                                                                        <i class="ti ti-x"></i> Tolak Pembayaran
+                                                                                                                    </button>
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                    </div>
+
+                                                                                                    <!-- RIGHT: Bukti Transfer -->
+                                                                                                    <div class="col-md-6">
+                                                                                                        <div class="card border-light">
+                                                                                                            <div class="card-header bg-info-subtle">
+                                                                                                                <h6 class="mb-0"><i class="ti ti-photo"></i> Bukti Transfer</h6>
+                                                                                                            </div>
+                                                                                                            <div class="card-body text-center">
+                                                                                                                <img src="${data.bukti_url}" 
+                                                                                                                     alt="Bukti Transfer" 
+                                                                                                                     class="img-fluid rounded border" 
+                                                                                                                     style="max-height: 500px; cursor: pointer;"
+                                                                                                                     onclick="showFullImage('${data.bukti_url}')">
+                                                                                                                <p class="text-muted small mt-2">
+                                                                                                                    <i class="ti ti-info-circle"></i> Klik gambar untuk memperbesar
+                                                                                                                </p>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                    </div>
                                                                                                 </div>
-                                                                                                <small class="text-muted">Denda otomatis: Rp ${data.denda_otomatis.toLocaleString('id-ID')}</small>
-                                                                                            </div>
-
-                                                                                            <div class="mt-3">
-                                                                                                <label class="form-label fw-semibold">Catatan Verifikasi (Opsional)</label>
-                                                                                                <textarea class="form-control" id="catatanInput" rows="2" placeholder="Catatan tambahan..."></textarea>
-                                                                                            </div>
-
-                                                                                            <div class="alert alert-success mt-3">
-                                                                                                <div class="d-flex justify-content-between">
-                                                                                                    <span>Total yang Diterima:</span>
-                                                                                                    <strong class="fs-5" id="totalVerifikasi">Rp ${(parseFloat(data.jumlah_bayar) + parseFloat(data.denda_otomatis)).toLocaleString('id-ID')}</strong>
-                                                                                                </div>
-                                                                                            </div>
-
-                                                                                            <!-- Action Buttons -->
-                                                                                            <div class="d-grid gap-2 mt-3">
-                                                                                                <button class="btn btn-success" onclick="approvePayment(${data.id})">
-                                                                                                    <i class="ti ti-check"></i> Approve Pembayaran
-                                                                                                </button>
-                                                                                                <button class="btn btn-danger" onclick="rejectPayment(${data.id})">
-                                                                                                    <i class="ti ti-x"></i> Tolak Pembayaran
-                                                                                                </button>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div>
-
-                                                                                <!-- RIGHT: Bukti Transfer -->
-                                                                                <div class="col-md-6">
-                                                                                    <div class="card border-light">
-                                                                                        <div class="card-header bg-info-subtle">
-                                                                                            <h6 class="mb-0"><i class="ti ti-photo"></i> Bukti Transfer</h6>
-                                                                                        </div>
-                                                                                        <div class="card-body text-center">
-                                                                                            <img src="${data.bukti_url}" 
-                                                                                                 alt="Bukti Transfer" 
-                                                                                                 class="img-fluid rounded border" 
-                                                                                                 style="max-height: 500px; cursor: pointer;"
-                                                                                                 onclick="showFullImage('${data.bukti_url}')">
-                                                                                            <p class="text-muted small mt-2">
-                                                                                                <i class="ti ti-info-circle"></i> Klik gambar untuk memperbesar
-                                                                                            </p>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                        `;
+                                                                                            `;
 
             $('#verifikasiContent').html(content);
             $('#modalVerifikasi').modal('show');
@@ -981,15 +1021,15 @@
             Swal.fire({
                 title: 'Konfirmasi Approve',
                 html: `
-                                                                                <div class="text-start">
-                                                                                    <p>Apakah Anda yakin ingin <strong class="text-success">menyetujui</strong> pembayaran ini?</p>
-                                                                                    ${denda > 0 ? `<p class="text-danger mb-0"><i class="ti ti-alert-circle"></i> Denda: Rp ${parseFloat(denda).toLocaleString('id-ID')}</p>` : ''}
-                                                                                    <div class="alert alert-info mt-2 mb-0">
-                                                                                        <i class="ti ti-info-circle"></i>
-                                                                                        Pembayaran akan langsung diproses dan status angsuran akan menjadi <strong>Lunas</strong>
-                                                                                    </div>
-                                                                                </div>
-                                                                            `,
+                                                                                                    <div class="text-start">
+                                                                                                        <p>Apakah Anda yakin ingin <strong class="text-success">menyetujui</strong> pembayaran ini?</p>
+                                                                                                        ${denda > 0 ? `<p class="text-danger mb-0"><i class="ti ti-alert-circle"></i> Denda: Rp ${parseFloat(denda).toLocaleString('id-ID')}</p>` : ''}
+                                                                                                        <div class="alert alert-info mt-2 mb-0">
+                                                                                                            <i class="ti ti-info-circle"></i>
+                                                                                                            Pembayaran akan langsung diproses dan status angsuran akan menjadi <strong>Lunas</strong>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                `,
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonText: '<i class="ti ti-check"></i> Ya, Approve',
@@ -1042,42 +1082,67 @@
             });
         }
 
-        // Function: Reject Payment
+        // Function: Reject Payment (Alternatif dengan input)
+        // Function: Reject Payment - Menggunakan Bootstrap Modal
         function rejectPayment(detailBayarId) {
-            Swal.fire({
-                title: 'Tolak Pembayaran',
-                html: `
-                                                                                <div class="text-start">
-                                                                                    <div class="alert alert-danger">
-                                                                                        <i class="ti ti-alert-triangle"></i>
-                                                                                        <strong>Perhatian!</strong><br>
-                                                                                        Pembayaran akan ditolak dan user harus melakukan pembayaran ulang
-                                                                                    </div>
+            // Tutup modal verifikasi
+            $('#modalVerifikasi').modal('hide');
 
-                                                                                    <div class="mb-3">
-                                                                                        <label class="form-label fw-semibold">Alasan Penolakan <span class="text-danger">*</span></label>
-                                                                                        <textarea class="form-control" id="alasanPenolakan" rows="3" placeholder="Jelaskan alasan penolakan..." required></textarea>
-                                                                                        <small class="text-muted">Alasan akan ditampilkan kepada user</small>
-                                                                                    </div>
-                                                                                </div>
-                                                                            `,
+            // Reset form
+            $('#tolakDetailId').val(detailBayarId);
+            $('#tolakAlasan').val('');
+
+            // Tampilkan modal tolak
+            $('#modalTolakPembayaran').modal('show');
+
+            // Auto focus ke textarea setelah modal terbuka
+            $('#modalTolakPembayaran').on('shown.bs.modal', function () {
+                $('#tolakAlasan').focus();
+            });
+        }
+
+        // Function: Konfirmasi Tolak
+        function konfirmasiTolak() {
+            const detailId = $('#tolakDetailId').val();
+            const alasan = $('#tolakAlasan').val().trim();
+
+            // Validasi
+            if (!alasan) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: 'Alasan penolakan wajib diisi!',
+                    confirmButtonColor: '#dc3545'
+                });
+                return;
+            }
+
+            if (alasan.length < 10) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: 'Alasan penolakan minimal 10 karakter!',
+                    confirmButtonColor: '#dc3545'
+                });
+                return;
+            }
+
+            // Konfirmasi
+            Swal.fire({
+                title: 'Konfirmasi Penolakan',
+                text: 'Yakin ingin menolak pembayaran ini?',
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonText: '<i class="ti ti-x"></i> Tolak Pembayaran',
+                confirmButtonText: 'Ya, Tolak',
                 cancelButtonText: 'Batal',
-                confirmButtonColor: '#dc3545',
-                width: '600px',
-                preConfirm: () => {
-                    const alasan = $('#alasanPenolakan').val().trim();
-                    if (!alasan) {
-                        Swal.showValidationMessage('Alasan penolakan wajib diisi');
-                        return false;
-                    }
-                    return { alasan: alasan };
-                }
+                confirmButtonColor: '#dc3545'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    processReject(detailBayarId, result.value.alasan);
+                    // Tutup modal tolak
+                    $('#modalTolakPembayaran').modal('hide');
+
+                    // Proses reject
+                    processReject(detailId, alasan);
                 }
             });
         }
@@ -1146,21 +1211,21 @@
             Swal.fire({
                 title: 'Validasi Pelunasan',
                 html: `
-                                                                                <div class="text-start">
-                                                                                    <div class="alert alert-warning">
-                                                                                        <i class="ti ti-alert-triangle"></i>
-                                                                                        <strong>Perhatian!</strong>
-                                                                                        <ul class="mb-0 mt-2">
-                                                                                            <li>Pastikan SEMUA angsuran sudah dibayar</li>
-                                                                                            <li>Tidak ada pembayaran yang pending verifikasi</li>
-                                                                                            <li>Data akan dipindahkan ke <strong>Pinjaman Lunas</strong></li>
-                                                                                            <li>Status pinjaman akan menjadi <strong>LUNAS</strong></li>
-                                                                                            <li>Proses ini tidak dapat dibatalkan</li>
-                                                                                        </ul>
-                                                                                    </div>
-                                                                                    <p class="mb-0">Apakah Anda yakin ingin memvalidasi pinjaman ini sebagai <strong>LUNAS</strong>?</p>
-                                                                                </div>
-                                                                            `,
+                                                                                                    <div class="text-start">
+                                                                                                        <div class="alert alert-warning">
+                                                                                                            <i class="ti ti-alert-triangle"></i>
+                                                                                                            <strong>Perhatian!</strong>
+                                                                                                            <ul class="mb-0 mt-2">
+                                                                                                                <li>Pastikan SEMUA angsuran sudah dibayar</li>
+                                                                                                                <li>Tidak ada pembayaran yang pending verifikasi</li>
+                                                                                                                <li>Data akan dipindahkan ke <strong>Pinjaman Lunas</strong></li>
+                                                                                                                <li>Status pinjaman akan menjadi <strong>LUNAS</strong></li>
+                                                                                                                <li>Proses ini tidak dapat dibatalkan</li>
+                                                                                                            </ul>
+                                                                                                        </div>
+                                                                                                        <p class="mb-0">Apakah Anda yakin ingin memvalidasi pinjaman ini sebagai <strong>LUNAS</strong>?</p>
+                                                                                                    </div>
+                                                                                                `,
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonText: '<i class="ti ti-check"></i> Ya, Validasi Lunas',
@@ -1194,15 +1259,15 @@
                                     icon: 'success',
                                     title: 'Validasi Berhasil!',
                                     html: `
-                                                                                                    <div class="text-start">
-                                                                                                        <div class="alert alert-success mb-3">
-                                                                                                            <i class="ti ti-check-circle"></i>
-                                                                                                            Pinjaman berhasil divalidasi sebagai <strong>LUNAS</strong>
-                                                                                                        </div>
-                                                                                                        <p class="mb-2"><strong>Kode Lunas:</strong> ${response.kode_lunas}</p>
-                                                                                                        <p class="mb-0 text-muted">Data telah dipindahkan ke menu Pinjaman Lunas</p>
-                                                                                                    </div>
-                                                                                                `,
+                                                                                                                        <div class="text-start">
+                                                                                                                            <div class="alert alert-success mb-3">
+                                                                                                                                <i class="ti ti-check-circle"></i>
+                                                                                                                                Pinjaman berhasil divalidasi sebagai <strong>LUNAS</strong>
+                                                                                                                            </div>
+                                                                                                                            <p class="mb-2"><strong>Kode Lunas:</strong> ${response.kode_lunas}</p>
+                                                                                                                            <p class="mb-0 text-muted">Data telah dipindahkan ke menu Pinjaman Lunas</p>
+                                                                                                                        </div>
+                                                                                                                    `,
                                     confirmButtonText: '<i class="ti ti-eye"></i> Lihat Data Lunas',
                                     showCancelButton: true,
                                     cancelButtonText: 'Tutup',
@@ -1223,14 +1288,14 @@
                                 icon: 'error',
                                 title: 'Validasi Gagal!',
                                 html: `
-                                                                                                <div class="text-start">
-                                                                                                    <div class="alert alert-danger">
-                                                                                                        <i class="ti ti-alert-circle"></i>
-                                                                                                        ${errorMessage}
-                                                                                                    </div>
-                                                                                                    ${xhr.status === 400 ? '<p class="text-muted mb-0">Periksa kembali status pembayaran angsuran</p>' : ''}
-                                                                                                </div>
-                                                                                            `,
+                                                                                                                    <div class="text-start">
+                                                                                                                        <div class="alert alert-danger">
+                                                                                                                            <i class="ti ti-alert-circle"></i>
+                                                                                                                            ${errorMessage}
+                                                                                                                        </div>
+                                                                                                                        ${xhr.status === 400 ? '<p class="text-muted mb-0">Periksa kembali status pembayaran angsuran</p>' : ''}
+                                                                                                                    </div>
+                                                                                                                `,
                                 confirmButtonText: 'OK',
                                 confirmButtonColor: '#dc3545'
                             });
@@ -1293,62 +1358,62 @@
             Swal.fire({
                 title: 'Bayar Angsuran',
                 html: `
-                                                                                <div class="text-start">
-                                                                                    <div class="alert alert-info rounded-3">
-                                                                                         <div class="d-flex justify-content-between align-items-start">
-                                                                                            <div>
-                                                                                                <strong>Angsuran Ke-${angsuran.angsuran_ke}</strong><br>
-                                                                                                <small>Tempo: ${angsuran.tanggal_jatuh_tempo_formatted}</small>
-                                                                                            </div>
-                                                                                            ${angsuran.is_terlambat ? `<span class="badge bg-danger">${angsuran.hari_terlambat} hari terlambat</span>` : ''}
-                                                                                        </div>
-                                                                                    </div>
+                                                                                                    <div class="text-start">
+                                                                                                        <div class="alert alert-info rounded-3">
+                                                                                                             <div class="d-flex justify-content-between align-items-start">
+                                                                                                                <div>
+                                                                                                                    <strong>Angsuran Ke-${angsuran.angsuran_ke}</strong><br>
+                                                                                                                    <small>Tempo: ${angsuran.tanggal_jatuh_tempo_formatted}</small>
+                                                                                                                </div>
+                                                                                                                ${angsuran.is_terlambat ? `<span class="badge bg-danger">${angsuran.hari_terlambat} hari terlambat</span>` : ''}
+                                                                                                            </div>
+                                                                                                        </div>
 
-                                                                                    <input type="hidden" id="angsuranId" value="${angsuran.id}">
+                                                                                                        <input type="hidden" id="angsuranId" value="${angsuran.id}">
 
-                                                                                    <div class="mb-3">
-                                                                                        <label class="form-label fw-semibold">Tanggal Bayar <span class="text-danger">*</span></label>
-                                                                                        <input type="datetime-local" class="form-control" id="tglBayar"
-                                                                                            value="${new Date().toISOString().slice(0, 16)}">
-                                                                                    </div>
+                                                                                                        <div class="mb-3">
+                                                                                                            <label class="form-label fw-semibold">Tanggal Bayar <span class="text-danger">*</span></label>
+                                                                                                            <input type="datetime-local" class="form-control" id="tglBayar"
+                                                                                                                value="${new Date().toISOString().slice(0, 16)}">
+                                                                                                        </div>
 
-                                                                                    <div class="mb-3">
-                                                                                        <label class="form-label fw-semibold">Jumlah Angsuran</label>
-                                                                                        <input type="text" class="form-control bg-light" 
-                                                                                            value="Rp ${jumlahBayar.toLocaleString('id-ID')}" readonly>
-                                                                                        <input type="hidden" id="jumlahBayar" value="${jumlahBayar}">
-                                                                                    </div>
+                                                                                                        <div class="mb-3">
+                                                                                                            <label class="form-label fw-semibold">Jumlah Angsuran</label>
+                                                                                                            <input type="text" class="form-control bg-light" 
+                                                                                                                value="Rp ${jumlahBayar.toLocaleString('id-ID')}" readonly>
+                                                                                                            <input type="hidden" id="jumlahBayar" value="${jumlahBayar}">
+                                                                                                        </div>
 
-                                                                                    <div class="mb-3">
-                                                                                        <label class="form-label fw-semibold">Denda</label>
-                                                                                        <input type="number" class="form-control" id="dendaBayar"
-                                                                                            value="${denda}" min="0" step="1000">
-                                                                                        <small class="text-muted">Dapat diubah manual</small>
-                                                                                    </div>
+                                                                                                        <div class="mb-3">
+                                                                                                            <label class="form-label fw-semibold">Denda</label>
+                                                                                                            <input type="number" class="form-control" id="dendaBayar"
+                                                                                                                value="${denda}" min="0" step="1000">
+                                                                                                            <small class="text-muted">Dapat diubah manual</small>
+                                                                                                        </div>
 
-                                                                                    <div class="mb-3">
-                                                                                        <label class="form-label fw-semibold">Kas Tujuan <span class="text-danger">*</span></label>
-                                                                                        <select class="form-select" id="keKasId">
-                                                                                            <option value="">-- Pilih Kas --</option>
-                                                                                            @foreach($kasList as $kas)
-                                                                                                <option value="{{ $kas->id }}">{{ $kas->nama_kas }}</option>
-                                                                                            @endforeach
-                                                                                        </select>
-                                                                                    </div>
+                                                                                                        <div class="mb-3">
+                                                                                                            <label class="form-label fw-semibold">Kas Tujuan <span class="text-danger">*</span></label>
+                                                                                                            <select class="form-select" id="keKasId">
+                                                                                                                <option value="">-- Pilih Kas --</option>
+                                                                                                                @foreach($kasList as $kas)
+                                                                                                                    <option value="{{ $kas->id }}">{{ $kas->nama_kas }}</option>
+                                                                                                                @endforeach
+                                                                                                            </select>
+                                                                                                        </div>
 
-                                                                                    <div class="mb-3">
-                                                                                        <label class="form-label fw-semibold">Keterangan</label>
-                                                                                        <textarea class="form-control" id="keterangan" rows="2"></textarea>
-                                                                                    </div>
+                                                                                                        <div class="mb-3">
+                                                                                                            <label class="form-label fw-semibold">Keterangan</label>
+                                                                                                            <textarea class="form-control" id="keterangan" rows="2"></textarea>
+                                                                                                        </div>
 
-                                                                                    <div class="alert alert-success mb-0">
-                                                                                        <div class="d-flex justify-content-between">
-                                                                                            <span>Total Bayar:</span>
-                                                                                            <strong class="fs-5" id="totalDisplay">Rp ${(jumlahBayar + denda).toLocaleString('id-ID')}</strong>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div>
-                                                                            `,
+                                                                                                        <div class="alert alert-success mb-0">
+                                                                                                            <div class="d-flex justify-content-between">
+                                                                                                                <span>Total Bayar:</span>
+                                                                                                                <strong class="fs-5" id="totalDisplay">Rp ${(jumlahBayar + denda).toLocaleString('id-ID')}</strong>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                `,
                 width: '600px',
                 showCancelButton: true,
                 confirmButtonText: '<i class="ti ti-cash"></i> Bayar Sekarang',
@@ -1417,9 +1482,9 @@
                             icon: 'success',
                             title: 'Berhasil!',
                             html: `
-                                                                                            Pembayaran berhasil disimpan<br>
-                                                                                            <strong>Kode Bayar: ${response.kode_bayar}</strong>
-                                                                                        `,
+                                                                                                                Pembayaran berhasil disimpan<br>
+                                                                                                                <strong>Kode Bayar: ${response.kode_bayar}</strong>
+                                                                                                            `,
                             confirmButtonText: 'OK'
                         }).then(() => {
                             location.reload();
@@ -1489,57 +1554,57 @@
             Swal.fire({
                 title: 'Edit Pembayaran',
                 html: `
-                                                                                <div class="text-start">
-                                                                                    <div class="alert alert-info">
-                                                                                        <strong>Kode Bayar: ${pembayaran.kode_bayar}</strong><br>
-                                                                                        <small>Angsuran Ke-${pembayaran.angsuran_ke}</small>
-                                                                                    </div>
+                                                                                                    <div class="text-start">
+                                                                                                        <div class="alert alert-info">
+                                                                                                            <strong>Kode Bayar: ${pembayaran.kode_bayar}</strong><br>
+                                                                                                            <small>Angsuran Ke-${pembayaran.angsuran_ke}</small>
+                                                                                                        </div>
 
-                                                                                    <input type="hidden" id="detailId" value="${pembayaran.id}">
+                                                                                                        <input type="hidden" id="detailId" value="${pembayaran.id}">
 
-                                                                                    <div class="mb-3">
-                                                                                        <label class="form-label fw-semibold">Tanggal Bayar <span class="text-danger">*</span></label>
-                                                                                        <input type="datetime-local" class="form-control" id="tglBayarEdit"
-                                                                                            value="${pembayaran.tanggal_bayar}">
-                                                                                    </div>
+                                                                                                        <div class="mb-3">
+                                                                                                            <label class="form-label fw-semibold">Tanggal Bayar <span class="text-danger">*</span></label>
+                                                                                                            <input type="datetime-local" class="form-control" id="tglBayarEdit"
+                                                                                                                value="${pembayaran.tanggal_bayar}">
+                                                                                                        </div>
 
-                                                                                    <div class="mb-3">
-                                                                                        <label class="form-label fw-semibold">Jumlah Bayar</label>
-                                                                                        <input type="number" class="form-control" id="jumlahBayarEdit"
-                                                                                            value="${jumlahBayar}" min="0" step="1000">
-                                                                                    </div>
+                                                                                                        <div class="mb-3">
+                                                                                                            <label class="form-label fw-semibold">Jumlah Bayar</label>
+                                                                                                            <input type="number" class="form-control" id="jumlahBayarEdit"
+                                                                                                                value="${jumlahBayar}" min="0" step="1000">
+                                                                                                        </div>
 
-                                                                                    <div class="mb-3">
-                                                                                        <label class="form-label fw-semibold">Denda</label>
-                                                                                        <input type="number" class="form-control" id="dendaBayarEdit"
-                                                                                            value="${denda}" min="0" step="1000">
-                                                                                    </div>
+                                                                                                        <div class="mb-3">
+                                                                                                            <label class="form-label fw-semibold">Denda</label>
+                                                                                                            <input type="number" class="form-control" id="dendaBayarEdit"
+                                                                                                                value="${denda}" min="0" step="1000">
+                                                                                                        </div>
 
-                                                                                    <div class="mb-3">
-                                                                                        <label class="form-label fw-semibold">Kas Tujuan <span class="text-danger">*</span></label>
-                                                                                        <select class="form-select" id="keKasIdEdit">
-                                                                                            <option value="">-- Pilih Kas --</option>
-                                                                                            @foreach($kasList as $kas)
-                                                                                                <option value="{{ $kas->id }}" ${pembayaran.ke_kas_id == {{ $kas->id }} ? 'selected' : ''}>
-                                                                                                    {{ $kas->nama_kas }}
-                                                                                                </option>
-                                                                                            @endforeach
-                                                                                        </select>
-                                                                                    </div>
+                                                                                                        <div class="mb-3">
+                                                                                                            <label class="form-label fw-semibold">Kas Tujuan <span class="text-danger">*</span></label>
+                                                                                                            <select class="form-select" id="keKasIdEdit">
+                                                                                                                <option value="">-- Pilih Kas --</option>
+                                                                                                                @foreach($kasList as $kas)
+                                                                                                                    <option value="{{ $kas->id }}" ${pembayaran.ke_kas_id == {{ $kas->id }} ? 'selected' : ''}>
+                                                                                                                        {{ $kas->nama_kas }}
+                                                                                                                    </option>
+                                                                                                                @endforeach
+                                                                                                            </select>
+                                                                                                        </div>
 
-                                                                                    <div class="mb-3">
-                                                                                        <label class="form-label fw-semibold">Keterangan</label>
-                                                                                        <textarea class="form-control" id="keteranganEdit" rows="2">${pembayaran.keterangan || ''}</textarea>
-                                                                                    </div>
+                                                                                                        <div class="mb-3">
+                                                                                                            <label class="form-label fw-semibold">Keterangan</label>
+                                                                                                            <textarea class="form-control" id="keteranganEdit" rows="2">${pembayaran.keterangan || ''}</textarea>
+                                                                                                        </div>
 
-                                                                                    <div class="alert alert-success mb-0">
-                                                                                        <div class="d-flex justify-content-between">
-                                                                                            <span>Total:</span>
-                                                                                            <strong class="fs-5" id="totalDisplayEdit">Rp ${(jumlahBayar + denda).toLocaleString('id-ID')}</strong>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div>
-                                                                            `,
+                                                                                                        <div class="alert alert-success mb-0">
+                                                                                                            <div class="d-flex justify-content-between">
+                                                                                                                <span>Total:</span>
+                                                                                                                <strong class="fs-5" id="totalDisplayEdit">Rp ${(jumlahBayar + denda).toLocaleString('id-ID')}</strong>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                `,
                 width: '600px',
                 showCancelButton: true,
                 confirmButtonText: '<i class="ti ti-check"></i> Update',
@@ -1657,14 +1722,14 @@
             Swal.fire({
                 title: 'Konfirmasi Hapus',
                 html: `
-                                                                                <div class="text-start">
-                                                                                    <p>Apakah Anda yakin ingin menghapus pembayaran ini?</p>
-                                                                                    <div class="alert alert-info">
-                                                                                        <i class="ti ti-info-circle"></i>
-                                                                                        Data akan dipindahkan ke <strong>Riwayat Hapus</strong> dan dapat dipulihkan kembali
-                                                                                    </div>
-                                                                                </div>
-                                                                            `,
+                                                                                                    <div class="text-start">
+                                                                                                        <p>Apakah Anda yakin ingin menghapus pembayaran ini?</p>
+                                                                                                        <div class="alert alert-info">
+                                                                                                            <i class="ti ti-info-circle"></i>
+                                                                                                            Data akan dipindahkan ke <strong>Riwayat Hapus</strong> dan dapat dipulihkan kembali
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                `,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: '<i class="ti ti-trash"></i> Ya, Hapus',
@@ -1707,13 +1772,13 @@
                                         icon: 'success',
                                         title: 'Berhasil!',
                                         html: `
-                                                                                                        ${response.message}
-                                                                                                        <div class="mt-3">
-                                                                                                            <button class="btn btn-sm btn-secondary" onclick="lihatRiwayatHapus()">
-                                                                                                                <i class="ti ti-history"></i> Lihat Riwayat
-                                                                                                            </button>
-                                                                                                        </div>
-                                                                                                    `,
+                                                                                                                            ${response.message}
+                                                                                                                            <div class="mt-3">
+                                                                                                                                <button class="btn btn-sm btn-secondary" onclick="lihatRiwayatHapus()">
+                                                                                                                                    <i class="ti ti-history"></i> Lihat Riwayat
+                                                                                                                                </button>
+                                                                                                                            </div>
+                                                                                                                        `,
                                         confirmButtonText: 'OK'
                                     }).then(() => {
                                         location.reload();
@@ -1797,129 +1862,129 @@
                 const totalBayar = parseFloat(item.jumlah_bayar) + (parseFloat(item.denda) || 0);
 
                 tableRows += `
-                                                                                <tr class="align-middle">
-                                                                                    <td class="text-center">
-                                                                                        <span class="badge rounded-pill bg-primary fs-3">${index + 1}</span>
-                                                                                    </td>
-                                                                                    <td class="text-center">
-                                                                                        <span class="badge bg-primary-subtle text-primary shadow-sm fw-semibold fs-3 px-3 py-2">
-                                                                                            ${item.kode_bayar}
-                                                                                        </span>
-                                                                                    </td>
-                                                                                    <td class="text-center">
-                                                                                        <span class="badge bg-secondary-subtle text-secondary shadow-sm fw-semibold fs-3 px-3 py-2">
-                                                                                            Ke-${item.angsuran_ke}
-                                                                                        </span>
-                                                                                    </td>
-                                                                                    <td class="text-end">
-                                                                                        <strong class="text-dark fs-4">Rp ${parseFloat(item.jumlah_bayar).toLocaleString('id-ID')}</strong>
-                                                                                        ${item.denda > 0 ? `<br><small class="text-danger fs-4 fw-bold">Denda: Rp ${parseFloat(item.denda).toLocaleString('id-ID')}</small>` : ''}
-                                                                                        <br><small class="text-muted fw-bold">Total: Rp ${totalBayar.toLocaleString('id-ID')}</small>
-                                                                                    </td>
-                                                                                    <td class="text-center">
-                                                                                        <div>
-                                                                                            <i class="ti ti-calendar me-1 fs-3"></i>${formattedDate}
-                                                                                        </div>
-                                                                                        <small class="text-muted fs-3">
-                                                                                            <i class="ti ti-clock me-1"></i>${formattedTime}
-                                                                                        </small>
-                                                                                    </td>
-                                                                                    <td class="text-center">
-                                                                                        <div class="d-flex justify-content-center gap-1">
-                                                                                            <button class="btn btn-success btn-sm" onclick="restorePembayaran(${item.id})">
-                                                                                                <i class="ti ti-refresh me-1"></i>Pulihkan
-                                                                                            </button>
-                                                                                            <button class="btn btn-danger btn-sm" onclick="hapusPermanen(${item.id})">
-                                                                                                <i class="ti ti-trash-x me-1"></i>Hapus
-                                                                                            </button>
-                                                                                        </div>
-                                                                                    </td>
-                                                                                </tr>
-                                                                            `;
+                                                                                                    <tr class="align-middle">
+                                                                                                        <td class="text-center">
+                                                                                                            <span class="badge rounded-pill bg-primary fs-3">${index + 1}</span>
+                                                                                                        </td>
+                                                                                                        <td class="text-center">
+                                                                                                            <span class="badge bg-primary-subtle text-primary shadow-sm fw-semibold fs-3 px-3 py-2">
+                                                                                                                ${item.kode_bayar}
+                                                                                                            </span>
+                                                                                                        </td>
+                                                                                                        <td class="text-center">
+                                                                                                            <span class="badge bg-secondary-subtle text-secondary shadow-sm fw-semibold fs-3 px-3 py-2">
+                                                                                                                Ke-${item.angsuran_ke}
+                                                                                                            </span>
+                                                                                                        </td>
+                                                                                                        <td class="text-end">
+                                                                                                            <strong class="text-dark fs-4">Rp ${parseFloat(item.jumlah_bayar).toLocaleString('id-ID')}</strong>
+                                                                                                            ${item.denda > 0 ? `<br><small class="text-danger fs-4 fw-bold">Denda: Rp ${parseFloat(item.denda).toLocaleString('id-ID')}</small>` : ''}
+                                                                                                            <br><small class="text-muted fw-bold">Total: Rp ${totalBayar.toLocaleString('id-ID')}</small>
+                                                                                                        </td>
+                                                                                                        <td class="text-center">
+                                                                                                            <div>
+                                                                                                                <i class="ti ti-calendar me-1 fs-3"></i>${formattedDate}
+                                                                                                            </div>
+                                                                                                            <small class="text-muted fs-3">
+                                                                                                                <i class="ti ti-clock me-1"></i>${formattedTime}
+                                                                                                            </small>
+                                                                                                        </td>
+                                                                                                        <td class="text-center">
+                                                                                                            <div class="d-flex justify-content-center gap-1">
+                                                                                                                <button class="btn btn-success btn-sm" onclick="restorePembayaran(${item.id})">
+                                                                                                                    <i class="ti ti-refresh me-1"></i>Pulihkan
+                                                                                                                </button>
+                                                                                                                <button class="btn btn-danger btn-sm" onclick="hapusPermanen(${item.id})">
+                                                                                                                    <i class="ti ti-trash-x me-1"></i>Hapus
+                                                                                                                </button>
+                                                                                                            </div>
+                                                                                                        </td>
+                                                                                                    </tr>
+                                                                                                `;
             });
 
             Swal.fire({
                 title: 'Riwayat Pembayaran Terhapus',
                 html: `
-                                                                                <div class="container-fluid px-0">
-                                                                                    <!-- Alert Info -->
-                                                                                    <div class="alert alert-warning alert-dismissible fade show mb-3" role="alert">
-                                                                                        <div class="d-flex align-items-start">
-                                                                                            <i class="ti ti-info-circle fs-4 me-2 mt-1"></i>
-                                                                                            <div class="text-start flex-grow-1">
-                                                                                                <h6 class="alert-heading mb-1">Informasi Penting</h6>
-                                                                                                <p class="mb-0 small">
-                                                                                                    Data yang telah dihapus masih dapat dipulihkan. Untuk menghapus permanen dari database, 
-                                                                                                    klik tombol <strong>"Hapus"</strong>.
-                                                                                                </p>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                                                                                    </div>
+                                                                                                    <div class="container-fluid px-0">
+                                                                                                        <!-- Alert Info -->
+                                                                                                        <div class="alert alert-warning alert-dismissible fade show mb-3" role="alert">
+                                                                                                            <div class="d-flex align-items-start">
+                                                                                                                <i class="ti ti-info-circle fs-4 me-2 mt-1"></i>
+                                                                                                                <div class="text-start flex-grow-1">
+                                                                                                                    <h6 class="alert-heading mb-1">Informasi Penting</h6>
+                                                                                                                    <p class="mb-0 small">
+                                                                                                                        Data yang telah dihapus masih dapat dipulihkan. Untuk menghapus permanen dari database, 
+                                                                                                                        klik tombol <strong>"Hapus"</strong>.
+                                                                                                                    </p>
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                                                                                        </div>
 
-                                                                                    <!-- Stats Card -->
-                                                                                    <div class="row g-2 mb-3">
-                                                                                        <div class="col-md-4">
-                                                                                            <div class="card border-primary">
-                                                                                                <div class="card-body text-center py-2">
-                                                                                                    <h6 class="text-muted mb-0 small">Total Dihapus</h6>
-                                                                                                    <h4 class="mb-0 text-primary">${data.length}</h4>
-                                                                                                </div>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                        <div class="col-md-4">
-                                                                                            <div class="card border-success">
-                                                                                                <div class="card-body text-center py-2">
-                                                                                                    <h6 class="text-muted mb-0 small">Total Nilai</h6>
-                                                                                                    <h4 class="mb-0 text-success">Rp ${data.reduce((sum, item) => sum + parseFloat(item.jumlah_bayar) + (parseFloat(item.denda) || 0), 0).toLocaleString('id-ID')}</h4>
-                                                                                                </div>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                        <div class="col-md-4">
-                                                                                            <div class="card border-danger">
-                                                                                                <div class="card-body text-center py-2">
-                                                                                                    <h6 class="text-muted mb-0 small">Total Denda</h6>
-                                                                                                    <h4 class="mb-0 text-danger">Rp ${data.reduce((sum, item) => sum + (parseFloat(item.denda) || 0), 0).toLocaleString('id-ID')}</h4>
-                                                                                                </div>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </div>
+                                                                                                        <!-- Stats Card -->
+                                                                                                        <div class="row g-2 mb-3">
+                                                                                                            <div class="col-md-4">
+                                                                                                                <div class="card border-primary">
+                                                                                                                    <div class="card-body text-center py-2">
+                                                                                                                        <h6 class="text-muted mb-0 small">Total Dihapus</h6>
+                                                                                                                        <h4 class="mb-0 text-primary">${data.length}</h4>
+                                                                                                                    </div>
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                            <div class="col-md-4">
+                                                                                                                <div class="card border-success">
+                                                                                                                    <div class="card-body text-center py-2">
+                                                                                                                        <h6 class="text-muted mb-0 small">Total Nilai</h6>
+                                                                                                                        <h4 class="mb-0 text-success">Rp ${data.reduce((sum, item) => sum + parseFloat(item.jumlah_bayar) + (parseFloat(item.denda) || 0), 0).toLocaleString('id-ID')}</h4>
+                                                                                                                    </div>
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                            <div class="col-md-4">
+                                                                                                                <div class="card border-danger">
+                                                                                                                    <div class="card-body text-center py-2">
+                                                                                                                        <h6 class="text-muted mb-0 small">Total Denda</h6>
+                                                                                                                        <h4 class="mb-0 text-danger">Rp ${data.reduce((sum, item) => sum + (parseFloat(item.denda) || 0), 0).toLocaleString('id-ID')}</h4>
+                                                                                                                    </div>
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                        </div>
 
-                                                                                    <!-- Table -->
-                                                                                    <div class="table-responsive border rounded" style="max-height: 400px; overflow-y: auto;">
-                                                                                        <table class="table table-hover mb-0">
-                                                                                            <thead class="table-primary position-sticky top-0">
-                                                                                                <tr>
-                                                                                                    <th class="text-center" style="width: 60px;">No</th>
-                                                                                                    <th class="text-center" style="width: 120px;">Kode</th>
-                                                                                                    <th class="text-center" style="width: 100px;">Angsuran</th>
-                                                                                                    <th class="text-end" style="width: 150px;">Jumlah</th>
-                                                                                                    <th class="text-center" style="width: 140px;">Dihapus Pada</th>
-                                                                                                    <th class="text-center" style="width: 160px;">Aksi</th>
-                                                                                                </tr>
-                                                                                            </thead>
-                                                                                            <tbody>
-                                                                                                ${tableRows}
-                                                                                            </tbody>
-                                                                                        </table>
-                                                                                    </div>
+                                                                                                        <!-- Table -->
+                                                                                                        <div class="table-responsive border rounded" style="max-height: 400px; overflow-y: auto;">
+                                                                                                            <table class="table table-hover mb-0">
+                                                                                                                <thead class="table-primary position-sticky top-0">
+                                                                                                                    <tr>
+                                                                                                                        <th class="text-center" style="width: 60px;">No</th>
+                                                                                                                        <th class="text-center" style="width: 120px;">Kode</th>
+                                                                                                                        <th class="text-center" style="width: 100px;">Angsuran</th>
+                                                                                                                        <th class="text-end" style="width: 150px;">Jumlah</th>
+                                                                                                                        <th class="text-center" style="width: 140px;">Dihapus Pada</th>
+                                                                                                                        <th class="text-center" style="width: 160px;">Aksi</th>
+                                                                                                                    </tr>
+                                                                                                                </thead>
+                                                                                                                <tbody>
+                                                                                                                    ${tableRows}
+                                                                                                                </tbody>
+                                                                                                            </table>
+                                                                                                        </div>
 
-                                                                                    <!-- Footer -->
-                                                                                    <div class="card border-0 bg-light mt-3">
-                                                                                        <div class="card-body py-2">
-                                                                                            <div class="d-flex justify-content-between align-items-center">
-                                                                                                <small class="text-muted">
-                                                                                                    <i class="ti ti-database me-1"></i>
-                                                                                                    Menampilkan ${data.length} dari ${data.length} data
-                                                                                                </small>
-                                                                                                <button class="btn btn-sm btn-secondary" onclick="Swal.close()">
-                                                                                                    <i class="ti ti-x me-1"></i>Tutup
-                                                                                                </button>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div>
-                                                                            `,
+                                                                                                        <!-- Footer -->
+                                                                                                        <div class="card border-0 bg-light mt-3">
+                                                                                                            <div class="card-body py-2">
+                                                                                                                <div class="d-flex justify-content-between align-items-center">
+                                                                                                                    <small class="text-muted">
+                                                                                                                        <i class="ti ti-database me-1"></i>
+                                                                                                                        Menampilkan ${data.length} dari ${data.length} data
+                                                                                                                    </small>
+                                                                                                                    <button class="btn btn-sm btn-secondary" onclick="Swal.close()">
+                                                                                                                        <i class="ti ti-x me-1"></i>Tutup
+                                                                                                                    </button>
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                `,
                 width: '1100px',
                 showConfirmButton: false,
                 showCloseButton: true,
@@ -1983,12 +2048,12 @@
             Swal.fire({
                 title: 'Hapus Permanen?',
                 html: `
-                                                                                <div class="alert alert-danger">
-                                                                                    <i class="ti ti-alert-triangle"></i>
-                                                                                    <strong>PERHATIAN!</strong><br>
-                                                                                    Data akan dihapus secara permanen dari database dan tidak dapat dipulihkan kembali
-                                                                                </div>
-                                                                            `,
+                                                                                                    <div class="alert alert-danger">
+                                                                                                        <i class="ti ti-alert-triangle"></i>
+                                                                                                        <strong>PERHATIAN!</strong><br>
+                                                                                                        Data akan dihapus secara permanen dari database dan tidak dapat dipulihkan kembali
+                                                                                                    </div>
+                                                                                                `,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'Ya, Hapus Permanen',

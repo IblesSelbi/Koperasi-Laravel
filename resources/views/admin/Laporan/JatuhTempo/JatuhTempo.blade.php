@@ -94,9 +94,6 @@
                         <button class="btn btn-info btn-sm" onclick="cetakLaporan()">
                             <i class="ti ti-printer"></i> Cetak Laporan
                         </button>
-                        <button class="btn btn-success btn-sm" onclick="exportExcel()">
-                            <i class="ti ti-file-spreadsheet"></i> Export Excel
-                        </button>
                         <button class="btn btn-warning btn-sm" onclick="kirimNotifikasi()">
                             <i class="ti ti-bell"></i> Kirim Notifikasi
                         </button>

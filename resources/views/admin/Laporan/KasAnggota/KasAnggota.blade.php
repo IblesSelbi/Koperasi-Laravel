@@ -118,9 +118,6 @@
                         <button class="btn btn-info btn-sm" onclick="cetakKasAnggota()">
                             <i class="ti ti-printer"></i> Cetak Laporan
                         </button>
-                        <button class="btn btn-success btn-sm" onclick="exportExcel()">
-                            <i class="ti ti-file-spreadsheet"></i> Export Excel
-                        </button>
                         <div class="ms-auto">
                             <span class="badge bg-primary-subtle text-primary px-3 py-2">
                                 <i class="ti ti-users"></i> Total Anggota: <strong id="totalData">{{ $kasAnggota->count() }}</strong>

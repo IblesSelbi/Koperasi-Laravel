@@ -131,6 +131,9 @@ Route::middleware(['auth', 'role:admin'])
 
             Route::get('/jatuh-tempo', [Admin\NotificationController::class, 'getJatuhTempo'])
                 ->name('jatuh-tempo');
+                
+            Route::get('/pembayaran-pending', [Admin\NotificationController::class, 'getPembayaranPending'])
+                ->name('pembayaran-pending');
         });
     });
 

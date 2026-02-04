@@ -32,7 +32,8 @@
     <!-- Info Alert -->
     <div class="alert alert-info alert-dismissible fade show mb-3" role="alert">
         <i class="ti ti-info-circle me-2"></i>
-        <strong>Informasi:</strong> Anda dapat mengubah nominal, lama angsuran, dan keterangan pada pengajuan dengan status "Menunggu Konfirmasi".
+        <strong>Informasi:</strong> Anda dapat mengubah nominal, lama angsuran, dan keterangan pada pengajuan dengan status
+        "Menunggu Konfirmasi".
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 
@@ -40,7 +41,8 @@
     <div class="card">
         <div class="card-body">
             <div class="table-responsive">
-                <table id="tabelPengajuan" class="table table-hover align-middle rounded-2 border overflow-hidden" style="width:100%">
+                <table id="tabelPengajuan" class="table table-hover align-middle rounded-2 border overflow-hidden"
+                    style="width:100%">
                     <thead class="table-primary">
                         <tr>
                             <th class="text-center align-middle">Tanggal</th>
@@ -56,95 +58,99 @@
                     </thead>
                     <tbody>
                         @forelse($pengajuan as $item)
-                        <tr>
-                            <td class="text-center text-muted">
-                                {{ $item->tanggal_pengajuan->format('d M Y') }}
-                            </td>
-                            <td class="text-center">
-                                @if($item->jenis_pinjaman == 'Biasa')
-                                    <span class="badge bg-info-subtle text-info">Biasa</span>
-                                @elseif($item->jenis_pinjaman == 'Darurat')
-                                    <span class="badge bg-warning-subtle text-warning">Darurat</span>
-                                @else
-                                    <span class="badge bg-danger-subtle text-danger">Barang</span>
-                                @endif
-                            </td>
-                            <td class="text-end">
-                                @if($item->status == 0)
-                                    <a href="javascript:void(0)" class="editable-nominal text-decoration-none fw-bold text-success" 
-                                       data-id="{{ $item->id }}" data-value="{{ $item->jumlah }}">
-                                        Rp {{ number_format($item->jumlah, 0, ',', '.') }}
-                                    </a>
-                                @else
-                                    <span class="fw-bold @if($item->status == 1 || $item->status == 3) text-success @else text-muted @endif">
-                                        Rp {{ number_format($item->jumlah, 0, ',', '.') }}
-                                    </span>
-                                @endif
-                            </td>
-                            <td class="text-center">
-                                @if($item->status == 0)
-                                    <a href="javascript:void(0)" class="editable-angsuran text-decoration-none" 
-                                       data-id="{{ $item->id }}" data-value="{{ $item->lama_angsuran_id }}">
+                            <tr>
+                                <td class="text-center text-muted">
+                                    {{ $item->tanggal_pengajuan->format('d M Y') }}
+                                </td>
+                                <td class="text-center">
+                                    @if($item->jenis_pinjaman == 'Biasa')
+                                        <span class="badge bg-info-subtle text-info">Biasa</span>
+                                    @elseif($item->jenis_pinjaman == 'Darurat')
+                                        <span class="badge bg-warning-subtle text-warning">Darurat</span>
+                                    @else
+                                        <span class="badge bg-danger-subtle text-danger">Barang</span>
+                                    @endif
+                                </td>
+                                <td class="text-end">
+                                    @if($item->status == 0)
+                                        <a href="javascript:void(0)"
+                                            class="editable-nominal text-decoration-none fw-bold text-success"
+                                            data-id="{{ $item->id }}" data-value="{{ $item->jumlah }}">
+                                            Rp {{ number_format($item->jumlah, 0, ',', '.') }}
+                                        </a>
+                                    @else
+                                        <span
+                                            class="fw-bold @if($item->status == 1 || $item->status == 3) text-success @else text-muted @endif">
+                                            Rp {{ number_format($item->jumlah, 0, ',', '.') }}
+                                        </span>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    @if($item->status == 0)
+                                        <a href="javascript:void(0)" class="editable-angsuran text-decoration-none"
+                                            data-id="{{ $item->id }}" data-value="{{ $item->lama_angsuran_id }}">
+                                            <span class="badge bg-secondary">{{ $item->lamaAngsuran->lama_angsuran }}</span>
+                                        </a>
+                                    @else
                                         <span class="badge bg-secondary">{{ $item->lamaAngsuran->lama_angsuran }}</span>
-                                    </a>
-                                @else
-                                    <span class="badge bg-secondary">{{ $item->lamaAngsuran->lama_angsuran }}</span>
-                                @endif
-                            </td>
-                            <td>
-                                @if($item->status == 0)
-                                    <a href="javascript:void(0)" class="editable-keterangan text-decoration-none" 
-                                       data-id="{{ $item->id }}" data-value="{{ $item->keterangan }}">
+                                    @endif
+                                </td>
+                                <td>
+                                    @if($item->status == 0)
+                                        <a href="javascript:void(0)" class="editable-keterangan text-decoration-none"
+                                            data-id="{{ $item->id }}" data-value="{{ $item->keterangan }}">
+                                            {{ Str::limit($item->keterangan, 50) }}
+                                        </a>
+                                    @else
                                         {{ Str::limit($item->keterangan, 50) }}
-                                    </a>
-                                @else
-                                    {{ Str::limit($item->keterangan, 50) }}
-                                @endif
-                            </td>
-                            <td class="@if($item->status == 1 || $item->status == 3) text-success @elseif($item->status == 2) text-danger @else text-muted @endif">
-                                {{ $item->alasan ?? '-' }}
-                            </td>
-                            <td class="text-center text-muted">
-                                {{ $item->updated_at->format('d M Y') }}
-                            </td>
-                            <td class="text-center">
-                                @if($item->status == 0)
-                                    <span class="text-primary">
-                                        <i class="ti ti-clock"></i> Menunggu<br>Konfirmasi
-                                    </span>
-                                @elseif($item->status == 1)
-                                    <span class="text-success">
-                                        <i class="ti ti-check"></i> Disetujui<br>
-                                        <small>Cair: {{ $item->tanggal_cair ? \Carbon\Carbon::parse($item->tanggal_cair)->format('d M Y') : '-' }}</small>
-                                    </span>
-                                @elseif($item->status == 2)
-                                    <span class="text-danger">
-                                        <i class="ti ti-x"></i> Ditolak
-                                    </span>
-                                @elseif($item->status == 3)
-                                    <span class="text-success">
-                                        <i class="ti ti-rocket"></i> Terlaksana
-                                    </span>
-                                @else
-                                    <span class="text-warning">
-                                        <i class="ti ti-ban"></i> Batal
-                                    </span>
-                                @endif
-                            </td>
-                            <td class="text-center">
-                                @if($item->status == 0)
-                                    <button class="btn btn-danger btn-sm" onclick="batalkanPengajuan({{ $item->id }})">
-                                        <i class="ti ti-ban"></i> Batal
-                                    </button>
-                                @elseif($item->status == 1 || $item->status == 3)
-                                    <button class="btn btn-secondary btn-sm" onclick="cetakPengajuan({{ $item->id }})">
-                                        <i class="ti ti-printer"></i> Cetak
-                                    </button>
-                                @else
-                                    <span class="text-muted">-</span>
-                                @endif
-                            </td>
-                        </tr>
+                                    @endif
+                                </td>
+                                <td
+                                    class="@if($item->status == 1 || $item->status == 3) text-success @elseif($item->status == 2) text-danger @else text-muted @endif">
+                                    {{ $item->alasan ?? '-' }}
+                                </td>
+                                <td class="text-center text-muted">
+                                    {{ $item->updated_at->format('d M Y') }}
+                                </td>
+                                <td class="text-center">
+                                    @if($item->status == 0)
+                                        <span class="text-primary">
+                                            <i class="ti ti-clock"></i> Menunggu<br>Konfirmasi
+                                        </span>
+                                    @elseif($item->status == 1)
+                                        <span class="text-success">
+                                            <i class="ti ti-check"></i> Disetujui<br>
+                                            <small>Cair:
+                                                {{ $item->tanggal_cair ? \Carbon\Carbon::parse($item->tanggal_cair)->format('d M Y') : '-' }}</small>
+                                        </span>
+                                    @elseif($item->status == 2)
+                                        <span class="text-danger">
+                                            <i class="ti ti-x"></i> Ditolak
+                                        </span>
+                                    @elseif($item->status == 3)
+                                        <span class="text-success">
+                                            <i class="ti ti-rocket"></i> Terlaksana
+                                        </span>
+                                    @else
+                                        <span class="text-warning">
+                                            <i class="ti ti-ban"></i> Batal
+                                        </span>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    @if($item->status == 0)
+                                        <button class="btn btn-danger btn-sm" onclick="batalkanPengajuan({{ $item->id }})">
+                                            <i class="ti ti-ban"></i> Batal
+                                        </button>
+                                    @elseif($item->status == 1 || $item->status == 3)
+                                        <button class="btn btn-secondary btn-sm" onclick="cetakPengajuan({{ $item->id }})">
+                                            <i class="ti ti-printer"></i> Cetak
+                                        </button>
+                                    @else
+                                        <span class="text-muted">-</span>
+                                    @endif
+                                </td>
+                            </tr>
                         @empty
                             <tr>
                                 <td colspan="9" class="text-center text-muted py-4">
@@ -204,12 +210,12 @@
                 Swal.fire({
                     title: 'Ubah Nominal',
                     html: `
-                        <div class="text-start">
-                            <label class="form-label fw-semibold">Nominal Baru</label>
-                            <input type="text" id="swal-nominal" class="form-control" value="${formatRupiah(currentValue)}">
-                            <small class="text-muted">Minimal Rp 500.000</small>
-                        </div>
-                    `,
+                            <div class="text-start">
+                                <label class="form-label fw-semibold">Nominal Baru</label>
+                                <input type="text" id="swal-nominal" class="form-control" value="${formatRupiah(currentValue)}">
+                                <small class="text-muted">Masukkan nominal sesuai kebutuhan</small>
+                            </div>
+                        `,
                     showCancelButton: true,
                     confirmButtonText: '<i class="ti ti-check"></i> Simpan',
                     cancelButtonText: '<i class="ti ti-x"></i> Batal',
@@ -217,11 +223,7 @@
                     preConfirm: () => {
                         const nominal = $('#swal-nominal').val().replace(/[^0-9]/g, '');
                         if (!nominal || nominal == '0') {
-                            Swal.showValidationMessage('Nominal wajib diisi!');
-                            return false;
-                        }
-                        if (parseInt(nominal) < 500000) {
-                            Swal.showValidationMessage('Minimal pinjaman Rp 500.000');
+                            Swal.showValidationMessage('Nominal wajib diisi dan harus lebih dari 0!');
                             return false;
                         }
                         return { nominal };
@@ -256,13 +258,13 @@
                 Swal.fire({
                     title: 'Ubah Lama Angsuran',
                     html: `
-                        <div class="text-start">
-                            <label class="form-label fw-semibold">Pilih Lama Angsuran (Bulan)</label>
-                            <select id="swal-angsuran" class="form-select">
-                                ${optionsHtml}
-                            </select>
-                        </div>
-                    `,
+                            <div class="text-start">
+                                <label class="form-label fw-semibold">Pilih Lama Angsuran (Bulan)</label>
+                                <select id="swal-angsuran" class="form-select">
+                                    ${optionsHtml}
+                                </select>
+                            </div>
+                        `,
                     showCancelButton: true,
                     confirmButtonText: '<i class="ti ti-check"></i> Simpan',
                     cancelButtonText: '<i class="ti ti-x"></i> Batal',
@@ -288,12 +290,12 @@
                 Swal.fire({
                     title: 'Ubah Keterangan',
                     html: `
-                        <div class="text-start">
-                            <label class="form-label fw-semibold">Keterangan</label>
-                            <textarea id="swal-keterangan" class="form-control" rows="4">${currentValue}</textarea>
-                            <small class="text-muted">Maksimal 500 karakter</small>
-                        </div>
-                    `,
+                            <div class="text-start">
+                                <label class="form-label fw-semibold">Keterangan</label>
+                                <textarea id="swal-keterangan" class="form-control" rows="4">${currentValue}</textarea>
+                                <small class="text-muted">Maksimal 500 karakter</small>
+                            </div>
+                        `,
                     showCancelButton: true,
                     confirmButtonText: '<i class="ti ti-check"></i> Simpan',
                     cancelButtonText: '<i class="ti ti-x"></i> Batal',
@@ -404,7 +406,7 @@
                                 title: 'Berhasil!',
                                 text: response.message || 'Pengajuan berhasil dibatalkan',
                                 timer: 1500,
-                        showConfirmButton: false
+                                showConfirmButton: false
                             }).then(() => {
                                 location.reload();
                             });

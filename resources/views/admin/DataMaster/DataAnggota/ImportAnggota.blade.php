@@ -60,7 +60,12 @@
             </form>
 
             <!-- Info Box -->
-            <div class="alert alert-info d-flex align-items-start mt-3" role="alert">
+            <button type="button" id="btnPetunjuk" class="btn btn-info mb-3 mt-3" onclick="togglePetunjuk()">
+                <i class="ti ti-info-circle me-1"></i> Petunjuk Import Anggota
+            </button>
+
+
+            <div id="petunjukImport" class="alert alert-info d-none align-items-start mt-1" role="alert">
                 <i class="ti ti-info-circle fs-4 me-2 mt-1"></i>
                 <div>
                     <strong>Petunjuk Pengisian Data Anggota</strong>
@@ -72,30 +77,25 @@
                         </li>
                         <li><strong>Cara kerja sistem saat impor:</strong>
                             <ul class="mt-1">
-                                <li>
-                                    Jika <strong>Username belum pernah ada</strong>,
+                                <li>• Jika <strong>Username belum pernah ada</strong>,
                                     data akan <span class="fw-semibold text-success">ditambahkan sebagai anggota
                                         baru</span>.
                                 </li>
-                                <li>
-                                    Jika <strong>Username sudah ada</strong> dan
-                                    <strong>datanya berbeda</strong>,
+                                <li>• Jika <strong>Username sudah ada</strong> dan <strong>datanya berbeda</strong>,
                                     data akan <span class="fw-semibold text-secondary">diperbarui</span>.
                                 </li>
-                                <li>
-                                    Jika <strong>Username sudah ada</strong> dan
-                                    <strong>tidak ada perubahan data</strong>,
-                                    data akan <span class="fw-semibold text-warning">dilewati</span> dan tidak
-                                    ditampilkan.
+                                <li>• Jika <strong>Username sudah ada</strong> dan <strong>tidak ada perubahan
+                                        data</strong>,
+                                    data akan <span class="fw-semibold text-warning">dilewati</span>.
                                 </li>
                             </ul>
                         </li>
                         <li>
-                            <strong>Tabel hasil impor</strong> hanya menampilkan
+                            <strong>• Tabel hasil impor</strong> hanya menampilkan
                             <strong>data baru atau data yang berubah</strong>.
                         </li>
                         <li>
-                            <strong>Password awal</strong> untuk anggota baru adalah
+                            <strong>• Password awal</strong> untuk anggota baru adalah
                             <strong class="text-primary">UserKoperasi</strong>.
                             <br>
                             <small class="text-muted">(Jika data diperbarui, password tidak ikut berubah)</small>
@@ -115,7 +115,6 @@
                     </ul>
                 </div>
             </div>
-
 
             <!-- Password Info Box -->
             <div class="alert alert-warning d-flex align-items-center mt-2" role="alert">
@@ -609,17 +608,17 @@
 
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                                        <td class="text-center text-muted fw-medium">${index + 1}</td>
-                                        <td class="text-center">${statusBadge}</td>
-                                        <td><span class="badge bg-primary-subtle text-primary">${row.id_anggota || '-'}</span></td>
-                                        <td>${row.username || '-'}</td>
-                                        <td><strong>${row.nama || '-'}</strong></td>
-                                        <td>${row.jenis_kelamin || '-'}</td>
-                                        <td>${row.alamat || '-'}</td>
-                                        <td>${row.kota || '-'}</td>
-                                        <td>${row.jabatan || '-'}</td>
-                                        <td class="text-center ${keteranganClass} fw-semibold">${row.keterangan || '-'}</td>
-                                    `;
+                                                                    <td class="text-center text-muted fw-medium">${index + 1}</td>
+                                                                    <td class="text-center">${statusBadge}</td>
+                                                                    <td><span class="badge bg-primary-subtle text-primary">${row.id_anggota || '-'}</span></td>
+                                                                    <td>${row.username || '-'}</td>
+                                                                    <td><strong>${row.nama || '-'}</strong></td>
+                                                                    <td>${row.jenis_kelamin || '-'}</td>
+                                                                    <td>${row.alamat || '-'}</td>
+                                                                    <td>${row.kota || '-'}</td>
+                                                                    <td>${row.jabatan || '-'}</td>
+                                                                    <td class="text-center ${keteranganClass} fw-semibold">${row.keterangan || '-'}</td>
+                                                                `;
                 tbody.appendChild(tr);
             });
 
@@ -683,5 +682,23 @@
             const tanggal = new Date().toISOString().slice(0, 10);
             XLSX.writeFile(wb, `Hasil_Import_Anggota_${tanggal}.xlsx`);
         }
+
+        function togglePetunjuk() {
+            const el = document.getElementById('petunjukImport');
+            const btn = document.getElementById('btnPetunjuk');
+
+            const isHidden = el.classList.contains('d-none');
+
+            if (isHidden) {
+                el.classList.remove('d-none');
+                el.classList.add('d-flex');
+                btn.innerHTML = '<i class="ti ti-eye-off me-1"></i> Sembunyikan Petunjuk';
+            } else {
+                el.classList.remove('d-flex');
+                el.classList.add('d-none');
+                btn.innerHTML = '<i class="ti ti-info-circle me-1"></i> Petunjuk Import Anggota';
+            }
+        }
+
     </script>
 @endpush

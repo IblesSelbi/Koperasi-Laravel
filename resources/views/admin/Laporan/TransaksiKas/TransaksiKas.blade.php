@@ -97,12 +97,6 @@
                         <button class="btn btn-info btn-sm" onclick="cetakLaporan()">
                             <i class="ti ti-printer"></i> Cetak Laporan
                         </button>
-                        <button class="btn btn-success btn-sm" onclick="exportExcel()">
-                            <i class="ti ti-file-spreadsheet"></i> Export Excel
-                        </button>
-                        <button class="btn btn-primary btn-sm" onclick="exportPDF()">
-                            <i class="ti ti-file-text"></i> Export PDF
-                        </button>
 
                         <span class="badge bg-info-subtle text-info shadow-sm border-2 px-3 py-2 ms-auto">
                             <i class="ti ti-file-text"></i> Total Transaksi:

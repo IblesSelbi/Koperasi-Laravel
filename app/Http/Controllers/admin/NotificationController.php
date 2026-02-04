@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Admin\Pinjaman\PengajuanPinjaman;
 use App\Models\Admin\Pinjaman\BayarAngsuran;
+use App\Models\Admin\Pinjaman\DetailBayarAngsuran;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
@@ -49,7 +50,7 @@ class NotificationController extends Controller
         } catch (\Exception $e) {
             Log::error('❌ Error getPengajuanBaru: ' . $e->getMessage());
             Log::error($e->getTraceAsString());
-            
+
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),
@@ -83,10 +84,10 @@ class NotificationController extends Controller
             $data = $angsuran->map(function ($item) use ($today) {
                 $jatuhTempo = Carbon::parse($item->tanggal_jatuh_tempo)->startOfDay();
                 $todayStart = $today->copy()->startOfDay();
-                
+
                 // Hitung selisih hari dan bulatkan
                 $selisihHari = (int) $todayStart->diffInDays($jatuhTempo, false);
-                
+
                 // Tentukan status dan styling
                 if ($selisihHari < 0) {
                     // Sudah lewat jatuh tempo (terlambat)
@@ -140,7 +141,66 @@ class NotificationController extends Controller
         } catch (\Exception $e) {
             Log::error('❌ Error getJatuhTempo: ' . $e->getMessage());
             Log::error($e->getTraceAsString());
-            
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'data' => [],
+                'count' => 0
+            ], 500);
+        }
+    }
+
+    public function getPembayaranPending()
+    {
+        try {
+            Log::info('🔔 Loading Pembayaran Pending Notifications');
+
+            $pembayaran = DetailBayarAngsuran::with([
+                'pinjaman.anggota',
+                'angsuran',
+                'kas',
+                'user'
+            ])
+                ->where('status_verifikasi', 'pending')
+                ->whereNotNull('bukti_transfer') // Hanya yang transfer
+                ->whereNull('deleted_at')
+                ->orderBy('created_at', 'desc')
+                ->limit(10)
+                ->get();
+
+            Log::info('📊 Pembayaran Pending Count: ' . $pembayaran->count());
+
+            $data = $pembayaran->map(function ($item) {
+                $selisihWaktu = Carbon::parse($item->created_at)->diffForHumans();
+
+                return [
+                    'id' => $item->id,
+                    'kode_bayar' => $item->kode_bayar,
+                    'pinjaman_id' => $item->pinjaman_id,
+                    'kode_pinjaman' => $item->pinjaman->kode_pinjaman,
+                    'nama_anggota' => $item->pinjaman->anggota->nama,
+                    'angsuran_ke' => $item->angsuran_ke,
+                    'jumlah_bayar' => $item->jumlah_bayar,
+                    'denda' => $item->denda ?? 0,
+                    'total_bayar' => $item->total_bayar,
+                    'bank_nama' => $item->kas->nama_kas ?? '-',
+                    'waktu' => $selisihWaktu,
+                    'waktu_full' => $item->created_at->translatedFormat('d F Y H:i'),
+                    'bukti_url' => $item->bukti_transfer ? asset('storage/' . $item->bukti_transfer) : null,
+                ];
+            });
+
+            return response()->json([
+                'success' => true,
+                'data' => $data,
+                'count' => $data->count()
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('❌ Error getPembayaranPending: ' . $e->getMessage());
+            Log::error($e->getTraceAsString());
+
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),
@@ -165,24 +225,32 @@ class NotificationController extends Controller
                 ->where('tanggal_jatuh_tempo', '<=', Carbon::now()->addDays(7))
                 ->count();
 
+            // ✅ TAMBAH COUNT PEMBAYARAN PENDING
+            $pembayaranPendingCount = DetailBayarAngsuran::where('status_verifikasi', 'pending')
+                ->whereNotNull('bukti_transfer')
+                ->whereNull('deleted_at')
+                ->count();
+
             return response()->json([
                 'success' => true,
                 'data' => [
                     'pengajuan_baru' => $pengajuanCount,
                     'jatuh_tempo' => $jatuhTempoCount,
-                    'total' => $pengajuanCount + $jatuhTempoCount
+                    'pembayaran_pending' => $pembayaranPendingCount, // ✅ TAMBAH INI
+                    'total' => $pengajuanCount + $jatuhTempoCount + $pembayaranPendingCount // ✅ UPDATE TOTAL
                 ]
             ]);
 
         } catch (\Exception $e) {
             Log::error('❌ Error getNotificationCount: ' . $e->getMessage());
-            
+
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),
                 'data' => [
                     'pengajuan_baru' => 0,
                     'jatuh_tempo' => 0,
+                    'pembayaran_pending' => 0,
                     'total' => 0
                 ]
             ], 500);
