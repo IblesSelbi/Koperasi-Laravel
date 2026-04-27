@@ -206,9 +206,10 @@
         </div>
         <div class="header-right">
             <h2>{{ strtoupper($identitas->nama_lembaga ?? 'KOPERASI') }}</h2>
-            <p>{{ strtoupper($identitas->badan_hukum ?? 'BINA TIRTA LESTARI') }}</p>
+            <p>{{ strtoupper($identitas->badan_hukum ?? 'Akeno Multimedia Solution') }}</p>
             <p>BADAN HUKUM : {{ $identitas->no_badan_hukum ?? 'NO.10455BH/KWK/10.20' }}</p>
-            <p>{{ strtoupper($identitas->alamat ?? 'AKENO MULTIMEDIA SOLUTION, VILA BANDUNG INDAH 40393 JAWA WEST JAVA') }}</p>
+            <p>{{ strtoupper($identitas->alamat ?? 'AKENO MULTIMEDIA SOLUTION, VILA BANDUNG INDAH 40393 JAWA WEST JAVA') }}
+            </p>
         </div>
     </div>
 
@@ -320,10 +321,10 @@
         $totalTagihan = $pinjamanLunas->sum('total_tagihan');
         $totalDenda = $pinjamanLunas->sum('total_denda');
         $totalDibayar = $pinjamanLunas->sum('sudah_dibayar');
-        
+
         // Hitung rata-rata lama cicilan
         $rataLamaCicilan = $totalPinjaman > 0 ? round($pinjamanLunas->sum('lama_pinjaman') / $totalPinjaman, 1) : 0;
-        
+
         // Hitung yang kena denda
         $yangKenaDenda = $pinjamanLunas->where('total_denda', '>', 0)->count();
         $persenKenaDenda = $totalPinjaman > 0 ? round(($yangKenaDenda / $totalPinjaman) * 100, 1) : 0;
@@ -331,7 +332,7 @@
 
     <div class="summary">
         <strong>Ringkasan Laporan Pinjaman Lunas:</strong>
-        
+
         <div class="summary-highlight">
             <p>
                 <strong>Total Pinjaman yang Sudah Lunas:</strong> {{ $totalPinjaman }} pinjaman
@@ -346,7 +347,7 @@
                 <strong>Total Dana Terkumpul:</strong> Rp {{ number_format($totalDibayar, 0, ',', '.') }}
             </p>
         </div>
-        
+
         <p style="margin-top: 8px;">
             <strong>Statistik Tambahan:</strong>
         </p>
@@ -354,15 +355,18 @@
             • Rata-rata Lama Cicilan: <strong>{{ $rataLamaCicilan }} bulan</strong>
         </p>
         <p>
-            • Pinjaman dengan Denda: <strong>{{ $yangKenaDenda }}</strong> dari {{ $totalPinjaman }} ({{ $persenKenaDenda }}%)
+            • Pinjaman dengan Denda: <strong>{{ $yangKenaDenda }}</strong> dari {{ $totalPinjaman }}
+            ({{ $persenKenaDenda }}%)
         </p>
         <p>
-            • Rata-rata Nilai Pinjaman: <strong>Rp {{ number_format($totalPinjaman > 0 ? $totalTagihan / $totalPinjaman : 0, 0, ',', '.') }}</strong>
+            • Rata-rata Nilai Pinjaman: <strong>Rp
+                {{ number_format($totalPinjaman > 0 ? $totalTagihan / $totalPinjaman : 0, 0, ',', '.') }}</strong>
         </p>
-        
+
         @if($totalDenda > 0)
             <p style="margin-top: 5px; color: #856404;">
-                ⚠ <em>Catatan: Ada {{ $yangKenaDenda }} pinjaman yang dikenakan denda dengan total Rp {{ number_format($totalDenda, 0, ',', '.') }}</em>
+                ⚠ <em>Catatan: Ada {{ $yangKenaDenda }} pinjaman yang dikenakan denda dengan total Rp
+                    {{ number_format($totalDenda, 0, ',', '.') }}</em>
             </p>
         @endif
     </div>

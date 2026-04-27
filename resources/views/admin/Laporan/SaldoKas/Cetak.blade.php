@@ -265,7 +265,7 @@
                 </td>
                 <td style="padding-left: 10px;">
                     <h2>{{ strtoupper($identitas->nama_lembaga ?? 'KOPERASI') }}</h2>
-                    <p><strong>{{ strtoupper($identitas->badan_hukum ?? 'BINA TIRTA LESTARI') }}</strong></p>
+                    <p><strong>{{ strtoupper($identitas->badan_hukum ?? 'Akeno Multimedia Solution') }}</strong></p>
                     <p>Badan Hukum: {{ $identitas->no_badan_hukum ?? 'NO.10455BH/KWK/10.20' }}</p>
                     <p>{{ strtoupper($identitas->alamat ?? 'JL LASWI 2 TONJONG MAJALENGKA') }}</p>
                 </td>
@@ -312,7 +312,8 @@
             <h3>Penjelasan Perhitungan</h3>
             <ul>
                 <li><strong>Saldo Periode Sebelumnya:</strong> Total saldo semua kas sampai akhir bulan sebelumnya</li>
-                <li><strong>Mutasi Periode Ini:</strong> Pemasukan - Pengeluaran + Transfer Masuk - Transfer Keluar + Setoran - Penarikan - Pinjaman + Angsuran</li>
+                <li><strong>Mutasi Periode Ini:</strong> Pemasukan - Pengeluaran + Transfer Masuk - Transfer Keluar +
+                    Setoran - Penarikan - Pinjaman + Angsuran</li>
                 <li><strong>Saldo Akhir:</strong> Saldo Periode Sebelumnya + Jumlah Mutasi Periode Ini</li>
             </ul>
         </div>
@@ -398,7 +399,8 @@
                 </tr>
                 <tr>
                     <td style="border: none; padding: 3px; font-size: 8pt;">
-                        1. Saldo Periode Sebelumnya (sampai {{ \Carbon\Carbon::parse($startDate)->subDay()->translatedFormat('d F Y') }})
+                        1. Saldo Periode Sebelumnya (sampai
+                        {{ \Carbon\Carbon::parse($startDate)->subDay()->translatedFormat('d F Y') }})
                     </td>
                     <td style="border: none; padding: 3px; text-align: right; font-size: 8pt;">
                         Rp {{ number_format($saldoPeriodeSebelumnya, 0, ',', '.') }}
@@ -454,7 +456,7 @@
                             {{ $item->nama_kas }}
                         </td>
                         <td style="border: none; padding: 2px; font-size: 7.5pt; text-align: right; width: 35%;">
-                            Mutasi: Rp 
+                            Mutasi: Rp
                             @if($item->saldo >= 0)
                                 {{ number_format($item->saldo, 0, ',', '.') }}
                             @else

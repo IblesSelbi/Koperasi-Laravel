@@ -348,16 +348,13 @@
                     url: "{{ route('admin.notifications.pengajuan') }}",
                     method: 'GET',
                     success: function (response) {
-                        console.log('✅ Pengajuan Response:', response);
                         if (response.success) {
                             updatePengajuanBadge(response.count);
                             renderPengajuanList(response.data);
                         }
                     },
                     error: function (xhr) {
-                        console.error('❌ Error loading pengajuan notifications:', xhr);
-                        console.error('Status:', xhr.status);
-                        console.error('Response:', xhr.responseText);
+                        // Silent error handling
                     }
                 });
             }
@@ -366,7 +363,6 @@
                 const badge = $('#badge-pengajuan');
                 if (count > 0) {
                     badge.text(count > 99 ? '99+' : count).show();
-                    // Add animation to icon
                     $('#dropPengajuan i');
                 } else {
                     badge.text('0').hide();
@@ -379,10 +375,10 @@
 
                 if (data.length === 0) {
                     container.html(`
-                                                                                    <div class="px-3 py-3 text-center text-muted">
-                                                                                        <small>Tidak ada pengajuan baru</small>
-                                                                                    </div>
-                                                                                `);
+                            <div class="px-3 py-3 text-center text-muted">
+                                <small>Tidak ada pengajuan baru</small>
+                            </div>
+                        `);
                     return;
                 }
 
@@ -392,34 +388,34 @@
                         item.jenis === 'Barang' ? 'info' : 'primary';
 
                     html += `
-                                                                                    <a href="javascript:void(0)" 
-                                                                                       class="dropdown-item border-bottom py-3 notif-pengajuan-item"
-                                                                                       data-id="${item.id}"
-                                                                                       data-id-ajuan="${item.id_ajuan}"
-                                                                                       data-nama="${item.nama}"
-                                                                                       data-jenis="${item.jenis}"
-                                                                                       data-jumlah="${item.jumlah}"
-                                                                                       data-tanggal="${item.tanggal_full}">
-                                                                                        <div class="d-flex align-items-start">
-                                                                                            <div class="flex-shrink-0">
-                                                                                                <div class="round-40 d-flex align-items-center justify-content-center bg-${badgeClass}-subtle">
-                                                                                                    <i class="ti ti-file-text fs-6 text-${badgeClass}"></i>
-                                                                                                </div>
-                                                                                            </div>
-                                                                                            <div class="flex-grow-1 ms-3">
-                                                                                                <h6 class="mb-1 fw-semibold">${item.nama}</h6>
-                                                                                                <p class="mb-1 fs-2 text-muted">${item.id_ajuan}</p>
-                                                                                                <div class="d-flex justify-content-between align-items-center">
-                                                                                                    <span class="badge bg-${badgeClass}-subtle text-${badgeClass} fw-semibold">
-                                                                                                        ${item.jenis}
-                                                                                                    </span>
-                                                                                                    <span class="text-success fw-semibold">Rp ${formatRupiah(item.jumlah)}</span>
-                                                                                                </div>
-                                                                                                <small class="text-muted">${item.tanggal}</small>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </a>
-                                                                                `;
+                            <a href="javascript:void(0)" 
+                               class="dropdown-item border-bottom py-3 notif-pengajuan-item"
+                               data-id="${item.id}"
+                               data-id-ajuan="${item.id_ajuan}"
+                               data-nama="${item.nama}"
+                               data-jenis="${item.jenis}"
+                               data-jumlah="${item.jumlah}"
+                               data-tanggal="${item.tanggal_full}">
+                                <div class="d-flex align-items-start">
+                                    <div class="flex-shrink-0">
+                                        <div class="round-40 d-flex align-items-center justify-content-center bg-${badgeClass}-subtle">
+                                            <i class="ti ti-file-text fs-6 text-${badgeClass}"></i>
+                                        </div>
+                                    </div>
+                                    <div class="flex-grow-1 ms-3">
+                                        <h6 class="mb-1 fw-semibold">${item.nama}</h6>
+                                        <p class="mb-1 fs-2 text-muted">${item.id_ajuan}</p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="badge bg-${badgeClass}-subtle text-${badgeClass} fw-semibold">
+                                                ${item.jenis}
+                                            </span>
+                                            <span class="text-success fw-semibold">Rp ${formatRupiah(item.jumlah)}</span>
+                                        </div>
+                                        <small class="text-muted">${item.tanggal}</small>
+                                    </div>
+                                </div>
+                            </a>
+                        `;
                 });
 
                 container.html(html);
@@ -431,16 +427,13 @@
                     url: "{{ route('admin.notifications.jatuh-tempo') }}",
                     method: 'GET',
                     success: function (response) {
-                        console.log('✅ Jatuh Tempo Response:', response);
                         if (response.success) {
                             updateJatuhTempoBadge(response.count);
                             renderJatuhTempoList(response.data);
                         }
                     },
                     error: function (xhr) {
-                        console.error('❌ Error loading jatuh tempo notifications:', xhr);
-                        console.error('Status:', xhr.status);
-                        console.error('Response:', xhr.responseText);
+                        // Silent error handling
                     }
                 });
             }
@@ -459,48 +452,48 @@
 
                 if (data.length === 0) {
                     container.html(`
-                                                                            <div class="px-3 py-3 text-center text-muted">
-                                                                                <small>Tidak ada notifikasi</small>
-                                                                            </div>
-                                                                        `);
+                            <div class="px-3 py-3 text-center text-muted">
+                                <small>Tidak ada notifikasi</small>
+                            </div>
+                        `);
                     return;
                 }
 
                 let html = '';
                 data.forEach(item => {
                     html += `
-                                                                            <a href="javascript:void(0)" 
-                                                                               class="dropdown-item border-bottom py-3 notif-tempo-item"
-                                                                               data-id="${item.id}"
-                                                                               data-pinjaman-id="${item.pinjaman_id}"
-                                                                               data-kode="${item.kode_pinjaman}"
-                                                                               data-nama="${item.nama}"
-                                                                               data-angsuran-ke="${item.angsuran_ke}"
-                                                                               data-tanggal="${item.tanggal_jatuh_tempo_full}"
-                                                                               data-jumlah="${item.jumlah_angsuran}"
-                                                                               data-status="${item.status}"
-                                                                               data-badge="${item.badge}"
-                                                                               data-keterangan="${item.keterangan}">
-                                                                                <div class="d-flex align-items-start">
-                                                                                    <div class="flex-shrink-0">
-                                                                                        <div class="round-40 d-flex align-items-center justify-content-center bg-${item.badge}-subtle">
-                                                                                            <i class="ti ${item.icon} fs-6 text-${item.badge}"></i>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                    <div class="flex-grow-1 ms-3">
-                                                                                        <h6 class="mb-1 fw-semibold">${item.nama}</h6>
-                                                                                        <p class="mb-1 fs-2 text-muted">${item.kode_pinjaman} - Angsuran ke-${item.angsuran_ke}</p>
-                                                                                        <div class="d-flex justify-content-between align-items-center">
-                                                                                            <span class="badge bg-${item.badge}-subtle text-${item.badge} fw-semibold">
-                                                                                                ${item.keterangan}
-                                                                                            </span>
-                                                                                            <span class="text-success fw-semibold">Rp ${formatRupiah(item.jumlah_angsuran)}</span>
-                                                                                        </div>
-                                                                                        <small class="text-muted">${item.tanggal_jatuh_tempo_full}</small>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </a>
-                                                                        `;
+                            <a href="javascript:void(0)" 
+                               class="dropdown-item border-bottom py-3 notif-tempo-item"
+                               data-id="${item.id}"
+                               data-pinjaman-id="${item.pinjaman_id}"
+                               data-kode="${item.kode_pinjaman}"
+                               data-nama="${item.nama}"
+                               data-angsuran-ke="${item.angsuran_ke}"
+                               data-tanggal="${item.tanggal_jatuh_tempo_full}"
+                               data-jumlah="${item.jumlah_angsuran}"
+                               data-status="${item.status}"
+                               data-badge="${item.badge}"
+                               data-keterangan="${item.keterangan}">
+                                <div class="d-flex align-items-start">
+                                    <div class="flex-shrink-0">
+                                        <div class="round-40 d-flex align-items-center justify-content-center bg-${item.badge}-subtle">
+                                            <i class="ti ${item.icon} fs-6 text-${item.badge}"></i>
+                                        </div>
+                                    </div>
+                                    <div class="flex-grow-1 ms-3">
+                                        <h6 class="mb-1 fw-semibold">${item.nama}</h6>
+                                        <p class="mb-1 fs-2 text-muted">${item.kode_pinjaman} - Angsuran ke-${item.angsuran_ke}</p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="badge bg-${item.badge}-subtle text-${item.badge} fw-semibold">
+                                                ${item.keterangan}
+                                            </span>
+                                            <span class="text-success fw-semibold">Rp ${formatRupiah(item.jumlah_angsuran)}</span>
+                                        </div>
+                                        <small class="text-muted">${item.tanggal_jatuh_tempo_full}</small>
+                                    </div>
+                                </div>
+                            </a>
+                        `;
                 });
 
                 container.html(html);
@@ -532,14 +525,13 @@
                     url: "{{ route('admin.notifications.pembayaran-pending') }}",
                     method: 'GET',
                     success: function (response) {
-                        console.log('✅ Pembayaran Response:', response);
                         if (response.success) {
                             updatePembayaranBadge(response.count);
                             renderPembayaranList(response.data);
                         }
                     },
                     error: function (xhr) {
-                        console.error('❌ Error loading pembayaran notifications:', xhr);
+                        // Silent error handling
                     }
                 });
             }
@@ -627,11 +619,6 @@
                 // Show modal
                 $('#modalDetailPembayaran').modal('show');
             });
-
-            // ========== Helper Functions ==========
-            function formatRupiah(angka) {
-                return new Intl.NumberFormat('id-ID').format(angka);
-            }
 
             $(document).on('click', '.notif-tempo-item', function () {
                 const data = $(this).data();

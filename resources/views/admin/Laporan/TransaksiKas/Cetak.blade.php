@@ -241,7 +241,7 @@
                 </td>
                 <td style="padding-left: 10px;">
                     <h2>{{ strtoupper($identitas->nama_lembaga ?? 'KOPERASI') }}</h2>
-                    <p><strong>{{ strtoupper($identitas->badan_hukum ?? 'BINA TIRTA LESTARI') }}</strong></p>
+                    <p><strong>{{ strtoupper($identitas->badan_hukum ?? 'Akeno Multimedia Solution') }}</strong></p>
                     <p>Badan Hukum: {{ $identitas->no_badan_hukum ?? 'NO.10455BH/KWK/10.20' }}</p>
                     <p>{{ strtoupper($identitas->alamat ?? 'JL LASWI 2 TONJONG MAJALENGKA') }}</p>
                 </td>
@@ -299,8 +299,8 @@
             <tr>
                 <td style="width: 70%;">
                     <strong>Keterangan:</strong>
-                    Laporan ini menampilkan {{ $transaksiKas->count() }} transaksi kas dari tanggal 
-                    {{ \Carbon\Carbon::parse($startDate)->translatedFormat('d F Y') }} sampai 
+                    Laporan ini menampilkan {{ $transaksiKas->count() }} transaksi kas dari tanggal
+                    {{ \Carbon\Carbon::parse($startDate)->translatedFormat('d F Y') }} sampai
                     {{ \Carbon\Carbon::parse($endDate)->translatedFormat('d F Y') }}.
                 </td>
                 <td style="width: 30%; text-align: right;">
@@ -415,7 +415,8 @@
                         <strong>Catatan:</strong><br>
                         - Saldo awal: Rp {{ number_format($saldoSebelumnya, 0, ',', '.') }}<br>
                         - Saldo akhir: Rp {{ number_format($saldoAkhir, 0, ',', '.') }}<br>
-                        - Periode transaksi: {{ \Carbon\Carbon::parse($startDate)->translatedFormat('d F Y') }} - {{ \Carbon\Carbon::parse($endDate)->translatedFormat('d F Y') }}
+                        - Periode transaksi: {{ \Carbon\Carbon::parse($startDate)->translatedFormat('d F Y') }} -
+                        {{ \Carbon\Carbon::parse($endDate)->translatedFormat('d F Y') }}
                     </td>
                     <td style="width: 50%; padding: 3px; text-align: right;">
                         <strong>Tanda Tangan,</strong><br><br><br><br>

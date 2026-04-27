@@ -118,12 +118,6 @@
                             <button class="btn btn-sm btn-primary" onclick="cetakLaporan()">
                                 <i class="ti ti-printer"></i> Cetak Laporan
                             </button>
-                            <button class="btn btn-sm btn-success" onclick="exportExcel()">
-                                <i class="ti ti-file-spreadsheet"></i> Export Excel
-                            </button>
-                            <button class="btn btn-sm btn-danger" onclick="exportPDF()">
-                                <i class="ti ti-file-pdf"></i> Export PDF
-                            </button>
                         </div>
                     </div>
                 </div>

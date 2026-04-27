@@ -291,7 +291,7 @@
                 </td>
                 <td style="padding-left: 15px;">
                     <h2>{{ strtoupper($identitas->nama_lembaga ?? 'KOPERASI') }}</h2>
-                    <p><strong>{{ strtoupper($identitas->badan_hukum ?? 'BINA TIRTA LESTARI') }}</strong></p>
+                    <p><strong>{{ strtoupper($identitas->badan_hukum ?? 'Akeno Multimedia Solution') }}</strong></p>
                     <p>Badan Hukum: {{ $identitas->no_badan_hukum ?? 'NO.10455BH/KWK/10.20' }}</p>
                     <p>{{ strtoupper($identitas->alamat ?? 'JL LASWI 2 TONJONG MAJALENGKA') }}</p>
                 </td>
@@ -303,7 +303,7 @@
     <div class="title">
         <h1>Laporan Data Pengguna Sistem</h1>
         <div class="filter-info">
-            <strong>Level:</strong> {{ $filterInfo['level'] }} | 
+            <strong>Level:</strong> {{ $filterInfo['level'] }} |
             <strong>Status:</strong> {{ $filterInfo['status'] }}
         </div>
         <div class="date">Dicetak: {{ $tanggalCetak }}</div>

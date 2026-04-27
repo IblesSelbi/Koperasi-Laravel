@@ -285,7 +285,7 @@
         </div>
         <div class="header-right">
             <h2>{{ strtoupper($identitas->nama_lembaga ?? 'KOPERASI') }}</h2>
-            <p>{{ strtoupper($identitas->badan_hukum ?? 'BINA TIRTA LESTARI') }}</p>
+            <p>{{ strtoupper($identitas->badan_hukum ?? 'Akeno Multimedia Solution') }}</p>
             <p>BADAN HUKUM : {{ $identitas->no_badan_hukum ?? 'NO.10455BH/KWK/10.20' }}</p>
             <p>{{ strtoupper($identitas->alamat ?? 'JL LASWI 2 TONJONG MAJALENGKA') }}</p>
         </div>
@@ -334,7 +334,9 @@
                     <tr>
                         <td class="label">Tanggal Tempo</td>
                         <td class="separator">:</td>
-                        <td class="value">{{ \Carbon\Carbon::parse($pinjaman->tanggal_pinjam)->addMonths($pinjaman->lamaAngsuran->lama_angsuran ?? 1)->format('d F Y') }}</td>
+                        <td class="value">
+                            {{ \Carbon\Carbon::parse($pinjaman->tanggal_pinjam)->addMonths($pinjaman->lamaAngsuran->lama_angsuran ?? 1)->format('d F Y') }}
+                        </td>
                     </tr>
                     <tr>
                         <td class="label">Lama Pinjam</td>
@@ -368,7 +370,8 @@
                     <tr>
                         <td class="label">Jumlah Angsuran</td>
                         <td class="separator">:</td>
-                        <td class="value"><strong>Rp. {{ number_format($pinjaman->jumlah_angsuran, 0, ',', '.') }}</strong></td>
+                        <td class="value"><strong>Rp.
+                                {{ number_format($pinjaman->jumlah_angsuran, 0, ',', '.') }}</strong></td>
                     </tr>
                 </table>
             </div>
@@ -390,7 +393,8 @@
                 </div>
                 <div class="detail-item">
                     <span class="label">Total Tagihan</span>
-                    <span class="value">{{ number_format($pinjaman->jumlah_angsuran + ($pinjaman->total_denda ?? 0), 0, ',', '.') }}</span>
+                    <span
+                        class="value">{{ number_format($pinjaman->jumlah_angsuran + ($pinjaman->total_denda ?? 0), 0, ',', '.') }}</span>
                 </div>
             </div>
             <div class="detail-col">
@@ -434,7 +438,9 @@
                         <td class="right">{{ number_format($pinjaman->angsuran_pokok, 0, ',', '.') }}</td>
                         <td class="right">{{ number_format($pinjaman->biaya_bunga, 0, ',', '.') }}</td>
                         <td class="right">{{ $i == 1 ? number_format($pinjaman->biaya_admin, 0, ',', '.') : '0' }}</td>
-                        <td class="right">{{ number_format(($i == 1 ? $pinjaman->angsuran_pokok + $pinjaman->biaya_bunga + $pinjaman->biaya_admin : $pinjaman->angsuran_pokok + $pinjaman->biaya_bunga), 0, ',', '.') }}</td>
+                        <td class="right">
+                            {{ number_format(($i == 1 ? $pinjaman->angsuran_pokok + $pinjaman->biaya_bunga + $pinjaman->biaya_admin : $pinjaman->angsuran_pokok + $pinjaman->biaya_bunga), 0, ',', '.') }}
+                        </td>
                         <td class="center">{{ $tanggalPinjam->copy()->addMonths($i)->format('d F Y') }}</td>
                     </tr>
                 @endfor
@@ -456,43 +462,43 @@
     <div class="pembayaran-section">
         <h3>Data Pembayaran</h3>
         @if($transaksi->count() > 0)
-        <table class="pembayaran">
-            <thead>
-                <tr>
-                    <th width="5%">No.</th>
-                    <th width="15%">Kode Bayar</th>
-                    <th width="15%">Tanggal Bayar</th>
-                    <th width="10%">Angsuran Ke</th>
-                    <th width="20%">Jenis Pembayaran</th>
-                    <th width="20%">Jumlah Bayar</th>
-                    <th width="15%">Denda</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($transaksi as $index => $item)
+            <table class="pembayaran">
+                <thead>
                     <tr>
-                        <td class="center">{{ $index + 1 }}</td>
-                        <td class="center">{{ $item->kode_bayar }}</td>
-                        <td class="center">{{ \Carbon\Carbon::parse($item->tanggal_bayar)->format('d M Y') }}</td>
-                        <td class="center">{{ $item->angsuran_ke }}</td>
-                        <td>{{ $item->jenis_pembayaran }}</td>
-                        <td class="right">{{ number_format($item->jumlah_bayar, 0, ',', '.') }}</td>
-                        <td class="right">{{ number_format($item->denda ?? 0, 0, ',', '.') }}</td>
+                        <th width="5%">No.</th>
+                        <th width="15%">Kode Bayar</th>
+                        <th width="15%">Tanggal Bayar</th>
+                        <th width="10%">Angsuran Ke</th>
+                        <th width="20%">Jenis Pembayaran</th>
+                        <th width="20%">Jumlah Bayar</th>
+                        <th width="15%">Denda</th>
                     </tr>
-                @endforeach
-            </tbody>
-            <tfoot>
-                <tr>
-                    <td colspan="5" class="center"><strong>Jumlah</strong></td>
-                    <td class="right">{{ number_format($transaksi->sum('jumlah_bayar'), 0, ',', '.') }}</td>
-                    <td class="right">{{ number_format($transaksi->sum('denda'), 0, ',', '.') }}</td>
-                </tr>
-            </tfoot>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach($transaksi as $index => $item)
+                        <tr>
+                            <td class="center">{{ $index + 1 }}</td>
+                            <td class="center">{{ $item->kode_bayar }}</td>
+                            <td class="center">{{ \Carbon\Carbon::parse($item->tanggal_bayar)->format('d M Y') }}</td>
+                            <td class="center">{{ $item->angsuran_ke }}</td>
+                            <td>{{ $item->jenis_pembayaran }}</td>
+                            <td class="right">{{ number_format($item->jumlah_bayar, 0, ',', '.') }}</td>
+                            <td class="right">{{ number_format($item->denda ?? 0, 0, ',', '.') }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="5" class="center"><strong>Jumlah</strong></td>
+                        <td class="right">{{ number_format($transaksi->sum('jumlah_bayar'), 0, ',', '.') }}</td>
+                        <td class="right">{{ number_format($transaksi->sum('denda'), 0, ',', '.') }}</td>
+                    </tr>
+                </tfoot>
+            </table>
         @else
-        <div class="no-data">
-            Belum ada data pembayaran
-        </div>
+            <div class="no-data">
+                Belum ada data pembayaran
+            </div>
         @endif
     </div>
 
@@ -500,7 +506,8 @@
     <div class="footer">
         <p>Dicetak pada: {{ now()->format('d F Y H:i') }} WIB</p>
         <p>{{ $identitas->alamat ?? 'AKENO MULTIMEDIA SOLUTION, VILA BANDUNG INDAH 40393 JAWA WEST JAVA' }}</p>
-        <p>Email: {{ $identitas->email ?? 'admin@koperasi.id' }} | Website: {{ $identitas->web ?? 'www.koperasi-akeno.id' }}</p>
+        <p>Email: {{ $identitas->email ?? 'admin@koperasi.id' }} | Website:
+            {{ $identitas->web ?? 'www.koperasi-akeno.id' }}</p>
     </div>
 </body>
 

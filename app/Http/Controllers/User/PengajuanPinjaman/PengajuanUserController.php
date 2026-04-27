@@ -89,17 +89,6 @@ class PengajuanUserController extends Controller
                 ->with('error', 'Data anggota tidak ditemukan! Silakan hubungi administrator.');
         }
 
-        // Cek apakah ada pengajuan pending
-        $hasPending = PengajuanPinjaman::where('anggota_id', $anggota->id)
-            ->where('status', 0)
-            ->whereNull('deleted_at')
-            ->exists();
-
-        if ($hasPending) {
-            return redirect()->route('user.pengajuan.index')
-                ->with('error', 'Anda masih memiliki pengajuan yang menunggu konfirmasi. Mohon tunggu hingga pengajuan sebelumnya diproses.');
-        }
-
         $lama_angsuran = LamaAngsuran::where('aktif', 'Y')
             ->orderBy('lama_angsuran', 'asc')
             ->get();
@@ -164,18 +153,6 @@ class PengajuanUserController extends Controller
             return redirect()->route('user.dashboard')
                 ->withInput()
                 ->with('error', 'Data anggota tidak ditemukan!');
-        }
-
-        // Cek duplikasi pengajuan pending
-        $hasPending = PengajuanPinjaman::where('anggota_id', $anggota->id)
-            ->where('status', 0)
-            ->whereNull('deleted_at')
-            ->exists();
-
-        if ($hasPending) {
-            return redirect()->back()
-                ->withInput()
-                ->with('error', 'Anda masih memiliki pengajuan yang menunggu konfirmasi.');
         }
 
         DB::beginTransaction();

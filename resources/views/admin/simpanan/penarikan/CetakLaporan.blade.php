@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -120,6 +121,7 @@
         }
     </style>
 </head>
+
 <body>
     <!-- Header -->
     <div class="header">
@@ -130,7 +132,7 @@
         </div>
         <div class="header-right">
             <h2>{{ strtoupper($identitas->nama_lembaga ?? 'KOPERASI') }}</h2>
-            <p>{{ strtoupper($identitas->badan_hukum ?? 'BINA TIRTA LESTARI') }}</p>
+            <p>{{ strtoupper($identitas->badan_hukum ?? 'Akeno Multimedia Solution') }}</p>
             <p>BADAN HUKUM : {{ $identitas->no_badan_hukum ?? 'NO.10455BH/KWK/10.20' }}</p>
             <p>{{ strtoupper($identitas->alamat ?? 'JL LASWI 2 TONJONG MAJALENGKA') }}</p>
         </div>
@@ -159,21 +161,21 @@
         </thead>
         <tbody>
             @forelse($penarikan as $index => $item)
-            <tr>
-                <td class="center">{{ $index + 1 }}</td>
-                <td class="center">{{ $item->kode_transaksi }}</td>
-                <td class="center">{{ \Carbon\Carbon::parse($item->tanggal_transaksi)->format('d M Y') }}</td>
-                <td class="center">{{ $item->anggota->id_anggota ?? '-' }}</td>
-                <td>{{ $item->anggota->nama ?? '-' }}</td>
-                <td>{{ $item->anggota->departement ?? '-' }}</td>
-                <td>{{ $item->jenisSimpanan->jenis_simpanan ?? '-' }}</td>
-                <td class="right">{{ number_format($item->jumlah, 0, ',', '.') }}</td>
-                <td class="center">{{ $item->user->name ?? 'admin' }}</td>
-            </tr>
+                <tr>
+                    <td class="center">{{ $index + 1 }}</td>
+                    <td class="center">{{ $item->kode_transaksi }}</td>
+                    <td class="center">{{ \Carbon\Carbon::parse($item->tanggal_transaksi)->format('d M Y') }}</td>
+                    <td class="center">{{ $item->anggota->id_anggota ?? '-' }}</td>
+                    <td>{{ $item->anggota->nama ?? '-' }}</td>
+                    <td>{{ $item->anggota->departement ?? '-' }}</td>
+                    <td>{{ $item->jenisSimpanan->jenis_simpanan ?? '-' }}</td>
+                    <td class="right">{{ number_format($item->jumlah, 0, ',', '.') }}</td>
+                    <td class="center">{{ $item->user->name ?? 'admin' }}</td>
+                </tr>
             @empty
-            <tr>
-                <td colspan="9" class="center">Tidak ada data</td>
-            </tr>
+                <tr>
+                    <td colspan="9" class="center">Tidak ada data</td>
+                </tr>
             @endforelse
         </tbody>
         <tfoot>
@@ -185,4 +187,5 @@
         </tfoot>
     </table>
 </body>
+
 </html>

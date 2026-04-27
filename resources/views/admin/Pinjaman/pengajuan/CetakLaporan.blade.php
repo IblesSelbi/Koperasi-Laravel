@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -143,14 +144,38 @@
             font-weight: bold;
         }
 
-        .badge-info { background-color: #d1ecf1; color: #0c5460; }
-        .badge-warning { background-color: #fff3cd; color: #856404; }
-        .badge-success { background-color: #d4edda; color: #155724; }
-        .badge-danger { background-color: #f8d7da; color: #721c24; }
-        .badge-secondary { background-color: #e2e3e5; color: #383d41; }
-        .badge-primary { background-color: #cce5ff; color: #004085; }
+        .badge-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .badge-warning {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .badge-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .badge-secondary {
+            background-color: #e2e3e5;
+            color: #383d41;
+        }
+
+        .badge-primary {
+            background-color: #cce5ff;
+            color: #004085;
+        }
     </style>
 </head>
+
 <body>
     <!-- Header -->
     <div class="header">
@@ -164,7 +189,7 @@
         </div>
         <div class="header-right">
             <h2>{{ strtoupper($identitas->nama_lembaga ?? 'KOPERASI') }}</h2>
-            <p>{{ strtoupper($identitas->badan_hukum ?? 'BINA TIRTA LESTARI') }}</p>
+            <p>{{ strtoupper($identitas->badan_hukum ?? 'Akeno Multimedia Solution') }}</p>
             <p>BADAN HUKUM : {{ $identitas->no_badan_hukum ?? 'NO.10455BH/KWK/10.20' }}</p>
             <p>{{ strtoupper($identitas->alamat ?? 'JL LASWI 2 TONJONG MAJALENGKA') }}</p>
         </div>
@@ -182,12 +207,12 @@
         @php
             $hasFilter = false;
             $filterTexts = [];
-            
+
             if ($jenis) {
                 $filterTexts[] = "Jenis Pinjaman: <strong>{$jenis}</strong>";
                 $hasFilter = true;
             }
-            
+
             if ($status !== '') {
                 $statusLabels = [
                     '0' => 'Menunggu Konfirmasi',
@@ -200,25 +225,26 @@
                 $filterTexts[] = "Status: <strong>{$statusLabel}</strong>";
                 $hasFilter = true;
             }
-            
+
             if ($bulan) {
                 try {
                     $bulanDate = \Carbon\Carbon::createFromFormat('Y-m', $bulan);
                     $filterTexts[] = "Periode Bulan: <strong>" . $bulanDate->format('F Y') . " (21 bulan lalu - 20 bulan ini)</strong>";
                     $hasFilter = true;
-                } catch (\Exception $e) {}
+                } catch (\Exception $e) {
+                }
             }
-            
+
             if ($tanggal) {
                 $filterTexts[] = "Periode Tanggal: <strong>{$tanggal}</strong>";
                 $hasFilter = true;
             }
-            
+
             if (!$hasFilter) {
                 $filterTexts[] = "<strong>Semua Data (Tanpa Filter)</strong>";
             }
         @endphp
-        
+
         @foreach($filterTexts as $text)
             <p>{!! $text !!}</p>
         @endforeach
@@ -244,53 +270,53 @@
         </thead>
         <tbody>
             @forelse($pengajuan as $index => $item)
-            <tr>
-                <td class="center">{{ $index + 1 }}</td>
-                <td class="center">{{ $item->id_ajuan }}</td>
-                <td class="center">{{ \Carbon\Carbon::parse($item->tanggal_pengajuan)->format('d M Y') }}</td>
-                <td>
-                    <strong>{{ $item->anggota->nama ?? '-' }}</strong><br>
-                    <small>ID: {{ $item->anggota->id_anggota ?? '-' }}</small>
-                </td>
-                <td class="center">
-                    @if($item->jenis_pinjaman == 'Biasa')
-                        <span class="badge badge-info">Biasa</span>
-                    @elseif($item->jenis_pinjaman == 'Darurat')
-                        <span class="badge badge-warning">Darurat</span>
-                    @else
-                        <span class="badge badge-success">Barang</span>
-                    @endif
-                </td>
-                <td class="right">{{ number_format($item->jumlah, 0, ',', '.') }}</td>
-                <td class="center">{{ $item->jumlah_angsuran }}</td>
-                <td>{{ $item->keterangan ?? '-' }}</td>
-                <td class="center">
-                    @if($item->status == 0)
-                        <span class="badge badge-primary">Pending</span>
-                    @elseif($item->status == 1)
-                        <span class="badge badge-success">Disetujui</span>
-                    @elseif($item->status == 2)
-                        <span class="badge badge-danger">Ditolak</span>
-                    @elseif($item->status == 3)
-                        <span class="badge badge-info">Terlaksana</span>
-                    @else
-                        <span class="badge badge-secondary">Batal</span>
-                    @endif
-                </td>
-                <td class="center">
-                    @if($item->tanggal_cair)
-                        {{ \Carbon\Carbon::parse($item->tanggal_cair)->format('d M Y') }}
-                    @else
-                        -
-                    @endif
-                </td>
-                <td>{{ $item->alasan ?? '-' }}</td>
-                <td class="center">{{ $item->user->name ?? 'admin' }}</td>
-            </tr>
+                <tr>
+                    <td class="center">{{ $index + 1 }}</td>
+                    <td class="center">{{ $item->id_ajuan }}</td>
+                    <td class="center">{{ \Carbon\Carbon::parse($item->tanggal_pengajuan)->format('d M Y') }}</td>
+                    <td>
+                        <strong>{{ $item->anggota->nama ?? '-' }}</strong><br>
+                        <small>ID: {{ $item->anggota->id_anggota ?? '-' }}</small>
+                    </td>
+                    <td class="center">
+                        @if($item->jenis_pinjaman == 'Biasa')
+                            <span class="badge badge-info">Biasa</span>
+                        @elseif($item->jenis_pinjaman == 'Darurat')
+                            <span class="badge badge-warning">Darurat</span>
+                        @else
+                            <span class="badge badge-success">Barang</span>
+                        @endif
+                    </td>
+                    <td class="right">{{ number_format($item->jumlah, 0, ',', '.') }}</td>
+                    <td class="center">{{ $item->jumlah_angsuran }}</td>
+                    <td>{{ $item->keterangan ?? '-' }}</td>
+                    <td class="center">
+                        @if($item->status == 0)
+                            <span class="badge badge-primary">Pending</span>
+                        @elseif($item->status == 1)
+                            <span class="badge badge-success">Disetujui</span>
+                        @elseif($item->status == 2)
+                            <span class="badge badge-danger">Ditolak</span>
+                        @elseif($item->status == 3)
+                            <span class="badge badge-info">Terlaksana</span>
+                        @else
+                            <span class="badge badge-secondary">Batal</span>
+                        @endif
+                    </td>
+                    <td class="center">
+                        @if($item->tanggal_cair)
+                            {{ \Carbon\Carbon::parse($item->tanggal_cair)->format('d M Y') }}
+                        @else
+                            -
+                        @endif
+                    </td>
+                    <td>{{ $item->alasan ?? '-' }}</td>
+                    <td class="center">{{ $item->user->name ?? 'admin' }}</td>
+                </tr>
             @empty
-            <tr>
-                <td colspan="12" class="center">Tidak ada data</td>
-            </tr>
+                <tr>
+                    <td colspan="12" class="center">Tidak ada data</td>
+                </tr>
             @endforelse
         </tbody>
         <tfoot>
@@ -313,19 +339,23 @@
         ];
     @endphp
 
-    <div style="margin-top: 20px; padding: 10px; border: 1px solid #dee2e6; border-radius: 4px; background-color: #f8f9fa;">
+    <div
+        style="margin-top: 20px; padding: 10px; border: 1px solid #dee2e6; border-radius: 4px; background-color: #f8f9fa;">
         <strong>Ringkasan Status:</strong>
         <p style="margin: 5px 0; font-size: 9pt;">
-            Menunggu Konfirmasi: <strong>{{ $summary['pending'] }}</strong> | 
-            Disetujui: <strong>{{ $summary['disetujui'] }}</strong> | 
-            Ditolak: <strong>{{ $summary['ditolak'] }}</strong> | 
-            Terlaksana: <strong>{{ $summary['terlaksana'] }}</strong> | 
+            Menunggu Konfirmasi: <strong>{{ $summary['pending'] }}</strong> |
+            Disetujui: <strong>{{ $summary['disetujui'] }}</strong> |
+            Ditolak: <strong>{{ $summary['ditolak'] }}</strong> |
+            Terlaksana: <strong>{{ $summary['terlaksana'] }}</strong> |
             Batal: <strong>{{ $summary['batal'] }}</strong>
         </p>
         <p style="margin: 5px 0; font-size: 9pt;">
-            <strong>Total Nilai Disetujui:</strong> Rp {{ number_format($pengajuan->where('status', 1)->sum('jumlah'), 0, ',', '.') }} |
-            <strong>Total Nilai Terlaksana:</strong> Rp {{ number_format($pengajuan->where('status', 3)->sum('jumlah'), 0, ',', '.') }}
+            <strong>Total Nilai Disetujui:</strong> Rp
+            {{ number_format($pengajuan->where('status', 1)->sum('jumlah'), 0, ',', '.') }} |
+            <strong>Total Nilai Terlaksana:</strong> Rp
+            {{ number_format($pengajuan->where('status', 3)->sum('jumlah'), 0, ',', '.') }}
         </p>
     </div>
 </body>
+
 </html>

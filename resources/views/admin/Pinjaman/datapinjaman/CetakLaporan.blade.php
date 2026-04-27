@@ -209,9 +209,10 @@
         </div>
         <div class="header-right">
             <h2>{{ strtoupper($identitas->nama_lembaga ?? 'KOPERASI') }}</h2>
-            <p>{{ strtoupper($identitas->badan_hukum ?? 'BINA TIRTA LESTARI') }}</p>
+            <p>{{ strtoupper($identitas->badan_hukum ?? 'Akeno Multimedia Solution') }}</p>
             <p>BADAN HUKUM : {{ $identitas->no_badan_hukum ?? 'NO.10455BH/KWK/10.20' }}</p>
-            <p>{{ strtoupper($identitas->alamat ?? 'AKENO MULTIMEDIA SOLUTION, VILA BANDUNG INDAH 40393 JAWA WEST JAVA') }}</p>
+            <p>{{ strtoupper($identitas->alamat ?? 'AKENO MULTIMEDIA SOLUTION, VILA BANDUNG INDAH 40393 JAWA WEST JAVA') }}
+            </p>
         </div>
     </div>
 
@@ -345,7 +346,7 @@
             'lunas' => $pinjaman->where('status_lunas', 'Lunas')->sum('pokok_pinjaman'),
             'belum_lunas' => $pinjaman->where('status_lunas', 'Belum')->sum('pokok_pinjaman'),
         ];
-        
+
         $summaryJenis = [
             'biasa' => $pinjaman->where('jenis_pinjaman', 'Biasa')->count(),
             'darurat' => $pinjaman->where('jenis_pinjaman', 'Darurat')->count(),
@@ -356,17 +357,20 @@
     <div class="summary">
         <strong>Ringkasan Status:</strong>
         <p>
-            Lunas: <strong>{{ $summary['lunas'] }}</strong> pinjaman (Rp {{ number_format($summaryNilai['lunas'], 0, ',', '.') }}) | 
-            Belum Lunas: <strong>{{ $summary['belum_lunas'] }}</strong> pinjaman (Rp {{ number_format($summaryNilai['belum_lunas'], 0, ',', '.') }})
+            Lunas: <strong>{{ $summary['lunas'] }}</strong> pinjaman (Rp
+            {{ number_format($summaryNilai['lunas'], 0, ',', '.') }}) |
+            Belum Lunas: <strong>{{ $summary['belum_lunas'] }}</strong> pinjaman (Rp
+            {{ number_format($summaryNilai['belum_lunas'], 0, ',', '.') }})
         </p>
         <p>
             <strong>Per Jenis:</strong>
-            Biasa: {{ $summaryJenis['biasa'] }} | 
-            Darurat: {{ $summaryJenis['darurat'] }} | 
+            Biasa: {{ $summaryJenis['biasa'] }} |
+            Darurat: {{ $summaryJenis['darurat'] }} |
             Barang: {{ $summaryJenis['barang'] }}
         </p>
         <p>
-            <strong>Total Piutang (Belum Lunas):</strong> Rp {{ number_format($pinjaman->where('status_lunas', 'Belum')->sum('sisa_tagihan'), 0, ',', '.') }}
+            <strong>Total Piutang (Belum Lunas):</strong> Rp
+            {{ number_format($pinjaman->where('status_lunas', 'Belum')->sum('sisa_tagihan'), 0, ',', '.') }}
         </p>
     </div>
 </body>

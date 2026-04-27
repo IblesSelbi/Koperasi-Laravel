@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <title>Laporan Data Anggota</title>
@@ -202,6 +203,7 @@
         }
     </style>
 </head>
+
 <body>
 
     <!-- Header -->
@@ -215,7 +217,7 @@
                 </td>
                 <td style="padding-left: 10px;">
                     <h2>{{ strtoupper($identitas->nama_lembaga ?? 'KOPERASI') }}</h2>
-                    <p><strong>{{ strtoupper($identitas->badan_hukum ?? 'BINA TIRTA LESTARI') }}</strong></p>
+                    <p><strong>{{ strtoupper($identitas->badan_hukum ?? 'Akeno Multimedia Solution') }}</strong></p>
                     <p>Badan Hukum: {{ $identitas->no_badan_hukum ?? 'NO.10455BH/KWK/10.20' }}</p>
                     <p>{{ strtoupper($identitas->alamat ?? 'JL LASWI 2 TONJONG MAJALENGKA') }}</p>
                 </td>
@@ -264,9 +266,9 @@
                 <td style="width: 65%;">
                     <div class="title-small">Filter yang Diterapkan</div>
                     <div class="content">
-                        Status: <strong>{{ $filterInfo['status'] }}</strong> | 
-                        Jenis Kelamin: <strong>{{ $filterInfo['gender'] }}</strong> | 
-                        Jabatan: <strong>{{ $filterInfo['jabatan'] }}</strong> | 
+                        Status: <strong>{{ $filterInfo['status'] }}</strong> |
+                        Jenis Kelamin: <strong>{{ $filterInfo['gender'] }}</strong> |
+                        Jabatan: <strong>{{ $filterInfo['jabatan'] }}</strong> |
                         Departemen: <strong>{{ $filterInfo['departemen'] }}</strong>
                     </div>
                 </td>
@@ -301,51 +303,53 @@
         </thead>
         <tbody>
             @forelse($anggota as $index => $item)
-            <tr>
-                <td class="center">{{ $index + 1 }}</td>
-                <td class="center"><strong>{{ $item->id_anggota }}</strong></td>
-                <td>
-                    <strong>{{ $item->nama }}</strong><br>
-                    <span style="font-size: 6.5pt; color: #666;">{{ $item->username }}</span>
-                </td>
-                <td class="center">
-                    <span class="badge">{{ $item->jenis_kelamin == 'Laki-laki' ? 'L' : 'P' }}</span>
-                </td>
-                <td>
-                    {{ $item->tempat_lahir }}<br>
-                    <span style="font-size: 6.5pt; color: #666;">
-                        {{ $item->tanggal_lahir ? \Carbon\Carbon::parse($item->tanggal_lahir)->translatedFormat('d M Y') : '-' }}
-                    </span>
-                </td>
-                <td class="center">{{ $item->status ?? '-' }}</td>
-                <td class="center">{{ $item->departement ?? '-' }}</td>
-                <td class="center">{{ $item->pekerjaan ?? '-' }}</td>
-                <td>{{ $item->alamat }}, {{ $item->kota }}</td>
-                <td class="center">{{ $item->no_telp ?? '-' }}</td>
-                <td class="center">
-                    <span class="badge">{{ $item->jabatan }}</span>
-                </td>
-                <td class="center">
-                    {{ \Carbon\Carbon::parse($item->tanggal_registrasi)->translatedFormat('d M Y') }}
-                </td>
-                <td class="center">
-                    <strong>{{ $item->aktif == 'Aktif' ? 'Y' : 'N' }}</strong>
-                </td>
-            </tr>
+                <tr>
+                    <td class="center">{{ $index + 1 }}</td>
+                    <td class="center"><strong>{{ $item->id_anggota }}</strong></td>
+                    <td>
+                        <strong>{{ $item->nama }}</strong><br>
+                        <span style="font-size: 6.5pt; color: #666;">{{ $item->username }}</span>
+                    </td>
+                    <td class="center">
+                        <span class="badge">{{ $item->jenis_kelamin == 'Laki-laki' ? 'L' : 'P' }}</span>
+                    </td>
+                    <td>
+                        {{ $item->tempat_lahir }}<br>
+                        <span style="font-size: 6.5pt; color: #666;">
+                            {{ $item->tanggal_lahir ? \Carbon\Carbon::parse($item->tanggal_lahir)->translatedFormat('d M Y') : '-' }}
+                        </span>
+                    </td>
+                    <td class="center">{{ $item->status ?? '-' }}</td>
+                    <td class="center">{{ $item->departement ?? '-' }}</td>
+                    <td class="center">{{ $item->pekerjaan ?? '-' }}</td>
+                    <td>{{ $item->alamat }}, {{ $item->kota }}</td>
+                    <td class="center">{{ $item->no_telp ?? '-' }}</td>
+                    <td class="center">
+                        <span class="badge">{{ $item->jabatan }}</span>
+                    </td>
+                    <td class="center">
+                        {{ \Carbon\Carbon::parse($item->tanggal_registrasi)->translatedFormat('d M Y') }}
+                    </td>
+                    <td class="center">
+                        <strong>{{ $item->aktif == 'Aktif' ? 'Y' : 'N' }}</strong>
+                    </td>
+                </tr>
             @empty
-            <tr>
-                <td colspan="13" class="center" style="padding: 15px;">Tidak ada data anggota</td>
-            </tr>
+                <tr>
+                    <td colspan="13" class="center" style="padding: 15px;">Tidak ada data anggota</td>
+                </tr>
             @endforelse
         </tbody>
         <tfoot>
             <tr>
                 <td colspan="13" class="center">
-                    <strong>TOTAL DATA: {{ $totalAnggota }} ANGGOTA | AKTIF: {{ $anggotaAktif }} | NON AKTIF: {{ $anggotaNonAktif }}</strong>
+                    <strong>TOTAL DATA: {{ $totalAnggota }} ANGGOTA | AKTIF: {{ $anggotaAktif }} | NON AKTIF:
+                        {{ $anggotaNonAktif }}</strong>
                 </td>
             </tr>
         </tfoot>
     </table>
 
 </body>
+
 </html>

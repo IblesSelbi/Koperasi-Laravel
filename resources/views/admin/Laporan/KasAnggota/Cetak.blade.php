@@ -227,7 +227,7 @@
                 </td>
                 <td style="padding-left: 10px;">
                     <h2>{{ strtoupper($identitas->nama_lembaga ?? 'KOPERASI') }}</h2>
-                    <p><strong>{{ strtoupper($identitas->badan_hukum ?? 'BINA TIRTA LESTARI') }}</strong></p>
+                    <p><strong>{{ strtoupper($identitas->badan_hukum ?? 'Akeno Multimedia Solution') }}</strong></p>
                     <p>Badan Hukum: {{ $identitas->no_badan_hukum ?? 'NO.10455BH/KWK/10.20' }}</p>
                     <p>{{ strtoupper($identitas->alamat ?? 'JL LASWI 2 TONJONG MAJALENGKA') }}</p>
                 </td>
@@ -364,7 +364,8 @@
                     <td class="right">{{ number_format($item->kredit['tagihan_denda'], 0, ',', '.') }}</td>
                     <td class="right">{{ number_format($item->kredit['dibayar'], 0, ',', '.') }}</td>
                     <td class="right" style="font-weight: bold;">
-                        {{ number_format($item->kredit['sisa_tagihan'], 0, ',', '.') }}</td>
+                        {{ number_format($item->kredit['sisa_tagihan'], 0, ',', '.') }}
+                    </td>
 
                     <!-- Keterangan -->
                     <td class="center">{{ $item->keterangan['jumlah_pinjaman'] }}</td>
@@ -390,10 +391,12 @@
                 <td class="right"><strong>{{ number_format($totalSimpananPokok, 0, ',', '.') }}</strong></td>
                 <td class="right"><strong>{{ number_format($totalSimpananWajib, 0, ',', '.') }}</strong></td>
                 <td class="right">
-                    <strong>{{ number_format($kasAnggota->sum('simpanan.lainnya'), 0, ',', '.') }}</strong></td>
+                    <strong>{{ number_format($kasAnggota->sum('simpanan.lainnya'), 0, ',', '.') }}</strong>
+                </td>
                 <td class="right"><strong>{{ number_format($totalPokokPinjaman, 0, ',', '.') }}</strong></td>
                 <td class="right">
-                    <strong>{{ number_format($kasAnggota->sum('kredit.tagihan_denda'), 0, ',', '.') }}</strong></td>
+                    <strong>{{ number_format($kasAnggota->sum('kredit.tagihan_denda'), 0, ',', '.') }}</strong>
+                </td>
                 <td class="right"><strong>{{ number_format($kasAnggota->sum('kredit.dibayar'), 0, ',', '.') }}</strong>
                 </td>
                 <td class="right"><strong>{{ number_format($totalSisaTagihan, 0, ',', '.') }}</strong></td>

@@ -279,7 +279,7 @@
                 </td>
                 <td style="padding-left: 15px;">
                     <h2>{{ strtoupper($identitas->nama_lembaga ?? 'KOPERASI') }}</h2>
-                    <p><strong>{{ strtoupper($identitas->badan_hukum ?? 'BINA TIRTA LESTARI') }}</strong></p>
+                    <p><strong>{{ strtoupper($identitas->badan_hukum ?? 'Akeno Multimedia Solution') }}</strong></p>
                     <p>Badan Hukum: {{ $identitas->no_badan_hukum ?? 'NO.10455BH/KWK/10.20' }}</p>
                     <p>{{ strtoupper($identitas->alamat ?? 'JL LASWI 2 TONJONG MAJALENGKA') }}</p>
                 </td>
@@ -338,7 +338,7 @@
                             <strong>{{ $item->lama_angsuran }} Bulan</strong>
                             @if($item->lama_angsuran >= 12)
                                 <span style="color: #666; font-size: 7.5pt;">
-                                    ({{ floor($item->lama_angsuran / 12) }} 
+                                    ({{ floor($item->lama_angsuran / 12) }}
                                     {{ floor($item->lama_angsuran / 12) > 1 ? 'Tahun' : 'Tahun' }}
                                     @if($item->lama_angsuran % 12 > 0)
                                         {{ $item->lama_angsuran % 12 }} Bulan

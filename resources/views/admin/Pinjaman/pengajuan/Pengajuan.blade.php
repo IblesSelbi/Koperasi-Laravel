@@ -114,12 +114,6 @@
             <div class="row mt-3 pt-3 border-top">
                 <div class="col-12">
                     <div class="d-flex gap-2 flex-wrap">
-                        <button class="btn btn-success btn-sm" onclick="exportExcel()">
-                            <i class="ti ti-file-spreadsheet"></i> Export Excel
-                        </button>
-                        <button class="btn btn-danger btn-sm" onclick="exportPDF()">
-                            <i class="ti ti-file-type-pdf"></i> Export PDF
-                        </button>
                         <button class="btn btn-info btn-sm" onclick="cetakLaporan()">
                             <i class="ti ti-printer"></i> Cetak Laporan
                         </button>

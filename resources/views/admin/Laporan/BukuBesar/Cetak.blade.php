@@ -286,7 +286,7 @@
                 </td>
                 <td style="padding-left: 10px;">
                     <h2>{{ strtoupper($identitas->nama_lembaga ?? 'KOPERASI') }}</h2>
-                    <p><strong>{{ strtoupper($identitas->badan_hukum ?? 'BINA TIRTA LESTARI') }}</strong></p>
+                    <p><strong>{{ strtoupper($identitas->badan_hukum ?? 'Akeno Multimedia Solution') }}</strong></p>
                     <p>Badan Hukum: {{ $identitas->no_badan_hukum ?? 'NO.10455BH/KWK/10.20' }}</p>
                     <p>{{ strtoupper($identitas->alamat ?? 'JL LASWI 2 TONJONG MAJALENGKA') }}</p>
                 </td>
@@ -313,7 +313,7 @@
                     <div class="label">Total Transaksi</div>
                     @php
                         $totalTransaksi = 0;
-                        foreach($bukuBesarData as $data) {
+                        foreach ($bukuBesarData as $data) {
                             $totalTransaksi += $data['transaksi']->count();
                         }
                     @endphp
@@ -323,7 +323,7 @@
                     <div class="label">Total Debet</div>
                     @php
                         $grandTotalDebet = 0;
-                        foreach($bukuBesarData as $data) {
+                        foreach ($bukuBesarData as $data) {
                             $grandTotalDebet += $data['total_debet'];
                         }
                     @endphp
@@ -333,7 +333,7 @@
                     <div class="label">Total Kredit</div>
                     @php
                         $grandTotalKredit = 0;
-                        foreach($bukuBesarData as $data) {
+                        foreach ($bukuBesarData as $data) {
                             $grandTotalKredit += $data['total_kredit'];
                         }
                     @endphp
@@ -360,7 +360,8 @@
                             <h3>{{ strtoupper($data['kas']->nama_kas) }}</h3>
                         </td>
                         <td style="width: 25%; text-align: right;">
-                            <span class="saldo-info">Saldo Awal: Rp {{ number_format($data['saldo_awal'], 0, ',', '.') }}</span>
+                            <span class="saldo-info">Saldo Awal: Rp
+                                {{ number_format($data['saldo_awal'], 0, ',', '.') }}</span>
                         </td>
                         <td style="width: 25%; text-align: right;">
                             <span class="saldo-info">
